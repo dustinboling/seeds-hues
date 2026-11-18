@@ -1,4 +1,5 @@
 import { podArtForPlant } from "@/lib/data/pod-ornaments";
+import { imageSrcSet, imageUrl } from "@/lib/images";
 import type { Media } from "@/lib/validators";
 
 /**
@@ -7,13 +8,14 @@ import type { Media } from "@/lib/validators";
  * illustration standard's 1:2 frame, like CropCardImage. The fixed aspect reserves the space
  * before the file arrives, so the grid has no layout shift.
  *
- * Cards never load the 1120-wide hero master. For variety artwork (/artwork/<file>.webp) the
- * 480- and 768-wide copies under /artwork/w480/ and /artwork/w768/ are derived from the master's
- * path; the app never generates image files. Any other media url is used as stored.
+ * Cards never load the 1120-wide hero size. Images come from our own image CDN through lib/images
+ * (R2 original + on-the-fly scale-down transformation, migrated 2026-11-18): variety artwork gets
+ * a 480-wide src with a 480w/768w srcset; crop media (/artwork/crops/…) and any other media url
+ * get the 480-wide transformation as src. The stored media url is never rewritten in data.
  *
  * Without media the same frame is a placeholder on paper: the crop's seed-pod motif
- * (/ornaments/motif-<key>.webp, from lib/data/pod-ornaments.ts by plantSlug) when the crop has
- * pod art, otherwise the theme's divider-stem motif. Both are decorative (alt="", aria-hidden):
+ * (/ornaments/motif-<key>.webp from lib/data/pod-ornaments.ts by plantSlug, rendered through
+ * lib/images at 480 wide) when the crop has pod art, otherwise the theme's divider-stem motif. Both are decorative (alt="", aria-hidden):
  * never a broken image, a stock photo or a guessed painting of the variety.
  */
 export function VarietyCardImage({ media, varietyName, plantSlug }: { media: Media[]; varietyName: string; plantSlug?: string }) {
@@ -29,7 +31,7 @@ export function VarietyCardImage({ media, varietyName, plantSlug }: { media: Med
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={motif}
+              src={imageUrl(motif, { width: 480 })}
               alt=""
               aria-hidden="true"
               width={480}
@@ -46,16 +48,13 @@ export function VarietyCardImage({ media, varietyName, plantSlug }: { media: Med
     );
   }
   const isVarietyArtwork = m.url.startsWith("/artwork/") && !m.url.startsWith("/artwork/crops/");
-  const w480 = m.url.replace("/artwork/", "/artwork/w480/");
-  const w768 = m.url.replace("/artwork/", "/artwork/w768/");
-  const cardSrc = isVarietyArtwork ? w480 : m.url;
-  const srcSet = isVarietyArtwork ? `${w480} 480w, ${w768} 768w` : undefined;
+  const srcSet = isVarietyArtwork ? imageSrcSet(m.url, [480, 768]) : undefined;
   return (
     <div className="card-image mb-2 aspect-[1/2] w-full overflow-hidden rounded-lg bg-paper" data-testid="variety-card-image">
-      {/* A plain <img>: the files are fixed-size local assets, so next/image adds nothing here. */}
+      {/* A plain <img>: sizing is done by the image CDN's transformations, so next/image adds nothing here. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={cardSrc}
+        src={imageUrl(m.url, { width: 480 })}
         srcSet={srcSet}
         sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
         alt={`${varietyName} — illustration`}

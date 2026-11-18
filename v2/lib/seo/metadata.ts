@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL } from "@/lib/config";
 import { shortCommonName } from "@/lib/format";
+import { imageUrl } from "@/lib/images";
 import type { SellerDetail, SellerState, VarietyDetail } from "@/lib/validators";
 
 export function clip(text: string, max = 160): string {
@@ -16,7 +17,8 @@ export interface OgImage {
   width: number;
   height: number;
   alt: string;
-  type: string;
+  /** MIME type; omitted when the served format is negotiated (image CDN, format=auto). */
+  type?: string;
 }
 
 /** Generated OG card (`/og/{kind}/{slug}`, 1200×630 PNG). */
@@ -24,9 +26,15 @@ export function ogImage(kind: "variety" | "seller" | "crop" | "site", slug: stri
   return { url: `${SITE_URL}/og/${kind}/${slug}`, width: 1200, height: 630, alt, type: "image/png" };
 }
 
-/** Own-work variety or crop illustration as the share image (public path from media, 1120×2240 WebP). */
+/**
+ * Own-work variety or crop illustration as the share image: the stored media path rendered as a
+ * 1120-wide scale-down transformation from our own image CDN (lib/images; absolute URL on
+ * images.seeds.hues.flowers since the 2026-11-18 migration). No `type`: format=auto negotiates the
+ * format per client (AVIF/WebP, else the original's format), so a fixed MIME type could be wrong.
+ * 1120×2240 is the illustration standard (every variety original is exactly that size).
+ */
 export function mediaOgImage(path: string, alt: string): OgImage {
-  return { url: `${SITE_URL}${path}`, width: 1120, height: 2240, alt, type: "image/webp" };
+  return { url: imageUrl(path, { width: 1120 }), width: 1120, height: 2240, alt };
 }
 
 export function pageMetadata(opts: {

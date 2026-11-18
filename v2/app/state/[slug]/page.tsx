@@ -12,6 +12,7 @@ import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage, totalPages } from "@/lib/paging";
 import { PAGE_SIZE } from "@/lib/config";
 import { STATE_SCENES } from "@/lib/data/state-scenes";
+import { imageUrl } from "@/lib/images";
 
 export const dynamic = "force-dynamic";
 
@@ -73,10 +74,10 @@ export default async function StatePage({ params, searchParams }: Props) {
       <header>
         {scene ? (
           <figure data-testid="state-hero">
-            {/* A plain <img>: the file is a fixed-size local asset, so next/image adds nothing here. */}
+            {/* A plain <img>: a 1200-wide scale-down transformation from our own image CDN (lib/images). */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`/theme/state-scenes/${st.slug}.webp`}
+              src={imageUrl(`/theme/state-scenes/${st.slug}.webp`, { width: 1200 })}
               alt={scene.alt}
               width={scene.width}
               height={scene.height}

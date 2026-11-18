@@ -113,9 +113,34 @@ function revokeMinted() {
   }
 }
 
+// ─── image CDN (R2 + Image Transformations migration, 2026-11-18) ─────────────
+// Every /artwork/, /theme/ and /ornaments/ image renders from our own image CDN as a scale-down
+// transformation of its R2 original (lib/images). Expected URLs are pinned here as literals (not
+// computed with lib/images) so the acceptance run checks the contract independently of the helper.
+const IMG_CDN = "https://images.seeds.hues.flowers";
+/** A transformation URL for an R2 original key (the exact shape lib/images emits). */
+const cdn = (width: number, key: string) => `${IMG_CDN}/cdn-cgi/image/width=${width},quality=80,format=auto,fit=scale-down/${key}`;
+/** Matches the src of any transformation of an R2 key under `prefix` (regex source, already escaped). */
+const cdnSrcRe = (prefix: string) => `https://images\\.seeds\\.hues\\.flowers/cdn-cgi/image/[^"/]+/${prefix}`;
+/** Width × height of a WebP (VP8 / VP8L / VP8X), or null. */
+function webpSize(b: Uint8Array): { w: number; h: number } | null {
+  const td = new TextDecoder();
+  if (b.length < 30 || td.decode(b.slice(0, 4)) !== "RIFF" || td.decode(b.slice(8, 12)) !== "WEBP") return null;
+  const chunk = td.decode(b.slice(12, 16));
+  if (chunk === "VP8X") return { w: (b[24]! | (b[25]! << 8) | (b[26]! << 16)) + 1, h: (b[27]! | (b[28]! << 8) | (b[29]! << 16)) + 1 };
+  if (chunk === "VP8 ") return { w: (b[26]! | (b[27]! << 8)) & 0x3fff, h: (b[28]! | (b[29]! << 8)) & 0x3fff };
+  if (chunk === "VP8L") {
+    const v = b[21]! | (b[22]! << 8) | (b[23]! << 16) | (b[24]! << 24);
+    return { w: (v & 0x3fff) + 1, h: ((v >>> 14) & 0x3fff) + 1 };
+  }
+  return null;
+}
+
 // ─── media display (media delta D7) ──────────────────────────────────────────
 const MEDIA_SLUG = "zinnia-queen-lime-blush";
 const MEDIA_PATH = `/artwork/${MEDIA_SLUG}.webp`;
+/** R2 original of MEDIA_PATH (a shipped WebP, so the key keeps the .webp extension). */
+const MEDIA_KEY = `artwork/${MEDIA_SLUG}.webp`;
 const NO_MEDIA_SLUG = "sweet-pea-albutt-blue";
 const IS_LOCAL_BASE = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(BASE);
 
@@ -154,11 +179,14 @@ const revalidateVariety = (token: string, slug: string) => revalidateTags(token,
 const PLANT_MEDIA_SLUG = "zinnia";
 const PLANT_MEDIA_NAME = "Zinnia";
 const PLANT_MEDIA_PATH = `/artwork/crops/${PLANT_MEDIA_SLUG}.webp`;
-const PLANT_THUMB_PATH = `/artwork/crops/thumbs/${PLANT_MEDIA_SLUG}.webp`;
+const PLANT_MEDIA_KEY = `artwork/crops/${PLANT_MEDIA_SLUG}.webp`;
+/** Crop cards render the 480-wide transformation (the old /artwork/crops/thumbs/ copies are gone). */
+const PLANT_CARD_SRC = cdn(480, PLANT_MEDIA_KEY);
+const PLANT_HERO_SRC = cdn(1120, PLANT_MEDIA_KEY);
 const PLANT_NO_MEDIA_SLUG = "yarrow";
 // The revalidate route's tag taxonomy names crops "crop:<slug>" and the crop index "list:crop".
 const PLANT_MEDIA_TAGS = [`crop:${PLANT_MEDIA_SLUG}`, "list:home", "list:crop"];
-const cropImg = (h: string) => /<img\b[^>]*\bsrc="\/artwork\/crops\/[^"]*"[^>]*>/.exec(h)?.[0] ?? null;
+const cropImg = (h: string) => new RegExp(`<img\\b[^>]*\\bsrc="${cdnSrcRe("artwork/crops/")}[^"]*"[^>]*>`).exec(h)?.[0] ?? null;
 const escapeRe = (x: string) => x.replace(/[.*+?^$()|[\]{}\\/]/g, "\\$&");
 const imgWithSrc = (h: string, src: string) => new RegExp(`<img\\b[^>]*\\bsrc="${escapeRe(src)}"[^>]*>`).exec(h)?.[0] ?? null;
 /** The <li> card that links to /crop/<slug> (home grid and /crop index both render one per crop). */
@@ -176,10 +204,11 @@ async function pageUntil(path: string, want: (h: string) => boolean, tries = 6):
   throw new Error(`${path}: expected state not reached after ${tries} fetches`);
 }
 
-/** Any own-artwork <img> (hero or card). */
-const artworkImg = (h: string) => /<img\b[^>]*\bsrc="\/artwork\/[^"]+"[^>]*>/.exec(h)?.[0] ?? null;
-/** The page hero: an /artwork/ <img> that is not a variety card (cards load /artwork/w480/ copies). */
-const heroImg = (h: string) => /<img\b[^>]*\bsrc="\/artwork\/(?!w480\/)[^"]+"[^>]*>/.exec(h)?.[0] ?? null;
+/** Any own-artwork <img> (hero or card): a CDN transformation of an artwork/ original. */
+const artworkImg = (h: string) => new RegExp(`<img\\b[^>]*\\bsrc="${cdnSrcRe("artwork/")}[^"]+"[^>]*>`).exec(h)?.[0] ?? null;
+/** The page hero: the 1120-wide artwork transformation (cards load the 480-wide one). */
+const heroImg = (h: string) =>
+  /<img\b[^>]*\bsrc="https:\/\/images\.seeds\.hues\.flowers\/cdn-cgi\/image\/width=1120,[^"\/]*\/artwork\/[^"]+"[^>]*>/.exec(h)?.[0] ?? null;
 /** The <li> card that links to /variety/<slug> (variety grids render one per variety). */
 /** Every opening <a> tag as an attribute map (order-independent); href is entity-decoded. */
 const anchorTags = (h: string) =>
@@ -198,7 +227,9 @@ const varietyCard = (h: string, slug: string) =>
 const attr = (tag: string, name: string) => new RegExp(`\\b${name}="([^"]*)"`).exec(tag)?.[1] ?? null;
 /** The variety card's no-media placeholder frame (its inner HTML), if the card has one. */
 const placeholderFrame = (card: string) => /<div\b[^>]*data-testid="variety-card-placeholder"[^>]*>([\s\S]*?)<\/div>/.exec(card)?.[1] ?? null;
-const POD_MOTIF_ZINNIA = "/ornaments/motif-zinnia.webp";
+/** Stored pod paths render as transformations of their .png masters: motifs 480 wide, bundles 1600. */
+const POD_MOTIF_ZINNIA = cdn(480, "ornaments/motif-zinnia.png");
+const podBundle = (key: string) => cdn(1600, `ornaments/bundle-${key}.png`);
 const metaContent = (h: string, prop: string) => new RegExp(`<meta property="${prop}" content="([^"]*)"`).exec(h)?.[1] ?? null;
 
 type Variety = { slug: string; indexable: boolean; listingCount: number };
@@ -655,10 +686,10 @@ async function main() {
     assert(canonicalOf(h) === "https://seeds.hues.flowers/state/oregon", `canonical ${canonicalOf(h)}`);
     // Phase 3 (brief #3 addendum 5): the state page now carries the Add Your Farm CTA, prefilled with its state.
     assert(h.includes('href="/add-your-farm?state=OR"'), "Add Your Farm CTA (?state=OR)");
-    assert(h.includes("/theme/state-scenes/oregon.webp"), "scene hero artwork");
+    assert(h.includes(`src="${cdn(1200, "theme/state-scenes/oregon.png")}"`), "scene hero artwork (1200-wide CDN transformation)");
     assert(h.includes('data-testid="state-hero"'), "state-hero figure");
     assert(h.includes("Oregon landscape with Oregon grape"), "scene hero alt text");
-    assert(!h.includes("/artwork/states/oregon.webp"), "masked state-flower artwork still on the page");
+    assert(!h.includes("artwork/states/oregon."), "masked state-flower artwork still on the page");
     crawled.set("/state/oregon", h);
     return `${got.length} sellers`;
   });
@@ -761,15 +792,18 @@ async function main() {
   });
 
   section("Media display (media delta)");
-  await check("no crawled page hotlinks an image; no page has an /artwork/ hero while media is empty", async () => {
+  await check("no crawled page hotlinks an image (remote srcs are only our own image CDN); no page has an /artwork/ hero while media is empty", async () => {
     for (const [p, h] of crawled) {
-      assert(!/<img\b[^>]*\bsrc="(https?:)?\/\//.test(h), `${p} has a remote <img>`);
+      // Image-CDN migration: a remote <img> src is allowed only on images.seeds.hues.flowers (our zone).
+      const remote = [...h.matchAll(/<img\b[^>]*\bsrc="((?:https?:)?\/\/[^"]*)"/g)].map((m) => m[1]!);
+      const foreign = remote.filter((u) => !u.startsWith(`${IMG_CDN}/`));
+      assert(foreign.length === 0, `${p} has a hotlinked <img>: ${foreign.join(" ")}`);
       assert(!artworkImg(h), `${p} renders an /artwork/ img with no media rows`);
     }
     return `${crawled.size} pages`;
   });
-  await check(`GET ${MEDIA_PATH} → 200 image/webp, 1120×2240, immutable cache`, async () => {
-    const r = await get(MEDIA_PATH);
+  await check(`GET image-CDN original ${MEDIA_KEY} → 200 image/webp, 1120×2240, immutable cache (public/artwork retired in the 2026-11-18 migration)`, async () => {
+    const r = await fetch(`${IMG_CDN}/${MEDIA_KEY}`);
     assert(r.status === 200, `status ${r.status}`);
     assert(r.headers.get("content-type")?.startsWith("image/webp"), `content-type ${r.headers.get("content-type")}`);
     const b = new Uint8Array(await r.arrayBuffer());
@@ -780,6 +814,34 @@ async function main() {
     assert(w === 1120 && ht === 2240, `dimensions ${w}×${ht}`);
     assert(/immutable/.test(r.headers.get("cache-control") ?? ""), `cache-control ${r.headers.get("cache-control")}`);
     return `${b.length} bytes, ${r.headers.get("cache-control")}`;
+  });
+  await check("image CDN: transformations serve WebP at the requested width, whole (scale-down: aspect kept, never upscaled); SVG served as stored", async () => {
+    const probe = async (url: string, accept = "image/webp,*/*") => {
+      const r = await fetch(url, { headers: { Accept: accept } });
+      assert(r.status === 200, `${url} → ${r.status}`);
+      return { type: r.headers.get("content-type") ?? "", bytes: new Uint8Array(await r.arrayBuffer()) };
+    };
+    const out: string[] = [];
+    // A shipped WebP original, a .png master looked up from a .webp stored path, and the 1:2 standard.
+    for (const [width, key] of [[480, MEDIA_KEY], [768, MEDIA_KEY], [480, "artwork/amaranth-mira.png"]] as const) {
+      const { type, bytes } = await probe(cdn(width, key));
+      assert(type.startsWith("image/webp"), `${key}@${width}: content-type ${type}`);
+      const size = webpSize(bytes);
+      assert(size && size.w === width && size.h === width * 2, `${key}@${width}: ${size ? `${size.w}×${size.h}` : "not a WebP"}`);
+      out.push(`${key}@${width}=${size.w}×${size.h}`);
+    }
+    // Never upscaled: asking for more than the 1120-wide original returns the original width.
+    const big = webpSize((await probe(cdn(2000, "artwork/amaranth-mira.png"))).bytes);
+    assert(big && big.w === 1120 && big.h === 2240, `upscaled: ${big ? `${big.w}×${big.h}` : "not a WebP"}`);
+    // A non-1:2 crop original keeps its own aspect (no crop / pad by the transformation).
+    const crop = webpSize((await probe(PLANT_HERO_SRC)).bytes);
+    assert(crop && crop.w <= 1120 && crop.h > 0, `crop original: ${crop ? `${crop.w}×${crop.h}` : "not a WebP"}`);
+    // Clients without WebP/AVIF (link-preview crawlers) still get an image.
+    const plain = await probe(cdn(1120, MEDIA_KEY), "*/*");
+    assert(/^image\//.test(plain.type), `Accept */*: content-type ${plain.type}`);
+    const svg = await probe(`${IMG_CDN}/theme/divider-stem.svg`, "*/*");
+    assert(svg.type.startsWith("image/svg+xml"), `divider-stem.svg: content-type ${svg.type}`);
+    return `${out.join(", ")}; crop ${crop.w}×${crop.h}; */* → ${plain.type}`;
   });
   if (!IS_LOCAL_BASE || args.flags.has("skip-media")) {
     console.log(`  (media-row checks skipped: they insert into the LOCAL D1, and ${BASE} is not a local preview)`);
@@ -808,20 +870,23 @@ async function main() {
         const none = (await getJson<{ data: { media: unknown[] } }>(`/api/v1/varieties/${NO_MEDIA_SLUG}`)).data;
         assert(Array.isArray(none.media) && none.media.length === 0, `${NO_MEDIA_SLUG} media ${JSON.stringify(none.media)}`);
       });
-      await check(`variety page renders the hero: <img src="${MEDIA_PATH}"> with illustration alt, 1120×2240, no caption; og:image is the illustration`, async () => {
+      await check(`variety page renders the hero: <img src="${cdn(1120, MEDIA_KEY)}"> (768w/1120w srcset) with illustration alt, 1120×2240, no caption; og:image is the illustration`, async () => {
         const { h, attempt } = await pageUntil(`/variety/${MEDIA_SLUG}`, (x) => heroImg(x) !== null);
         const img = heroImg(h)!;
-        assert(attr(img, "src") === MEDIA_PATH, `src ${attr(img, "src")}`);
+        assert(attr(img, "src") === cdn(1120, MEDIA_KEY), `src ${attr(img, "src")}`);
+        const ss = attr(img, "srcset") ?? attr(img, "srcSet");
+        assert(ss === `${cdn(768, MEDIA_KEY)} 768w, ${cdn(1120, MEDIA_KEY)} 1120w`, `srcset ${ss}`);
         assert(/illustration/.test(attr(img, "alt") ?? ""), `alt ${attr(img, "alt")}`);
         assert(attr(img, "alt") === "Queen Lime Blush Zinnia — illustration", `alt ${attr(img, "alt")}`);
         assert(attr(img, "width") === "1120" && attr(img, "height") === "2240", "width/height attributes");
         assert(attr(img, "loading") === "eager", "loading=eager");
         assert(!h.includes("<figcaption"), "figcaption present");
         assert(!h.includes(credit), "credit text rendered on page");
-        assert(metaContent(h, "og:image") === `https://seeds.hues.flowers${MEDIA_PATH}`, `og:image ${metaContent(h, "og:image")}`);
+        assert(metaContent(h, "og:image") === cdn(1120, MEDIA_KEY), `og:image ${metaContent(h, "og:image")}`);
         assert(metaContent(h, "og:image:width") === "1120" && metaContent(h, "og:image:height") === "2240", "og:image dimensions");
-        assert(metaContent(h, "og:image:type") === "image/webp", `og:image:type ${metaContent(h, "og:image:type")}`);
-        assert(/<meta name="twitter:image" content="https:\/\/seeds\.hues\.flowers\/artwork\/zinnia-queen-lime-blush\.webp"/.test(h), "twitter:image");
+        // format=auto negotiates per client (JPEG for crawlers, AVIF/WebP for browsers): no fixed type.
+        assert(metaContent(h, "og:image:type") === null, `og:image:type ${metaContent(h, "og:image:type")}`);
+        assert(h.includes(`<meta name="twitter:image" content="${cdn(1120, MEDIA_KEY)}"`), "twitter:image");
         return `fetch ${attempt}`;
       });
       await check(`no-media variety (${NO_MEDIA_SLUG}) renders no /artwork/ hero and keeps the generated OG card`, async () => {
@@ -831,17 +896,18 @@ async function main() {
       });
       await check("API variety list items carry media: the row for the media variety, [] for the rest", async () => {
         type M = { url: string; licence: string; credit: string; thumbUrl?: string };
+        // The API keeps the canonical stored path in `url` (rendering alone moved to the CDN).
         const list = (await getJson<{ data: { slug: string; media: M[] }[] }>("/api/v1/varieties?crop=zinnia&limit=100")).data;
         const m = list.find((x) => x.slug === MEDIA_SLUG)?.media ?? [];
         assert(m.length === 1 && m[0]!.url === MEDIA_PATH && m[0]!.credit === credit && m[0]!.thumbUrl === undefined, JSON.stringify(m));
         assert(list.every((x) => Array.isArray(x.media)), "a list item without a media array");
         assert(list.filter((x) => x.media.length > 0).length === 1, "more than one variety has media");
       });
-      await check(`variety card: <img src="/artwork/w480/${MEDIA_SLUG}.webp"> (w480/w768 srcset, alt, 480×960, lazy, contain in a 1:2 frame), placeholder for the rest, whole card one link`, async () => {
+      await check(`variety card: <img src="${cdn(480, MEDIA_KEY)}"> (480w/768w srcset, alt, 480×960, lazy, contain in a 1:2 frame), placeholder for the rest, whole card one link`, async () => {
         // /crop/{slug} is force-dynamic, so the new row shows without a revalidate. Walk the
         // name-sorted pages of the colour filter until the card turns up.
-        const w480 = `/artwork/w480/${MEDIA_SLUG}.webp`;
-        const w768 = `/artwork/w768/${MEDIA_SLUG}.webp`;
+        const w480 = cdn(480, MEDIA_KEY);
+        const w768 = cdn(768, MEDIA_KEY);
         let h = "";
         let card: string | null = null;
         for (let page = 1; page <= 20 && !card; page++) {
@@ -852,7 +918,7 @@ async function main() {
         }
         assert(card, `no ${MEDIA_SLUG} card on /crop/zinnia?color_family=green`);
         const img = imgWithSrc(card, w480);
-        assert(img, "w480 card image not inside the card");
+        assert(img, "480-wide card image not inside the card");
         // React SSR emits the camelCase name `srcSet=`; HTML attribute names are case-insensitive, so accept either.
         const ss = attr(img, "srcset") ?? attr(img, "srcSet");
         assert(ss === `${w480} 480w, ${w768} 768w`, `srcset ${ss}`);
@@ -861,7 +927,7 @@ async function main() {
         assert(attr(img, "loading") === "lazy", "loading=lazy");
         assert(/\bobject-contain\b/.test(attr(img, "class") ?? "") && !/object-cover/.test(card), "object-contain, never cover");
         assert(/class="[^"]*aspect-\[1\/2\]/.test(card), "aspect-[1/2] frame");
-        assert(!h.includes(`src="${MEDIA_PATH}"`) && !h.includes(`${MEDIA_PATH} 1120w`), "card grid loads the 1120 master");
+        assert(!h.includes(`src="${cdn(1120, MEDIA_KEY)}"`) && !h.includes(`${cdn(1120, MEDIA_KEY)} 1120w`), "card grid loads the 1120-wide hero size");
         // The whole card is one link, labelled with the name and crop, ending in the availability line.
         assert((card.match(/<a\b/g) ?? []).length === 1, "card has more than one link");
         assert(/<a\b[^>]*aria-label="Queen Lime Blush — Zinnia"/.test(card), "card link aria-label");
@@ -895,9 +961,9 @@ async function main() {
   }
 
   section("Plant media display (plant-media delta)");
-  await check("no page has an /artwork/crops/ img while plant media is empty", async () => {
-    for (const [p, h] of crawled) assert(!cropImg(h), `${p} renders an /artwork/crops/ img with no media rows`);
-    for (const p of ["/", "/crop", `/crop/${PLANT_MEDIA_SLUG}`]) assert(!cropImg(await html(p)), `${p} renders an /artwork/crops/ img`);
+  await check("no page has an artwork/crops/ img while plant media is empty", async () => {
+    for (const [p, h] of crawled) assert(!cropImg(h), `${p} renders an artwork/crops/ img with no media rows`);
+    for (const p of ["/", "/crop", `/crop/${PLANT_MEDIA_SLUG}`]) assert(!cropImg(await html(p)), `${p} renders an artwork/crops/ img`);
     const c = (await getJson<{ data: { media: unknown[] } }>(`/api/v1/crops/${PLANT_MEDIA_SLUG}`)).data;
     assert(Array.isArray(c.media) && c.media.length === 0, `crop media ${JSON.stringify(c.media)}`);
     return `${crawled.size} pages + /, /crop, /crop/${PLANT_MEDIA_SLUG}`;
@@ -923,9 +989,9 @@ async function main() {
         if (token) await revalidateTags(token, PLANT_MEDIA_TAGS);
         return token ? "revalidated with the .dev.vars token" : "NO REVALIDATE_TOKEN: relying on a cache miss";
       });
-      await check("API crop detail and crop list carry the row with the computed thumbUrl; the no-media crop has []", async () => {
+      await check("API crop detail and crop list carry the row as stored (canonical url, no thumbUrl); the no-media crop has []", async () => {
         type M = { url: string; thumbUrl?: string; licence: string; credit: string };
-        const want = (m: M[]) => m.length === 1 && m[0]!.url === PLANT_MEDIA_PATH && m[0]!.thumbUrl === PLANT_THUMB_PATH && m[0]!.credit === credit;
+        const want = (m: M[]) => m.length === 1 && m[0]!.url === PLANT_MEDIA_PATH && m[0]!.thumbUrl === undefined && m[0]!.credit === credit;
         const c = (await getJson<{ data: { media: M[] } }>(`/api/v1/crops/${PLANT_MEDIA_SLUG}`)).data;
         assert(want(c.media), `detail ${JSON.stringify(c.media)}`);
         const list = await walkCrops<{ slug: string; media: M[] }>();
@@ -935,43 +1001,47 @@ async function main() {
         assert(Array.isArray(none.media) && none.media.length === 0, `${PLANT_NO_MEDIA_SLUG} media ${JSON.stringify(none.media)}`);
       });
       for (const page of ["/", "/crop"]) {
-        await check(`${page} card shows the thumbnail <img src="${PLANT_THUMB_PATH}"> (alt, 480×960, lazy, 1:2 wrapper); ${PLANT_NO_MEDIA_SLUG} card has none`, async () => {
-          const { h, attempt } = await pageUntil(page, (x) => imgWithSrc(x, PLANT_THUMB_PATH) !== null);
+        await check(`${page} card shows the thumbnail <img src="${PLANT_CARD_SRC}"> (alt, 480×960, lazy, 1:2 wrapper); ${PLANT_NO_MEDIA_SLUG} card has none`, async () => {
+          const { h, attempt } = await pageUntil(page, (x) => imgWithSrc(x, PLANT_CARD_SRC) !== null);
           const card = cropCard(h, PLANT_MEDIA_SLUG);
           assert(card, `no ${PLANT_MEDIA_SLUG} card`);
-          const img = imgWithSrc(card, PLANT_THUMB_PATH);
+          const img = imgWithSrc(card, PLANT_CARD_SRC);
           assert(img, "thumbnail not inside the zinnia card");
           assert(attr(img, "alt") === `${PLANT_MEDIA_NAME} — illustration`, `alt ${attr(img, "alt")}`);
           assert(attr(img, "width") === "480" && attr(img, "height") === "960", "width/height attributes");
           assert(attr(img, "loading") === "lazy", "loading=lazy");
           // The wrapper matches the 480×960 (1:2) thumbnails since the theme delta (CropCardImage).
           assert(/class="[^"]*aspect-\[1\/2\]/.test(card), "aspect-[1/2] wrapper");
-          assert(!h.includes(`src="${PLANT_MEDIA_PATH}"`), "card grid loads the full-size hero");
+          assert(!h.includes(`src="${PLANT_HERO_SRC}"`), "card grid loads the full-size hero");
           const other = cropCard(h, PLANT_NO_MEDIA_SLUG);
           assert(other && !/<img\b/.test(other), `${PLANT_NO_MEDIA_SLUG} card has an img`);
           // Theme delta: decorative /theme/ art (the home hero) is not a crop thumbnail; count the rest.
           // Branding delta: the Hues wordmark (/brand/) in the header and footer is not one either.
           // Pod-ornament delta: nor are the decorative seed-pod ornaments (/ornaments/).
-          assert((h.match(/<img\b(?![^>]*\bsrc="\/(?:theme|brand|ornaments)\/)/g) ?? []).length === 1, "exactly one non-theme, non-brand, non-ornament img on the page");
+          // Image-CDN migration: theme and ornament art are now CDN transformations of theme/ and ornaments/ keys.
+          const notDecor = new RegExp(`<img\\b(?![^>]*\\bsrc="(?:/brand/|${cdnSrcRe("(?:theme|ornaments)/")}))`, "g");
+          assert((h.match(notDecor) ?? []).length === 1, "exactly one non-theme, non-brand, non-ornament img on the page");
           return `fetch ${attempt}`;
         });
       }
-      await check(`crop page renders the hero <img src="${PLANT_MEDIA_PATH}"> (alt, 1120×2240, no caption); og:image is the illustration`, async () => {
-        const { h, attempt } = await pageUntil(`/crop/${PLANT_MEDIA_SLUG}`, (x) => imgWithSrc(x, PLANT_MEDIA_PATH) !== null);
-        const img = imgWithSrc(h, PLANT_MEDIA_PATH)!;
+      await check(`crop page renders the hero <img src="${PLANT_HERO_SRC}"> (768w/1120w srcset, alt, 1120×2240, no caption); og:image is the illustration`, async () => {
+        const { h, attempt } = await pageUntil(`/crop/${PLANT_MEDIA_SLUG}`, (x) => imgWithSrc(x, PLANT_HERO_SRC) !== null);
+        const img = imgWithSrc(h, PLANT_HERO_SRC)!;
+        const ss = attr(img, "srcset") ?? attr(img, "srcSet");
+        assert(ss === `${cdn(768, PLANT_MEDIA_KEY)} 768w, ${PLANT_HERO_SRC} 1120w`, `srcset ${ss}`);
         assert(attr(img, "alt") === `${PLANT_MEDIA_NAME} — illustration`, `alt ${attr(img, "alt")}`);
         assert(attr(img, "width") === "1120" && attr(img, "height") === "2240", "width/height attributes");
         assert(attr(img, "loading") === "eager", "loading=eager");
         assert(/data-testid="crop-hero"/.test(h), "crop-hero figure");
         assert(!h.includes("<figcaption"), "figcaption present");
         assert(!h.includes(credit), "credit text rendered on page");
-        assert(metaContent(h, "og:image") === `https://seeds.hues.flowers${PLANT_MEDIA_PATH}`, `og:image ${metaContent(h, "og:image")}`);
+        assert(metaContent(h, "og:image") === PLANT_HERO_SRC, `og:image ${metaContent(h, "og:image")}`);
         assert(metaContent(h, "og:image:width") === "1120" && metaContent(h, "og:image:height") === "2240", "og:image dimensions");
-        assert(metaContent(h, "og:image:type") === "image/webp", `og:image:type ${metaContent(h, "og:image:type")}`);
-        assert(h.includes(`<meta name="twitter:image" content="https://seeds.hues.flowers${PLANT_MEDIA_PATH}"`), "twitter:image");
+        assert(metaContent(h, "og:image:type") === null, `og:image:type ${metaContent(h, "og:image:type")}`);
+        assert(h.includes(`<meta name="twitter:image" content="${PLANT_HERO_SRC}"`), "twitter:image");
         return `fetch ${attempt}`;
       });
-      await check(`no-media crop page (${PLANT_NO_MEDIA_SLUG}) renders no /artwork/crops/ img and keeps the generated OG card`, async () => {
+      await check(`no-media crop page (${PLANT_NO_MEDIA_SLUG}) renders no artwork/crops/ img and keeps the generated OG card`, async () => {
         const h = await html(`/crop/${PLANT_NO_MEDIA_SLUG}`);
         assert(!cropImg(h) && !h.includes("<figcaption"), "hero present");
         assert(metaContent(h, "og:image") === `https://seeds.hues.flowers/og/crop/${PLANT_NO_MEDIA_SLUG}`, `og:image ${metaContent(h, "og:image")}`);
@@ -1011,7 +1081,7 @@ async function main() {
   await check("/crop/zinnia: header pod motif + pod divider before the grower guide; motif in the card placeholders", async () => {
     const h = await html("/crop/zinnia");
     podImg(h, POD_MOTIF_ZINNIA);
-    assert(h.includes('src="/ornaments/bundle-zinnia.webp"'), "no bundle-zinnia divider");
+    assert(h.includes(`src="${podBundle("zinnia")}"`), "no bundle-zinnia divider");
     const div = h.indexOf('data-testid="pod-divider"');
     const guide = h.indexOf('data-testid="grower-guide"');
     assert(div >= 0 && guide > div, "pod divider is not before the grower guide");
@@ -1022,25 +1092,25 @@ async function main() {
   });
   await check("/crop/cornflower: the bachelor-button pod motif", async () => {
     const h = await html("/crop/cornflower");
-    podImg(h, "/ornaments/motif-bachelor-button.webp");
-    assert(h.includes('src="/ornaments/bundle-bachelor-button.webp"'), "no bundle-bachelor-button divider");
+    podImg(h, cdn(480, "ornaments/motif-bachelor-button.png"));
+    assert(h.includes(`src="${podBundle("bachelor-button")}"`), "no bundle-bachelor-button divider");
   });
   await check("/crop/dahlia (no pod art): no ornaments and no pod divider above the footer", async () => {
     const body = beforeFooter(await html("/crop/dahlia"));
-    assert(!body.includes("/ornaments/"), "ornament above the footer");
+    assert(!body.includes("ornaments/"), "ornament above the footer");
     assert(!body.includes('data-testid="pod-divider"'), "pod divider rendered");
   });
   await check("home: cosmos + sunflower pod dividers; /variety: zinnia pod divider; footer has no motif", async () => {
     const home = await html("/");
-    for (const b of ["bundle-cosmos", "bundle-sunflower"]) assert(home.includes(`src="/ornaments/${b}.webp"`), `home has no ${b}`);
+    for (const b of ["cosmos", "sunflower"]) assert(home.includes(`src="${podBundle(b)}"`), `home has no bundle-${b}`);
     assert((home.match(/data-testid="pod-divider"/g) ?? []).length === 2, "home has other than two pod dividers");
     const v = await html("/variety");
-    assert(v.includes('src="/ornaments/bundle-zinnia.webp"'), "/variety has no bundle-zinnia");
+    assert(v.includes(`src="${podBundle("zinnia")}"`), "/variety has no bundle-zinnia");
     // Scope to the footer ELEMENT, in script-free HTML: the RSC payload carries a serialized
     // copy of the whole tree (footer included) and streamed chunk order varies, so matching
     // against the raw document can land inside a payload string instead of the element.
     const footer = /<footer[\s\S]*?<\/footer>/.exec(home.replace(/<script[\s\S]*?<\/script>/g, " "))?.[0] ?? "";
-    assert(!footer.includes("/ornaments/"), "footer carries an ornament (motif or bundle)");
+    assert(!footer.includes("ornaments/"), "footer carries an ornament (motif or bundle)");
     assert(footer.length > 0, "footer element not found");
   });
 

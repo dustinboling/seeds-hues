@@ -79,7 +79,8 @@ describe("StateShape", () => {
 
     it("clips the state-flower artwork to the outline and draws the outline over it", () => {
       const h = artHtml("or", 140);
-      expect(h).toContain('href="/artwork/states/oregon.webp"');
+      // Image-CDN migration (2026-11-18): an 800-wide scale-down transformation of the R2 original.
+      expect(h).toContain('href="https://images.seeds.hues.flowers/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/artwork/states/oregon.png"');
       expect(h).toMatch(/<clipPath id="state-art-clip-OR">/);
       expect(h).toMatch(/<image [^>]*clip-path="url\(#state-art-clip-OR\)"/);
       expect(h).toMatch(/<image [^>]*preserveAspectRatio="xMidYMid slice"/);

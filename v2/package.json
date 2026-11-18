@@ -25,6 +25,7 @@
     "farm-summaries": "tsx scripts/farm-summaries.ts",
     "zip-zones": "tsx scripts/gen-zip-zones.ts",
     "icons": "tsx scripts/gen-icons.ts",
+    "images:data": "tsx scripts/gen-images-data.ts",
     "cf:build": "node scripts/build-sw.mjs && opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",

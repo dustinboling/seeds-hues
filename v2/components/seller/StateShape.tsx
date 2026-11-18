@@ -1,13 +1,17 @@
 import { STATE_SHAPES } from "@/lib/data/state-paths";
+import { imageUrl } from "@/lib/images";
 
 /**
  * A US state outline (decorative). Fill leaf-deep at 8%, leaf-deep hairline stroke that keeps its
  * width at any size. The state name must always be printed beside it as text: the shape is
  * aria-hidden and never carries the information alone. Unknown region → renders nothing.
  * The outline is centred in a size × size square, so icons line up whatever the state's aspect.
- * `art` (opt-in, for the large state-page header): the state-flower artwork at
- * /artwork/states/{slug}.webp is clipped to the outline (clip id derived from the state code, so
- * SSR output is deterministic) and the same hairline outline is drawn over it. Still decorative.
+ * `art` (opt-in, for the large state-page header): the state-flower artwork (stored path
+ * /artwork/states/{slug}.webp, rendered through lib/images as an 800-wide scale-down
+ * transformation from our own image CDN) is clipped to the outline (clip id derived from the state
+ * code, so SSR output is deterministic) and the same hairline outline is drawn over it. Still
+ * decorative. The transformation never crops; the browser-side "slice" fill + outline clip is the
+ * design.
  */
 export function StateShape({
   region,
@@ -47,7 +51,7 @@ export function StateShape({
           </clipPath>
         </defs>
         <image
-          href={`/artwork/states/${shape.slug}.webp`}
+          href={imageUrl(`/artwork/states/${shape.slug}.webp`, { width: 800 })}
           x={0}
           y={0}
           width={w}

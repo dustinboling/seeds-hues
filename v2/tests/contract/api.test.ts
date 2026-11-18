@@ -601,7 +601,9 @@ describe("catalog endpoints (kept untouched)", () => {
 });
 
 describe("crop media in the API (plant-media delta R5)", () => {
-  it("GET /crops and /crops/{slug} carry media: rows when present (with thumbUrl), [] when absent", async () => {
+  // Image-CDN migration (2026-11-18): thumbUrl is no longer populated (cards render lib/images
+  // transformations of `url`); the field stays optional in the schema for backward compatibility.
+  it("GET /crops and /crops/{slug} carry media: rows when present (no thumbUrl), [] when absent", async () => {
     const getOne = async (s: string) => (await json(await call(cropRoute.GET, `/crops/${s}`, { slug: s }))).data as V.CropDetail;
     // Every crop: 124 is more than one 100-row page, so walk the cursor (zinnia + yarrow sort last).
     const getAll = async () => {
@@ -621,7 +623,7 @@ describe("crop media in the API (plant-media delta R5)", () => {
       "INSERT INTO media (plant_id, r2_key, licence, credit, created_at) SELECT id, '/artwork/crops/zinnia.webp', 'Own work', 'Illustration by Hues Floral Park', '2026-11-16T00:00:00.000Z' FROM plants WHERE slug = 'zinnia'",
     ).run();
     try {
-      const row = { url: "/artwork/crops/zinnia.webp", thumbUrl: "/artwork/crops/thumbs/zinnia.webp", licence: "Own work", credit: "Illustration by Hues Floral Park" };
+      const row = { url: "/artwork/crops/zinnia.webp", licence: "Own work", credit: "Illustration by Hues Floral Park" };
       const one = await getOne("zinnia");
       expect(one.media).toEqual([row]);
       expect(V.CropDetailSchema.safeParse(one).success).toBe(true);
@@ -637,7 +639,7 @@ describe("crop media in the API (plant-media delta R5)", () => {
     expect((await getOne("zinnia")).media).toEqual([]);
   });
 
-  it("the OpenAPI contract documents media (with optional thumbUrl) on CropListItem and CropDetail", async () => {
+  it("the OpenAPI contract documents media (with optional, deprecated thumbUrl) on CropListItem and CropDetail", async () => {
     const doc = (await (await call(openapiRoute.GET, "/openapi.json")).json()) as { components: { schemas: Record<string, { properties?: Record<string, unknown>; required?: string[] }> } };
     for (const name of ["CropListItem", "CropDetail", "VarietyDetail"]) {
       const s = doc.components.schemas[name]!;
@@ -651,6 +653,7 @@ describe("crop media in the API (plant-media delta R5)", () => {
     const media = doc.components.schemas.Media!;
     expect(Object.keys(media.properties!).sort()).toEqual(["credit", "licence", "thumbUrl", "url"]);
     expect([...media.required!].sort()).toEqual(["credit", "licence", "url"]); // thumbUrl optional
+    expect(media.properties!.thumbUrl).toMatchObject({ type: "string", deprecated: true }); // no longer populated
   });
 });
 

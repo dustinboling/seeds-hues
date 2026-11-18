@@ -20,6 +20,7 @@ import { PAGE_SIZE } from "@/lib/config";
 import { SEASON_LABELS, SOWING_METHOD_LABELS } from "@/lib/validators";
 import { growerGuideTabs, lifeCycleFact } from "@/lib/grower-guide";
 import { podArtForPlant } from "@/lib/data/pod-ornaments";
+import { imageUrl } from "@/lib/images";
 
 export const dynamic = "force-dynamic";
 
@@ -152,10 +153,10 @@ export default async function CropPage({ params, searchParams }: Props) {
         </div>
         {pod ? (
           <>
-            {/* Decorative seed-pod motif (lib/data/pod-ornaments.ts). A plain <img>: fixed-size local asset. */}
+            {/* Decorative seed-pod motif (lib/data/pod-ornaments.ts), 480-wide transformation via lib/images. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={pod.motif}
+              src={imageUrl(pod.motif, { width: 480 })}
               alt=""
               aria-hidden="true"
               width={480}

@@ -338,7 +338,9 @@ describe("plant media read path (plant-media delta R2/R5)", () => {
     ).run();
   const cropMedia = async (slug: string) => (await svc().getCrop(slug, { page: { offset: 0, limit: 1 } }))!.crop.media;
 
-  it("getCrop / listCrops map rows with a computed thumbUrl, in id order; no rows → []; variety media unchanged", async () => {
+  // Image-CDN migration (2026-11-18): media is the stored row only — no computed thumbUrl any more
+  // (card sizes are lib/images transformations of `url`); `url` stays the canonical stored path.
+  it("getCrop / listCrops map rows as stored (no thumbUrl), in id order; no rows → []; variety media unchanged", async () => {
     // One unpaged list of every crop (124 > the 100-row API page), so first and last are both in it.
     const everyCrop = { offset: 0, limit: 1000 };
     const all = (await svc().listCrops(everyCrop)).items;
@@ -350,7 +352,7 @@ describe("plant media read path (plant-media delta R2/R5)", () => {
     expect(await cropMedia("zinnia")).toEqual([]);
     try {
       await insertPlant("zinnia", "/artwork/crops/zinnia.webp", "Own work, all rights reserved", "Illustration by Hues Floral Park");
-      // A second row outside /artwork/crops/ gets no thumbUrl.
+      // A second row outside /artwork/crops/ maps the same way.
       await insertPlant("zinnia", "/artwork/zinnia-alt.webp", "Own work (second)", "Second credit");
       await insertPlant(first, `/artwork/crops/${first}.webp`, "Own work", "Illustration by Hues Floral Park");
       // A variety row on a zinnia variety never shows up as crop media (and vice versa).
@@ -359,21 +361,16 @@ describe("plant media read path (plant-media delta R2/R5)", () => {
       ).run();
 
       const zinnia = [
-        {
-          url: "/artwork/crops/zinnia.webp",
-          thumbUrl: "/artwork/crops/thumbs/zinnia.webp",
-          licence: "Own work, all rights reserved",
-          credit: "Illustration by Hues Floral Park",
-        },
+        { url: "/artwork/crops/zinnia.webp", licence: "Own work, all rights reserved", credit: "Illustration by Hues Floral Park" },
         { url: "/artwork/zinnia-alt.webp", licence: "Own work (second)", credit: "Second credit" },
       ];
       expect(await cropMedia("zinnia")).toEqual(zinnia);
-      expect((await cropMedia("zinnia"))[1]).not.toHaveProperty("thumbUrl");
+      for (const m of await cropMedia("zinnia")) expect(m).not.toHaveProperty("thumbUrl");
       const listed = (await svc().listCrops(everyCrop)).items;
       const bySlug = new Map(listed.map((c) => [c.slug, c.media]));
       expect(bySlug.get("zinnia")).toEqual(zinnia);
       expect(bySlug.get(first)).toEqual([
-        { url: `/artwork/crops/${first}.webp`, thumbUrl: `/artwork/crops/thumbs/${first}.webp`, licence: "Own work", credit: "Illustration by Hues Floral Park" },
+        { url: `/artwork/crops/${first}.webp`, licence: "Own work", credit: "Illustration by Hues Floral Park" },
       ]);
       expect(listed.filter((c) => c.media.length > 0).map((c) => c.slug).sort()).toEqual([first, "zinnia"].sort());
       expect(await cropMedia("yarrow")).toEqual([]);

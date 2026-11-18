@@ -26,13 +26,18 @@ describe("pod ornaments", () => {
   it("PodDivider is a decorative image only", () => {
     const h = renderToStaticMarkup(createElement(PodDivider, { bundle: "/ornaments/bundle-zinnia.webp", className: "mt-8" }));
     expect(h).toMatch(/^<div aria-hidden="true" data-testid="pod-divider" class="w-full mt-8"><img /);
-    expect(h).toContain('src="/ornaments/bundle-zinnia.webp" alt="" width="1600" height="400" loading="lazy"');
+    // Image-CDN migration (2026-11-18): the stored path renders as a 1600-wide transformation of its R2 original.
+    expect(h).toContain(
+      'src="https://images.seeds.hues.flowers/cdn-cgi/image/width=1600,quality=80,format=auto,fit=scale-down/ornaments/bundle-zinnia.png" alt="" width="1600" height="400" loading="lazy"',
+    );
   });
 
   it("card placeholder shows the pod motif when the crop has one, the divider stem otherwise", () => {
     const withArt = renderToStaticMarkup(createElement(VarietyCardImage, { media: [], varietyName: "Benary's Giant Lime", plantSlug: "zinnia" }));
     expect(withArt).toContain('data-testid="variety-card-placeholder"');
-    expect(withArt).toMatch(/<img src="\/ornaments\/motif-zinnia\.webp" alt="" aria-hidden="true" width="480" height="480" loading="lazy"/);
+    expect(withArt).toContain(
+      '<img src="https://images.seeds.hues.flowers/cdn-cgi/image/width=480,quality=80,format=auto,fit=scale-down/ornaments/motif-zinnia.png" alt="" aria-hidden="true" width="480" height="480" loading="lazy"',
+    );
     expect(withArt).not.toContain("divider-stem");
     const without = renderToStaticMarkup(createElement(VarietyCardImage, { media: [], varietyName: "Café au Lait", plantSlug: "dahlia" }));
     expect(without).toContain('data-testid="variety-card-placeholder"');

@@ -285,23 +285,29 @@ export const VarietyFactsSchema = z
 /**
  * Own-work illustration (media table), shared by varieties and crops. `url` is media.r2_key as
  * stored: for artwork served from the app's public assets that is the public path, e.g.
- * /artwork/<file>.webp (variety) or /artwork/crops/<plant-slug>.webp (crop).
- * `thumbUrl` is set by the service for crop media only: for a url under /artwork/crops/ it is the
- * same file under /artwork/crops/thumbs/ (card thumbnail, ~480px wide). Variety media never has it.
+ * /artwork/<file>.webp (variety) or /artwork/crops/<plant-slug>.webp (crop). Pages render it
+ * through lib/images (R2 original + on-the-fly transformation at images.seeds.hues.flowers).
+ * `thumbUrl` is DEPRECATED and no longer populated (since the 2026-11-18 image migration card
+ * sizes are transformations of `url`); it stays optional so the API contract is backward-compatible.
  */
 export const MediaSchema = z
   .object({
     url: z.string().min(1),
     licence: z.string().min(1),
     credit: z.string().min(1),
-    thumbUrl: z.string().min(1).optional(),
+    /** Deprecated: no longer populated (2026-11-18); kept optional for backward compatibility. */
+    thumbUrl: z
+      .string()
+      .min(1)
+      .optional()
+      .meta({ deprecated: true, description: "Deprecated; no longer populated. Card sizes are transformations of `url`." }),
   })
   .meta({ id: "Media" });
 
 /**
  * A variety in a list (/varieties, crop/series/category details): the summary plus its media,
- * ordered by media id ([] when none, never omitted). Variety media carries no thumbUrl; cards
- * derive their /artwork/w480/ and /artwork/w768/ variants from `url`.
+ * ordered by media id ([] when none, never omitted). Media carries no thumbUrl; cards render
+ * 480/768-wide transformations of `url` (lib/images).
  */
 export const VarietyListItemSchema = VarietySummarySchema.extend({
   media: z.array(MediaSchema),
@@ -378,7 +384,7 @@ export const CropListItemSchema = PlantRefSchema.extend({
   varietiesWithSellers: z.number().int().nonnegative(),
   /** Latest variety update or listing check for this crop (YYYY-MM-DD); null when unknown. */
   lastUpdated: dateish.nullable(),
-  /** Crop illustrations ordered by media id, with thumbUrl for cards; [] when none (never omitted). */
+  /** Crop illustrations ordered by media id; [] when none (never omitted). */
   media: z.array(MediaSchema),
 }).meta({ id: "CropListItem" });
 

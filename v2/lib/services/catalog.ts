@@ -81,20 +81,14 @@ export interface Paged<T> {
 
 export const DEFAULT_PAGE_SIZE = 24;
 
-const CROP_ARTWORK_PREFIX = "/artwork/crops/";
-
 /**
- * media row → API media (design D3). url = r2_key as stored (the public path). With thumbs on
- * (crop media only), a url under /artwork/crops/ gets thumbUrl = the same file under
- * /artwork/crops/thumbs/; any other url gets no thumbUrl. The app never generates image files.
+ * media row → API media (design D3). url = r2_key as stored (the canonical public path; never
+ * rewritten). Since the R2 + Image Transformations migration (2026-11-18) card and hero sizes are
+ * transformations computed at render time (lib/images), so no thumbUrl is populated any more —
+ * the field stays optional in the schema for API backward compatibility.
  */
-export function toMedia(row: repo.MediaRow, opts: { thumbs: boolean }): Media {
-  const url = row.r2Key;
-  const m: Media = { url, licence: row.licence, credit: row.credit };
-  if (opts.thumbs && url.startsWith(CROP_ARTWORK_PREFIX)) {
-    m.thumbUrl = `${CROP_ARTWORK_PREFIX}thumbs/${url.slice(CROP_ARTWORK_PREFIX.length)}`;
-  }
-  return m;
+export function toMedia(row: repo.MediaRow): Media {
+  return { url: row.r2Key, licence: row.licence, credit: row.credit };
 }
 /** A subject shows an average only once it has this many reviews (canonical §2 "Ratings"). */
 export const MIN_REVIEWS_FOR_RATING = 3;
@@ -367,7 +361,7 @@ export function createCatalogService(db: Db) {
       items: items.map((v, i) =>
         parse(
           VarietyListItemSchema,
-          { ...v, media: (mediaByVariety.get(ids[i]!) ?? []).map((m) => toMedia(m, { thumbs: false })) },
+          { ...v, media: (mediaByVariety.get(ids[i]!) ?? []).map(toMedia) },
           "variety list item",
         ),
       ),
@@ -394,7 +388,7 @@ export function createCatalogService(db: Db) {
         varietyCount: p.coverage.varieties,
         varietiesWithSellers: p.coverage.withSellers,
         lastUpdated: p.coverage.lastUpdated,
-        media: mediaRows.map((m) => toMedia(m, { thumbs: true })),
+        media: mediaRows.map(toMedia),
       },
       "crop",
     );
@@ -463,7 +457,7 @@ export function createCatalogService(db: Db) {
         contentLevel: row.contentLevel,
         updatedAt: row.updatedAt,
         listings: ls,
-        media: mediaRows.map((m) => toMedia(m, { thumbs: false })),
+        media: mediaRows.map(toMedia),
       };
       return parse(VarietyDetailSchema, detail, "variety detail");
     },
