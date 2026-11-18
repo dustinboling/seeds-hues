@@ -1,0 +1,84 @@
+# ============================================================================
+# Seed Directory — ALLOWLIST .gitignore
+# Everything is ignored by default. Only the paths explicitly un-ignored
+# below are tracked: the app (v2/), project docs, and catalog data.
+# Artwork masters / working art folders are deliberately OUT — images will
+# move to Cloudflare R2 (Dustin's direction, 2026-11-18); the shipped
+# variants under v2/public/ ARE tracked so the site can be redeployed.
+# ============================================================================
+
+/*
+
+# --- Project-root docs & catalog data (the project's data brain) ---
+!/*.md
+!/*.json
+/floret-library-descriptions.json
+/floret-library-descriptions.md
+
+# --- App + supporting project folders ---
+!/v2/
+!/app/
+!/seed-saving/
+!/season-sources/
+!/specialist-consults/
+!/new-crops/
+!/source-data/
+!/state-shapes/
+!/reviews-work/
+!/.kiro/
+!/preview/
+!/.gitignore
+
+# --- Build output, dependencies, local state (any depth) ---
+node_modules/
+.next/
+.open-next/
+.wrangler/
+*.log
+*.tsbuildinfo
+next-env.d.ts
+
+# --- Artwork masters & working art folders: OUT (R2 migration later) ---
+/artwork-varieties/
+/artwork-states/
+/artwork-states-scenes/
+/artwork-crops/
+/pod-ornaments-real/
+/pod-ornaments/
+/pod-ornaments-web/
+/icon-concepts/
+/icon-staging/
+/artwork-theme/
+/artwork-pilot/
+/theme-preview-shots/
+
+# --- Raw crawl data: OUT (root CRAWL-PASS-1-REPORT.md stays as the record) ---
+/.crawl/
+/crawl-pass-1/
+
+# ============================================================================
+# NEVER COMMIT — secrets & private reference material.
+# These patterns come LAST so they win over every un-ignore above.
+# ============================================================================
+/hidden_files/
+hidden_files/
+reference-photos/
+**/reference-photos/
+.env
+.env.*
+*.env
+*.env.*
+.dev.vars
+.dev.vars.*
+*api-key*
+*apikey*
+*credential*
+*.pem
+*.key
+# Verified source files whose NAMES match *api-key* but which contain no key
+# material (key-management code; checked in the pre-commit secret sweep):
+!/v2/lib/repositories/api-keys.ts
+!/v2/scripts/create-api-key.ts
+# Template only — placeholders + Cloudflare's published Turnstile TEST keys
+# (public non-credentials); the real .dev.vars stays ignored above.
+!/v2/.dev.vars.example

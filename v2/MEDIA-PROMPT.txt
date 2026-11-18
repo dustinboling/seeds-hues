@@ -1,0 +1,18 @@
+You are building a small DELTA on the existing seeds.hues.flowers v2 app in this directory (~/workspace/seeds-hues/v2). The app is complete, live in production, and locally verified; do not rebuild it — modify it surgically.
+
+READ FIRST, in this order:
+1. ~/workspace/seeds-hues/SPEC-CANONICAL.md — the adopted canonical spec (Nov 16, 2026).
+2. README.md, DELTA-REPORT.md and IMPORT-FLORET-REPORT.md in this directory — current state (production catalog is now 93 plants / 619 varieties / 6 sellers / 17 listings, catalog version 2; the README's data counts in the importer section are stale, the code is not).
+3. .kiro/specs/seeds-v2-media/requirements.md, design.md, tasks.md — your build spec for this delta. Follow the design decisions exactly.
+
+THE DELTA IN ONE LINE: the `media` table exists but nothing reads or renders it; add the minimal read path + variety-page hero rendering so own-work illustration files in `public/artwork/` show on variety pages, and point the OG image at the illustration when one exists.
+
+KEY FACTS:
+- The six .webp files are in ~/workspace/seeds-hues/artwork-pilot/ (1120×2240 each). Copy them byte-identical into public/artwork/ (task 1; verify with checksums).
+- `media.r2_key` stores the public path (e.g. /artwork/zinnia-queen-lime-blush.webp) for this class of media — design D2/D3. No schema migration, no seed-data changes, no new endpoints.
+- The guardrail test that bans all raster <img> must be REWRITTEN per design D6 (ban hotlinks/remote images, allow local /artwork/), not deleted. The price guardrails and every other test stay untouched in intent.
+- Tasks are in .kiro/specs/seeds-v2-media/tasks.md — work them in order, check boxes as they pass.
+- Hard constraints: NO deployment, NO remote Cloudflare changes, NO production data changes, NO crawling or fetching external sites, NO email. Local-only verification (local D1/R2 via Miniflare, OpenNext preview on localhost). Production rows and the deploy are handled by Hue afterwards from your MEDIA-REPORT.md.
+- House rules still bind: repositories are the only Drizzle importers; atomic() is the only db.batch(); services shared by pages + API with Zod validation; TypeScript strict, no `any` casts; exact version pins (add no new dependencies).
+
+FINISH LINE: `npm run verify` green (all pre-existing tests plus the new media tests); fresh local db:setup; `npm run cf:build` green; OpenNext preview running locally; `npm run acceptance` green against it including the new Media display section; MEDIA-REPORT.md written in this directory covering: what changed (files/routes), the r2_key storage-convention choice, verification results item by item, and every divergence or fallback stated plainly.

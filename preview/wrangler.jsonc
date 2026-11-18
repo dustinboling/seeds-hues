@@ -1,0 +1,9 @@
+{
+  "name": "seeds-hues-preview",
+  "compatibility_date": "2025-01-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "../app",
+    "not_found_handling": "404-page"
+  }
+}

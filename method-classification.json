@@ -1,0 +1,2572 @@
+{
+ "crops": {
+  "stock": {
+   "name": "Stock",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 11 varieties: start-indoors/transplant stated for 11, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "snapdragon": {
+   "name": "Snapdragon",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 17 varieties: start-indoors/transplant stated for 17, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "larkspur": {
+   "name": "Larkspur",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 13 varieties: start-indoors/transplant stated for 13, direct-seed offered for 13 (sentence-level scan, negations excluded)"
+  },
+  "cornflower": {
+   "name": "Cornflower / Bachelor's Buttons",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 3 varieties: start-indoors/transplant stated for 3, direct-seed offered for 3 (sentence-level scan, negations excluded)"
+  },
+  "nigella": {
+   "name": "Nigella / Love-in-a-Mist",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 8 varieties: start-indoors/transplant stated for 8, direct-seed offered for 8 (sentence-level scan, negations excluded)"
+  },
+  "calendula": {
+   "name": "Calendula",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 5, direct-seed offered for 5 (sentence-level scan, negations excluded)"
+  },
+  "sweet-pea": {
+   "name": "Sweet Pea",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 111 varieties: start-indoors/transplant stated for 111, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "iceland-poppy": {
+   "name": "Iceland Poppy",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 5, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "shirley-poppy": {
+   "name": "Shirley Poppy",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 4 varieties: start-indoors/transplant stated for 4, direct-seed offered for 4 (sentence-level scan, negations excluded)"
+  },
+  "virginia-stock": {
+   "name": "Virginia Stock",
+   "methods": [],
+   "basis": "No Floret records for this crop"
+  },
+  "breadseed-poppy": {
+   "name": "Breadseed Poppy",
+   "methods": [
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 7 varieties: start-indoors/transplant stated for 0, direct-seed offered for 7 (sentence-level scan, negations excluded)"
+  },
+  "zinnia": {
+   "name": "Zinnia",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 46 varieties: start-indoors/transplant stated for 46, direct-seed offered for 46 (sentence-level scan, negations excluded)"
+  },
+  "sunflower": {
+   "name": "Sunflower",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 10 varieties: start-indoors/transplant stated for 10, direct-seed offered for 10 (sentence-level scan, negations excluded)"
+  },
+  "dahlia": {
+   "name": "Dahlia",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 4 varieties: start-indoors/transplant stated for 4, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "celosia": {
+   "name": "Celosia",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 18 varieties: start-indoors/transplant stated for 18, direct-seed offered for 12 (sentence-level scan, negations excluded)"
+  },
+  "cosmos": {
+   "name": "Cosmos",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 18 varieties: start-indoors/transplant stated for 18, direct-seed offered for 18 (sentence-level scan, negations excluded)"
+  },
+  "gomphrena": {
+   "name": "Gomphrena",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 5, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "rudbeckia": {
+   "name": "Rudbeckia",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 7 varieties: start-indoors/transplant stated for 7, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "strawflower": {
+   "name": "Strawflower",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 9 varieties: start-indoors/transplant stated for 9, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "amaranth": {
+   "name": "Amaranth",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 6 varieties: start-indoors/transplant stated for 6, direct-seed offered for 6 (sentence-level scan, negations excluded)"
+  },
+  "annual-babys-breath": {
+   "name": "Annual Baby\u2019s Breath",
+   "methods": [
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 0, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "apple-of-peru": {
+   "name": "Apple of Peru",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "argentine-forget-me-not": {
+   "name": "Argentine Forget-Me-Not",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "basil": {
+   "name": "Basil",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 4 varieties: start-indoors/transplant stated for 4, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "bee-balm": {
+   "name": "Bee Balm",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "bees-friend": {
+   "name": "Bee\u2019s Friend",
+   "methods": [
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 0, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "bells-of-ireland": {
+   "name": "Bells of Ireland",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "bupleurum": {
+   "name": "Bupleurum",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "california-poppy": {
+   "name": "California Poppy",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 4 varieties: start-indoors/transplant stated for 4, direct-seed offered for 4 (sentence-level scan, negations excluded)"
+  },
+  "candytuft": {
+   "name": "Candytuft",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "canterbury-bells": {
+   "name": "Canterbury Bells",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 4 varieties: start-indoors/transplant stated for 4, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "carnation": {
+   "name": "Carnation",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 5, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "china-aster": {
+   "name": "China Aster",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 13 varieties: start-indoors/transplant stated for 13, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "chinese-forget-me-not": {
+   "name": "Chinese Forget-Me-Not",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 3 varieties: start-indoors/transplant stated for 3, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "chocolate-lace-flower": {
+   "name": "Chocolate Lace Flower",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "clarkia": {
+   "name": "Clarkia",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "clary-sage": {
+   "name": "Clary Sage",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "corn-cockle": {
+   "name": "Corn Cockle",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "cress": {
+   "name": "Cress",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 5, direct-seed offered for 5 (sentence-level scan, negations excluded)"
+  },
+  "cup-and-saucer-vine": {
+   "name": "Cup and Saucer Vine",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "dill": {
+   "name": "Dill",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "dusty-miller": {
+   "name": "Dusty Miller",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "eucalyptus": {
+   "name": "Eucalyptus",
+   "methods": [],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 0, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "euphorbia": {
+   "name": "Euphorbia",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "feverfew": {
+   "name": "Feverfew",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 4 varieties: start-indoors/transplant stated for 4, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "figwort": {
+   "name": "Figwort",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "flax": {
+   "name": "Flax",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "flowering-tobacco": {
+   "name": "Flowering Tobacco",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 8 varieties: start-indoors/transplant stated for 8, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "formosa-lily": {
+   "name": "Formosa Lily",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "foxglove": {
+   "name": "Foxglove",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 8 varieties: start-indoors/transplant stated for 3, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "godetia": {
+   "name": "Godetia",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "honeywort": {
+   "name": "Honeywort",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "hyacinth-bean": {
+   "name": "Hyacinth Bean",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "jewels-of-opar": {
+   "name": "Jewels of Opar",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "kiss-me-over-the-garden-gate": {
+   "name": "Kiss-Me-Over-the-Garden-Gate",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "lace-flower": {
+   "name": "Lace Flower",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 3 varieties: start-indoors/transplant stated for 3, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "lavatera": {
+   "name": "Lavatera",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "linaria": {
+   "name": "Linaria",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "love-in-a-puff": {
+   "name": "Love-in-a-puff",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "lupine": {
+   "name": "Lupine",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "malope": {
+   "name": "Malope",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "marigold": {
+   "name": "Marigold",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 15 varieties: start-indoors/transplant stated for 15, direct-seed offered for 15 (sentence-level scan, negations excluded)"
+  },
+  "mignonette": {
+   "name": "Mignonette",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "nasturtium": {
+   "name": "Nasturtium",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 7 varieties: start-indoors/transplant stated for 7, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "orach": {
+   "name": "Orach",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "oregano": {
+   "name": "Oregano",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "orlaya": {
+   "name": "Orlaya",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "ornamental-grass": {
+   "name": "Ornamental Grass",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 5, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "ornamental-squash": {
+   "name": "Ornamental Squash",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 54 varieties: start-indoors/transplant stated for 54, direct-seed offered for 54 (sentence-level scan, negations excluded)"
+  },
+  "painted-tongue": {
+   "name": "Painted Tongue",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "pansy": {
+   "name": "Pansy",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 12 varieties: start-indoors/transplant stated for 12, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "pea": {
+   "name": "Pea",
+   "methods": [
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 9 varieties: start-indoors/transplant stated for 0, direct-seed offered for 9 (sentence-level scan, negations excluded)"
+  },
+  "phlox": {
+   "name": "Phlox",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 8 varieties: start-indoors/transplant stated for 8, direct-seed offered for 8 (sentence-level scan, negations excluded)"
+  },
+  "pincushion-flower": {
+   "name": "Pincushion Flower",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 7 varieties: start-indoors/transplant stated for 7, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "poor-mans-orchid": {
+   "name": "Poor Man\u2019s Orchid",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "queen-annes-lace": {
+   "name": "Queen Anne\u2019s Lace",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "quinoa": {
+   "name": "Quinoa",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "red-leaf-hibiscus": {
+   "name": "Red-leaf Hibiscus",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "salvia": {
+   "name": "Salvia",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "shiso": {
+   "name": "Shiso",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "silene": {
+   "name": "Silene",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "silver-lace": {
+   "name": "Silver Lace",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "soapwort": {
+   "name": "Soapwort",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 2 varieties: start-indoors/transplant stated for 2, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "statice": {
+   "name": "Statice",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 4 varieties: start-indoors/transplant stated for 4, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "sweet-rocket": {
+   "name": "Sweet Rocket",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "sweet-sultan": {
+   "name": "Sweet Sultan",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "sweet-william": {
+   "name": "Sweet William",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "tickseed": {
+   "name": "Tickseed",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "tomato": {
+   "name": "Tomato",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 7 varieties: start-indoors/transplant stated for 7, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "viola": {
+   "name": "Viola",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 5 varieties: start-indoors/transplant stated for 5, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "winged-everlasting": {
+   "name": "Winged Everlasting",
+   "methods": [
+    "transplant",
+    "direct_sow"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 1 (sentence-level scan, negations excluded)"
+  },
+  "xeranthemum": {
+   "name": "Xeranthemum",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  },
+  "yarrow": {
+   "name": "Yarrow",
+   "methods": [
+    "transplant"
+   ],
+   "basis": "Floret Sowing & Growing Notes across 1 varieties: start-indoors/transplant stated for 1, direct-seed offered for 0 (sentence-level scan, negations excluded)"
+  }
+ },
+ "varieties": {
+  "amaranth-autumn-touch": [
+   "direct_sow",
+   "transplant"
+  ],
+  "amaranth-coral-fountain": [
+   "direct_sow",
+   "transplant"
+  ],
+  "amaranth-green-tails": [
+   "direct_sow",
+   "transplant"
+  ],
+  "amaranth-hot-biscuits": [
+   "direct_sow",
+   "transplant"
+  ],
+  "amaranth-mira": [
+   "direct_sow",
+   "transplant"
+  ],
+  "amaranth-opopeo": [
+   "direct_sow",
+   "transplant"
+  ],
+  "annual-babys-breath-covent-garden": [
+   "direct_sow"
+  ],
+  "apple-of-peru": [
+   "transplant"
+  ],
+  "argentine-forget-me-not": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cornflower-classic-fantastic": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cornflower-classic-magic": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cornflower-classic-romantic": [
+   "direct_sow",
+   "transplant"
+  ],
+  "basil-aromatto": [
+   "transplant"
+  ],
+  "basil-cinnamon": [
+   "transplant"
+  ],
+  "basil-dark-opal": [
+   "transplant"
+  ],
+  "basil-mrs-burns-lemon": [
+   "transplant"
+  ],
+  "bee-balm-bergamo": [
+   "transplant"
+  ],
+  "bee-balm-lambada": [
+   "transplant"
+  ],
+  "bees-friend": [
+   "direct_sow"
+  ],
+  "bells-of-ireland": [
+   "transplant"
+  ],
+  "rudbeckia-cherry-brandy": [
+   "transplant"
+  ],
+  "rudbeckia-chim-chiminee": [
+   "transplant"
+  ],
+  "rudbeckia-denver-daisy": [
+   "transplant"
+  ],
+  "rudbeckia-indian-summer": [
+   "transplant"
+  ],
+  "rudbeckia-macau": [
+   "transplant"
+  ],
+  "rudbeckia-prairie-sun": [
+   "transplant"
+  ],
+  "rudbeckia-sahara": [
+   "transplant"
+  ],
+  "breadseed-poppy-black-beauty": [
+   "direct_sow"
+  ],
+  "breadseed-poppy-frosted-salmon": [
+   "direct_sow"
+  ],
+  "breadseed-poppy-lilac-peony": [
+   "direct_sow"
+  ],
+  "breadseed-poppy-peony-flowered-mix": [
+   "direct_sow"
+  ],
+  "breadseed-poppy-pink-peony": [
+   "direct_sow"
+  ],
+  "breadseed-poppy-rattle-poppy": [
+   "direct_sow"
+  ],
+  "breadseed-poppy-white-frills": [
+   "direct_sow"
+  ],
+  "bupleurum-griffithi": [
+   "direct_sow",
+   "transplant"
+  ],
+  "calendula-bronze-beauty": [
+   "direct_sow",
+   "transplant"
+  ],
+  "calendula-greenheart-orange": [
+   "direct_sow",
+   "transplant"
+  ],
+  "calendula-ivory-princess": [
+   "direct_sow",
+   "transplant"
+  ],
+  "calendula-pink-surprise": [
+   "direct_sow",
+   "transplant"
+  ],
+  "calendula-zeolights": [
+   "direct_sow",
+   "transplant"
+  ],
+  "california-poppy-cream-swirl": [
+   "direct_sow",
+   "transplant"
+  ],
+  "california-poppy-thai-silk-appleblossom-chiffon": [
+   "direct_sow",
+   "transplant"
+  ],
+  "california-poppy-thai-silk-apricot-chiffon": [
+   "direct_sow",
+   "transplant"
+  ],
+  "california-poppy-thai-silk-pink-champagne": [
+   "direct_sow",
+   "transplant"
+  ],
+  "candytuft-pinnacle-white": [
+   "transplant"
+  ],
+  "canterbury-bells-champion-blue": [
+   "transplant"
+  ],
+  "canterbury-bells-champion-lavender": [
+   "transplant"
+  ],
+  "canterbury-bells-champion-pink-improved": [
+   "transplant"
+  ],
+  "canterbury-bells-champion-white": [
+   "transplant"
+  ],
+  "carnation-chabaud-aurora": [
+   "transplant"
+  ],
+  "carnation-chabaud-benigna": [
+   "transplant"
+  ],
+  "carnation-chabaud-jeanne-dionis": [
+   "transplant"
+  ],
+  "carnation-chabaud-la-france": [
+   "transplant"
+  ],
+  "carnation-chabaud-orange-sherbet": [
+   "transplant"
+  ],
+  "celosia-autumn-blaze": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-coral-reef": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-dusty-rose": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-flamingo-feather": [
+   "transplant"
+  ],
+  "celosia-glowing-embers": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-limonata": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-pampas-plume-mix": [
+   "transplant"
+  ],
+  "celosia-pink-champagne": [
+   "transplant"
+  ],
+  "celosia-pink-chenille": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-rainbow-sherbet-mix": [
+   "transplant"
+  ],
+  "celosia-raspberry-lemonade": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-rose-gold": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-sangria-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-spun-sugar": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-summer-sherbet": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-supercrest-mix": [
+   "transplant"
+  ],
+  "celosia-vintage-rose": [
+   "direct_sow",
+   "transplant"
+  ],
+  "celosia-xantippe": [
+   "transplant"
+  ],
+  "china-aster-harlekin-light-rose": [
+   "transplant"
+  ],
+  "china-aster-harlekin-violet": [
+   "transplant"
+  ],
+  "china-aster-juwel-ametrin-lavendel": [
+   "transplant"
+  ],
+  "china-aster-lady-coral-chamois": [
+   "transplant"
+  ],
+  "china-aster-lady-coral-lavender": [
+   "transplant"
+  ],
+  "china-aster-lady-coral-salmon-rose": [
+   "transplant"
+  ],
+  "china-aster-matador-mix": [
+   "transplant"
+  ],
+  "china-aster-rose-of-shanghai-light-blue": [
+   "transplant"
+  ],
+  "china-aster-sea-starlet-pink": [
+   "transplant"
+  ],
+  "china-aster-tower-chamois-apricot": [
+   "transplant"
+  ],
+  "china-aster-valkyrie-chamois": [
+   "transplant"
+  ],
+  "china-aster-valkyrie-pink": [
+   "transplant"
+  ],
+  "china-aster-valkyrie-yellow": [
+   "transplant"
+  ],
+  "chinese-forget-me-not-blue-showers": [
+   "transplant"
+  ],
+  "chinese-forget-me-not-ms-marilyn": [
+   "transplant"
+  ],
+  "chinese-forget-me-not-mystic-pink": [
+   "transplant"
+  ],
+  "chocolate-lace-flower-dara": [
+   "transplant"
+  ],
+  "clarkia-tower-coral": [
+   "transplant"
+  ],
+  "clary-sage-tricolor-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "corn-cockle-dawn-creek-blush": [
+   "transplant"
+  ],
+  "corn-cockle-ocean-pearls": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-apricot-lemonade": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-apricotta": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-brownie": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-cupcakes-blush": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-cupcakes-white": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-daydream": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-double-click-bicolor-rose": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-double-click-cranberries": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-double-click-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-double-click-snow-puff": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-psyche-white": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-purity": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-rosetta": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-rubenza": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-seashells-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-velouette": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-xanthos": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cosmos-xsenia": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cress-attraxa": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cress-emerald-beads": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cress-green-dragon": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cress-pennycress": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cress-wrinkled-crinkled": [
+   "direct_sow",
+   "transplant"
+  ],
+  "cup-and-saucer-vine-alba": [
+   "transplant"
+  ],
+  "cup-and-saucer-vine-purple": [
+   "transplant"
+  ],
+  "dahlia-seed-bees-choice": [
+   "transplant"
+  ],
+  "dahlia-seed-cancan-girls": [
+   "transplant"
+  ],
+  "dahlia-seed-petite-florets": [
+   "transplant"
+  ],
+  "dahlia-seed-shooting-stars": [
+   "transplant"
+  ],
+  "dill-bouquet": [
+   "direct_sow",
+   "transplant"
+  ],
+  "dusty-miller-new-look": [
+   "transplant"
+  ],
+  "dusty-miller-silver-dust": [
+   "transplant"
+  ],
+  "eucalyptus-baby-blue": [],
+  "eucalyptus-nichols-willow": [],
+  "eucalyptus-round-leaved-mallee": [],
+  "eucalyptus-silver-dollar": [],
+  "eucalyptus-small-leaved-gum": [],
+  "euphorbia": [
+   "transplant"
+  ],
+  "feverfew-magic-lime-green": [
+   "transplant"
+  ],
+  "feverfew-tetra-white": [
+   "transplant"
+  ],
+  "feverfew-vegmo-single": [
+   "transplant"
+  ],
+  "feverfew-vegmo-snowball": [
+   "transplant"
+  ],
+  "figwort": [
+   "transplant"
+  ],
+  "flax-bubble-grass": [
+   "direct_sow",
+   "transplant"
+  ],
+  "flowering-tobacco-bronze-queen": [
+   "transplant"
+  ],
+  "flowering-tobacco-grandiflora": [
+   "transplant"
+  ],
+  "flowering-tobacco-langsdorffii": [
+   "transplant"
+  ],
+  "flowering-tobacco-marshmallow": [
+   "transplant"
+  ],
+  "flowering-tobacco-peach-screamer": [
+   "transplant"
+  ],
+  "flowering-tobacco-rustica": [
+   "transplant"
+  ],
+  "flowering-tobacco-starlight-dancer": [
+   "transplant"
+  ],
+  "flowering-tobacco-tinkerbell": [
+   "transplant"
+  ],
+  "formosa-lily": [
+   "transplant"
+  ],
+  "foxglove-alba": [
+   "transplant"
+  ],
+  "foxglove-apricot-beauty": [],
+  "foxglove-cafe-creme": [],
+  "foxglove-camelot-cream": [
+   "transplant"
+  ],
+  "foxglove-dalmatian-peach": [
+   "transplant"
+  ],
+  "foxglove-excelsior": [],
+  "foxglove-obscura-sunset": [],
+  "foxglove-pams-choice": [],
+  "gomphrena-pastel-mix": [
+   "transplant"
+  ],
+  "gomphrena-pink": [
+   "transplant"
+  ],
+  "gomphrena-rose": [
+   "transplant"
+  ],
+  "gomphrena-sunset-mix": [
+   "transplant"
+  ],
+  "gomphrena-white": [
+   "transplant"
+  ],
+  "godetia-grace-salmon": [
+   "transplant"
+  ],
+  "honeywort-pride-of-gibraltar": [
+   "transplant"
+  ],
+  "hyacinth-bean-ruby-moon": [
+   "transplant"
+  ],
+  "iceland-poppy-champagne-bubbles-pink": [
+   "transplant"
+  ],
+  "iceland-poppy-champagne-bubbles-white": [
+   "transplant"
+  ],
+  "iceland-poppy-colibri-salmonato": [
+   "transplant"
+  ],
+  "iceland-poppy-colibri-sherbet-mix": [
+   "transplant"
+  ],
+  "iceland-poppy-pastel-meadows": [
+   "transplant"
+  ],
+  "jewels-of-opar": [
+   "transplant"
+  ],
+  "kiss-me-over-the-garden-gate-cerise-pearls": [
+   "transplant"
+  ],
+  "lace-flower-lacy-blue": [
+   "transplant"
+  ],
+  "lace-flower-lacy-pink": [
+   "transplant"
+  ],
+  "lace-flower-lacy-white": [
+   "transplant"
+  ],
+  "larkspur-earl-grey": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-fancy-pink": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-frosted-skies": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-giant-imperial-blue-bell": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-giant-imperial-blue-spire": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-giant-imperial-carmine-king": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-giant-imperial-white-king": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-imperial-lilac-spire": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-pink-perfection": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-smokey-eyes": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-splish-splash": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-summer-skies-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "larkspur-white-cloud": [
+   "direct_sow",
+   "transplant"
+  ],
+  "lavatera-pink-regis": [
+   "transplant"
+  ],
+  "linaria-northern-lights-mix": [
+   "transplant"
+  ],
+  "nigella-african-bride": [
+   "direct_sow",
+   "transplant"
+  ],
+  "nigella-albion-green-pod": [
+   "direct_sow",
+   "transplant"
+  ],
+  "nigella-cramers-plum": [
+   "direct_sow",
+   "transplant"
+  ],
+  "nigella-delft-blue": [
+   "direct_sow",
+   "transplant"
+  ],
+  "nigella-miss-jekyll-dark-blue": [
+   "direct_sow",
+   "transplant"
+  ],
+  "nigella-miss-jekyll-rose": [
+   "direct_sow",
+   "transplant"
+  ],
+  "nigella-starry-night-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "nigella-transformer": [
+   "direct_sow",
+   "transplant"
+  ],
+  "love-in-a-puff-vine": [
+   "transplant"
+  ],
+  "lupine-javelin-white": [
+   "transplant"
+  ],
+  "lupine-sunrise": [
+   "transplant"
+  ],
+  "malope-queen-pink": [
+   "transplant"
+  ],
+  "marigold-brocade-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-burgundy-bliss": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-fireball": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-francess-choice": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-giant-orange": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-harlequin": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-la-ribera": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-mushrooms-sol": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-red-gem": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-red-metamorph": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-sparkler": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-starfire-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-sunbright-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-tangerine-gem": [
+   "direct_sow",
+   "transplant"
+  ],
+  "marigold-tiger-eyes": [
+   "direct_sow",
+   "transplant"
+  ],
+  "mignonette-garden-mignonette": [
+   "transplant"
+  ],
+  "mignonette-white-mignonette": [
+   "transplant"
+  ],
+  "nasturtium-caribbean-crush": [
+   "transplant"
+  ],
+  "nasturtium-cherry-rose-jewel": [
+   "transplant"
+  ],
+  "nasturtium-gleam-salmon": [
+   "transplant"
+  ],
+  "nasturtium-ladybird-rose": [
+   "transplant"
+  ],
+  "nasturtium-purple-emperor": [
+   "transplant"
+  ],
+  "nasturtium-salmon-mousse": [
+   "transplant"
+  ],
+  "nasturtium-yeti": [
+   "transplant"
+  ],
+  "orach-ruby-gold": [
+   "direct_sow",
+   "transplant"
+  ],
+  "oregano-greek": [
+   "transplant"
+  ],
+  "orlaya-white-finch-lace": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-grass-broomcorn-millet": [
+   "transplant"
+  ],
+  "ornamental-grass-bunny-tails": [
+   "transplant"
+  ],
+  "ornamental-grass-feathertop": [
+   "transplant"
+  ],
+  "ornamental-grass-frosted-explosion": [
+   "transplant"
+  ],
+  "ornamental-grass-quaking-grass": [
+   "transplant"
+  ],
+  "ornamental-squash-american-tondo": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-autumn-crown": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-black-futsu": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-blue-delight": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-blue-doll": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-chirimen": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-cinderellas-carriage": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-colorado-sunset": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-daybreak": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-flat-stacker": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-flat-white-boer": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-flatso": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-fools-gold": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-fright": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-galeux-deysines": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-grizzly-bear": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-indian-doll": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-ivory-belle": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-jarrahdale": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-lady-godiva": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-long-island-cheese": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-lumina": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-lunar-blush": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-lunch-lady": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-marina-di-chioggia": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-milestone": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-moranga": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-mr-fugly": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-musquee-de-provence": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-newton": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-one-too-many": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-polar-bear": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-porcelain-doll": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-red-eye": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-rembrandt": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-rouge-vif-detampes": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-shadow-moon": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-silver-edged": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-speckled-hound": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-specter": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-strawberry-crown": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-tandy": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-triamble": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-troll": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-turbino": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-turks-turban": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-valenciano": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-warty-goblin": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-warty-sunset": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-white-delight": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-white-patty-pan": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-winter-luxury": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-yugoslavian-finger-fruit": [
+   "direct_sow",
+   "transplant"
+  ],
+  "ornamental-squash-zapalo-plomo": [
+   "direct_sow",
+   "transplant"
+  ],
+  "painted-tongue-gloomy-rival": [
+   "transplant"
+  ],
+  "pansy-aalsmeer-king-size-mix": [
+   "transplant"
+  ],
+  "pansy-acquarelle-flambe-red-shades": [
+   "transplant"
+  ],
+  "pansy-chianti-mix": [
+   "transplant"
+  ],
+  "pansy-cool-wave-blueberry-swirl": [
+   "transplant"
+  ],
+  "pansy-dynamite-lavender": [
+   "transplant"
+  ],
+  "pansy-envy": [
+   "transplant"
+  ],
+  "pansy-frizzle-sizzle-raspberry": [
+   "transplant"
+  ],
+  "pansy-frizzle-sizzle-yellow-blue-swirl": [
+   "transplant"
+  ],
+  "pansy-majestic-giants-sherry": [
+   "transplant"
+  ],
+  "pansy-nature-antique-shades": [
+   "transplant"
+  ],
+  "pansy-panola-pink-shades": [
+   "transplant"
+  ],
+  "pansy-rococo-frill-mix": [
+   "transplant"
+  ],
+  "pea-amethyst-beauty": [
+   "direct_sow"
+  ],
+  "pea-blue-podded-blauwschokkers": [
+   "direct_sow"
+  ],
+  "pea-blushing-beauty": [
+   "direct_sow"
+  ],
+  "pea-golden-sweet": [
+   "direct_sow"
+  ],
+  "pea-magnolia-blossom": [
+   "direct_sow"
+  ],
+  "pea-opal-beauty": [
+   "direct_sow"
+  ],
+  "pea-ruby-beauty": [
+   "direct_sow"
+  ],
+  "pea-spring-blush": [
+   "direct_sow"
+  ],
+  "pea-spring-rose": [
+   "direct_sow"
+  ],
+  "phlox-blushing-bride": [
+   "direct_sow",
+   "transplant"
+  ],
+  "phlox-cherry-caramel": [
+   "direct_sow",
+   "transplant"
+  ],
+  "phlox-creme-brulee": [
+   "direct_sow",
+   "transplant"
+  ],
+  "phlox-dulce-de-leche": [
+   "direct_sow",
+   "transplant"
+  ],
+  "phlox-leopoldii": [
+   "direct_sow",
+   "transplant"
+  ],
+  "phlox-phlox-of-sheep": [
+   "direct_sow",
+   "transplant"
+  ],
+  "phlox-sugar-stars": [
+   "direct_sow",
+   "transplant"
+  ],
+  "phlox-whipped-cream": [
+   "direct_sow",
+   "transplant"
+  ],
+  "pincushion-flower-black-knight": [
+   "transplant"
+  ],
+  "pincushion-flower-fata-morgana": [
+   "transplant"
+  ],
+  "pincushion-flower-ochroleuca": [
+   "transplant"
+  ],
+  "pincushion-flower-salmon-queen": [
+   "transplant"
+  ],
+  "pincushion-flower-snowmaiden": [
+   "transplant"
+  ],
+  "pincushion-flower-starflower": [
+   "transplant"
+  ],
+  "pincushion-flower-summer-sangria": [
+   "transplant"
+  ],
+  "poor-mans-orchid-angels-wings-mix": [
+   "transplant"
+  ],
+  "queen-annes-lace-green-mist": [
+   "transplant"
+  ],
+  "queen-annes-lace-queen-of-africa": [
+   "transplant"
+  ],
+  "quinoa-red-head": [
+   "direct_sow",
+   "transplant"
+  ],
+  "red-leaf-hibiscus-mahogany-splendor": [
+   "transplant"
+  ],
+  "salvia-rose-queen": [
+   "transplant"
+  ],
+  "shirley-poppy-amazing-grey": [
+   "direct_sow",
+   "transplant"
+  ],
+  "shirley-poppy-mother-of-pearl": [
+   "direct_sow",
+   "transplant"
+  ],
+  "shirley-poppy-pandora": [
+   "direct_sow",
+   "transplant"
+  ],
+  "shirley-poppy-supreme": [
+   "direct_sow",
+   "transplant"
+  ],
+  "shiso-purple-frills": [
+   "transplant"
+  ],
+  "silene-blushing-lanterns": [
+   "transplant"
+  ],
+  "silene-pink": [
+   "transplant"
+  ],
+  "silver-lace": [
+   "transplant"
+  ],
+  "snapdragon-avignon-bicolor-yellow": [
+   "transplant"
+  ],
+  "snapdragon-chantilly-light-pink": [
+   "transplant"
+  ],
+  "snapdragon-chantilly-light-salmon": [
+   "transplant"
+  ],
+  "snapdragon-costa-apricot": [
+   "transplant"
+  ],
+  "snapdragon-costa-silver": [
+   "transplant"
+  ],
+  "snapdragon-costa-summer-lavender": [
+   "transplant"
+  ],
+  "snapdragon-costa-summer-orange": [
+   "transplant"
+  ],
+  "snapdragon-madame-butterfly-bronze": [
+   "transplant"
+  ],
+  "snapdragon-madame-butterfly-dark-red": [
+   "transplant"
+  ],
+  "snapdragon-madame-butterfly-peaches-n-cream-mix": [
+   "transplant"
+  ],
+  "snapdragon-madame-butterfly-pink": [
+   "transplant"
+  ],
+  "snapdragon-madame-butterfly-white": [
+   "transplant"
+  ],
+  "snapdragon-monaco-orange": [
+   "transplant"
+  ],
+  "snapdragon-opus-early-bronze": [
+   "transplant"
+  ],
+  "snapdragon-potomac-appleblossom": [
+   "transplant"
+  ],
+  "snapdragon-sherbet-toned-chantilly-mix": [
+   "transplant"
+  ],
+  "soapwort-beauty-pink": [
+   "direct_sow",
+   "transplant"
+  ],
+  "soapwort-graciella-white": [
+   "transplant"
+  ],
+  "statice-light-blue": [
+   "transplant"
+  ],
+  "statice-pastel-mix": [
+   "transplant"
+  ],
+  "statice-rat-tail": [
+   "transplant"
+  ],
+  "statice-sunset-mix": [
+   "transplant"
+  ],
+  "stock-antique-pink": [
+   "transplant"
+  ],
+  "stock-apricot": [
+   "transplant"
+  ],
+  "stock-avalanche-supreme": [
+   "transplant"
+  ],
+  "stock-buttercream": [
+   "transplant"
+  ],
+  "stock-katz-bright-rose": [
+   "transplant"
+  ],
+  "stock-katz-lavender-light": [
+   "transplant"
+  ],
+  "stock-katz-pink": [
+   "transplant"
+  ],
+  "stock-katz-purple": [
+   "transplant"
+  ],
+  "stock-malmaison-pink": [
+   "transplant"
+  ],
+  "stock-pacific-crimson": [
+   "transplant"
+  ],
+  "stock-vintage-brown": [
+   "transplant"
+  ],
+  "strawflower-apricot-mix": [
+   "transplant"
+  ],
+  "strawflower-candy-pink": [
+   "transplant"
+  ],
+  "strawflower-copper-red": [
+   "transplant"
+  ],
+  "strawflower-dragon-fire": [
+   "transplant"
+  ],
+  "strawflower-frosted-sulphur": [
+   "transplant"
+  ],
+  "strawflower-pomegranate": [
+   "transplant"
+  ],
+  "strawflower-scarlet": [
+   "transplant"
+  ],
+  "strawflower-silvery-rose": [
+   "transplant"
+  ],
+  "strawflower-vintage-white": [
+   "transplant"
+  ],
+  "sunflower-frilly": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-greenburst": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-procut-gold": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-procut-red": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-procut-white-lite": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-procut-white-nite": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-ruby-eclipse": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-sparky": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-starburst-panache": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sunflower-sunrich-gold": [
+   "direct_sow",
+   "transplant"
+  ],
+  "sweet-pea-albutt-blue": [
+   "transplant"
+  ],
+  "sweet-pea-alison-valentini": [
+   "transplant"
+  ],
+  "sweet-pea-almost-black": [
+   "transplant"
+  ],
+  "sweet-pea-anniversary": [
+   "transplant"
+  ],
+  "sweet-pea-apricot-queen": [
+   "transplant"
+  ],
+  "sweet-pea-april-in-paris": [
+   "transplant"
+  ],
+  "sweet-pea-audrey-kirkman": [
+   "transplant"
+  ],
+  "sweet-pea-azureus": [
+   "transplant"
+  ],
+  "sweet-pea-balmoral": [
+   "transplant"
+  ],
+  "sweet-pea-baronscourt": [
+   "transplant"
+  ],
+  "sweet-pea-bix": [
+   "transplant"
+  ],
+  "sweet-pea-blue-shift": [
+   "transplant"
+  ],
+  "sweet-pea-blue-vein": [
+   "transplant"
+  ],
+  "sweet-pea-bobbys-girl": [
+   "transplant"
+  ],
+  "sweet-pea-brian-haynes": [
+   "transplant"
+  ],
+  "sweet-pea-bristol": [
+   "transplant"
+  ],
+  "sweet-pea-burlesque": [
+   "transplant"
+  ],
+  "sweet-pea-burnished-bronze": [
+   "transplant"
+  ],
+  "sweet-pea-carlotta": [
+   "transplant"
+  ],
+  "sweet-pea-charlies-angel": [
+   "transplant"
+  ],
+  "sweet-pea-chelsea-centenary": [
+   "transplant"
+  ],
+  "sweet-pea-cheryl-rainey": [
+   "transplant"
+  ],
+  "sweet-pea-chloranthus": [
+   "transplant"
+  ],
+  "sweet-pea-chocolate-flake": [
+   "transplant"
+  ],
+  "sweet-pea-clotted-cream": [
+   "transplant"
+  ],
+  "sweet-pea-cold-steel": [
+   "transplant"
+  ],
+  "sweet-pea-coquette": [
+   "transplant"
+  ],
+  "sweet-pea-daily-mail": [
+   "transplant"
+  ],
+  "sweet-pea-dancing-queen": [
+   "transplant"
+  ],
+  "sweet-pea-dynasty": [
+   "transplant"
+  ],
+  "sweet-pea-earl-grey": [
+   "transplant"
+  ],
+  "sweet-pea-edith-flanagan": [
+   "transplant"
+  ],
+  "sweet-pea-enchante": [
+   "transplant"
+  ],
+  "sweet-pea-erewhon": [
+   "transplant"
+  ],
+  "sweet-pea-ethel-grace": [
+   "transplant"
+  ],
+  "sweet-pea-florencecourt": [
+   "transplant"
+  ],
+  "sweet-pea-frances-kate": [
+   "transplant"
+  ],
+  "sweet-pea-future-shock": [
+   "transplant"
+  ],
+  "sweet-pea-geoff-hughes": [
+   "transplant"
+  ],
+  "sweet-pea-glasnevin": [
+   "transplant"
+  ],
+  "sweet-pea-grandma-butt": [
+   "transplant"
+  ],
+  "sweet-pea-gwendoline": [
+   "transplant"
+  ],
+  "sweet-pea-hannah-dale": [
+   "transplant"
+  ],
+  "sweet-pea-hannah-macgovern": [
+   "transplant"
+  ],
+  "sweet-pea-happy-birthday": [
+   "transplant"
+  ],
+  "sweet-pea-high-society": [
+   "transplant"
+  ],
+  "sweet-pea-hotham-red": [
+   "transplant"
+  ],
+  "sweet-pea-jacqueline-ann": [
+   "transplant"
+  ],
+  "sweet-pea-jacqueline-heather": [
+   "transplant"
+  ],
+  "sweet-pea-jill-walton": [
+   "transplant"
+  ],
+  "sweet-pea-jilly": [
+   "transplant"
+  ],
+  "sweet-pea-john-grey": [
+   "transplant"
+  ],
+  "sweet-pea-joyce-stanton": [
+   "transplant"
+  ],
+  "sweet-pea-judith-wilkenson": [
+   "transplant"
+  ],
+  "sweet-pea-karen-louise": [
+   "transplant"
+  ],
+  "sweet-pea-lady-nicholson": [
+   "transplant"
+  ],
+  "sweet-pea-lakeland-blizzard": [
+   "transplant"
+  ],
+  "sweet-pea-lavender-flake": [
+   "transplant"
+  ],
+  "sweet-pea-len-harrod": [
+   "transplant"
+  ],
+  "sweet-pea-limelight": [
+   "transplant"
+  ],
+  "sweet-pea-lizbeth": [
+   "transplant"
+  ],
+  "sweet-pea-lunar-sea": [
+   "transplant"
+  ],
+  "sweet-pea-lynn-davey": [
+   "transplant"
+  ],
+  "sweet-pea-maloy": [
+   "transplant"
+  ],
+  "sweet-pea-marjorie-carrier": [
+   "transplant"
+  ],
+  "sweet-pea-mark-harrod": [
+   "transplant"
+  ],
+  "sweet-pea-mark-williams": [
+   "transplant"
+  ],
+  "sweet-pea-memorial-flight": [
+   "transplant"
+  ],
+  "sweet-pea-millennium": [
+   "transplant"
+  ],
+  "sweet-pea-mollie-rilstone": [
+   "transplant"
+  ],
+  "sweet-pea-mr-p": [
+   "transplant"
+  ],
+  "sweet-pea-mrs-bernard-jones": [
+   "transplant"
+  ],
+  "sweet-pea-mrs-r-penney": [
+   "transplant"
+  ],
+  "sweet-pea-naomi-nazareth": [
+   "transplant"
+  ],
+  "sweet-pea-nimbus": [
+   "transplant"
+  ],
+  "sweet-pea-noel-sutton": [
+   "transplant"
+  ],
+  "sweet-pea-nora-holman": [
+   "transplant"
+  ],
+  "sweet-pea-north-shore": [
+   "transplant"
+  ],
+  "sweet-pea-nuance": [
+   "transplant"
+  ],
+  "sweet-pea-oban-bay": [
+   "transplant"
+  ],
+  "sweet-pea-our-harry": [
+   "transplant"
+  ],
+  "sweet-pea-patricia-marilyn": [
+   "transplant"
+  ],
+  "sweet-pea-pearl-anniversary": [
+   "transplant"
+  ],
+  "sweet-pea-pearl-pink": [
+   "transplant"
+  ],
+  "sweet-pea-piggy-sue": [
+   "transplant"
+  ],
+  "sweet-pea-porlock": [
+   "transplant"
+  ],
+  "sweet-pea-promise": [
+   "transplant"
+  ],
+  "sweet-pea-queen-of-hearts": [
+   "transplant"
+  ],
+  "sweet-pea-raspberry-flake": [
+   "transplant"
+  ],
+  "sweet-pea-restormel": [
+   "transplant"
+  ],
+  "sweet-pea-richard-judy": [
+   "transplant"
+  ],
+  "sweet-pea-route-66": [
+   "transplant"
+  ],
+  "sweet-pea-sir-jimmy-shand": [
+   "transplant"
+  ],
+  "sweet-pea-snowlight": [
+   "transplant"
+  ],
+  "sweet-pea-solstice-light-blue": [
+   "transplant"
+  ],
+  "sweet-pea-solstice-opal": [
+   "transplant"
+  ],
+  "sweet-pea-solstice-rose": [
+   "transplant"
+  ],
+  "sweet-pea-spring-sunshine-champagne": [
+   "transplant"
+  ],
+  "sweet-pea-strawberry-fields": [
+   "transplant"
+  ],
+  "sweet-pea-suzy-z": [
+   "transplant"
+  ],
+  "sweet-pea-sylvestris": [
+   "transplant"
+  ],
+  "sweet-pea-topsy": [
+   "transplant"
+  ],
+  "sweet-pea-triple-g": [
+   "transplant"
+  ],
+  "sweet-pea-turquoise": [
+   "transplant"
+  ],
+  "sweet-pea-valerie-harrod": [
+   "transplant"
+  ],
+  "sweet-pea-white-frills": [
+   "transplant"
+  ],
+  "sweet-pea-white-supreme": [
+   "transplant"
+  ],
+  "sweet-pea-wild-swan": [
+   "transplant"
+  ],
+  "sweet-pea-windsor": [
+   "transplant"
+  ],
+  "sweet-pea-yvette-ann": [
+   "transplant"
+  ],
+  "sweet-rocket-pale-lavender": [
+   "transplant"
+  ],
+  "sweet-sultan-imperial-bride-white": [
+   "transplant"
+  ],
+  "sweet-william-super-duplex-mix": [
+   "transplant"
+  ],
+  "tickseed-incredible": [
+   "direct_sow",
+   "transplant"
+  ],
+  "tomato-brads-atomic-grape": [
+   "transplant"
+  ],
+  "tomato-chocolate-cherry": [
+   "transplant"
+  ],
+  "tomato-gardeners-sweetheart": [
+   "transplant"
+  ],
+  "tomato-indigo-rose": [
+   "transplant"
+  ],
+  "tomato-rapunzel": [
+   "transplant"
+  ],
+  "tomato-red-currant": [
+   "transplant"
+  ],
+  "tomato-sunpeach": [
+   "transplant"
+  ],
+  "viola-brush-strokes": [
+   "transplant"
+  ],
+  "viola-gem-apricot-antique": [
+   "transplant"
+  ],
+  "viola-gem-heavenly-blue": [
+   "transplant"
+  ],
+  "viola-gem-pink-antique": [
+   "transplant"
+  ],
+  "viola-tiger-eye": [
+   "transplant"
+  ],
+  "winged-everlasting": [
+   "direct_sow",
+   "transplant"
+  ],
+  "xeranthemum": [
+   "transplant"
+  ],
+  "yarrow-summer-berries": [
+   "transplant"
+  ],
+  "zinnia-alpenglow": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-aztec-sunset": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-bright-pink": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-carmine": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-coral": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-deep-red": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-lilac": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-lime": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-orange": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-salmon-rose": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-benarys-giant-wine": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-candy-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-cresto-peaches-and-cream": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-cupcakes-pink": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-dawn-creek-blush": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-dawn-creek-honey": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-dawn-creek-pastels": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-dawn-creek-peach": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-day-glow-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-desert-sunset-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-dreamin": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-golden-hour": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-isabellina-creamy-yellow": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-lilliput-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-lilliput-salmon": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-little-flower-girl": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-macarenia": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-mazurkia": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-oklahoma-carmine": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-oklahoma-ivory": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-oklahoma-pink": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-oklahoma-salmon": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-persian-carpet-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-precious-metals": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-queen-lime": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-queen-lime-blush": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-queen-lime-orange": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-queen-red-lime": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-rainbow-eyes": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-senora": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-sunbow-orange": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-unicorn-mix": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-victorian-wedding": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-yell-fire": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-zinderella-lilac": [
+   "direct_sow",
+   "transplant"
+  ],
+  "zinnia-zinderella-peach": [
+   "direct_sow",
+   "transplant"
+  ]
+ }
+}

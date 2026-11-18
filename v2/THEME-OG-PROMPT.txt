@@ -1,0 +1,12 @@
+Small follow-up to the completed theme delta in this directory (see THEME-REPORT.md, divergence 1). One scoped change only:
+
+The OG card route (app/og/[kind]/[slug]/route.tsx) could not use Fraunces because Satori cannot parse WOFF2 and only WOFF2 files were staged. A TTF now exists: app/fonts/fraunces-var.ttf (variable font, decompressed from the same Fraunces build).
+
+DO:
+- Load app/fonts/fraunces-var.ttf in the OG route the way the route already loads its bundled font (read the file at runtime/bundled asset, same pattern), and use it for the card TITLE (fontFamily Fraunces), requesting weight 600 or 700. If Satori renders the variable font's default instance regardless of requested weight, that is acceptable — say so in the addendum.
+- Keep everything else about the card identical: dimensions, text, colours, layout, per-kind behaviour.
+- If Satori throws on the variable TTF, try instantiating a static instance is NOT available to you (no font tools work in the route); in that case revert to the current state and report the failure plainly instead of shipping a broken route.
+
+VERIFY: `npm run verify` green; `npm run cf:build` green; restart the local OpenNext preview; fetch one OG image of each kind (variety with media, variety without, crop, seller, home if it exists) and confirm each returns a 1200×630 PNG with HTTP 200; `npm run acceptance` still green. Append a short "Addendum — OG Fraunces" section to THEME-REPORT.md with the outcome (including which weight actually rendered, judged from the code/Satori behaviour) and any fallback.
+
+Hard constraints: no deployment, no remote Cloudflare changes, no other files changed, no new dependencies.

@@ -1,0 +1,3045 @@
+{
+ "batch": {
+  "label": "initial-catalog",
+  "note": "Curated by Hue from verified project sources; see build-catalog.py header."
+ },
+ "sources": [
+  {
+   "id": "src-v1-varieties",
+   "kind": "owner",
+   "label": "Hues v1 catalog data (from Hues seed-sourcing files)",
+   "url": null,
+   "checkedDate": "2026-11-15",
+   "access": "public"
+  },
+  {
+   "id": "src-sweetpea-checks",
+   "kind": "shop-check",
+   "label": "Hues sweet pea supplier checks (sweet-pea-variety-checks.md)",
+   "url": null,
+   "checkedDate": "2026-11-15",
+   "access": "public"
+  },
+  {
+   "id": "src-seller-list",
+   "kind": "owner",
+   "label": "Owner-named seller list (SELLER-SEED-LIST.md)",
+   "url": null,
+   "checkedDate": "2026-11-15",
+   "access": "public"
+  },
+  {
+   "id": "src-research-2026-11-16",
+   "kind": "research",
+   "label": "Small seed farms research sweep, verified reads 2026-11-16",
+   "url": null,
+   "checkedDate": "2026-11-16",
+   "access": "public"
+  }
+ ],
+ "categories": [
+  {
+   "slug": "flowers",
+   "name": "Flowers",
+   "sortOrder": 1
+  }
+ ],
+ "subcategories": [
+  {
+   "slug": "annual",
+   "name": "Annual",
+   "category": "flowers"
+  },
+  {
+   "slug": "annual-climber",
+   "name": "Annual Climber",
+   "category": "flowers"
+  },
+  {
+   "slug": "perennial",
+   "name": "Perennial",
+   "category": "flowers"
+  }
+ ],
+ "plants": [
+  {
+   "slug": "stock",
+   "commonName": "Stock",
+   "latinName": "Matthiola incana",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "snapdragon",
+   "commonName": "Snapdragon",
+   "latinName": "Antirrhinum majus",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "larkspur",
+   "commonName": "Larkspur",
+   "latinName": "Consolida ajacis",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "cornflower",
+   "commonName": "Cornflower / Bachelor's Buttons",
+   "latinName": "Centaurea cyanus",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "nigella",
+   "commonName": "Nigella / Love-in-a-Mist",
+   "latinName": "Nigella damascena",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "calendula",
+   "commonName": "Calendula",
+   "latinName": "Calendula officinalis",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "sweet-pea",
+   "commonName": "Sweet Pea",
+   "latinName": "Lathyrus odoratus",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "iceland-poppy",
+   "commonName": "Iceland Poppy",
+   "latinName": "Papaver nudicaule",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "shirley-poppy",
+   "commonName": "Shirley Poppy",
+   "latinName": "Papaver rhoeas",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "virginia-stock",
+   "commonName": "Virginia Stock",
+   "latinName": "Malcolmia maritima",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "breadseed-poppy",
+   "commonName": "Breadseed Poppy",
+   "latinName": "Papaver somniferum",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "zinnia",
+   "commonName": "Zinnia",
+   "latinName": "Zinnia elegans",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "sunflower",
+   "commonName": "Sunflower",
+   "latinName": "Helianthus annuus",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "dahlia",
+   "commonName": "Dahlia",
+   "latinName": "Dahlia × hybrida",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "celosia",
+   "commonName": "Celosia",
+   "latinName": "Celosia argentea",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "cosmos",
+   "commonName": "Cosmos",
+   "latinName": "Cosmos bipinnatus",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "gomphrena",
+   "commonName": "Gomphrena",
+   "latinName": "Gomphrena globosa",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "rudbeckia",
+   "commonName": "Rudbeckia",
+   "latinName": "Rudbeckia hirta",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  },
+  {
+   "slug": "strawflower",
+   "commonName": "Strawflower",
+   "latinName": "Xerochrysum bracteatum",
+   "category": "flowers",
+   "description": null,
+   "sowingNotes": null
+  }
+ ],
+ "varieties": [
+  {
+   "slug": "stock-katz-mix",
+   "plant": "stock",
+   "varietyName": "Katz Mix",
+   "subcategory": "annual",
+   "description": "Tall, strongly fragrant cut flower stock with 32\" stems and very early, programmable timing (7–11 weeks in fall, 8–13 weeks in spring). Uniform stem length across the mix. Approximately 50% double flowering, which is normal for stock. Best suited for cool greenhouse, tunnel, or open field.",
+   "sowingNotes": "Sow November in pots or trays under cool cover (45–55°F). Can also be sown January–February as an insurance sowing using the same seed. Grows best in cool, bright conditions — cold frame or unheated greenhouse, not a warm house.",
+   "heightCm": 81,
+   "colorSwatch": "#E8A0BF",
+   "tags": [
+    "fragrant",
+    "cut-flower",
+    "cool-season",
+    "mothers-day"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "snapdragon-rocket-mix",
+   "plant": "snapdragon",
+   "varietyName": "Rocket Mix",
+   "subcategory": "annual",
+   "description": "Classic 30\" cut flower snapdragon, fragrant, with strong upright spikes suited for field or greenhouse production. The Rocket series is a standard professional cut flower choice. Available in individual colours (Bronze, Golden Yellow, Orchid, Pink, Red, White) and mix.",
+   "sowingNotes": "Sow November in pots or trays under cool cover (45–55°F). Also sow January–February for a second wave. Needs cool, bright conditions to develop strong stems.",
+   "heightCm": 76,
+   "colorSwatch": "#F4A460",
+   "tags": [
+    "fragrant",
+    "cut-flower",
+    "cool-season",
+    "mothers-day"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "snapdragon-madame-butterfly-mix",
+   "plant": "snapdragon",
+   "varietyName": "Madame Butterfly Mix (F1)",
+   "subcategory": "annual",
+   "description": "Tall double azalea-flowered snapdragon, 30\", described as a superb cut flower. F1 hybrid for uniform timing and stem quality. AAS award winner. Available in individual colours (Bronze, Ivory, Pink, Red, Yellow) and mix.",
+   "sowingNotes": "Sow November in pots or trays under cool cover (45–55°F). Also suitable for a January–February insurance sowing.",
+   "heightCm": 76,
+   "colorSwatch": "#FFB6C1",
+   "tags": [
+    "cut-flower",
+    "cool-season",
+    "mothers-day",
+    "double-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "snapdragon-toulon-mix",
+   "plant": "snapdragon",
+   "varietyName": "Toulon Mix",
+   "subcategory": "annual",
+   "description": "Group IV tall snapdragon (32–40\") with solid spikes on sturdy stems. Named replacement for the discontinued Costa Summer series. Well suited to greenhouse, tunnel, or open ground production.",
+   "sowingNotes": "Sow November in pots or trays under cool cover (45–55°F). Also suitable for January–February insurance sowing.",
+   "heightCm": 91,
+   "colorSwatch": "#FFD700",
+   "tags": [
+    "cut-flower",
+    "cool-season",
+    "mothers-day"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "larkspur-imperial-choice-mix",
+   "plant": "larkspur",
+   "varietyName": "Imperial Choice Mix",
+   "subcategory": "annual",
+   "description": "Giant Imperial type larkspur at 32\", a reliable direct-sown cut flower. The Imperial Choice Mix is an exact match for traditional cut flower larkspur plantings. Direct sow only — taproot resents transplanting. Suited to the back of the border.",
+   "sowingNotes": "Direct sow outdoors in November into a raised, well-drained bed. Cold stratification happens naturally over winter. Most fall sowing failures are caused by poor drainage, not cold. Do not transplant.",
+   "heightCm": 81,
+   "colorSwatch": "#7B68EE",
+   "tags": [
+    "direct-sow",
+    "cut-flower",
+    "cool-season",
+    "mothers-day"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "cornflower-frosty-mix",
+   "plant": "cornflower",
+   "varietyName": "Frosty Mix",
+   "subcategory": "annual",
+   "description": "Extra-select double bicolour cornflower mix suited to field-grown cut flower, borders, and mass landscape plantings. Direct sown. The Frosty Mix includes frosted bicolour tones not found in standard bachelor's button mixes.",
+   "sowingNotes": "Direct sow outdoors in November into a raised, well-drained bed. Hardy annual that benefits from cold conditioning over winter.",
+   "heightCm": null,
+   "colorSwatch": "#6495ED",
+   "tags": [
+    "direct-sow",
+    "cut-flower",
+    "cool-season",
+    "mothers-day"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "nigella-miss-jekyll-double-mix",
+   "plant": "nigella",
+   "varietyName": "Miss Jekyll Double Mix",
+   "subcategory": "annual",
+   "description": "Traditional double-flowered Love-in-a-Mist, direct sown to field. Both the intricate blue-green flowers and the striped, inflated seed pods are useful in arrangements. Available in single colours (Indigo, Light Blue, White) and mix.",
+   "sowingNotes": "Direct sow outdoors in November. Taproot — does not transplant well. Scatter seed in a prepared bed.",
+   "heightCm": null,
+   "colorSwatch": "#4169E1",
+   "tags": [
+    "direct-sow",
+    "cut-flower",
+    "cool-season",
+    "mothers-day",
+    "dried-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "calendula-pacific-beauty-mix",
+   "plant": "calendula",
+   "varietyName": "Pacific Beauty Formula Mix",
+   "subcategory": "annual",
+   "description": "24\" long-stemmed calendula with double and semi-double flowers in orange, apricot, cream, and lemon tones. A classic direct-sown cut flower. Available in single colours (Apricot, Cream, Lemon, Orange w/ Brown Eye) and mix.",
+   "sowingNotes": "Direct sow outdoors in November into a well-drained bed. Can also be sown in early spring. Cold-hardy and tolerant of light frost.",
+   "heightCm": 61,
+   "colorSwatch": "#FF8C00",
+   "tags": [
+    "direct-sow",
+    "cut-flower",
+    "cool-season",
+    "mothers-day",
+    "edible-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "sweet-pea-winter-elegance-mix",
+   "plant": "sweet-pea",
+   "varietyName": "Winter Elegance Mix",
+   "subcategory": "annual-climber",
+   "description": "6-foot fragrant climbing sweet pea bred specifically for cut flower production under short days — the best fit for a November sowing aimed at late April to May flowering. Available in single colours (Burgundy, Deep Rose, Mid Blue, White) and mix. Note: a Bed 3 fence row will require multiple packs as each pack is only 100 seeds.",
+   "sowingNotes": "Sow November in deep root-trainers under cool cover (45–55°F). Pre-chill seed 4 weeks at 32–35°F, then soak overnight before sowing 1\" deep. Needs a trellis or fence. Quantity note: 100 seeds per Trade Pkt — plan on multiple packs for a full fence row.",
+   "heightCm": 183,
+   "colorSwatch": "#DA70D6",
+   "tags": [
+    "fragrant",
+    "cut-flower",
+    "cool-season",
+    "mothers-day",
+    "climber"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "sweet-pea-mammoth-mix",
+   "plant": "sweet-pea",
+   "varietyName": "Mammoth Mix",
+   "subcategory": "annual-climber",
+   "description": "Sweet pea mix; approximately 300 seeds per ounce. A practical choice for large-scale plantings where a named Spencer variety is not required.",
+   "sowingNotes": "Sow in deep root-trainers under cool cover. Pre-soak overnight. Needs a trellis or fence. Climbs to 6 feet.",
+   "heightCm": 183,
+   "colorSwatch": "#C71585",
+   "tags": [
+    "fragrant",
+    "cut-flower",
+    "cool-season",
+    "climber",
+    "bulk"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "iceland-poppy-champagne-bubbles-mix",
+   "plant": "iceland-poppy",
+   "varietyName": "Champagne Bubbles Formula Mix (F1)",
+   "subcategory": "annual",
+   "description": "F1 hybrid Iceland poppy, 15\", with uniform timing, sturdy stems, and large flowers. Primed seed for reliable germination. Available in single colours (Orange, Pink, Scarlet, White, Yellow) and mix.",
+   "sowingNotes": "Sow November in individual pots — Iceland poppies strongly resent root disturbance. Keep cool and bright (cold frame or unheated greenhouse). Do not transplant bareroot.",
+   "heightCm": 38,
+   "colorSwatch": "#FFA07A",
+   "tags": [
+    "cut-flower",
+    "cool-season",
+    "mothers-day"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "shirley-poppy-angels-choir",
+   "plant": "shirley-poppy",
+   "varietyName": "Angel's Choir",
+   "subcategory": "annual",
+   "description": "2-foot double Shirley-type poppy mix in cherry, cream, orange, lilac, and mauve bicolour tones. A fresh local cut flower classic, field sown. The American Legion (red Flanders type) is a separate variety — Angel's Choir is the Shirley mix.",
+   "sowingNotes": "Direct sow outdoors in November into a well-drained bed. Scatter seed on the surface; poppies need light to germinate. Do not bury seed deeply.",
+   "heightCm": 61,
+   "colorSwatch": "#FF69B4",
+   "tags": [
+    "direct-sow",
+    "cut-flower",
+    "cool-season"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "virginia-stock",
+   "plant": "virginia-stock",
+   "varietyName": "Virginia Stock",
+   "subcategory": "annual",
+   "description": "Low-growing front-of-border filler with fragrant small flowers.",
+   "sowingNotes": "Direct sow. Suited to front-of-border or low edging. Can be scattered in gaps between taller plants.",
+   "heightCm": null,
+   "colorSwatch": "#FFB6C1",
+   "tags": [
+    "direct-sow",
+    "fragrant",
+    "filler",
+    "front-of-border"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "breadseed-poppy",
+   "plant": "breadseed-poppy",
+   "varietyName": "Breadseed Poppy",
+   "subcategory": "annual",
+   "description": "Classic ornamental and culinary poppy with large, showy flowers and ornamental seedpods useful in dried arrangements.",
+   "sowingNotes": "Direct sow late fall for natural cold stratification. 1,266,000 seeds per pound. Scatter on the soil surface; needs light to germinate.",
+   "heightCm": null,
+   "colorSwatch": "#9370DB",
+   "tags": [
+    "direct-sow",
+    "cut-flower",
+    "dried-flower",
+    "edible-seed"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-v1-varieties"
+  },
+  {
+   "slug": "sweet-pea-kings-ransom",
+   "plant": "sweet-pea",
+   "varietyName": "King's Ransom",
+   "subcategory": "annual-climber",
+   "description": "Spencer exhibition sweet pea, introduced in 2021 by breeder Andrew Beane; fragrance rated 3/5 in Hues' source check.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower",
+    "fragrant"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-clementine-kiss",
+   "plant": "sweet-pea",
+   "varietyName": "Clementine Kiss",
+   "subcategory": "annual-climber",
+   "description": "Matthewman's sweet pea, described in sources as the first true orange sweet pea (2011).",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-emma",
+   "plant": "sweet-pea",
+   "varietyName": "Emma",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-wild-swan",
+   "plant": "sweet-pea",
+   "varietyName": "Wild Swan",
+   "subcategory": "annual-climber",
+   "description": "Pure white Spencer sweet pea bred by Hammett.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-bix",
+   "plant": "sweet-pea",
+   "varietyName": "Bix",
+   "subcategory": "annual-climber",
+   "description": "Large picotee blooms; Hammett-bred.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-susan-burgess",
+   "plant": "sweet-pea",
+   "varietyName": "Susan Burgess",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-blue-shift",
+   "plant": "sweet-pea",
+   "varietyName": "Blue Shift",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-gerry-cullinan",
+   "plant": "sweet-pea",
+   "varietyName": "Gerry Cullinan",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-raspberry-flake",
+   "plant": "sweet-pea",
+   "varietyName": "Raspberry Flake",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-alison",
+   "plant": "sweet-pea",
+   "varietyName": "Alison",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-shell-pink",
+   "plant": "sweet-pea",
+   "varietyName": "Shell Pink",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-juliet",
+   "plant": "sweet-pea",
+   "varietyName": "Juliet",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-sweetpea-checks"
+  },
+  {
+   "slug": "sweet-pea-castle-wellan",
+   "plant": "sweet-pea",
+   "varietyName": "Castle Wellan",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sweet-pea-oban-bay",
+   "plant": "sweet-pea",
+   "varietyName": "Oban Bay",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sweet-pea-spring-sunshine-burgundy",
+   "plant": "sweet-pea",
+   "varietyName": "Spring Sunshine Burgundy",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sweet-pea-mollie-rilstone",
+   "plant": "sweet-pea",
+   "varietyName": "Mollie Rilstone",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sweet-pea-cosmic-kitty-mix",
+   "plant": "sweet-pea",
+   "varietyName": "Cosmic Kitty Mix",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sweet-pea-dark-matter-mix",
+   "plant": "sweet-pea",
+   "varietyName": "Dark Matter Mix",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sweet-pea-luminosity-mix",
+   "plant": "sweet-pea",
+   "varietyName": "Luminosity Mix",
+   "subcategory": "annual-climber",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dearest-joanna-lavender-frost",
+   "plant": "zinnia",
+   "varietyName": "Dearest Joanna Lavender Frost",
+   "subcategory": "annual",
+   "description": "Part of Basket of Flowers Farm's 'Dearest' series, bred on the farm from open-pollinated zinnias saved from its U-Pick field in 2021.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dearest-bubblegum",
+   "plant": "zinnia",
+   "varietyName": "Dearest Bubblegum",
+   "subcategory": "annual",
+   "description": "Part of Basket of Flowers Farm's 'Dearest' series, bred on the farm from open-pollinated zinnias saved from its U-Pick field in 2021.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dearest-sunset",
+   "plant": "zinnia",
+   "varietyName": "Dearest Sunset",
+   "subcategory": "annual",
+   "description": "Part of Basket of Flowers Farm's 'Dearest' series, bred on the farm from open-pollinated zinnias saved from its U-Pick field in 2021.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dearest-kaleidoscope",
+   "plant": "zinnia",
+   "varietyName": "Dearest Kaleidoscope",
+   "subcategory": "annual",
+   "description": "Part of Basket of Flowers Farm's 'Dearest' series, bred on the farm from open-pollinated zinnias saved from its U-Pick field in 2021.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dearest-orange-creamsicle",
+   "plant": "zinnia",
+   "varietyName": "Dearest Orange Creamsicle",
+   "subcategory": "annual",
+   "description": "Part of Basket of Flowers Farm's 'Dearest' series, bred on the farm from open-pollinated zinnias saved from its U-Pick field in 2021.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dearest-ellie",
+   "plant": "zinnia",
+   "varietyName": "Dearest Ellie",
+   "subcategory": "annual",
+   "description": "Part of Basket of Flowers Farm's 'Dearest' series, bred on the farm from open-pollinated zinnias saved from its U-Pick field in 2021.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dearest-tabita",
+   "plant": "zinnia",
+   "varietyName": "Dearest Tabita",
+   "subcategory": "annual",
+   "description": "Part of Basket of Flowers Farm's 'Dearest' series, bred on the farm from open-pollinated zinnias saved from its U-Pick field in 2021.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "zinnia-dawn-creek-pastels",
+   "plant": "zinnia",
+   "varietyName": "Dawn Creek Pastels",
+   "subcategory": "annual",
+   "description": "A Dawn Creek Farm zinnia selection bred by Kori Hargreaves, sold through Floret.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "zinnia-dawn-creek-honey",
+   "plant": "zinnia",
+   "varietyName": "Dawn Creek Honey",
+   "subcategory": "annual",
+   "description": "A Dawn Creek Farm zinnia selection bred by Kori Hargreaves, sold through Floret.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "zinnia-dawn-creek-blush",
+   "plant": "zinnia",
+   "varietyName": "Dawn Creek Blush",
+   "subcategory": "annual",
+   "description": "A Dawn Creek Farm zinnia selection bred by Kori Hargreaves, sold through Floret.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "zinnia-dawn-creek-peach",
+   "plant": "zinnia",
+   "varietyName": "Dawn Creek Peach",
+   "subcategory": "annual",
+   "description": "A Dawn Creek Farm zinnia selection bred by Kori Hargreaves, sold through Floret.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "zinnia-gift",
+   "plant": "zinnia",
+   "varietyName": "Gift Zinnia",
+   "subcategory": "annual",
+   "description": "Offered by Hudson Valley Seed Co. in its artist-designed Art Pack line.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "zinnia-karens-fave-color-mix",
+   "plant": "zinnia",
+   "varietyName": "Karen's Fave Color Mix",
+   "subcategory": "annual",
+   "description": "Farm-original zinnia mix from Wild Garden Seed's on-farm breeding program.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sunflower-van-goghs-fantasy",
+   "plant": "sunflower",
+   "varietyName": "Van Gogh's Fantasy",
+   "subcategory": "annual",
+   "description": "Bred by Steve Kaufer and sold by Sunflower Steve Seed Co.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "sunflower-better-off-red",
+   "plant": "sunflower",
+   "varietyName": "Better Off Red",
+   "subcategory": "annual",
+   "description": "Farm-bred sunflower from Adaptive Seeds.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "sunflower-mountainlily-mixed",
+   "plant": "sunflower",
+   "varietyName": "Mixed Sunflowers",
+   "subcategory": "annual",
+   "description": "A hand-cleaned mix of the sunflower varieties grown at Mountainlily Farm — including Velvet Queen, Lemon Queen, Valentine, Tarahumara, Autumn Beauty and Earthwalker, per the farm's product page.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "snapdragon-rembrandt",
+   "plant": "snapdragon",
+   "varietyName": "Rembrandt",
+   "subcategory": "annual",
+   "description": "Offered by Hudson Valley Seed Co. in its artist-designed Art Pack line.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "snapdragon-black-prince",
+   "plant": "snapdragon",
+   "varietyName": "Black Prince",
+   "subcategory": "annual",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "snapdragon-defiant-mix",
+   "plant": "snapdragon",
+   "varietyName": "Defiant Mix",
+   "subcategory": "annual",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "snapdragon-orange-wonder",
+   "plant": "snapdragon",
+   "varietyName": "Orange Wonder",
+   "subcategory": "annual",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "shirley-poppy-mother-of-pearl",
+   "plant": "shirley-poppy",
+   "varietyName": "Mother of Pearl",
+   "subcategory": "annual",
+   "description": "Offered by Hudson Valley Seed Co. in its artist-designed Art Pack line.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-seller-list"
+  },
+  {
+   "slug": "dahlia-seed-premium-pollinator-mix",
+   "plant": "dahlia",
+   "varietyName": "Premium Pollinator Mix",
+   "subcategory": "annual",
+   "description": "Dahlia seed harvested from the seller's own dahlia fields.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "dahlia-seed-coseytown-honey-pot-mix",
+   "plant": "dahlia",
+   "varietyName": "Coseytown Honey Pot Mix",
+   "subcategory": "annual",
+   "description": "Dahlia seed harvested from the seller's own dahlia fields.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "dahlia-seed-paulas-field-mix",
+   "plant": "dahlia",
+   "varietyName": "Dahlia Seed Mix",
+   "subcategory": "annual",
+   "description": "Seed saved from Paula Fisher's own dahlia field; packets of 30 seed from a mix of fully-double cultivars, hand-processed.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "dahlia-seed-mixed-parent",
+   "plant": "dahlia",
+   "varietyName": "Mixed Parent",
+   "subcategory": "annual",
+   "description": "Hand-harvested from open-pollinated Stone Hollow Farmstead dahlias; seed sold by parent line.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "dahlia-seed-miss-amara",
+   "plant": "dahlia",
+   "varietyName": "Miss Amara",
+   "subcategory": "annual",
+   "description": "Hand-harvested from open-pollinated Stone Hollow Farmstead dahlias; seed sold by parent line.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "dahlia-seed-aa-giant-flowered",
+   "plant": "dahlia",
+   "varietyName": "AA (Giant-Flowered)",
+   "subcategory": "annual",
+   "description": "Hand-harvested from open-pollinated Stone Hollow Farmstead dahlias; seed sold by parent line.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "dahlia-seed-collarette",
+   "plant": "dahlia",
+   "varietyName": "Collarette",
+   "subcategory": "annual",
+   "description": "Hand-harvested from open-pollinated Stone Hollow Farmstead dahlias; seed sold by parent line.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "celosia-xantippe",
+   "plant": "celosia",
+   "varietyName": "Xantippe",
+   "subcategory": "annual",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "celosia-pink-lemonade",
+   "plant": "celosia",
+   "varietyName": "Pink Lemonade",
+   "subcategory": "annual",
+   "description": "Celosia introduced by PepperHarrow Farm in 2025.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "cosmos-diablo",
+   "plant": "cosmos",
+   "varietyName": "Diablo",
+   "subcategory": "annual",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "cosmos-sea-shells",
+   "plant": "cosmos",
+   "varietyName": "Sea Shells",
+   "subcategory": "annual",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "gomphrena-audray-pink",
+   "plant": "gomphrena",
+   "varietyName": "Audray Pink",
+   "subcategory": "annual",
+   "description": null,
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "rudbeckia-tall-dark-sahara",
+   "plant": "rudbeckia",
+   "varietyName": "Tall Dark Sahara",
+   "subcategory": "perennial",
+   "description": "Farm-original rudbeckia from Wild Garden Seed's on-farm breeding program.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  },
+  {
+   "slug": "strawflower-firefly",
+   "plant": "strawflower",
+   "varietyName": "Firefly",
+   "subcategory": "annual",
+   "description": "Farm-selected strawflower from Adaptive Seeds.",
+   "sowingNotes": null,
+   "heightCm": null,
+   "colorSwatch": null,
+   "tags": [
+    "cut-flower"
+   ],
+   "protection": "unknown",
+   "protectionNote": null,
+   "sourceId": "src-research-2026-11-16"
+  }
+ ],
+ "sellers": [
+  {
+   "slug": "songbird-seed-co",
+   "name": "Songbird Seed Co.",
+   "type": "specialty",
+   "homepage": "https://www.songbirdseeds.com",
+   "location": "Skagit Valley, WA",
+   "provenance": "owner-named",
+   "description": "Boutique seed venture of Colleen Raney (also Diadem Flower Co.), specialising in hard-to-find British sweet pea seeds grown on a small farm in Washington's Skagit Valley.",
+   "orderingNotes": "Farm-grown seed packets; Hues buys from Songbird. Specialty sweet pea drops sell out quickly.",
+   "platform": "squarespace",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "sunflower-steve-seed-co",
+   "name": "Sunflower Steve Seed Co.",
+   "type": "specialty",
+   "homepage": "https://www.sunflowersteveseedco.com",
+   "location": "Wisconsin",
+   "provenance": "owner-named",
+   "description": "Steve Kaufer, Wisconsin cut-flower grower and sunflower breeder (breeding since ~2008); sells his own bred sunflower varieties.",
+   "orderingNotes": "Sells direct from its own site.",
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "floret",
+   "name": "Floret",
+   "type": "specialty",
+   "homepage": "https://www.floretflowers.com",
+   "location": "Skagit Valley, WA",
+   "provenance": "owner-named",
+   "description": "Erin Benzakein's family flower farm and seed company; breeds its own cut-flower varieties (Floret Originals).",
+   "orderingNotes": "Sells seed only occasionally — periodic, limited seed sales rather than an always-open shop; availability is episodic.",
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "dawn-creek-farm",
+   "name": "Dawn Creek Farm",
+   "type": "specialty",
+   "homepage": "https://dawncreekfarm.squarespace.com/donate",
+   "location": "Santa Cruz Mountains, CA",
+   "provenance": "owner-named",
+   "description": "Kori Hargreaves' farm breeding program — zinnias since 2016, plus cynoglossum and other cut flowers. Her varieties also reach market through Floret.",
+   "orderingNotes": "Episodic: an annual fundraiser window (seeds as thank-you gifts, typically limit 1 packet/person, US shipping only, ships ~March). Breeder terms: no reselling or renaming her varieties; listings credit Dawn Creek as breeder.",
+   "platform": "squarespace",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "hudson-valley-seed-co",
+   "name": "Hudson Valley Seed Co.",
+   "type": "retail",
+   "homepage": "https://hudsonvalleyseed.com",
+   "location": "Accord, NY",
+   "provenance": "owner-named",
+   "description": "Small independent seed house in Accord, New York; grows on its own farm and works with regional small growers; known for artist-designed 'Art Pack' packets, much of the line certified organic.",
+   "orderingNotes": "Standing shop (always open). Only its flower varieties are listed in this directory.",
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "wild-west-seed",
+   "name": "Wild West Seed",
+   "type": "wholesale",
+   "homepage": "http://www.wildwestseed.com/",
+   "location": "Albany, OR",
+   "provenance": "owner-named",
+   "description": "Independent Oregon seed producer in the Willamette Valley: grows flower and vegetable seed with local partner growers; wildflower mixes and contract seed production.",
+   "orderingNotes": "Wholesale/bulk-oriented rather than a retail packet shop.",
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "basket-of-flowers-farm",
+   "name": "Basket of Flowers Farm",
+   "type": "specialty",
+   "homepage": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "location": "Woodville, WI",
+   "provenance": "research-candidate",
+   "description": "Family farm that saved open-pollinated zinnias from its U-Pick field in 2021 and bred the 'Dearest' series in isolated grow-outs on the farm.",
+   "orderingNotes": "Episodic: seed sales close for the season and reopen in December; newsletter passcode gives early access.",
+   "platform": "squarespace",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "flower-people",
+   "name": "Flower People",
+   "type": "specialty",
+   "homepage": "https://flowerpeople.com/collections/seeds",
+   "location": "Southwest WA / Portland, OR area",
+   "provenance": "research-candidate",
+   "description": "Family-run flower farm and seed company whose seed collection is built around its own cut-flower growing — 35+ sweet peas plus celosia, strawflower, snapdragon, cosmos, zinnia and larkspur.",
+   "orderingNotes": "Standing Shopify shop; many varieties sold out between drops.",
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "lunaseed-farm",
+   "name": "Lunaseed Farm",
+   "type": "specialty",
+   "homepage": "https://lunaseedfarm.com/seed-shop",
+   "location": "Chimacum, WA",
+   "provenance": "research-candidate",
+   "description": "Woman-owned flower seed farm; all seed field-grown, open-pollinated, harvested and cleaned by hand. Spencer and Grandiflora sweet peas plus cottage flowers.",
+   "orderingNotes": null,
+   "platform": "squarespace",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "enchanting-sweet-peas",
+   "name": "Enchanting Sweet Peas",
+   "type": "specialty",
+   "homepage": "https://enchantingsweetpeas.com/",
+   "location": "Sebastopol, CA",
+   "provenance": "research-candidate",
+   "description": "One-person operation (Glenys Johnson) selling Spencer sweet peas — 40+ varieties — directly from the Sebastopol seed grower; 29 years growing and selling sweet peas.",
+   "orderingNotes": "Seasonal: seed sales start in September.",
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "uprising-seeds",
+   "name": "Uprising Seeds",
+   "type": "retail",
+   "homepage": "https://uprisingorganics.com/",
+   "location": "Bellingham, WA",
+   "provenance": "research-candidate",
+   "description": "Small family-run certified organic seed farm; produces over 70% of the seed it sells at its home farm, the remainder from Pacific Northwest family farms. Specialty cut flowers, all open-pollinated.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "siskiyou-seeds",
+   "name": "Siskiyou Seeds",
+   "type": "retail",
+   "homepage": "http://www.siskiyouseeds.com/",
+   "location": "Williams, OR",
+   "provenance": "research-candidate",
+   "description": "Produces open-pollinated and heirloom seed on its home farm in southwest Oregon, plus a network of certified-organic small farms in the West. Broad flower list.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "wild-garden-seed",
+   "name": "Wild Garden Seed",
+   "type": "specialty",
+   "homepage": "https://www.wildgardenseed.com/",
+   "location": "Philomath, OR",
+   "provenance": "research-candidate",
+   "description": "Organic seed farm established 1994 (Frank & Karen Morton); all seed organically grown by Shoulder to Shoulder Farm, many varieties from its on-farm breeding program.",
+   "orderingNotes": null,
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "adaptive-seeds",
+   "name": "Adaptive Seeds",
+   "type": "retail",
+   "homepage": "https://www.adaptiveseeds.com/seeds/flowers/page/3/",
+   "location": "Sweet Home, OR",
+   "provenance": "research-candidate",
+   "description": "Certified-organic farm-based seed company (est. 2009) growing over 75% of the seed it sells on its own farm; ~120 flower listings including farm-bred and farm-selected varieties.",
+   "orderingNotes": null,
+   "platform": "woocommerce",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "grand-prismatic-seed",
+   "name": "Grand Prismatic Seed",
+   "type": "specialty",
+   "homepage": "https://www.grandprismaticseed.com/aboutus",
+   "location": "Salt Lake Valley, UT",
+   "provenance": "research-candidate",
+   "description": "Small seed farm in northern Utah (co-owners James Young & Guy Banner) growing with organic methods; curated cut flowers plus dye plants and Great Basin natives.",
+   "orderingNotes": null,
+   "platform": "squarespace",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "coseytown-flowers",
+   "name": "Coseytown Flowers",
+   "type": "specialty",
+   "homepage": "https://coseytownflowers.com/products/dahlia-seed-pollinator-mix",
+   "location": "Greencastle, PA",
+   "provenance": "research-candidate",
+   "description": "Independent dahlia hybridizer (LeeAnn Huber); all dahlia seed is harvested from Coseytown's own dahlia fields.",
+   "orderingNotes": "Episodic: tuber and seed sales mainly January–April with restocks.",
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "garden-bee-flower-farm",
+   "name": "Garden Bee Flower Farm",
+   "type": "specialty",
+   "homepage": "https://mygardenbee.com/collections/dahlia-seeds",
+   "location": "Walnut Cove, NC",
+   "provenance": "research-candidate",
+   "description": "Paula Fisher (DBA Paula's Dahlias) saves seed from her own dahlia field, evaluates seedlings, and hand-processes every packet.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "turtle-tree-seed",
+   "name": "Turtle Tree Seed",
+   "type": "retail",
+   "homepage": "https://turtletreeseed.org/",
+   "location": "Copake, NY",
+   "provenance": "research-candidate",
+   "description": "Small non-profit seed company at Camphill Village; every seed grown with Demeter-certified biodynamic and organic practices. 350+ open-pollinated varieties including dahlia seed.",
+   "orderingNotes": null,
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "nature-and-nurture-seeds",
+   "name": "Nature and Nurture Seeds",
+   "type": "retail",
+   "homepage": "http://www.natureandnurtureseeds.com/",
+   "location": "Dexter, MI",
+   "provenance": "research-candidate",
+   "description": "Farm-based seed company near Ann Arbor; grows over 30% of its catalog on its 80-acre certified-organic farm, 60%+ in the Midwest.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "north-circle-seeds",
+   "name": "North Circle Seeds",
+   "type": "retail",
+   "homepage": "http://www.northcircleseeds.com/",
+   "location": "Vergas, MN",
+   "provenance": "research-candidate",
+   "description": "Certified-organic Midwestern grower circle producing regionally adapted, open-pollinated seed.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "high-desert-seed",
+   "name": "High Desert Seed + Gardens",
+   "type": "retail",
+   "homepage": "https://www.highdesertseed.com/",
+   "location": "Paonia, CO",
+   "provenance": "research-candidate",
+   "description": "High-altitude seed farm founded by Laura Parker; reported to grow ~90% of the seed it sells. Dedicated cut-flower section.",
+   "orderingNotes": null,
+   "platform": "woocommerce",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "larner-seeds",
+   "name": "Larner Seeds",
+   "type": "specialty",
+   "homepage": "https://www.larnerseeds.com/",
+   "location": "Bolinas, CA",
+   "provenance": "research-candidate",
+   "description": "California native wildflower seed usable as cut flowers, from a one-acre demonstration garden in Bolinas growing 100+ coastal native plants for over 40 years.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "mountainlily-farm",
+   "name": "Mountainlily Farm",
+   "type": "specialty",
+   "homepage": "https://mountainlilyfarm.com/",
+   "location": "Ozark Mountains, AR",
+   "provenance": "research-candidate",
+   "description": "Single horticulturist and licensed Ozark nursery; heirloom flower seed — celosia mixes, mixed sunflowers, peony poppies — hand-cleaned from varieties grown on the farm.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "pepperharrow-farm",
+   "name": "PepperHarrow Farm",
+   "type": "specialty",
+   "homepage": "https://www.pepperharrowfarm.com/seeds",
+   "location": "Winterset, IA",
+   "provenance": "research-candidate",
+   "description": "60-acre lavender and cut-flower farm selling a broad cut-flower seed list, including a celosia it introduced in 2025. Note: the list also includes standard commercial types whose per-packet origin is not stated.",
+   "orderingNotes": "Seasonal: farm seed generally offered early January to end of February.",
+   "platform": "squarespace",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "stone-hollow-farmstead",
+   "name": "Stone Hollow Farmstead",
+   "type": "specialty",
+   "homepage": "https://www.stonehollowfarmstead.com/products/dahlia-seeds",
+   "location": "Shelby County, AL",
+   "provenance": "research-candidate",
+   "description": "Dahlia seed hand-harvested from open-pollinated Stone Hollow Farmstead dahlias on its own farm, sold by parent line.",
+   "orderingNotes": "Episodic: pre-purchase, shipping March–April.",
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "truelove-seeds",
+   "name": "Truelove Seeds",
+   "type": "retail",
+   "homepage": "https://trueloveseeds.com/",
+   "location": "Philadelphia, PA",
+   "provenance": "research-candidate",
+   "description": "Farm-rooted seed company whose seed is grown by more than 70 small-scale urban and rural farmers (30% of each packet sale goes back to the grower); also grows wholesale cut flowers on its own farm.",
+   "orderingNotes": null,
+   "platform": "shopify",
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "sweet-pea-gardens",
+   "name": "Sweet Pea Gardens",
+   "type": "specialty",
+   "homepage": "https://sweetpeagardens.com",
+   "location": "United States",
+   "provenance": "sourcing-check",
+   "description": "Specialist sweet pea grower-shop carrying exhibition Spencer varieties in ~10-seed packets (found in Hues' 2026-11-13 supplier checks).",
+   "orderingNotes": "Specialty varieties are scarce and often out of stock; King's Ransom is limit 1 per household.",
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "sugar-moon-gardens",
+   "name": "Sugar Moon Gardens",
+   "type": "specialty",
+   "homepage": null,
+   "location": "Bainbridge Island, WA",
+   "provenance": "sourcing-check",
+   "description": "Small garden shop carrying exhibition sweet pea varieties (found in Hues' 2026-11-13 supplier checks).",
+   "orderingNotes": null,
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "the-farmhouse-flower-farm",
+   "name": "The Farmhouse Flower Farm",
+   "type": "specialty",
+   "homepage": null,
+   "location": "United States",
+   "provenance": "sourcing-check",
+   "description": "Flower farm shop carrying exhibition sweet pea varieties in ~10-seed packets (found in Hues' 2026-11-13 supplier checks).",
+   "orderingNotes": null,
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "neat-flower-farm",
+   "name": "Neat Flower Farm",
+   "type": "specialty",
+   "homepage": null,
+   "location": "United States",
+   "provenance": "sourcing-check",
+   "description": "Flower farm shop found carrying Bix sweet pea in Hues' 2026-11-13 supplier checks.",
+   "orderingNotes": null,
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "the-dahlia-house",
+   "name": "The Dahlia House",
+   "type": "specialty",
+   "homepage": null,
+   "location": "United States",
+   "provenance": "sourcing-check",
+   "description": "Shop found carrying Susan Burgess sweet pea in Hues' 2026-11-13 supplier checks.",
+   "orderingNotes": null,
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  },
+  {
+   "slug": "pnw-blooms",
+   "name": "PNW Blooms",
+   "type": "specialty",
+   "homepage": null,
+   "location": "Pacific Northwest",
+   "provenance": "sourcing-check",
+   "description": "Shop found carrying Gerry Cullinan sweet pea in Hues' 2026-11-13 supplier checks.",
+   "orderingNotes": null,
+   "platform": null,
+   "listingPolicy": "full",
+   "status": "active"
+  }
+ ],
+ "listings": [
+  {
+   "variety": "sweet-pea-kings-ransom",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": "https://www.songbirdseeds.com/seedshop/p/kingsransom-54d2m",
+   "notes": "Verified in stock at the 2026-11-15 restock check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-bix",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-blue-shift",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-gerry-cullinan",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Back in stock at the 2026-11-15 restock check; limit 1 per order.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-emma",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Sold out at the 2026-11-15 check (restock had been scheduled for that day).",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-wild-swan",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Listed at Songbird but sold out at the 2026-11-15 check; price not recorded.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": "2026-11-15",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-alison",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-shell-pink",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-juliet",
+   "seller": "songbird-seed-co",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": 600,
+     "priceSource": "Songbird Seed Co. shop",
+     "priceCheckDate": "2026-11-15",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-kings-ransom",
+   "seller": "flower-people",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": "https://flowerpeople.com/collections/seeds",
+   "notes": "Sold out at the 2026-11-13 check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 900,
+     "priceSource": "Flower People shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-susan-burgess",
+   "seller": "flower-people",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": "https://flowerpeople.com/collections/seeds",
+   "notes": "Sold out at the 2026-11-13 check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 800,
+     "priceSource": "Flower People shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-castle-wellan",
+   "seller": "flower-people",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://flowerpeople.com/collections/seeds",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-oban-bay",
+   "seller": "flower-people",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://flowerpeople.com/collections/seeds",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-spring-sunshine-burgundy",
+   "seller": "flower-people",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://flowerpeople.com/collections/seeds",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-mollie-rilstone",
+   "seller": "flower-people",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://flowerpeople.com/collections/seeds",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-gerry-cullinan",
+   "seller": "lunaseed-farm",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": "https://lunaseedfarm.com/seed-shop",
+   "notes": "Sold out at the 2026-11-13 check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 595,
+     "priceSource": "Lunaseed Farm shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-cosmic-kitty-mix",
+   "seller": "lunaseed-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://lunaseedfarm.com/seed-shop",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-dark-matter-mix",
+   "seller": "lunaseed-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://lunaseedfarm.com/seed-shop",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-luminosity-mix",
+   "seller": "lunaseed-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://lunaseedfarm.com/seed-shop",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "celosia-xantippe",
+   "seller": "lunaseed-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://lunaseedfarm.com/seed-shop",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-kings-ransom",
+   "seller": "sweet-pea-gardens",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Out of stock at the 2026-11-13 check; limit 1 per household. A shy seed producer — always scarce.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": 1499,
+     "priceSource": "Sweet Pea Gardens shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-clementine-kiss",
+   "seller": "sweet-pea-gardens",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": 595,
+     "priceSource": "Sweet Pea Gardens shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-wild-swan",
+   "seller": "sweet-pea-gardens",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-kings-ransom",
+   "seller": "sugar-moon-gardens",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Listed as 'coming soon' at the 2026-11-13 check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 1000,
+     "priceSource": "Sugar Moon Gardens shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-emma",
+   "seller": "sugar-moon-gardens",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-gerry-cullinan",
+   "seller": "sugar-moon-gardens",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Sold out at the 2026-11-13 check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 900,
+     "priceSource": "Sugar Moon Gardens shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-bix",
+   "seller": "the-farmhouse-flower-farm",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 595,
+     "priceSource": "The Farmhouse Flower Farm shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-blue-shift",
+   "seller": "the-farmhouse-flower-farm",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 595,
+     "priceSource": "The Farmhouse Flower Farm shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-raspberry-flake",
+   "seller": "the-farmhouse-flower-farm",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 595,
+     "priceSource": "The Farmhouse Flower Farm shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-kings-ransom",
+   "seller": "the-farmhouse-flower-farm",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Sold out at the 2026-11-13 check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 595,
+     "priceSource": "The Farmhouse Flower Farm shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-bix",
+   "seller": "neat-flower-farm",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 600,
+     "priceSource": "Neat Flower Farm shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": true
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-susan-burgess",
+   "seller": "the-dahlia-house",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Sold out at the 2026-11-13 check.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 525,
+     "priceSource": "The Dahlia House shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sweet-pea-gerry-cullinan",
+   "seller": "pnw-blooms",
+   "sourceId": "src-sweetpea-checks",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": 550,
+     "priceSource": "PNW Blooms shop",
+     "priceCheckDate": "2026-11-13",
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dawn-creek-pastels",
+   "seller": "floret",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": "https://shop.floretflowers.com/products/zinnia-dawn-creek-pastels",
+   "notes": "Floret sells seed only occasionally; availability is episodic.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dawn-creek-honey",
+   "seller": "floret",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": "https://shop.floretflowers.com/products/zinnia-milk-honey",
+   "notes": "Floret sells seed only occasionally; availability is episodic.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dawn-creek-blush",
+   "seller": "floret",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Floret sells seed only occasionally; availability is episodic.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dawn-creek-peach",
+   "seller": "floret",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": null,
+   "notes": "Floret sells seed only occasionally; availability is episodic.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sunflower-van-goghs-fantasy",
+   "seller": "sunflower-steve-seed-co",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": "https://www.sunflowersteveseedco.com",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-gift",
+   "seller": "hudson-valley-seed-co",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": "https://hudsonvalleyseed.com/collections/art-packs",
+   "notes": "From the Art Packs collection.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "snapdragon-rembrandt",
+   "seller": "hudson-valley-seed-co",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": "https://hudsonvalleyseed.com/collections/art-packs",
+   "notes": "From the Art Packs collection.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "shirley-poppy-mother-of-pearl",
+   "seller": "hudson-valley-seed-co",
+   "sourceId": "src-seller-list",
+   "sku": null,
+   "productUrl": "https://hudsonvalleyseed.com/collections/art-packs",
+   "notes": "From the Art Packs collection.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dearest-joanna-lavender-frost",
+   "seller": "basket-of-flowers-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "notes": "Episodic sales; prized varieties sell out quickly after the December reopening.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dearest-bubblegum",
+   "seller": "basket-of-flowers-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "notes": "Episodic sales; prized varieties sell out quickly after the December reopening.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dearest-sunset",
+   "seller": "basket-of-flowers-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "notes": "Episodic sales; prized varieties sell out quickly after the December reopening.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dearest-kaleidoscope",
+   "seller": "basket-of-flowers-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "notes": "Episodic sales; prized varieties sell out quickly after the December reopening.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dearest-orange-creamsicle",
+   "seller": "basket-of-flowers-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "notes": "Episodic sales; prized varieties sell out quickly after the December reopening.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dearest-ellie",
+   "seller": "basket-of-flowers-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "notes": "Episodic sales; prized varieties sell out quickly after the December reopening.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-dearest-tabita",
+   "seller": "basket-of-flowers-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.basketofflowersfarm.com/specialty-zinnias",
+   "notes": "Episodic sales; prized varieties sell out quickly after the December reopening.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "dahlia-seed-premium-pollinator-mix",
+   "seller": "coseytown-flowers",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://coseytownflowers.com/products/dahlia-seed-pollinator-mix",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "dahlia-seed-coseytown-honey-pot-mix",
+   "seller": "coseytown-flowers",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://coseytownflowers.com/products/dahlia-seed-coseytown-honey-pot",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "dahlia-seed-paulas-field-mix",
+   "seller": "garden-bee-flower-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://mygardenbee.com/collections/dahlia-seeds",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "30 seeds",
+     "seedCount": 30,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "dahlia-seed-mixed-parent",
+   "seller": "stone-hollow-farmstead",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.stonehollowfarmstead.com/products/dahlia-seeds",
+   "notes": "Episodic pre-purchase; ships March–April.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "dahlia-seed-miss-amara",
+   "seller": "stone-hollow-farmstead",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.stonehollowfarmstead.com/products/dahlia-seeds",
+   "notes": "Episodic pre-purchase; ships March–April.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "dahlia-seed-aa-giant-flowered",
+   "seller": "stone-hollow-farmstead",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.stonehollowfarmstead.com/products/dahlia-seeds",
+   "notes": "Episodic pre-purchase; ships March–April.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "dahlia-seed-collarette",
+   "seller": "stone-hollow-farmstead",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.stonehollowfarmstead.com/products/dahlia-seeds",
+   "notes": "Episodic pre-purchase; ships March–April.",
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "10 seeds",
+     "seedCount": 10,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "strawflower-firefly",
+   "seller": "adaptive-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sunflower-better-off-red",
+   "seller": "adaptive-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "snapdragon-black-prince",
+   "seller": "adaptive-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "snapdragon-defiant-mix",
+   "seller": "adaptive-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "snapdragon-orange-wonder",
+   "seller": "adaptive-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "rudbeckia-tall-dark-sahara",
+   "seller": "wild-garden-seed",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "zinnia-karens-fave-color-mix",
+   "seller": "wild-garden-seed",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "gomphrena-audray-pink",
+   "seller": "nature-and-nurture-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "cosmos-diablo",
+   "seller": "nature-and-nurture-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "cosmos-sea-shells",
+   "seller": "north-circle-seeds",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": null,
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "celosia-pink-lemonade",
+   "seller": "pepperharrow-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://www.pepperharrowfarm.com/seeds/p/celosia-pink-lemonade",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  },
+  {
+   "variety": "sunflower-mountainlily-mixed",
+   "seller": "mountainlily-farm",
+   "sourceId": "src-research-2026-11-16",
+   "sku": null,
+   "productUrl": "https://mountainlilyfarm.com/products/sunflower-seeds-mixed-sunflowers-great-for-cut-flower-garden-and-bee-friendly-garden",
+   "notes": null,
+   "status": "active",
+   "packetSizes": [
+    {
+     "label": "Packet",
+     "seedCount": null,
+     "priceCents": null,
+     "priceSource": null,
+     "priceCheckDate": null,
+     "inStock": null
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+# Copy to .dev.vars for local `wrangler dev` / `opennextjs-cloudflare preview` / `next dev`.
+# Production: `wrangler secret put REVALIDATE_TOKEN` (never commit a real token).
+REVALIDATE_TOKEN=change-me-local-only
+
+# Phase 3 (accounts, waiting lists, Add Your Farm) — optional locally.
+# Cloudflare's PUBLISHED always-pass Turnstile TEST keys (not credentials). With the secret set,
+# the account / waiting-list / Add Your Farm forms verify against siteverify; without it they
+# FAIL CLOSED except under `next dev`. NOTE: setting the secret also switches /report to
+# verified mode, so leave these unset for `npm run acceptance` (it expects "not_configured").
+# TURNSTILE_SITE_KEY=1x00000000000000000000AA
+# TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Unsubscribe-link HMAC key (production: `wrangler secret put UNSUBSCRIBE_SIGNING_KEY`).
+# UNSUBSCRIBE_SIGNING_KEY=change-me-local-only
+# SMS: 'mock' prints texts to the console and sends nothing; 'twilio' needs the two secrets.
+# SMS_PROVIDER=mock
+# SMS_SENDER_ID=+15555550100
+# TWILIO_ACCOUNT_SID=
+# TWILIO_AUTH_TOKEN=
+# ADMIN_NOTIFY_EMAIL=

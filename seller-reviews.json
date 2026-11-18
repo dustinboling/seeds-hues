@@ -1,0 +1,58 @@
+{
+ "hudson-valley-seed-co": {
+  "source": "Google",
+  "placeName": "Hudson Valley Seed Company",
+  "placeId": "958339862252637",
+  "rating": 5,
+  "reviewCount": 12,
+  "fetchedDate": "2026-11-16"
+ },
+ "botanical-interests": {
+  "source": "Google",
+  "placeName": "Botanical Interests",
+  "placeId": "1143253486266818",
+  "rating": 4.8,
+  "reviewCount": 72,
+  "fetchedDate": "2026-11-16"
+ },
+ "prairie-moon-nursery": {
+  "source": "Google",
+  "placeName": "Prairie Moon Nursery",
+  "placeId": "923491753097900",
+  "rating": 4.7,
+  "reviewCount": 136,
+  "fetchedDate": "2026-11-16"
+ },
+ "johnnys-selected-seeds": {
+  "source": "Google",
+  "placeName": "Johnny's Selected Seeds",
+  "placeId": "1108259913094783",
+  "rating": 4.7,
+  "reviewCount": 313,
+  "fetchedDate": "2026-11-16"
+ },
+ "3-porch-farm": {
+  "source": "Google",
+  "placeName": "3 Porch Farm",
+  "placeId": "481872633685842",
+  "rating": 5,
+  "reviewCount": 5,
+  "fetchedDate": "2026-11-16"
+ },
+ "high-mowing-organic-seeds": {
+  "source": "Google",
+  "placeName": "High Mowing Organic Seeds",
+  "placeId": "2303140426863046",
+  "rating": 4.7,
+  "reviewCount": 1014,
+  "fetchedDate": "2026-11-16"
+ },
+ "seed-savers-exchange": {
+  "source": "Google",
+  "placeName": "Seed Savers Exchange",
+  "placeId": "1746651342363025",
+  "rating": 4.8,
+  "reviewCount": 1035,
+  "fetchedDate": "2026-11-16"
+ }
+}

@@ -1,0 +1,26 @@
+You are building PHASE 3 (accounts + waiting lists + Add Your Farm) on the existing seeds.hues.flowers v2 app in this directory (~/workspace/seeds-hues/v2). The app is live and complete through the seller batch; do not rebuild it — modify it.
+
+READ FIRST, in this order:
+1. tmp/season/kiro-brief-3.md — YOUR BUILD BRIEF. It already contains all 7 binding addenda (auto-drafted summary job; email verification codes; SMS alerts; Twilio lean; state-page CTA coordination; Alerts section; ZIP + held/active vocabulary). Follow it exactly except where the COORDINATOR AMENDMENTS below override.
+2. ~/workspace/seeds-hues/USER-ACCOUNTS-DESIGN.md — the binding design behind the brief.
+3. ~/workspace/seeds-hues/PRODUCT-DESIGN.md §1, §3, §5 — phase map, the held/active activation rule, UX principles.
+
+COORDINATOR AMENDMENTS (binding, override the brief where they differ):
+A. Migrations: 0007_seller_imported_rating.sql now EXISTS (seller batch, live). Your accounts migration is 0008 as the brief says — it comes after 0007. Do not renumber anything existing.
+B. The seller batch (brief 4) is DONE and LIVE: /state/{slug} pages exist WITHOUT an Add Your Farm button (a comment in app/state/[slug]/page.tsx marks the spot), the /seller state filter exists, imported Google ratings are live. SiteHeader already links the Hues logo to "/" (do not regress that). Per brief Addendum 5, add the "Add Your Farm" CTA to each state page linking to /add-your-farm?state={code}.
+C. SMS provider: implement the TWILIO adapter first behind sendSms() (brief Addendum 4), SMS_PROVIDER env switch ('twilio' | 'pinpoint' | 'mock'), Pinpoint may remain a stub behind the interface. No number purchase, no registration, no real sends.
+D. ADMIN_NOTIFY_EMAIL comes from env/config only. If unset, the admin notification is recorded as not_configured (queued/logged) — never hardcode any email address, never silently drop it.
+E. Frost dates: the account page shows the user's USDA zone (required, brief Addendum 7). Add the average last-frost / first-frost blurb ONLY if you can source a real, self-hosted NOAA-normals-based ZIP dataset in-build and record its provenance in the code/README; if you cannot source it reliably, ship zone-only and state that gap plainly in PHASE3-REPORT.md. NEVER invent frost dates or zone data. The ZIP→zone dataset itself must likewise be a real sourced dataset (current USDA Plant Hardiness Zone Map basis) with provenance recorded — not generated from memory.
+F. Turnstile: Cloudflare's documented public TEST keys are for local dev/tests ONLY. Production reads NEXT_PUBLIC_TURNSTILE_SITE_KEY (public var) + TURNSTILE_SECRET_KEY (secret) from env; when unset outside local dev, verification FAILS CLOSED per brief §1.
+G. Email: implement sendEmail() behind the Workers send_email binding exactly as the brief says (binding absent → drain reports mail-not-configured and leaves rows queued). You MAY add the send_email binding declaration to wrangler.jsonc (config only). The sending domain is NOT onboarded yet — that is expected; do not attempt any Cloudflare account changes.
+
+HARD CONSTRAINTS:
+- NO deployment, NO remote Cloudflare changes, NO remote D1 writes. Local-only verification (local D1/R2 via Miniflare, OpenNext preview on localhost).
+- Do NOT touch tmp/.
+- Catalog counts stay 93 plants / 619 varieties / 25 sellers / 17 listings. Do not change catalog data.
+- Prices are NEVER shown anywhere, including APIs and emails. Our own seller rating stays "Not yet rated".
+- Account tables stay OUT of the public sync/snapshot allowlists (guardrail test per brief §2).
+- WCAG 2.2 AA on every new surface; ≥44px targets; real labels and error text.
+- `npm run verify` (ESLint + tsc + Vitest) must be fully green at the end, plus the brief's §7 tests.
+
+DELIVERABLE: write PHASE3-REPORT.md in this directory: files changed, migration number, test counts, how the publish trigger hooks in, cron outcome (registered or endpoint-only + why), dataset provenance (ZIP→zone, frost if shipped), and every place production will need external setup (real Turnstile keys, Email Sending domain onboarding + binding, Twilio credentials/sender registration, ADMIN_NOTIFY_EMAIL) stated exactly.

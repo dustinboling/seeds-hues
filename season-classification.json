@@ -1,0 +1,1311 @@
+{
+ "stock": {
+  "name": "Stock",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 11,
+  "types": {
+   "hardy annual": 11
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "snapdragon": {
+  "name": "Snapdragon",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 17,
+  "types": {
+   "hardy annual": 17
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 17
+ },
+ "larkspur": {
+  "name": "Larkspur",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 13,
+  "types": {
+   "hardy annual": 13
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 13,
+  "warmTimingRecords": 0
+ },
+ "cornflower": {
+  "name": "Cornflower / Bachelor's Buttons",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 3,
+  "types": {
+   "hardy annual": 3
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 3,
+  "warmTimingRecords": 0
+ },
+ "nigella": {
+  "name": "Nigella / Love-in-a-Mist",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 8,
+  "types": {
+   "hardy annual": 8
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 8,
+  "warmTimingRecords": 0
+ },
+ "calendula": {
+  "name": "Calendula",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 5,
+  "types": {
+   "hardy annual": 5
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 5
+ },
+ "sweet-pea": {
+  "name": "Sweet Pea",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 111,
+  "types": {
+   "hardy annual": 109,
+   "perennial": 2
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 111,
+  "warmTimingRecords": 0
+ },
+ "iceland-poppy": {
+  "name": "Iceland Poppy",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 5,
+  "types": {
+   "hardy annual/biennial": 5
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 5,
+  "warmTimingRecords": 5
+ },
+ "shirley-poppy": {
+  "name": "Shirley Poppy",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 4 of 4 typed varieties of this crop",
+  "floretRecords": 4,
+  "types": {
+   "hardy annual": 4
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 4
+ },
+ "virginia-stock": {
+  "name": "Virginia Stock",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 0,
+  "types": {},
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "breadseed-poppy": {
+  "name": "Breadseed Poppy",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 7,
+  "types": {
+   "hardy annual": 7
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 7
+ },
+ "zinnia": {
+  "name": "Zinnia",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 46,
+  "types": {
+   "missing": 10,
+   "annual": 36
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 36
+ },
+ "sunflower": {
+  "name": "Sunflower",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 10,
+  "types": {
+   "annual": 10
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 10
+ },
+ "dahlia": {
+  "name": "Dahlia",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 4 of 4 varieties; no fall-sowing mention",
+  "floretRecords": 4,
+  "types": {
+   "missing": 4
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 4
+ },
+ "celosia": {
+  "name": "Celosia",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 18,
+  "types": {
+   "missing": 12,
+   "annual": 6
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 6
+ },
+ "cosmos": {
+  "name": "Cosmos",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 18,
+  "types": {
+   "annual": 17,
+   "annual/tender perennial": 1
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 18
+ },
+ "gomphrena": {
+  "name": "Gomphrena",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 5,
+  "types": {
+   "annual": 5
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 5
+ },
+ "rudbeckia": {
+  "name": "Rudbeckia",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 7,
+  "types": {
+   "annual": 7
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 7
+ },
+ "strawflower": {
+  "name": "Strawflower",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 9,
+  "types": {
+   "annual": 9
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 9
+ },
+ "amaranth": {
+  "name": "Amaranth",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 6,
+  "types": {
+   "annual": 6
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 6
+ },
+ "annual-babys-breath": {
+  "name": "Annual Baby\u2019s Breath",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "apple-of-peru": {
+  "name": "Apple of Peru",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "argentine-forget-me-not": {
+  "name": "Argentine Forget-Me-Not",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "basil": {
+  "name": "Basil",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 4,
+  "types": {
+   "annual": 4
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 4
+ },
+ "bee-balm": {
+  "name": "Bee Balm",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 2,
+  "types": {
+   "annual": 2
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "bees-friend": {
+  "name": "Bee\u2019s Friend",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "bells-of-ireland": {
+  "name": "Bells of Ireland",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "bupleurum": {
+  "name": "Bupleurum",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 1,
+  "warmTimingRecords": 0
+ },
+ "california-poppy": {
+  "name": "California Poppy",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 4 of 4 typed varieties of this crop",
+  "floretRecords": 4,
+  "types": {
+   "hardy annual": 4
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 4
+ },
+ "candytuft": {
+  "name": "Candytuft",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "canterbury-bells": {
+  "name": "Canterbury Bells",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 4 of 4 varieties; no fall-sowing mention",
+  "floretRecords": 4,
+  "types": {
+   "annual": 4
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 4
+ },
+ "carnation": {
+  "name": "Carnation",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 5,
+  "types": {
+   "annual": 5
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 5
+ },
+ "china-aster": {
+  "name": "China Aster",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 13 of 13 varieties; no fall-sowing mention",
+  "floretRecords": 13,
+  "types": {
+   "annual": 13
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 13
+ },
+ "chinese-forget-me-not": {
+  "name": "Chinese Forget-Me-Not",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 3,
+  "types": {
+   "hardy annual": 3
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 3
+ },
+ "chocolate-lace-flower": {
+  "name": "Chocolate Lace Flower",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "clarkia": {
+  "name": "Clarkia",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "clary-sage": {
+  "name": "Clary Sage",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "corn-cockle": {
+  "name": "Corn Cockle",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 2 of 2 typed varieties of this crop",
+  "floretRecords": 2,
+  "types": {
+   "hardy annual": 2
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "cress": {
+  "name": "Cress",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 5,
+  "types": {
+   "hardy annual": 5
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 5
+ },
+ "cup-and-saucer-vine": {
+  "name": "Cup and Saucer Vine",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 2 of 2 varieties; no fall-sowing mention",
+  "floretRecords": 2,
+  "types": {
+   "annual": 2
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "dill": {
+  "name": "Dill",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "dusty-miller": {
+  "name": "Dusty Miller",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 2 of 2 varieties; no fall-sowing mention",
+  "floretRecords": 2,
+  "types": {
+   "annual/tender perennial": 2
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "eucalyptus": {
+  "name": "Eucalyptus",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 5,
+  "types": {
+   "tender perennial": 5
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "euphorbia": {
+  "name": "Euphorbia",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "feverfew": {
+  "name": "Feverfew",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 4,
+  "types": {
+   "hardy annual/tender perennial": 4
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 4
+ },
+ "figwort": {
+  "name": "Figwort",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 1,
+  "types": {
+   "perennial": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "flax": {
+  "name": "Flax",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "flowering-tobacco": {
+  "name": "Flowering Tobacco",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 8 of 8 varieties; no fall-sowing mention",
+  "floretRecords": 8,
+  "types": {
+   "annual": 8
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 8
+ },
+ "formosa-lily": {
+  "name": "Formosa Lily",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 1,
+  "types": {
+   "perennial": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "foxglove": {
+  "name": "Foxglove",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 8,
+  "types": {
+   "biennial": 6,
+   "annual": 2
+  },
+  "tgw": [],
+  "fallMentions": 6,
+  "warmTimingRecords": 2
+ },
+ "godetia": {
+  "name": "Godetia",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "honeywort": {
+  "name": "Honeywort",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "hyacinth-bean": {
+  "name": "Hyacinth Bean",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "jewels-of-opar": {
+  "name": "Jewels of Opar",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "kiss-me-over-the-garden-gate": {
+  "name": "Kiss-Me-Over-the-Garden-Gate",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "lace-flower": {
+  "name": "Lace Flower",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 3,
+  "types": {
+   "annual": 3
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 3
+ },
+ "lavatera": {
+  "name": "Lavatera",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "linaria": {
+  "name": "Linaria",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "love-in-a-puff": {
+  "name": "Love-in-a-puff",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "lupine": {
+  "name": "Lupine",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 2,
+  "types": {
+   "hardy annual": 2
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "malope": {
+  "name": "Malope",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "marigold": {
+  "name": "Marigold",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 15,
+  "types": {
+   "annual": 15
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 15
+ },
+ "mignonette": {
+  "name": "Mignonette",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 2 of 2 typed varieties of this crop",
+  "floretRecords": 2,
+  "types": {
+   "hardy annual": 2
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "nasturtium": {
+  "name": "Nasturtium",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 7 of 7 varieties; no fall-sowing mention",
+  "floretRecords": 7,
+  "types": {
+   "annual": 7
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 7
+ },
+ "orach": {
+  "name": "Orach",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "oregano": {
+  "name": "Oregano",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 1,
+  "types": {
+   "perennial": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "orlaya": {
+  "name": "Orlaya",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 1,
+  "warmTimingRecords": 0
+ },
+ "ornamental-grass": {
+  "name": "Ornamental Grass",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: TGW lists it in BOTH season collections (mixed at crop level)",
+  "floretRecords": 5,
+  "types": {
+   "annual": 3,
+   "tender perennial": 1,
+   "perennial": 1
+  },
+  "tgw": [
+   "cool",
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 5
+ },
+ "ornamental-squash": {
+  "name": "Ornamental Squash",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 54,
+  "types": {
+   "annual": 54
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 54
+ },
+ "painted-tongue": {
+  "name": "Painted Tongue",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "pansy": {
+  "name": "Pansy",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 12 of 12 typed varieties of this crop",
+  "floretRecords": 12,
+  "types": {
+   "hardy annual": 12
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "pea": {
+  "name": "Pea",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 9,
+  "types": {
+   "annual": 7,
+   "hardy annual": 2
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "phlox": {
+  "name": "Phlox",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 8 of 8 varieties; no fall-sowing mention",
+  "floretRecords": 8,
+  "types": {
+   "annual": 8
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 8
+ },
+ "pincushion-flower": {
+  "name": "Pincushion Flower",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 7,
+  "types": {
+   "hardy annual": 7
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 7
+ },
+ "poor-mans-orchid": {
+  "name": "Poor Man\u2019s Orchid",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "queen-annes-lace": {
+  "name": "Queen Anne\u2019s Lace",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 2 of 2 typed varieties of this crop",
+  "floretRecords": 2,
+  "types": {
+   "hardy annual": 2
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "quinoa": {
+  "name": "Quinoa",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "red-leaf-hibiscus": {
+  "name": "Red-leaf Hibiscus",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-tgw-warm-season-seeds",
+  "basis": "TGW All Warm-Season Annual Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "tender perennial": 1
+  },
+  "tgw": [
+   "warm"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "salvia": {
+  "name": "Salvia",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "perennial": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "shiso": {
+  "name": "Shiso",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "silene": {
+  "name": "Silene",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 2,
+  "types": {
+   "perennial": 2
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "silver-lace": {
+  "name": "Silver Lace",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 1,
+  "types": {
+   "tender perennial": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "soapwort": {
+  "name": "Soapwort",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 2,
+  "types": {
+   "hardy annual": 1,
+   "perennial": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 2
+ },
+ "statice": {
+  "name": "Statice",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 4,
+  "types": {
+   "annual": 4
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 4
+ },
+ "sweet-rocket": {
+  "name": "Sweet Rocket",
+  "seasonClass": null,
+  "seasonSource": null,
+  "basis": "No sourced classification: no TGW season-collection listing and Floret evidence absent, mixed, or not season-specific",
+  "floretRecords": 1,
+  "types": {
+   "biennial": 1
+  },
+  "tgw": [],
+  "fallMentions": 1,
+  "warmTimingRecords": 0
+ },
+ "sweet-sultan": {
+  "name": "Sweet Sultan",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 1 of 1 typed varieties of this crop",
+  "floretRecords": 1,
+  "types": {
+   "hardy annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "sweet-william": {
+  "name": "Sweet William",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "biennial": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 1,
+  "warmTimingRecords": 0
+ },
+ "tickseed": {
+  "name": "Tickseed",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "tomato": {
+  "name": "Tomato",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 7 of 7 varieties; no fall-sowing mention",
+  "floretRecords": 7,
+  "types": {
+   "annual": 7
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 7
+ },
+ "viola": {
+  "name": "Viola",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library plant type 'hardy annual' for 5 of 5 typed varieties of this crop",
+  "floretRecords": 5,
+  "types": {
+   "hardy annual": 5
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 0
+ },
+ "winged-everlasting": {
+  "name": "Winged Everlasting",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "xeranthemum": {
+  "name": "Xeranthemum",
+  "seasonClass": "warm_season_tender_annual",
+  "seasonSource": "src-floret-library-sowing-notes",
+  "basis": "Floret Library: plant type 'annual' (never 'hardy annual'); sowing notes give an after-frost / warm-weather transplant instruction for 1 of 1 varieties; no fall-sowing mention",
+  "floretRecords": 1,
+  "types": {
+   "annual": 1
+  },
+  "tgw": [],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ },
+ "yarrow": {
+  "name": "Yarrow",
+  "seasonClass": "cool_season_hardy_annual",
+  "seasonSource": "src-tgw-cool-season-seeds",
+  "basis": "TGW Cool-Season Seeds collection lists this crop",
+  "floretRecords": 1,
+  "types": {
+   "perennial": 1
+  },
+  "tgw": [
+   "cool"
+  ],
+  "fallMentions": 0,
+  "warmTimingRecords": 1
+ }
+}

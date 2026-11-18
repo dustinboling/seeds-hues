@@ -1,0 +1,198 @@
+{
+  "1113470793100517": {
+    "details": {
+      "address": {
+        "city": "Newport News",
+        "country": "US",
+        "postalcode": "23608",
+        "stateprovince": "VA",
+        "streetaddress": "531 Edwards Ct"
+      },
+      "categories": [
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "description": "",
+      "entrance_pins": [
+        {
+          "latitude": 37.16514524,
+          "longitude": -76.54825494
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "thegardenersworkshop.com",
+          "type": "website",
+          "url": "https://thegardenersworkshop.com/"
+        }
+      ],
+      "location": {
+        "latitude": 37.16514524,
+        "longitude": -76.54825494
+      },
+      "name": "The Gardener's Workshop",
+      "opening_hours": [
+        {
+          "close_time": "1600",
+          "day_of_week": "MONDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "TUESDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "THURSDAY",
+          "open_time": "1000"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "opening_status_facts": {
+        "next_status": "OPEN"
+      },
+      "phone_numbers": {
+        "display_number": "+1 757-877-7159",
+        "e164_number": "+17578777159"
+      },
+      "price_level": null,
+      "rating": null,
+      "rich_attributes": [],
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 2.2911879672114
+          },
+          "name": "Fresh cut-flowers"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 1.8802806823672
+          },
+          "name": "Seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 1.8583642209385
+          },
+          "name": "Online courses"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 0.95188602389201
+          },
+          "name": "Tools & supplies"
+        }
+      ],
+      "summaries": {
+        "full": null
+      },
+      "time_zone": "-0500:TZ",
+      "time_zone_id": "America/New_York"
+    },
+    "error": null,
+    "events": [],
+    "gallery": [],
+    "place_id": 1113470793100517,
+    "quotes": [],
+    "special_photos": {
+      "hero_banner": null,
+      "thumbnail": null
+    }
+  },
+  "827478421971378": {
+    "details": {
+      "address": {
+        "city": "Williston",
+        "country": "US",
+        "postalcode": "05401",
+        "stateprovince": "VT",
+        "streetaddress": "Avenue D"
+      },
+      "categories": [
+        {
+          "category_id": "189323644423254",
+          "display_name": "Agricultural Service",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "description": "",
+      "entrance_pins": [
+        {
+          "latitude": 44.46522357,
+          "longitude": -73.12371722
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [],
+      "location": {
+        "latitude": 44.46522357,
+        "longitude": -73.12371722
+      },
+      "name": "American Meadows",
+      "opening_hours": [],
+      "opening_status": "UNKNOWN",
+      "opening_status_facts": {
+        "next_status": "UNKNOWN"
+      },
+      "phone_numbers": {
+        "display_number": "+1 802-951-9089",
+        "e164_number": "+18029519089"
+      },
+      "price_level": null,
+      "rating": null,
+      "rich_attributes": [],
+      "rich_offerings": [],
+      "summaries": {
+        "full": null
+      },
+      "time_zone": "-0500:TZ",
+      "time_zone_id": "America/New_York"
+    },
+    "error": null,
+    "events": [],
+    "gallery": [],
+    "place_id": 827478421971378,
+    "quotes": [],
+    "special_photos": {
+      "hero_banner": null,
+      "thumbnail": null
+    }
+  },
+  "_meta": {
+    "data": {
+      "fbids": [
+        827478421971378,
+        1113470793100517
+      ],
+      "message_ids": []
+    },
+    "tool_call_id": "call_01a1e796b4ac70b8b46e3414dc718900"
+  }
+}

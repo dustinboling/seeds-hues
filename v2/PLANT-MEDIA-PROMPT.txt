@@ -1,0 +1,18 @@
+You are building a small DELTA on the existing seeds.hues.flowers v2 app in this directory (~/workspace/seeds-hues/v2). The app is complete and live in production; do not rebuild it — modify it surgically. This delta immediately follows the variety-media delta you can read in MEDIA-REPORT.md; follow its patterns exactly.
+
+READ FIRST, in this order:
+1. ~/workspace/seeds-hues/SPEC-CANONICAL.md — the adopted canonical spec (Nov 16, 2026).
+2. MEDIA-REPORT.md in this directory — the variety-media delta (storage convention: media.r2_key holds the public path; guardrail shape; acceptance mechanics). Production state now: 93 plants / 619 varieties / 6 sellers / 17 listings, catalog version 3, six variety media rows live.
+3. .kiro/specs/seeds-v2-plant-media/requirements.md, design.md, tasks.md — your build spec for this delta. Follow the design decisions exactly.
+
+THE DELTA IN ONE LINE: give plants (crops) the same media capability varieties just got — a plant_id on the media table, the read path into CropListItem/CropDetail, thumbnail rendering on crop cards (home grid + /crop index), a hero + OG image on the crop page — so Hue can publish one illustration per crop afterwards.
+
+KEY FACTS:
+- Migration numbering: existing migrations run 0000–0003; yours is 0004_media_plant.sql.
+- Thumbnails: heroes at /artwork/crops/<slug>.webp, thumbs at /artwork/crops/thumbs/<slug>.webp. The service computes thumbUrl from the stored path per design D3; the app never generates image files. The artwork files themselves are NOT in the tree yet and are not your concern — your acceptance asserts markup + API with a locally inserted row, exactly like the variety Media section did.
+- The <img> guardrail must be UPDATED to name the new allowed component files (design D5), never weakened into a blanket allowance. All other guardrails (prices above all) stay untouched in intent.
+- Tasks are in .kiro/specs/seeds-v2-plant-media/tasks.md — work them in order, check boxes as they pass.
+- Hard constraints: NO deployment, NO remote Cloudflare changes, NO production data changes, NO crawling or fetching external sites, NO email. Local-only verification (local D1/R2 via Miniflare, OpenNext preview on localhost). Production migration, rows and the deploy are handled by Hue afterwards from your PLANT-MEDIA-REPORT.md.
+- House rules still bind: repositories are the only Drizzle importers; atomic() is the only db.batch(); services shared by pages + API with Zod validation; TypeScript strict, no `any` casts; exact version pins (add no new dependencies).
+
+FINISH LINE: `npm run verify` green (all pre-existing tests plus the new plant-media tests); fresh local db:setup; `npm run cf:build` green; OpenNext preview running locally; `npm run acceptance` green against it including the new Plant media display section; PLANT-MEDIA-REPORT.md written in this directory covering: what changed (files/routes), the thumbUrl convention, verification results item by item, every divergence or fallback stated plainly, and the production runbook for Hue.

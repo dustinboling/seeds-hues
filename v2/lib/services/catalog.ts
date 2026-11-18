@@ -1,0 +1,725 @@
+/**
+ * Catalog service layer — the single implementation behind Server Components (in-process), the
+ * /api/v1 route handlers and /sync (FINAL X2). Every output is parsed by its Zod schema so a bad
+ * row fails loudly instead of rendering.
+ *
+ * Delta: no price ever leaves this layer (R1); listings carry provenance; varieties and sellers
+ * carry rating; unknown facts are explicit (R13).
+ */
+import { z } from "zod";
+import type { Db } from "@/lib/db/client";
+import * as repo from "@/lib/repositories/catalog-read";
+import type {
+  ListingQuery,
+  PacketRow,
+  Page,
+  PlantFilters,
+  PlantListFilters,
+  PublicListingRow,
+  SeasonClass,
+  SowingMethod,
+  VarietyFilters,
+  VarietySort,
+} from "@/lib/repositories/catalog-read";
+import { SOWING_METHODS } from "@/lib/db/schema";
+import { latestPublish } from "@/lib/repositories/catalog-write";
+import { insertSearchEvent } from "@/lib/repositories/events";
+import { MIN_QUERY_CHARS, normaliseQuery, searchVarieties, type VarietyMatch } from "@/lib/repositories/fts";
+import { catalogSeq } from "@/lib/repositories/seq";
+import { SITE_URL } from "@/lib/config";
+import { foldText } from "@/lib/names";
+import { stateByCode } from "@/lib/data/states";
+import {
+  CatalogVersionSchema,
+  CategoryDetailSchema,
+  CategorySchema,
+  CoverageItemSchema,
+  CropDetailSchema,
+  CropListItemSchema,
+  PublicListingSchema,
+  RecentItemSchema,
+  SearchResponseSchema,
+  SellerDetailSchema,
+  SellerListItemSchema,
+  SellerStateSchema,
+  SeriesDetailSchema,
+  VarietyDetailSchema,
+  VarietyListItemSchema,
+  VarietySummarySchema,
+  type CatalogVersion,
+  type Category,
+  type CategoryDetail,
+  type CoverageItem,
+  type CropDetail,
+  type CropListItem,
+  type GrowerGuide,
+  type Media,
+  type PacketSize,
+  type PlantRef,
+  type PublicListing,
+  type Rating,
+  type RecentItem,
+  type SearchResponse,
+  type SearchResult,
+  type SearchType,
+  type SellerDetail,
+  type ImportedRating,
+  type SellerListItem,
+  type SellerState,
+  type SeriesDetail,
+  type VarietyDetail,
+  type VarietyListItem,
+  type VarietySummary,
+} from "@/lib/validators";
+import { CatalogGrowerGuideInput } from "@/lib/catalog/input";
+import { proseCommonName, templateDescription } from "./template";
+
+export interface Paged<T> {
+  items: T[];
+  total: number;
+}
+
+export const DEFAULT_PAGE_SIZE = 24;
+
+const CROP_ARTWORK_PREFIX = "/artwork/crops/";
+
+/**
+ * media row → API media (design D3). url = r2_key as stored (the public path). With thumbs on
+ * (crop media only), a url under /artwork/crops/ gets thumbUrl = the same file under
+ * /artwork/crops/thumbs/; any other url gets no thumbUrl. The app never generates image files.
+ */
+export function toMedia(row: repo.MediaRow, opts: { thumbs: boolean }): Media {
+  const url = row.r2Key;
+  const m: Media = { url, licence: row.licence, credit: row.credit };
+  if (opts.thumbs && url.startsWith(CROP_ARTWORK_PREFIX)) {
+    m.thumbUrl = `${CROP_ARTWORK_PREFIX}thumbs/${url.slice(CROP_ARTWORK_PREFIX.length)}`;
+  }
+  return m;
+}
+/** A subject shows an average only once it has this many reviews (canonical §2 "Ratings"). */
+export const MIN_REVIEWS_FOR_RATING = 3;
+
+/** Validate (throws on bad data — fail loudly, NFR4). */
+export function parse<T>(schema: z.ZodType<T>, value: unknown, what: string): T {
+  const r = schema.safeParse(value);
+  if (!r.success) {
+    throw new Error(`Invalid ${what} from repository: ${r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`);
+  }
+  return r.data;
+}
+
+export function ratingOf(reviewCount: number, average: number | null): Rating {
+  return reviewCount >= MIN_REVIEWS_FOR_RATING && average !== null
+    ? { state: "rated", average, review_count: reviewCount }
+    : { state: "not_yet_rated", average: null, review_count: reviewCount };
+}
+
+export const goUrl = (listingId: number) => `${SITE_URL}/go/${listingId}`;
+
+/** The ONE PlantRef builder: every repository row that joins plants carries these columns. */
+export function plantRefOf(r: {
+  plantSlug: string;
+  commonName: string;
+  latinName: string | null;
+  seasonClass: SeasonClass | null;
+  seasonSourceLabel: string | null;
+  sowingMethods: string | null;
+  sowingMethodSourceLabel: string | null;
+}): PlantRef {
+  const methods = sowingMethodsOf(r.sowingMethods);
+  return {
+    slug: r.plantSlug,
+    commonName: r.commonName,
+    latinName: r.latinName,
+    season_class: r.seasonClass,
+    season_source_label: r.seasonClass ? r.seasonSourceLabel : null,
+    sowing_methods: methods,
+    sowing_method_source_label: methods.length ? r.sowingMethodSourceLabel : null,
+  };
+}
+
+/**
+ * group_concat'd method list → canonical order (direct_sow, transplant). Unknown values are kept
+ * so the PlantRef Zod parse rejects them loudly instead of silently dropping them.
+ */
+export function sowingMethodsOf(raw: string | null): SowingMethod[] {
+  if (!raw) return [];
+  const got = new Set(raw.split(","));
+  const rank = (m: string) => {
+    const i = (SOWING_METHODS as readonly string[]).indexOf(m);
+    return i === -1 ? SOWING_METHODS.length : i;
+  };
+  return [...got].sort((a, b) => rank(a) - rank(b)) as SowingMethod[];
+}
+
+/**
+ * plants.grower_guide JSON text (as imported from catalog.json) → API GrowerGuide. Absent fields
+ * become null / [] (explicit unknown); a missing section is null. Malformed stored JSON fails
+ * loudly (strict parse), like every other repository row.
+ */
+export function growerGuideOf(raw: string | null): GrowerGuide | null {
+  if (raw == null) return null;
+  const g = parse(CatalogGrowerGuideInput, JSON.parse(raw), "stored grower guide");
+  const t = (v: string | undefined) => v ?? null;
+  const growing = g.growing;
+  const seed = g.seedSaving;
+  return {
+    growing: growing
+      ? {
+          sowing: t(growing.sowing),
+          germination: t(growing.germination),
+          transplanting: t(growing.transplanting),
+          days_to_bloom: t(growing.days_to_bloom),
+          spacing: t(growing.spacing),
+          growing: t(growing.growing),
+          harvest_for_cutting: t(growing.harvest_for_cutting),
+          good_to_know: growing.good_to_know ?? [],
+        }
+      : null,
+    seed_saving: seed
+      ? {
+          difficulty: t(seed.difficulty),
+          when_to_harvest: t(seed.when_to_harvest),
+          how_to_collect: t(seed.how_to_collect),
+          cleaning: t(seed.cleaning),
+          drying: t(seed.drying),
+          storage: t(seed.storage),
+          pollination_notes: t(seed.pollination_notes),
+        }
+      : null,
+  };
+}
+
+function groupPackets(rows: PacketRow[]): Map<number, PacketSize[]> {
+  const m = new Map<number, PacketSize[]>();
+  for (const r of rows) {
+    const list = m.get(r.listingId) ?? [];
+    list.push({ label: r.label, seedCount: r.seedCount });
+    m.set(r.listingId, list);
+  }
+  return m;
+}
+
+/** The ONE public listing serializer (pages, API, /recent, /sync all go through it). */
+export function mapListing(l: PublicListingRow, packets: PacketSize[]): PublicListing {
+  return parse(
+    PublicListingSchema,
+    {
+      id: l.id,
+      variety: {
+        slug: l.varietySlug,
+        varietyName: l.varietyName,
+        plant: plantRefOf(l),
+        colorSwatch: l.colorSwatch,
+      },
+      seller: {
+        slug: l.sellerSlug,
+        name: l.sellerName,
+        location: l.sellerLocation,
+        region: l.sellerRegion,
+        country: l.sellerCountry,
+      },
+      availability: l.availability,
+      lastCheckedAt: l.lastCheckedAt,
+      firstSeenAt: l.firstSeenAt,
+      goUrl: goUrl(l.id),
+      productUrl: l.productUrl,
+      notes: l.notes,
+      status: "published",
+      packetSizes: packets,
+      provenance: {
+        source_url: l.sourceUrl,
+        retrieved_at: l.lastCheckedAt,
+        method: l.matchMethod,
+        confidence: l.confidence,
+      },
+      sourceLabel: l.sourceLabel ?? null,
+    },
+    "listing",
+  );
+}
+
+/** "As of 2026-11-15, 3 small farms list King's Ransom: A, B and C." — data only (canonical §5 GEO). */
+export function answerSentence(varietyName: string, listings: PublicListing[]): string {
+  if (listings.length === 0) return `No small farm found selling ${varietyName} yet.`;
+  const names = [...new Set(listings.map((l) => l.seller.name))];
+  const date = listings
+    .map((l) => l.lastCheckedAt?.slice(0, 10))
+    .filter((d): d is string => Boolean(d))
+    .sort()
+    .at(-1);
+  const list = names.length === 1 ? names[0]! : `${names.slice(0, -1).join(", ")} and ${names.at(-1)!}`;
+  const n = names.length;
+  const lead = date ? `As of ${date}, ` : "";
+  const verb = n === 1 ? "small farm lists" : "small farms list";
+  // "Songbird Seed Co." already ends the sentence.
+  return `${lead}${n} ${verb} ${varietyName}: ${list}${list.endsWith(".") ? "" : "."}`;
+}
+
+function summaryFrom(r: repo.VarietySummaryRow): VarietySummary {
+  return parse(
+    VarietySummarySchema,
+    {
+      slug: r.slug,
+      varietyName: r.varietyName,
+      plant: plantRefOf(r),
+      category: { slug: r.categorySlug, name: r.categoryName },
+      subcategory: r.subcategorySlug && r.subcategoryName ? { slug: r.subcategorySlug, name: r.subcategoryName } : null,
+      series: r.seriesSlug && r.seriesName ? { slug: r.seriesSlug, name: r.seriesName } : null,
+      colorSwatch: r.colorSwatch,
+      colorFamily: r.colorFamily,
+      listingCount: r.listingCount ?? 0,
+      inStockCount: r.inStockCount ?? 0,
+      lastCheckedAt: r.lastChecked,
+      indexable: r.indexable,
+      rating: ratingOf(0, null),
+    },
+    "variety summary",
+  );
+}
+
+type SellerRow = NonNullable<Awaited<ReturnType<typeof repo.sellerRow>>>;
+
+/** The six sellers.imported_rating_* columns (catalog read and sync rows share these names). */
+export interface ImportedRatingColumns {
+  importedRatingSource: ImportedRating["source"] | null;
+  importedRatingPlaceName: string | null;
+  importedRatingPlaceId: string | null;
+  importedRatingValue: number | null;
+  importedRatingCount: number | null;
+  importedRatingFetchedAt: string | null;
+}
+
+/**
+ * Imported third-party aggregate, or null. Kept apart from ratingOf(): it never feeds our rating.
+ * A row with a source but missing fields is passed through so the schema fails loudly.
+ */
+export function importedRatingOf(r: ImportedRatingColumns): ImportedRating | null {
+  if (r.importedRatingSource === null) return null;
+  return {
+    source: r.importedRatingSource,
+    placeName: r.importedRatingPlaceName as string,
+    placeId: r.importedRatingPlaceId as string,
+    rating: r.importedRatingValue as number,
+    reviewCount: r.importedRatingCount as number,
+    fetchedDate: r.importedRatingFetchedAt as string,
+  };
+}
+
+function sellerBase(r: SellerRow) {
+  return {
+    slug: r.slug,
+    name: r.name,
+    type: r.type,
+    location: r.location,
+    region: r.region,
+    country: r.country,
+    homepage: r.homepage,
+    ratingCount: r.ratingCount,
+    ratingAverage: r.ratingCount > 0 ? r.ratingAverage : null,
+    rating: ratingOf(r.ratingCount, r.ratingCount > 0 ? r.ratingAverage : null),
+    importedRating: importedRatingOf(r),
+  };
+}
+
+function parseShipsTo(raw: string): string[] {
+  try {
+    const v: unknown = JSON.parse(raw);
+    return Array.isArray(v) && v.every((x) => typeof x === "string") && v.length > 0 ? v : ["unknown"];
+  } catch {
+    return ["unknown"];
+  }
+}
+
+function likePattern(query: string): string {
+  const lowered = query.replace(/[%_\\]/g, "").toLowerCase();
+  return [...lowered].length >= 3 ? `%${lowered}%` : `${lowered}%`;
+}
+
+export interface SearchOptions {
+  limit?: number;
+  types?: SearchType[];
+  /** When set, the search is logged to search_events with this client label. */
+  logClient?: string | null;
+  /** Only crops / series / varieties whose crop has this season class (sellers are unaffected). */
+  season?: SeasonClass;
+  /** Only crops / series / varieties whose crop has ANY of these sowing methods (sellers are unaffected). */
+  methods?: SowingMethod[];
+  /** Only varieties of these colour families (variety-level: crops, series and sellers are unaffected). */
+  colorFamily?: string[];
+}
+
+export function createCatalogService(db: Db) {
+  /**
+   * Variety summaries without media. Used directly only where list media is never shown: search
+   * (maps to SearchResult) and getVariety (fetches its own media). Everything else uses summaries().
+   */
+  async function baseSummaries(filters: VarietyFilters, sort: VarietySort, page: Page): Promise<Paged<VarietySummary> & { ids: number[] }> {
+    const { rows, total } = await repo.listVarietySummaryRows(db, filters, sort, page);
+    return { items: rows.map(summaryFrom), ids: rows.map((r) => r.id), total };
+  }
+
+  /** List items: the page's summaries plus each variety's media (one batched media query). */
+  async function summaries(filters: VarietyFilters, sort: VarietySort, page: Page): Promise<Paged<VarietyListItem> & { ids: number[] }> {
+    const { items, ids, total } = await baseSummaries(filters, sort, page);
+    const mediaByVariety = await repo.listMediaForVarieties(db, ids);
+    return {
+      items: items.map((v, i) =>
+        parse(
+          VarietyListItemSchema,
+          { ...v, media: (mediaByVariety.get(ids[i]!) ?? []).map((m) => toMedia(m, { thumbs: false })) },
+          "variety list item",
+        ),
+      ),
+      ids,
+      total,
+    };
+  }
+
+  async function listings(q: ListingQuery): Promise<PublicListing[]> {
+    const rows = await repo.publicListingRows(db, q);
+    const packets = groupPackets(await repo.packetRows(db, rows.map((l) => l.id)));
+    return rows.map((l) => mapListing(l, packets.get(l.id) ?? []));
+  }
+
+  async function cropListItem(
+    p: Awaited<ReturnType<typeof repo.listPlantRows>>["rows"][number],
+    mediaRows: repo.MediaRow[],
+  ): Promise<CropListItem> {
+    return parse(
+      CropListItemSchema,
+      {
+        ...plantRefOf({ ...p, plantSlug: p.slug }),
+        category: { slug: p.categorySlug, name: p.categoryName },
+        varietyCount: p.coverage.varieties,
+        varietiesWithSellers: p.coverage.withSellers,
+        lastUpdated: p.coverage.lastUpdated,
+        media: mediaRows.map((m) => toMedia(m, { thumbs: true })),
+      },
+      "crop",
+    );
+  }
+
+  /**
+   * US states with at least one visible seller, alphabetical by name, with counts. Drives the
+   * /seller?state= chips and decides which /state/{slug} pages exist. Regions that are not a
+   * US state code (or non-US sellers) are left out.
+   */
+  async function sellerStates(): Promise<SellerState[]> {
+    const rows = await repo.sellerRegionCountRows(db);
+    const out: SellerState[] = [];
+    for (const r of rows) {
+      const st = r.country === "US" ? stateByCode(r.region) : null;
+      if (st && r.region === st.code) out.push(parse(SellerStateSchema, { ...st, sellerCount: r.n }, "seller state"));
+    }
+    return out.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  return {
+    async listVarieties(opts: { filters?: VarietyFilters; sort?: VarietySort; page: Page }): Promise<Paged<VarietyListItem>> {
+      const { items, total } = await summaries(opts.filters ?? {}, opts.sort ?? "name", opts.page);
+      return { items, total };
+    },
+
+    async getVariety(slug: string): Promise<VarietyDetail | null> {
+      const row = await repo.varietyDetailRow(db, slug);
+      if (!row) return null;
+      const [{ tags, aliases }, ls, s, mediaRows] = await Promise.all([
+        repo.varietyTagsAndAliases(db, row.id),
+        listings({ varietyId: row.id }),
+        baseSummaries({ ids: [row.id] }, "name", { offset: 0, limit: 1 }),
+        repo.listMediaForVariety(db, row.id),
+      ]);
+      const summary = s.items[0];
+      if (!summary) return null;
+      const detail: VarietyDetail = {
+        ...summary,
+        plant: {
+          ...plantRefOf(row),
+          description: row.plantDescription,
+          sowingNotes: row.plantSowingNotes,
+        },
+        description: row.description,
+        templateDescription: templateDescription({
+          varietyName: row.varietyName,
+          commonName: row.commonName,
+          latinName: row.latinName,
+          listingCount: ls.length,
+        }),
+        answer: answerSentence(row.varietyName, ls),
+        sowingNotes: row.sowingNotes,
+        heightCm: row.heightCm,
+        facts: {
+          color_family: row.colorFamily,
+          pollination: row.pollination,
+          // One sourced height is both ends of the range; null means unknown.
+          height_cm: { min: row.heightCm, max: row.heightCm },
+          days_to_bloom: { min: row.daysToBloomMin, max: row.daysToBloomMax },
+        },
+        tags,
+        aliases,
+        protection: row.protection,
+        protectionNote: row.protectionNote,
+        contentLevel: row.contentLevel,
+        updatedAt: row.updatedAt,
+        listings: ls,
+        media: mediaRows.map((m) => toMedia(m, { thumbs: false })),
+      };
+      return parse(VarietyDetailSchema, detail, "variety detail");
+    },
+
+    /** Surviving slug for a merged variety (pages 308 to it). */
+    mergedVarietyTarget: (slug: string) => repo.mergedVarietyTarget(db, slug),
+
+    async varietyListings(slug: string, q: Pick<ListingQuery, "availability" | "shipsTo"> = {}): Promise<PublicListing[] | null> {
+      const row = await repo.varietyDetailRow(db, slug);
+      if (!row) return null;
+      return listings({ varietyId: row.id, ...q });
+    },
+
+    async listSellers(page: Page, filters: repo.SellerFilters = {}): Promise<Paged<SellerListItem>> {
+      const { rows, total } = await repo.listSellerRows(db, page, filters);
+      const items = rows.map((r) =>
+        parse(SellerListItemSchema, { ...sellerBase(r), varietyCount: r.varietyCount ?? 0 }, "seller list item"),
+      );
+      return { items, total };
+    },
+
+    listSellerStates: sellerStates,
+
+    async getSeller(slug: string): Promise<SellerDetail | null> {
+      const r = await repo.sellerRow(db, slug);
+      if (!r) return null;
+      const ls = await listings({ sellerId: r.id });
+      const detail: SellerDetail = {
+        ...sellerBase(r),
+        description: r.description,
+        orderingNotes: r.orderingNotes,
+        varietyCount: r.varietyCount ?? 0,
+        updatedAt: r.updatedAt,
+        claimStatus: r.claimStatus,
+        shipsTo: parseShipsTo(r.shipsTo),
+        isSiteOwner: r.isSiteOwner,
+        listings: ls,
+      };
+      return parse(SellerDetailSchema, detail, "seller detail");
+    },
+
+    /** "ok" (visible), "gone" (removed at the seller's request → 410), or "missing" (→ 404). */
+    async sellerStatus(slug: string): Promise<"ok" | "gone" | "missing"> {
+      const e = await repo.sellerEligibility(db, slug);
+      if (!e) return "missing";
+      if (e.eligibility === "removed_by_request" || e.listingPolicy === "removed") return "gone";
+      return (await repo.sellerRow(db, slug)) ? "ok" : "missing";
+    },
+
+    async sellerListings(slug: string, q: Pick<ListingQuery, "availability" | "plant"> = {}): Promise<PublicListing[] | null> {
+      const r = await repo.sellerRow(db, slug);
+      if (!r) return null;
+      return listings({ sellerId: r.id, ...q });
+    },
+
+    async listCategories(): Promise<Category[]> {
+      const rows = await repo.categoryRows(db);
+      return rows.map((c) => parse(CategorySchema, c, "category"));
+    },
+
+    async getCategory(slug: string, page: Page): Promise<{ category: CategoryDetail; total: number } | null> {
+      const [c] = await repo.categoryRows(db, slug);
+      if (!c) return null;
+      const { items, total } = await summaries({ category: slug }, "name", page);
+      return { category: parse(CategoryDetailSchema, { ...c, varieties: items }, "category detail"), total };
+    },
+
+    async listCrops(page: Page, opts: PlantListFilters = {}): Promise<Paged<CropListItem>> {
+      const { rows, total } = await repo.listPlantRows(db, page, { season: opts.season, methods: opts.methods, lifeCycle: opts.lifeCycle });
+      const mediaByPlant = await repo.listMediaForPlants(db, rows.map((r) => r.id));
+      return { items: await Promise.all(rows.map((r) => cropListItem(r, mediaByPlant.get(r.id) ?? []))), total };
+    },
+
+    async getCrop(
+      slug: string,
+      opts: { page: Page; filters?: Pick<VarietyFilters, "colorFamily" | "series" | "hasListings">; sort?: VarietySort },
+    ): Promise<{ crop: CropDetail; total: number; colorFamilies: string[] } | null> {
+      const p = await repo.plantRow(db, slug);
+      if (!p) return null;
+      const [s, seriesRows, colorFamilies, mediaRows] = await Promise.all([
+        summaries({ ...opts.filters, plant: [slug] }, opts.sort ?? "name", opts.page),
+        repo.seriesForPlant(db, p.id),
+        repo.colorFamiliesForPlant(db, slug),
+        repo.listMediaForPlant(db, p.id),
+      ]);
+      const crop: CropDetail = {
+        ...(await cropListItem(p, mediaRows)),
+        description: p.description,
+        sowingNotes: p.sowingNotes,
+        life_cycle: p.lifeCycle,
+        hardiness: p.hardiness,
+        grower_guide: growerGuideOf(p.growerGuide),
+        series: seriesRows,
+        varieties: s.items,
+      };
+      return { crop: parse(CropDetailSchema, crop, "crop detail"), total: s.total, colorFamilies };
+    },
+
+    async getSeries(slug: string): Promise<SeriesDetail | null> {
+      const r = await repo.seriesRow(db, slug);
+      if (!r) return null;
+      const { items } = await summaries({ series: [slug] }, "name", { offset: 0, limit: 100 });
+      return parse(
+        SeriesDetailSchema,
+        {
+          slug: r.slug,
+          name: r.name,
+          crop: plantRefOf(r),
+          varietyCount: items.length,
+          varietiesWithSellers: items.filter((v) => v.listingCount > 0).length,
+          varieties: items,
+        },
+        "series detail",
+      );
+    },
+
+    async coverage(): Promise<CoverageItem[]> {
+      const rows = await repo.coverageRows(db);
+      return rows.map((r) =>
+        parse(
+          CoverageItemSchema,
+          {
+            crop: { slug: r.slug, name: r.commonName },
+            varieties: r.coverage.varieties,
+            varieties_with_sellers: r.coverage.withSellers,
+            last_updated: r.coverage.lastUpdated,
+          },
+          "coverage",
+        ),
+      );
+    },
+
+    async recent(opts: { plant?: string[]; since?: string; limit: number }): Promise<RecentItem[]> {
+      const events = await repo.recentEventRows(db, opts);
+      const byId = new Map((await listings({ ids: [...new Set(events.map((e) => e.listingId))] })).map((l) => [l.id, l]));
+      return events
+        .filter((e) => byId.has(e.listingId))
+        .map((e) => parse(RecentItemSchema, { event: e.event, at: e.at, listing: byId.get(e.listingId) }, "recent item"));
+    },
+
+    /**
+     * Search (R12). Any query of ≥ 2 characters searches; varieties rank exact → prefix → full
+     * text with has-listings first on ties. Logs one search_events row when `logClient` is set.
+     */
+    async search(q: string, opts: SearchOptions = {}): Promise<SearchResponse> {
+      const query = normaliseQuery(q);
+      const lim = Math.max(1, Math.min(opts.limit ?? 10, 50));
+      const types = new Set<SearchType>(opts.types?.length ? opts.types : ["variety", "series", "crop", "seller"]);
+      const empty = { query, results: [], varieties: [], series: [], crops: [], sellers: [] };
+      if ([...query.replace(/[%_\\]/g, "")].length < MIN_QUERY_CHARS) {
+        if (opts.logClient && query) await logSearch(query, 0, opts.logClient);
+        return parse(SearchResponseSchema, empty, "search");
+      }
+      const pattern = likePattern(query);
+      const plantFilters: PlantFilters = { season: opts.season, methods: opts.methods };
+      const [plantRows, seriesRows, matches, sellerRows] = await Promise.all([
+        types.has("crop") ? repo.searchPlantRows(db, pattern, Math.min(5, lim), plantFilters) : Promise.resolve([]),
+        types.has("series") ? repo.searchSeriesRows(db, pattern, Math.min(5, lim), plantFilters) : Promise.resolve([]),
+        types.has("variety") ? searchVarieties(db, query, { limit: 100 }) : Promise.resolve([] as VarietyMatch[]),
+        types.has("seller") ? repo.searchSellerRows(db, pattern, Math.min(5, lim)) : Promise.resolve([]),
+      ]);
+      const found = matches.length
+        ? await baseSummaries(
+            {
+              ids: matches.map((m) => m.varietyId),
+              season: opts.season ? [opts.season] : undefined,
+              methods: opts.methods,
+              colorFamily: opts.colorFamily,
+            },
+            "name",
+            { offset: 0, limit: matches.length },
+          )
+        : { items: [], ids: [], total: 0 };
+      const byId = new Map(found.ids.map((id, i) => [id, found.items[i]!]));
+      const ranked = matches
+        .map((m, order) => ({ m, order, v: byId.get(m.varietyId) }))
+        .filter((x): x is { m: VarietyMatch; order: number; v: VarietySummary } => Boolean(x.v))
+        .sort((a, b) => a.m.tier - b.m.tier || Number(b.v.listingCount > 0) - Number(a.v.listingCount > 0) || a.order - b.order);
+
+      const varieties: SearchResult[] = ranked.slice(0, lim).map(({ m, v }) => ({
+        type: "variety",
+        slug: v.slug,
+        title: v.varietyName,
+        subtitle: `${proseCommonName(v.plant.commonName)} · ${v.listingCount === 0 ? "no farm listing yet" : `${v.listingCount} farm${v.listingCount === 1 ? "" : "s"}`}`,
+        href: `/variety/${v.slug}`,
+        matchedAlias: m.matchedAlias,
+      }));
+      const crops: SearchResult[] = plantRows.map((p) => ({
+        type: "crop",
+        slug: p.slug,
+        title: proseCommonName(p.commonName),
+        subtitle: p.latinName ? `${p.latinName} · crop` : "crop",
+        href: `/crop/${p.slug}`,
+        matchedAlias: null,
+      }));
+      const series: SearchResult[] = seriesRows.map((s) => ({
+        type: "series",
+        slug: s.slug,
+        title: `${s.name} series`,
+        subtitle: `${proseCommonName(s.commonName)} · series`,
+        href: `/series/${s.slug}`,
+        matchedAlias: null,
+      }));
+      const sellers: SearchResult[] = sellerRows.map((s) => ({
+        type: "seller",
+        slug: s.slug,
+        title: s.name,
+        subtitle: s.location ? `${s.location} · seller` : "seller",
+        href: `/seller/${s.slug}`,
+        matchedAlias: null,
+      }));
+      const results = [...crops, ...series, ...varieties, ...sellers].slice(0, lim);
+      const total = ranked.length + crops.length + series.length + sellers.length;
+      if (opts.logClient) await logSearch(query, total, opts.logClient);
+      return parse(SearchResponseSchema, { query, results, varieties, series, crops, sellers }, "search");
+    },
+
+    async catalogVersion(siteUrl: string): Promise<CatalogVersion> {
+      const p = await latestPublish(db);
+      return parse(
+        CatalogVersionSchema,
+        p
+          ? {
+              version: p.version,
+              publishedAt: p.publishedAt,
+              snapshotUrl: p.snapshotKey ? `${siteUrl}/api/v1/catalog/snapshot/${p.version}.sqlite` : null,
+            }
+          : { version: 0, publishedAt: null, snapshotUrl: null },
+        "catalog version",
+      );
+    },
+
+    catalogSeq: () => catalogSeq(db),
+    counts: () => repo.catalogCounts(db),
+    sitemapEntries: async () => ({
+      varieties: await repo.indexableVarietyRows(db),
+      sellers: await repo.allSellerSlugs(db),
+      states: (await sellerStates()).map((st) => ({ slug: st.slug })),
+      crops: await repo.allPlantSlugs(db),
+      series: await repo.allSeriesSlugs(db),
+    }),
+  };
+
+  async function logSearch(query: string, resultCount: number, client: string) {
+    try {
+      await insertSearchEvent(db, {
+        at: new Date().toISOString(),
+        queryNormalized: foldText(query).slice(0, 100),
+        resultCount,
+        client: client.slice(0, 60),
+      });
+    } catch (err) {
+      // Logging must never break search.
+      console.error("search_events insert failed", err);
+    }
+  }
+}
+
+export type CatalogService = ReturnType<typeof createCatalogService>;

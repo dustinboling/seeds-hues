@@ -1,0 +1,12 @@
+RESUME an interrupted delta build in this directory (~/workspace/seeds-hues/v2). Your previous run was killed by a host service restart (SIGTERM) — not by an error in your work.
+
+State so far (verify before trusting): tasks 1–3 are checked in .kiro/specs/seeds-v2-delta/tasks.md (migration 0002 applies cleanly; importer updated; fresh db:setup:local converges to 19/68/6/17 with spot checks passing). You were mid-way through later foundation work (an events repository for search logging was being written when the run died). Some files may be half-written.
+
+DO FIRST:
+1. Re-read .kiro/specs/seeds-v2-delta/{requirements,design,tasks}.md, ~/workspace/seeds-hues/SPEC-CANONICAL.md and ~/workspace/seeds-hues/DELTA-PLAN-DEC16.md if you need to re-ground.
+2. Inspect the working tree for half-finished files from the killed run; run `npm run verify` to see what currently passes/fails; fix any partial file to a coherent state.
+3. Continue from the first unchecked task in tasks.md, in order, checking boxes as they pass.
+
+Reminders: seed-data/catalog.json is final (19/68/6/17) — do not touch it or build-catalog.py. Task 19 (vinext check) is already done by Hue: 94% compatible, 2 partials (typedRoutes, reactStrictMode), 0 issues — just record it in DELTA-REPORT.md; do NOT switch adapters. NO deployment, NO remote Cloudflare changes, NO crawling/fetching external seller sites, NO email. Local-only verification.
+
+FINISH LINE (unchanged): `npm run verify` green; fresh local db:setup; `npm run cf:build` green; OpenNext preview running locally; `npm run acceptance` green against it (incl. planted evidence-validation tests + throwaway-seller removal flow); DELTA-REPORT.md written covering what changed (routes/schema/data), the vinext result, verification item by item, and every divergence/fallback stated plainly.

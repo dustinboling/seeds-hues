@@ -1,0 +1,11 @@
+Second follow-up to the theme delta in this directory. Read THEME-REPORT.md's "Addendum — OG Fraunces" first: it documents why the variable TTF failed in Satori and what would make it work. That fix has now been staged:
+
+- `app/fonts/fraunces-og.ttf` — a STATIC Fraunces instance (wght 700, opsz 100, no fvar/gvar tables, 36 KB), generated from the same Fraunces build as the site's webfonts.
+
+GOAL: the OG card title (`app/og/[kind]/[slug]/route.tsx`) renders in this Fraunces; everything else on the card stays visually identical (same text, colours, layout, dimensions, per-kind behaviour; eyebrow/subtitle/footer stay in the current bundled sans).
+
+APPROACH (per the addendum): bundle the font for Workers by enabling `experimental.turbopackImportTypeBytes` in next.config.ts and importing the TTF with `with { type: "bytes" }`, passing it to ImageResponse `fonts`. Note the addendum's warning: passing `fonts` replaces the built-in Geist, so the sans used by the rest of the card must be supplied too — locate the Geist font file next/og bundles (in node_modules) and import it the same way, OR if no standalone Geist file exists, find another no-new-dependency way to keep the non-title text in the same sans it uses today. If neither works cleanly, revert everything and report — do not ship a card whose non-title text changes face.
+
+Files you may change: `app/og/[kind]/[slug]/route.tsx`, `next.config.ts`, and THEME-REPORT.md (append "Addendum 2 — OG Fraunces static"). Nothing else. No new dependencies. No deployment, no remote changes.
+
+VERIFY: `npm run verify` green; `npm run cf:build` green; restart local preview; fetch OG images for variety (with and without media), crop, seller and /og/site/home — each HTTP 200, image/png, 1200×630; `npm run acceptance` green. In the addendum, state plainly whether the title now renders Fraunces 700 and how you confirmed it (e.g. pixel/byte difference vs the pre-change card for the same slug, or another concrete check — a 200 alone does not prove the font loaded).

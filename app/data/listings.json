@@ -1,0 +1,380 @@
+[
+  {
+    "id": "geoseed-stock-katz-mix",
+    "varietyId": "stock-katz-mix",
+    "sellerId": "geoseed",
+    "sku": "G893522",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (200 seeds)",
+        "price": 3.25,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds",
+        "price": 13.60,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "32\", very early programmable timing (7–11 weeks fall, 8–13 weeks spring). 14 single colours available. Wholesale account required to order."
+  },
+  {
+    "id": "geoseed-snapdragon-rocket-mix",
+    "varietyId": "snapdragon-rocket-mix",
+    "sellerId": "geoseed",
+    "sku": "G76796",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (200 seeds)",
+        "price": 3.20,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds",
+        "price": 11.00,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "30\", choice for cut flower, fragrant. Singles also available: Bronze G76800, Golden Yellow G76824, Orchid G76848, Pink G76856, Red G76864, White G76888. Wholesale account required."
+  },
+  {
+    "id": "geoseed-snapdragon-madame-butterfly-mix",
+    "varietyId": "snapdragon-madame-butterfly-mix",
+    "sellerId": "geoseed",
+    "sku": "G74300",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (100 seeds)",
+        "price": 3.25,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds",
+        "price": 20.95,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "30\", tall double azalea-flowered, AAS winner. Singles available. Wholesale account required."
+  },
+  {
+    "id": "geoseed-snapdragon-toulon-mix",
+    "varietyId": "snapdragon-toulon-mix",
+    "sellerId": "geoseed",
+    "sku": "G80012",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (100 seeds)",
+        "price": 3.80,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds",
+        "price": 32.95,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "Group IV, 32–40\". Named replacement for discontinued Costa Summer series. Wholesale account required."
+  },
+  {
+    "id": "geoseed-larkspur-imperial-choice-mix",
+    "varietyId": "larkspur-imperial-choice-mix",
+    "sellerId": "geoseed",
+    "sku": "G323941",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (1,000 seeds)",
+        "price": 4.50,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds (at 2M+)",
+        "price": 3.90,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "32\", Giant Imperial type. Direct-sow only — taproot hates transplanting. Wholesale account required."
+  },
+  {
+    "id": "geoseed-cornflower-frosty-mix",
+    "varietyId": "cornflower-frosty-mix",
+    "sellerId": "geoseed",
+    "sku": "G237644",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (1,000 seeds)",
+        "price": 4.60,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds (at 2M+)",
+        "price": 3.95,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "Extra-select double bicolour mix. Suited to field-grown cut flower, borders, mass landscape. Wholesale account required."
+  },
+  {
+    "id": "geoseed-nigella-miss-jekyll-double-mix",
+    "varietyId": "nigella-miss-jekyll-double-mix",
+    "sellerId": "geoseed",
+    "sku": "G672156",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (1,000 seeds)",
+        "price": 3.90,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds (at 2M+)",
+        "price": 3.35,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "Traditional strain, direct-sown to field. Flowers and striped pods both useful. Wholesale account required."
+  },
+  {
+    "id": "geoseed-calendula-pacific-beauty-mix",
+    "varietyId": "calendula-pacific-beauty-mix",
+    "sellerId": "geoseed",
+    "sku": "G188542",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (1,000 seeds)",
+        "price": 5.20,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds (at 2M+)",
+        "price": 4.60,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "24\", long-stemmed double/semi-double. Single colours available. Wholesale account required."
+  },
+  {
+    "id": "geoseed-sweet-pea-winter-elegance-mix",
+    "varietyId": "sweet-pea-winter-elegance-mix",
+    "sellerId": "geoseed",
+    "sku": "G538224",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (100 seeds)",
+        "price": 8.25,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds",
+        "price": 71.00,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "6 ft vine, fragrant, bred for cut flower production under short days. Best for November sowing targeting April–May. Singles: Burgundy G538190, Deep Rose G538200, Mid Blue G538218, White G538284. Quantity note: only 100 seeds/Trade Pkt — a full fence row needs multiple packs. Wholesale account required."
+  },
+  {
+    "id": "geoseed-iceland-poppy-champagne-bubbles",
+    "varietyId": "iceland-poppy-champagne-bubbles-mix",
+    "sellerId": "geoseed",
+    "sku": "G719712",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (200 seeds, primed)",
+        "price": 3.35,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds",
+        "price": 14.40,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "F1 hybrid, primed seed. 15\", uniform, sturdy, large flowers. Singles: Orange G719724, Pink G719736, Scarlet G719741, White G719748, Yellow G719760. Sow in individual pots — resents root disturbance. Wholesale account required."
+  },
+  {
+    "id": "geoseed-shirley-poppy-angels-choir",
+    "varietyId": "shirley-poppy-angels-choir",
+    "sellerId": "geoseed",
+    "sku": "G723250",
+    "packetSizes": [
+      {
+        "label": "Trade Pkt (500 seeds)",
+        "price": 3.25,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      },
+      {
+        "label": "XT / 1,000 seeds",
+        "price": 5.60,
+        "priceSource": "GeoSeed Catalog 2026–27",
+        "priceCheckDate": "2026-11-04",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "2 ft, double Shirley-type mix. Direct sow, scatter on surface. Wholesale account required."
+  },
+  {
+    "id": "everwilde-sweet-pea-mammoth-mix",
+    "varietyId": "sweet-pea-mammoth-mix",
+    "sellerId": "everwilde-farms",
+    "sku": null,
+    "packetSizes": [
+      {
+        "label": "1 oz (~300 seeds)",
+        "price": 11.03,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1/4 lb",
+        "price": 27.47,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1 lb",
+        "price": 96.00,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "5 lb",
+        "price": 432.00,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "Approx. 300 seeds/oz. At 1 lb: ~$19–20 per 1,000 seeds. No named Spencer varieties — bulk mix only. No account required."
+  },
+  {
+    "id": "everwilde-virginia-stock",
+    "varietyId": "virginia-stock",
+    "sellerId": "everwilde-farms",
+    "sku": null,
+    "packetSizes": [
+      {
+        "label": "XL Packet (~2,000 seeds)",
+        "price": 3.48,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1 oz (~70,000 seeds)",
+        "price": 8.70,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1/4 lb",
+        "price": 18.54,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1 lb",
+        "price": 57.00,
+        "priceSource": "Everwilde Farms website",
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      }
+    ],
+    "productUrl": "https://www.everwilde.com/store/Malcolmia-maritima-WildFlower-Seed.html",
+    "notes": "Product page verified live 2026-11-06. 1 oz showed active add-to-cart with no out-of-stock notice. Good production quantity at 1 oz (~70,000 seeds). No account required."
+  },
+  {
+    "id": "reimer-breadseed-poppy",
+    "varietyId": "breadseed-poppy",
+    "sellerId": "reimer-seeds",
+    "sku": null,
+    "packetSizes": [
+      {
+        "label": "1,000 seeds",
+        "price": null,
+        "priceSource": null,
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1/4 oz",
+        "price": null,
+        "priceSource": null,
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1 oz",
+        "price": null,
+        "priceSource": null,
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      },
+      {
+        "label": "1 lb",
+        "price": null,
+        "priceSource": null,
+        "priceCheckDate": "2026-11-06",
+        "inStock": null
+      }
+    ],
+    "productUrl": null,
+    "notes": "Lot germination rate: 85%. Approximately 1,266,000 seeds per pound. Per-size prices not displayed on product page at time of check (2026-11-06) — visit seller for current pricing. Direct-sow, best sown late fall."
+  }
+]

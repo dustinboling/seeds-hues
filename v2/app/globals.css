@@ -1,0 +1,360 @@
+@import "tailwindcss";
+
+/*
+ * seeds.hues.flowers design tokens — "The Illustrated Seed Catalogue" theme
+ * (~/workspace/seeds-hues/THEME-ART-DIRECTION.md). Mobile-first (390 pt). WCAG 2.2 AA: every
+ * text/background pair below is ≥ 4.5:1 (body) / ≥ 3:1 (large text, UI boundaries); ratios are
+ * recorded in THEME-REPORT.md. Token NAMES are unchanged from the previous theme; paper-deep,
+ * ink-soft and sage are new. Decorative-only colours never carry text.
+ */
+@theme {
+  --color-paper: #f8f1e1; /* plate paper — page ground */
+  --color-paper-deep: #f0e5cb; /* recessed bands, footer, tab-bar wash (decorative) */
+  --color-surface: #fffdf6; /* cards, sheets, inputs */
+  --color-ink: #2e2a23; /* 12.7:1 on paper, 14.0:1 on surface */
+  --color-ink-soft: #4a4438; /* 8.6:1 on paper, 7.7:1 on paper-deep */
+  --color-muted: #6a5f4c; /* 5.6:1 on paper, 6.2:1 on surface, 5.0:1 on paper-deep */
+  --color-line: #e0d5b8; /* hairlines, card borders (decorative edge) */
+  --color-line-strong: #97865f; /* 3.2:1 on paper, 3.5:1 on surface — UI component boundaries */
+  --color-leaf: #1e4634; /* leaf-deep: primary, active tab — 9.4:1 on paper, white on it 10.6:1 */
+  --color-leaf-600: #2e6b4f; /* hover/secondary green — white on it 6.3:1 */
+  --color-leaf-50: #e3ead8; /* sage-tint — leaf on it 8.6:1 */
+  --color-link: #1f5c3d; /* 7.0:1 on paper, 7.8:1 on surface, 6.3:1 on paper-deep */
+  --color-petal: #8e2a52; /* 7.2:1 on paper */
+  --color-petal-50: #f7e8ec; /* petal on it 6.8:1 */
+  --color-warn: #8a5e08; /* ochre — 5.1:1 on paper */
+  --color-warn-50: #f7edd3; /* ochre-tint — warn on it 4.9:1 */
+  --color-sage: #7d9b76; /* decorative foliage only — never text */
+  --color-focus: #7a3e10; /* warm umber — 7.4:1 on paper, 8.2:1 on surface */
+
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --radius-card: 18px;
+  --shadow-card: 0 1px 2px rgb(90 70 20 / 0.08), 0 1px 1px rgb(90 70 20 / 0.05);
+}
+
+/*
+ * Font tokens: display = Fraunces, serif (body) = Newsreader, sans = the system stack (tool layer).
+ * `inline` so the utilities resolve the next/font variables set on <html>.
+ */
+@theme inline {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-newsreader), "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, ui-serif, serif;
+  --font-display: var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, ui-serif, serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    background: var(--color-paper);
+  }
+  body {
+    position: relative;
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    color: var(--color-ink);
+    /* The flat paper colour is on <html>; the grain layer below sits between it and the content. */
+    background: transparent;
+    line-height: 1.6;
+    min-height: 100dvh;
+  }
+  /*
+   * Paper grain: one tiled texture over the flat paper ground, under all content. Cards, header
+   * sheets and inputs keep their own flat fills, so no small text sits on grain inside them.
+   */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("/theme/paper-grain.webp");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    opacity: 0.5;
+  }
+  @media (forced-colors: active) {
+    body::before {
+      display: none;
+    }
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  h1 {
+    line-height: 1.15;
+  }
+  h3 {
+    line-height: 1.3;
+  }
+  /* Tool layer: form controls and their labels use the system sans. */
+  button,
+  input,
+  select,
+  textarea,
+  label {
+    font-family: var(--font-sans);
+  }
+  a {
+    color: var(--color-link);
+    text-underline-offset: 0.15em;
+  }
+  a:hover {
+    color: var(--color-leaf);
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* WCAG 2.2 SC 2.4.11: focused items are never hidden behind the fixed tab bar. */
+  html {
+    scroll-padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+    scroll-padding-top: 1rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+  }
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  /* Interactive cards (crop, variety, seller): pointer-fine hover only, nothing depends on it. */
+  .card-hover {
+    transition:
+      border-color 160ms ease-out,
+      transform 160ms ease-out;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card-hover:hover {
+      border-color: var(--color-line-strong);
+      transform: translateY(-1px);
+    }
+  }
+  /* Hairline sage-tint band under a card image. */
+  .card-image {
+    box-shadow: 0 2px 0 var(--color-leaf-50);
+  }
+  /* Homepage crop cards as vintage seed packets (branding delta): a keyline frame printed
+     inside the card's edge, like the border rule on a paper seed packet. Decorative only —
+     the card is identified by its name and link, never by the frame. */
+  .packet {
+    position: relative;
+  }
+  .packet::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 13px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  @media (forced-colors: active) {
+    .packet::after {
+      display: none;
+    }
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.125rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+    transition:
+      background-color 160ms ease-out,
+      border-color 160ms ease-out;
+  }
+  a.chip:hover {
+    border-color: var(--color-leaf-600);
+    background: var(--color-leaf-50);
+    color: var(--color-ink);
+  }
+  .chip[aria-current="page"],
+  .chip[aria-current="true"] {
+    border-color: var(--color-leaf);
+    background: var(--color-leaf-50);
+    color: var(--color-leaf);
+  }
+  .tap {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      background-color 160ms ease-out,
+      border-color 160ms ease-out;
+  }
+  .btn-primary {
+    background: var(--color-leaf);
+    color: #fff;
+    /* Letterpress edge: a 1 px darker bottom line. */
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.35);
+  }
+  .btn-primary:hover {
+    background: var(--color-leaf-600);
+    color: #fff;
+  }
+  /* Pill variant of a button (header "Add Your Farm" CTA): same colours, fully rounded. */
+  .btn-pill {
+    border-radius: 999px;
+  }
+  /* Form controls on the account / waiting-list / Add Your Farm forms. */
+  .field {
+    min-height: 44px;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-sans);
+  }
+  textarea.field {
+    min-height: 6rem;
+  }
+  .btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-leaf);
+    border: 1px solid var(--color-line-strong);
+  }
+  .btn-secondary:hover {
+    background: var(--color-leaf-50);
+    color: var(--color-leaf);
+  }
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  /* Scientific names inside an eyebrow: Newsreader italic, muted. */
+  .eyebrow i {
+    font-family: var(--font-serif);
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+  .prose-plain p + p {
+    margin-top: 0.75rem;
+  }
+  .prose-plain h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  /* The stem motif between prose sections. Decorative; part of the heading box, no markup. */
+  .prose-plain h2::before {
+    content: "";
+    display: block;
+    height: 24px;
+    margin-bottom: 1.25rem;
+    background: url("/theme/divider-stem.svg") center / 220px 24px no-repeat;
+  }
+  .prose-plain ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  .prose-plain li + li {
+    margin-top: 0.25rem;
+  }
+  /* The one botanical motif: a thin stem with two leaves (/theme/divider-stem.svg). Decorative. */
+  .divider-stem {
+    display: block;
+    height: 24px;
+    background: url("/theme/divider-stem.svg") center / 220px 24px no-repeat;
+  }
+  /* The stem's centre (two leaves) at wordmark size, between "Seed Directory" and the site name. */
+  .divider-stem-mini {
+    width: 2.5rem;
+    height: 12px;
+    background: url("/theme/divider-stem.svg") center / 110px 12px no-repeat;
+  }
+  /* Theme illustrations: painted to their cream edge, hairline frame, soft radius, no shadow. */
+  .art-frame {
+    display: block;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-paper);
+    overflow: hidden;
+  }
+  /* Loading placeholder: a flat paper-deep pulse (no shimmer). */
+  .skeleton {
+    background: var(--color-paper-deep);
+    animation: skeleton 1.6s ease-in-out infinite;
+    border-radius: 8px;
+  }
+  @keyframes skeleton {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  .sr-only-focusable:not(:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  /* Filter-strip chevron buttons: mouse/trackpad only; touch users swipe (the edge fades cue it). */
+  .filter-strip-btn {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .filter-strip-btn {
+      display: flex;
+    }
+  }
+}

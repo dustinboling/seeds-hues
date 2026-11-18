@@ -1,0 +1,17 @@
+You are implementing a THEME delta on the existing seeds.hues.flowers v2 app in this directory (~/workspace/seeds-hues/v2). The app is complete and live in production; do not rebuild it — restyle it surgically, presentation layer only.
+
+READ FIRST, in this order:
+1. ~/workspace/seeds-hues/THEME-ART-DIRECTION.md — the art direction. It is the design authority; follow it exactly.
+2. ~/workspace/seeds-hues/SPEC-CANONICAL.md — the canonical spec whose rules still bind (no prices shown, "Not yet rated", provenance + check dates on listings, WCAG 2.2 AA, mobile-first 390pt, performance budgets).
+3. .kiro/specs/seeds-v2-theme/tasks.md — your task list. Work it in order, check boxes as tasks pass.
+4. README.md / PLANT-MEDIA-REPORT.md skim — current state (143 unit tests green at last build; catalog 93 plants / 619 varieties / 6 sellers / 17 listings).
+
+KEY FACTS:
+- Fonts are already in app/fonts/ (Fraunces + Newsreader, variable woff2, latin). Self-host via next/font/local. No external font fetches.
+- Theme art is already in public/theme/ (hero, four spots, grain tile, divider SVG). Icon PNGs in public/icons/ are ALREADY the new set — do NOT run scripts/gen-icons.ts.
+- Keep every Tailwind token NAME that exists today; change values, add the three new tokens named in the tasks. Components should re-theme through tokens, not per-component colour forks.
+- Serif is the printed world (Fraunces display, Newsreader body); the system sans stack is the tool layer (tab bar, chips, badges, buttons, form labels) — .btn/.chip get sans in CSS; TabBar labels get the sans utility.
+
+HARD CONSTRAINTS: presentation only — no data, routing, API, copy, indexability, JSON-LD or service-worker changes. NO deployment, NO remote Cloudflare changes, NO production data changes, NO new dependencies, NO external fetches. Local-only verification.
+
+FINISH LINE: `npm run verify` green (styling-asserting tests may be updated — each named in the report; all content/behaviour tests untouched in intent); fresh local db:setup if needed for preview; `npm run cf:build` green; OpenNext preview running locally; `npm run acceptance` green against it; THEME-REPORT.md written in this directory covering: files changed, art placements page by page, every test updated and why, verification results, and every divergence or fallback stated plainly.

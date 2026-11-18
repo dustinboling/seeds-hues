@@ -1,0 +1,110 @@
+[
+  {
+    "id": "geoseed",
+    "name": "GeoSeed",
+    "type": "wholesale",
+    "homepage": "https://www.geoseed.com",
+    "description": "Professional wholesale seed supplier based in Greenwood, SC. Stocks a wide range of field-grown cut flower and specialty crop seed. Online ordering through geoseed.com; wholesale account required to see pricing and place orders.",
+    "orderingNotes": "Approved wholesale/business account required to see company pricing and order online. Minimum per item: one Trade Pkt. Home gardeners directed to call: 888-645-2323. Email: svc@geoseed.com. Online shop verified live 2026-11-04.",
+    "location": "Greenwood, SC",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "everwilde-farms",
+    "name": "Everwilde Farms",
+    "type": "retail",
+    "homepage": "https://www.everwilde.com",
+    "description": "Retail and bulk seed supplier based in Fallbrook, CA. Carries a broad range of wildflower, vegetable, and specialty seeds in packet through bulk bag sizes. Known for competitive bulk pricing on common flower seed mixes.",
+    "orderingNotes": "Retail, no account required. Bulk sizes available for many lines (1 oz through 50 lb). Add-to-cart online; ships to Oregon without restriction.",
+    "location": "Fallbrook, CA",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "park-seed",
+    "name": "Park Seed",
+    "type": "retail",
+    "homepage": "https://www.parkseed.com",
+    "description": "Long-established retail seed company offering a wide selection of flower and vegetable seeds for home gardeners. Ships nationwide.",
+    "orderingNotes": "Retail, no account required. Online ordering at parkseed.com.",
+    "location": "Greenwood, SC",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "ball-seed",
+    "name": "Ball Seed",
+    "type": "wholesale",
+    "homepage": "https://www.ballseed.com",
+    "description": "Major professional wholesale seed and young plant supplier serving commercial growers. Ordering through the Ball WebTrack system. Separates seed from plugs/plant material in its search — search the seed section only when checking for seed availability.",
+    "orderingNotes": "Professional wholesale account required. Orders through Ball WebTrack (ballseed.com). Minimum order quantities apply. Seed and plugs/plants are separate product categories.",
+    "location": "West Chicago, IL",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "onings-america",
+    "name": "Onings America",
+    "type": "specialty",
+    "homepage": "https://www.shopOningsAmerica.com",
+    "description": "US agent for Biancheri Creazioni (Italy), the exclusive source for Colibri Iceland poppy seed and plugs in the US. Also handles Onings plug and specialty cut flower material. All Colibri varieties are PBR-protected for commercial cut-flower production only.",
+    "orderingNotes": "Specialty wholesale. Colibri seed available as Biancheri foil packs (1,000 seeds). Plugs grown with Gro 'n Sell: 128-cell trays at $88.75/tray, 3 trays/box, packing $9.25/box, freight extra from PA. Contact Onings for account setup.",
+    "location": "Pennsylvania",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "reimer-seeds",
+    "name": "Reimer Seeds",
+    "type": "retail",
+    "homepage": "https://www.reimerseeds.com",
+    "description": "Retail seed company carrying a wide range of flower and vegetable seed including specialty and heirloom varieties. One of few sources for Breadseed Poppy (Papaver somniferum) in quantity.",
+    "orderingNotes": "Retail, no account required. Orders at reimerseeds.com. Breadseed poppy available in 1,000-seed packs and by weight (1/4 oz, 1 oz, 1 lb).",
+    "location": "United States",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "johnnys-selected-seeds",
+    "name": "Johnny's Selected Seeds",
+    "type": "retail",
+    "homepage": "https://www.johnnyseeds.com",
+    "description": "Employee-owned seed company offering a broad catalog of vegetable, herb, and flower seed for home gardeners and commercial growers. Competitive bulk pricing at production scales. Ships free to Oregon on orders over $200.",
+    "orderingNotes": "Retail and production packs available, no account required for most orders. Standard shipping to Oregon: $19.00 on orders $100–$150; free over $200. Prices verified 2026-11-05.",
+    "location": "Winslow, ME",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "baker-creek",
+    "name": "Baker Creek Heirloom Seeds",
+    "type": "retail",
+    "homepage": "https://www.rareseeds.com",
+    "description": "Specialty retailer focused on heirloom, open-pollinated, and rare seed varieties. Extensive flower catalog including many historic cultivars not found at mainstream suppliers.",
+    "orderingNotes": "Retail, no account required. Orders at rareseeds.com.",
+    "location": "Mansfield, MO",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  },
+  {
+    "id": "floret",
+    "name": "Floret",
+    "type": "specialty",
+    "homepage": "https://www.floretflowers.com",
+    "description": "Specialty cut flower farm and seed shop focused on rare and highly sought-after flower varieties. Known for curated collections of specialty cutting flowers, often including hard-to-find varieties.",
+    "orderingNotes": "Retail, no account required. Shop at floretflowers.com. Seed drops sell out quickly; sign up for notifications.",
+    "location": "Skagit Valley, WA",
+    "rating": null,
+    "ratingCount": 0,
+    "ratingAverage": null
+  }
+]

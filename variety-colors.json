@@ -1,0 +1,2822 @@
+{
+ "amaranth-autumn-touch": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "amaranth-coral-fountain": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "amaranth-green-tails": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'chartreuse'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "amaranth-hot-biscuits": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "amaranth-mira": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "amaranth-opopeo": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'burgundy'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "annual-babys-breath-covent-garden": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "apple-of-peru": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "argentine-forget-me-not": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cornflower-classic-fantastic": {
+  "family": "mix",
+  "basis": "Described as a colour mix in Floret Library text",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cornflower-classic-magic": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'black'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cornflower-classic-romantic": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "basil-aromatto": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "basil-cinnamon": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "basil-dark-opal": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'black'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "basil-mrs-burns-lemon": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "bee-balm-bergamo": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "bee-balm-lambada": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "bees-friend": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "bells-of-ireland": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'lime'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "rudbeckia-cherry-brandy": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "rudbeckia-chim-chiminee": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "rudbeckia-denver-daisy": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "rudbeckia-indian-summer": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "rudbeckia-macau": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'black'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "rudbeckia-prairie-sun": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "rudbeckia-sahara": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "breadseed-poppy-black-beauty": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'plum'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "breadseed-poppy-frosted-salmon": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "breadseed-poppy-lilac-peony": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "breadseed-poppy-peony-flowered-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "breadseed-poppy-pink-peony": {
+  "family": "pink",
+  "basis": "Variety name colour word 'pink' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "breadseed-poppy-rattle-poppy": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "breadseed-poppy-white-frills": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "bupleurum-griffithi": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'chartreuse'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "calendula-bronze-beauty": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "calendula-greenheart-orange": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "calendula-ivory-princess": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "calendula-pink-surprise": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "calendula-zeolights": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "california-poppy-cream-swirl": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "california-poppy-thai-silk-appleblossom-chiffon": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "california-poppy-thai-silk-apricot-chiffon": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "california-poppy-thai-silk-pink-champagne": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "candytuft-pinnacle-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "canterbury-bells-champion-blue": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "canterbury-bells-champion-lavender": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "canterbury-bells-champion-pink-improved": {
+  "family": "pink",
+  "basis": "Variety name colour word 'pink' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "canterbury-bells-champion-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "carnation-chabaud-aurora": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "carnation-chabaud-benigna": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "carnation-chabaud-jeanne-dionis": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "carnation-chabaud-la-france": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "carnation-chabaud-orange-sherbet": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-autumn-blaze": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-coral-reef": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-dusty-rose": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-flamingo-feather": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-glowing-embers": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'copper'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-limonata": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'lime'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-pampas-plume-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-pink-champagne": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-pink-chenille": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-rainbow-sherbet-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-raspberry-lemonade": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-rose-gold": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-sangria-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-spun-sugar": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-summer-sherbet": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-supercrest-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-vintage-rose": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "celosia-xantippe": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-harlekin-light-rose": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-harlekin-violet": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-juwel-ametrin-lavendel": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-lady-coral-chamois": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-lady-coral-lavender": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-lady-coral-salmon-rose": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-matador-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-rose-of-shanghai-light-blue": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-sea-starlet-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-tower-chamois-apricot": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-valkyrie-pink": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'mauve'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "china-aster-valkyrie-yellow": {
+  "family": "yellow",
+  "basis": "Variety name colour word 'yellow' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "chinese-forget-me-not-blue-showers": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "chinese-forget-me-not-ms-marilyn": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "chinese-forget-me-not-mystic-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "chocolate-lace-flower-dara": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'burgundy'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "clarkia-tower-coral": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "clary-sage-tricolor-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "corn-cockle-dawn-creek-blush": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "corn-cockle-ocean-pearls": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-apricot-lemonade": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-apricotta": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-brownie": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-cupcakes-blush": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-cupcakes-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-daydream": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-double-click-bicolor-rose": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-double-click-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-double-click-snow-puff": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-psyche-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-purity": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-rosetta": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-rubenza": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-seashells-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-velouette": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-xanthos": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cosmos-xsenia": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'magenta'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cress-attraxa": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cress-emerald-beads": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cress-green-dragon": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cress-pennycress": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cress-wrinkled-crinkled": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cup-and-saucer-vine-alba": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "cup-and-saucer-vine-purple": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "dahlia-seed-petite-florets": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "dill-bouquet": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'chartreuse'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "eucalyptus-baby-blue": {
+  "family": "blue",
+  "basis": "Variety name colour word 'blue' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "eucalyptus-nichols-willow": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "eucalyptus-silver-dollar": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "eucalyptus-small-leaved-gum": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "euphorbia": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'chartreuse'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "feverfew-magic-lime-green": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "feverfew-tetra-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "feverfew-vegmo-snowball": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "figwort": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flax-bubble-grass": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-bronze-queen": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-grandiflora": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-langsdorffii": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-marshmallow": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-peach-screamer": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-rustica": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-starlight-dancer": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "flowering-tobacco-tinkerbell": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "formosa-lily": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-alba": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-apricot-beauty": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-cafe-creme": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-camelot-cream": {
+  "family": "white",
+  "basis": "Variety name colour word 'cream' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-dalmatian-peach": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-excelsior": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-obscura-sunset": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "foxglove-pams-choice": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "gomphrena-pastel-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "gomphrena-pink": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "gomphrena-rose": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "gomphrena-sunset-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "gomphrena-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "godetia-grace-salmon": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "honeywort-pride-of-gibraltar": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "hyacinth-bean-ruby-moon": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'wine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "iceland-poppy-champagne-bubbles-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "iceland-poppy-champagne-bubbles-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "iceland-poppy-colibri-sherbet-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "iceland-poppy-pastel-meadows": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "jewels-of-opar": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'chartreuse'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "kiss-me-over-the-garden-gate-cerise-pearls": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "lace-flower-lacy-blue": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "lace-flower-lacy-pink": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "lace-flower-lacy-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-earl-grey": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-fancy-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-frosted-skies": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-giant-imperial-blue-bell": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-giant-imperial-blue-spire": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-giant-imperial-carmine-king": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-giant-imperial-white-king": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-imperial-lilac-spire": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'mauve'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-pink-perfection": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-smokey-eyes": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-splish-splash": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'violet'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-summer-skies-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "larkspur-white-cloud": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "lavatera-pink-regis": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "linaria-northern-lights-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-african-bride": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'black'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-albion-green-pod": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-cramers-plum": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-delft-blue": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-miss-jekyll-dark-blue": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-miss-jekyll-rose": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-starry-night-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nigella-transformer": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "love-in-a-puff-vine": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "lupine-javelin-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "lupine-sunrise": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "malope-queen-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'magenta'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-brocade-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-burgundy-bliss": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-fireball": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-francess-choice": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-giant-orange": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-harlequin": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'maroon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-la-ribera": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-mushrooms-sol": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-red-gem": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-red-metamorph": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-sparkler": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-starfire-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-sunbright-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-tangerine-gem": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "marigold-tiger-eyes": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "mignonette-garden-mignonette": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "mignonette-white-mignonette": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nasturtium-caribbean-crush": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nasturtium-cherry-rose-jewel": {
+  "family": "mix",
+  "basis": "Described as a colour mix in Floret Library text",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nasturtium-gleam-salmon": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nasturtium-ladybird-rose": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nasturtium-purple-emperor": {
+  "family": "purple",
+  "basis": "Variety name colour word 'purple' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nasturtium-salmon-mousse": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "nasturtium-yeti": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'ivory'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "orach-ruby-gold": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "oregano-greek": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "orlaya-white-finch-lace": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-grass-broomcorn-millet": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-grass-bunny-tails": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-grass-feathertop": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-grass-frosted-explosion": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-grass-quaking-grass": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-american-tondo": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-black-futsu": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-blue-delight": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-blue-doll": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-chirimen": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-cinderellas-carriage": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-colorado-sunset": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-daybreak": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-flat-stacker": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-flat-white-boer": {
+  "family": "white",
+  "basis": "Variety name colour word 'white' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-flatso": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-fools-gold": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-fright": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-galeux-deysines": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-indian-doll": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-ivory-belle": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-jarrahdale": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-lady-godiva": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-long-island-cheese": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-lumina": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-lunar-blush": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-lunch-lady": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-marina-di-chioggia": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-moranga": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-mr-fugly": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-musquee-de-provence": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-newton": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-one-too-many": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-polar-bear": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-porcelain-doll": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-red-eye": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-rembrandt": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-rouge-vif-detampes": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-shadow-moon": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-silver-edged": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-speckled-hound": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-specter": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-strawberry-crown": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-triamble": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-troll": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-turbino": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-turks-turban": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-valenciano": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-warty-goblin": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-warty-sunset": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-white-delight": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-white-patty-pan": {
+  "family": "white",
+  "basis": "Variety name colour word 'white' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-winter-luxury": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "ornamental-squash-zapalo-plomo": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "painted-tongue-gloomy-rival": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-aalsmeer-king-size-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-acquarelle-flambe-red-shades": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-chianti-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-cool-wave-blueberry-swirl": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-dynamite-lavender": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lilac'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-envy": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-frizzle-sizzle-raspberry": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-frizzle-sizzle-yellow-blue-swirl": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-majestic-giants-sherry": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-nature-antique-shades": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-panola-pink-shades": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pansy-rococo-frill-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-amethyst-beauty": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-blue-podded-blauwschokkers": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-blushing-beauty": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-golden-sweet": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'chartreuse'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-magnolia-blossom": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-opal-beauty": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-ruby-beauty": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-spring-blush": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pea-spring-rose": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "phlox-blushing-bride": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "phlox-cherry-caramel": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lilac'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "phlox-dulce-de-leche": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "phlox-leopoldii": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "phlox-phlox-of-sheep": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "phlox-sugar-stars": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'violet'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "phlox-whipped-cream": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pincushion-flower-black-knight": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'black'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pincushion-flower-fata-morgana": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pincushion-flower-salmon-queen": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pincushion-flower-snowmaiden": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pincushion-flower-starflower": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'brown'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "pincushion-flower-summer-sangria": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "poor-mans-orchid-angels-wings-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "queen-annes-lace-green-mist": {
+  "family": "mix",
+  "basis": "Described as a colour mix in Floret Library text",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "queen-annes-lace-queen-of-africa": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "quinoa-red-head": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'lime'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "red-leaf-hibiscus-mahogany-splendor": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'burgundy'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "salvia-rose-queen": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "shirley-poppy-amazing-grey": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "shirley-poppy-mother-of-pearl": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'plum'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "shirley-poppy-pandora": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "shirley-poppy-supreme": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "shiso-purple-frills": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "silene-blushing-lanterns": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "silene-pink": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-avignon-bicolor-yellow": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'golden'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-chantilly-light-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-chantilly-light-salmon": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'tangerine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-costa-apricot": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-costa-silver": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-costa-summer-lavender": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'mauve'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-costa-summer-orange": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-madame-butterfly-bronze": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-madame-butterfly-dark-red": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-madame-butterfly-peaches-n-cream-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-madame-butterfly-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-madame-butterfly-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-monaco-orange": {
+  "family": "mix",
+  "basis": "Described as a colour mix in Floret Library text",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-opus-early-bronze": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'brown'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-potomac-appleblossom": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "snapdragon-sherbet-toned-chantilly-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "soapwort-beauty-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "soapwort-graciella-white": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "statice-light-blue": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "statice-pastel-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "statice-rat-tail": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "statice-sunset-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-antique-pink": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-apricot": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'apricot'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-avalanche-supreme": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-buttercream": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-katz-bright-rose": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-katz-lavender-light": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-katz-pink": {
+  "family": "pink",
+  "basis": "Variety name colour word 'pink' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-katz-purple": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-malmaison-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-pacific-crimson": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'magenta'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-vintage-brown": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-apricot-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-candy-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-copper-red": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-dragon-fire": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-pomegranate": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-scarlet": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-silvery-rose": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "strawflower-vintage-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'ivory'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-frilly": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-greenburst": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'yellow'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-procut-gold": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-procut-red": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-procut-white-lite": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-procut-white-nite": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-ruby-eclipse": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-sparky": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-starburst-panache": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sunflower-sunrich-gold": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-albutt-blue": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-alison-valentini": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-almost-black": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'black'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-anniversary": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-apricot-queen": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-april-in-paris": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-audrey-kirkman": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-azureus": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-balmoral": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'maroon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-baronscourt": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lilac'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-bix": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-blue-shift": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'mauve'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-blue-vein": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-bobbys-girl": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-brian-haynes": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-bristol": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-burlesque": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-burnished-bronze": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-carlotta": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-charlies-angel": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-chelsea-centenary": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-cheryl-rainey": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-chloranthus": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-chocolate-flake": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'brown'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-clotted-cream": {
+  "family": "white",
+  "basis": "Variety name colour word 'cream' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-cold-steel": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-coquette": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-daily-mail": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-dancing-queen": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-dynasty": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-earl-grey": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'maroon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-edith-flanagan": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-enchante": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-erewhon": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-ethel-grace": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-florencecourt": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-frances-kate": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-future-shock": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-geoff-hughes": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-glasnevin": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-grandma-butt": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-gwendoline": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-hannah-dale": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'maroon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-hannah-macgovern": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'scarlet'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-happy-birthday": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-high-society": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-hotham-red": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-jacqueline-ann": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-jacqueline-heather": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-jill-walton": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-jilly": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-john-grey": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-joyce-stanton": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-judith-wilkenson": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'magenta'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-karen-louise": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-lady-nicholson": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-lakeland-blizzard": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-lavender-flake": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-len-harrod": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-limelight": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-lizbeth": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-lunar-sea": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-lynn-davey": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-maloy": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-marjorie-carrier": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-mark-harrod": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-memorial-flight": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-millennium": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'magenta'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-mollie-rilstone": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-mr-p": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-mrs-bernard-jones": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-mrs-r-penney": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-naomi-nazareth": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-noel-sutton": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-nora-holman": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-north-shore": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'violet'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-nuance": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-oban-bay": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-our-harry": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-patricia-marilyn": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-pearl-anniversary": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-pearl-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-piggy-sue": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-promise": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-queen-of-hearts": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-raspberry-flake": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'cream'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-restormel": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-richard-judy": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-route-66": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-sir-jimmy-shand": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-snowlight": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-solstice-light-blue": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-solstice-opal": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-solstice-rose": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-spring-sunshine-champagne": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-strawberry-fields": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-suzy-z": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'maroon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-sylvestris": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'mauve'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-topsy": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'black'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-triple-g": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'purple'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-turquoise": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-valerie-harrod": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-white-frills": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-white-supreme": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-wild-swan": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-windsor": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'maroon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-pea-yvette-ann": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-rocket-pale-lavender": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-sultan-imperial-bride-white": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'ivory'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "sweet-william-super-duplex-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tickseed-incredible": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tomato-brads-atomic-grape": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tomato-chocolate-cherry": {
+  "family": "chocolate",
+  "basis": "Floret Library description colour word 'chocolate'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tomato-gardeners-sweetheart": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tomato-indigo-rose": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tomato-rapunzel": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tomato-red-currant": {
+  "family": "red",
+  "basis": "Variety name colour word 'red' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "tomato-sunpeach": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "viola-brush-strokes": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'wine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "viola-gem-apricot-antique": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'plum'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "viola-gem-heavenly-blue": {
+  "family": "blue",
+  "basis": "Floret Library description colour word 'blue'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "viola-gem-pink-antique": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'violet'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "viola-tiger-eye": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "winged-everlasting": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "xeranthemum": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'white'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "yarrow-summer-berries": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-alpenglow": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-aztec-sunset": {
+  "family": "yellow",
+  "basis": "Floret Library description colour word 'gold'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-bright-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-carmine": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-coral": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-deep-red": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-lilac": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lilac'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-lime": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-orange": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-salmon-rose": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-benarys-giant-wine": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'wine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-candy-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-cresto-peaches-and-cream": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-cupcakes-pink": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-dawn-creek-blush": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-dawn-creek-honey": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-dawn-creek-pastels": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'coral'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-dawn-creek-peach": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-day-glow-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-desert-sunset-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-dreamin": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'maroon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-golden-hour": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-isabellina-creamy-yellow": {
+  "family": "yellow",
+  "basis": "Variety name colour word 'yellow' (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-lilliput-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-lilliput-salmon": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-little-flower-girl": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-macarenia": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'scarlet'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-mazurkia": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'pink'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-oklahoma-carmine": {
+  "family": "burgundy",
+  "basis": "Floret Library description colour word 'wine'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-oklahoma-ivory": {
+  "family": "white",
+  "basis": "Floret Library description colour word 'ivory'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-oklahoma-pink": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-oklahoma-salmon": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-persian-carpet-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-precious-metals": {
+  "family": "purple",
+  "basis": "Floret Library description colour word 'lavender'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-queen-lime": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'lime'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-queen-lime-blush": {
+  "family": "green",
+  "basis": "Floret Library description colour word 'green'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-queen-lime-orange": {
+  "family": "mix",
+  "basis": "Described as a colour mix in Floret Library text",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-queen-red-lime": {
+  "family": "pink",
+  "basis": "Floret Library description colour word 'rose'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-rainbow-eyes": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-senora": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-sunbow-orange": {
+  "family": "orange",
+  "basis": "Floret Library description colour word 'orange'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-unicorn-mix": {
+  "family": "mix",
+  "basis": "Variety is named as a mix (Floret Library variety name)",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-victorian-wedding": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'peach'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-yell-fire": {
+  "family": "red",
+  "basis": "Floret Library description colour word 'red'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-zinderella-lilac": {
+  "family": "blush",
+  "basis": "Floret Library description colour word 'blush'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "zinnia-zinderella-peach": {
+  "family": "peach",
+  "basis": "Floret Library description colour word 'salmon'",
+  "source": "src-floret-library-sowing-notes"
+ },
+ "stock-katz-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "snapdragon-rocket-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "snapdragon-madame-butterfly-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "snapdragon-toulon-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "larkspur-imperial-choice-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "cornflower-frosty-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "nigella-miss-jekyll-double-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "calendula-pacific-beauty-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "sweet-pea-winter-elegance-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "sweet-pea-mammoth-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "iceland-poppy-champagne-bubbles-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "shirley-poppy-angels-choir": {
+  "family": "white",
+  "basis": "Catalog description colour word 'cream'",
+  "source": "catalog-description"
+ },
+ "sweet-pea-clementine-kiss": {
+  "family": "orange",
+  "basis": "Catalog description colour word 'orange'",
+  "source": "catalog-description"
+ },
+ "zinnia-dearest-joanna-lavender-frost": {
+  "family": "purple",
+  "basis": "Variety name colour word 'lavender'",
+  "source": "catalog-description"
+ },
+ "zinnia-dearest-orange-creamsicle": {
+  "family": "orange",
+  "basis": "Variety name colour word 'orange'",
+  "source": "catalog-description"
+ },
+ "zinnia-karens-fave-color-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "sunflower-better-off-red": {
+  "family": "red",
+  "basis": "Variety name colour word 'red'",
+  "source": "catalog-description"
+ },
+ "sunflower-mountainlily-mixed": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "dahlia-seed-premium-pollinator-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "dahlia-seed-coseytown-honey-pot-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "dahlia-seed-paulas-field-mix": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "dahlia-seed-mixed-parent": {
+  "family": "mix",
+  "basis": "Named as a mix in the catalog",
+  "source": "catalog-description"
+ },
+ "celosia-pink-lemonade": {
+  "family": "pink",
+  "basis": "Variety name colour word 'pink'",
+  "source": "catalog-description"
+ }
+}

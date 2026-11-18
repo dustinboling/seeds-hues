@@ -1,0 +1,1707 @@
+{
+  "1070613063849982": {
+    "details": {
+      "address": {
+        "city": "Ephraim",
+        "country": "US",
+        "postalcode": "84627",
+        "stateprovince": "UT",
+        "streetaddress": "450 S 50 E"
+      },
+      "categories": [
+        {
+          "category_id": "1574325646194878",
+          "display_name": "Agriculture",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "150815208309028",
+          "display_name": "Farm",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "189323644423254",
+          "display_name": "Agricultural Service",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "992206487469908",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/992206487469908"
+        },
+        {
+          "id": "992206487469908",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/992206487469908"
+        },
+        {
+          "id": "greatbasinseed",
+          "type": "ig_account",
+          "url": "https://www.instagram.com/greatbasinseed"
+        },
+        {
+          "id": "greatbasinseeds.com",
+          "type": "website",
+          "url": "https://greatbasinseeds.com/"
+        }
+      ],
+      "location": {
+        "latitude": 39.35181441,
+        "longitude": -111.58576213
+      },
+      "name": "Great Basin Seed",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1200",
+          "day_of_week": "FRIDAY",
+          "open_time": "0800"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 435-283-1411",
+        "e164_number": "+14352831411"
+      },
+      "price_level": 2,
+      "rating": {
+        "avg_local_rating": null,
+        "avg_rating": null,
+        "num_local_rating": null,
+        "num_rating": null
+      },
+      "rich_offerings": []
+    }
+  },
+  "1108259913094783": {
+    "details": {
+      "address": {
+        "city": "Winslow",
+        "country": "US",
+        "postalcode": "04901",
+        "stateprovince": "ME",
+        "streetaddress": "955 Benton Ave"
+      },
+      "categories": [
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "189323644423254",
+          "display_name": "Agricultural Service",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "168302345473",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/168302345473"
+        },
+        {
+          "id": "168302345473",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/168302345473"
+        },
+        {
+          "id": "M9NzRFwYeoFjtIFgtOj3pw",
+          "type": "yelp",
+          "url": "https://www.yelp.com/biz/M9NzRFwYeoFjtIFgtOj3pw"
+        },
+        {
+          "id": "johnnys_seeds",
+          "type": "ig_account",
+          "url": "https://www.instagram.com/johnnys_seeds"
+        },
+        {
+          "id": "johnnyseeds.com",
+          "type": "website",
+          "url": "https://www.johnnyseeds.com/"
+        }
+      ],
+      "location": {
+        "latitude": 44.57286406,
+        "longitude": -69.59880252
+      },
+      "name": "Johnny's Selected Seeds",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "FRIDAY",
+          "open_time": "0800"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 877-564-6697",
+        "e164_number": "+18775646697"
+      },
+      "price_level": 2,
+      "rating": {
+        "avg_local_rating": 0,
+        "avg_rating": 4.7060702875399,
+        "num_local_rating": 45,
+        "num_rating": 313
+      },
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.997228,
+            "knownfor": 1176
+          },
+          "name": "Zinnias"
+        },
+        {
+          "data": {
+            "confidence": 0.99208,
+            "knownfor": 343
+          },
+          "name": "Snapdragons"
+        },
+        {
+          "data": {
+            "confidence": 0.997228,
+            "knownfor": 388
+          },
+          "name": "Sunflowers"
+        },
+        {
+          "data": {
+            "confidence": 0.98,
+            "knownfor": 152
+          },
+          "name": "Tomatoes"
+        },
+        {
+          "data": {
+            "confidence": 0.992,
+            "knownfor": 99
+          },
+          "name": "Cosmos"
+        },
+        {
+          "data": {
+            "confidence": 0.99208,
+            "knownfor": 136
+          },
+          "name": "Lisianthus"
+        },
+        {
+          "data": {
+            "confidence": 0.98,
+            "knownfor": 104
+          },
+          "name": "Lettuce"
+        },
+        {
+          "data": {
+            "confidence": 0.99208,
+            "knownfor": 112
+          },
+          "name": "Celosia"
+        },
+        {
+          "data": {
+            "confidence": 0.96,
+            "knownfor": 53
+          },
+          "name": "Basil"
+        },
+        {
+          "data": {
+            "confidence": 0.99208,
+            "knownfor": 61
+          },
+          "name": "Carrots"
+        }
+      ]
+    }
+  },
+  "1113470793100517": {
+    "details": {
+      "address": {
+        "city": "Newport News",
+        "country": "US",
+        "postalcode": "23608",
+        "stateprovince": "VA",
+        "streetaddress": "531 Edwards Ct"
+      },
+      "categories": [
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "thegardenersworkshop.com",
+          "type": "website",
+          "url": "https://thegardenersworkshop.com/"
+        }
+      ],
+      "location": {
+        "latitude": 37.16514524,
+        "longitude": -76.54825494
+      },
+      "name": "The Gardener's Workshop",
+      "opening_hours": [
+        {
+          "close_time": "1600",
+          "day_of_week": "MONDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "TUESDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "THURSDAY",
+          "open_time": "1000"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 757-877-7159",
+        "e164_number": "+17578777159"
+      },
+      "price_level": null,
+      "rating": null,
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 2.2911879672114
+          },
+          "name": "Fresh cut-flowers"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 1.8802806823672
+          },
+          "name": "Seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 1.8583642209385
+          },
+          "name": "Online courses"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 0.95188602389201
+          },
+          "name": "Tools & supplies"
+        }
+      ]
+    }
+  },
+  "1143253486266818": {
+    "details": {
+      "address": {
+        "city": "Broomfield",
+        "country": "US",
+        "postalcode": "80020",
+        "stateprovince": "CO",
+        "streetaddress": "660 Compton St"
+      },
+      "categories": [
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "45531817992",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/45531817992"
+        },
+        {
+          "id": "45531817992",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/45531817992"
+        },
+        {
+          "id": "7Zt_pe-PZXWz7DaKKwSRnw",
+          "type": "yelp",
+          "url": "https://www.yelp.com/biz/7Zt_pe-PZXWz7DaKKwSRnw"
+        },
+        {
+          "id": "botanicalinterests.com",
+          "type": "website",
+          "url": "https://www.botanicalinterests.com/"
+        }
+      ],
+      "location": {
+        "latitude": 39.92765268,
+        "longitude": -105.09818932
+      },
+      "name": "Botanical Interests",
+      "opening_hours": [
+        {
+          "close_time": "1600",
+          "day_of_week": "MONDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "TUESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "THURSDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1600",
+          "day_of_week": "FRIDAY",
+          "open_time": "0800"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 877-821-4340",
+        "e164_number": "+18778214340"
+      },
+      "price_level": 2,
+      "rating": {
+        "avg_local_rating": 0,
+        "avg_rating": 4.7777777777778,
+        "num_local_rating": 6,
+        "num_rating": 72
+      },
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.99208,
+            "knownfor": 14
+          },
+          "name": "Dahlia seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.96,
+            "knownfor": 2
+          },
+          "name": "Biquinho red & yellow blend chili pepper seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.96,
+            "knownfor": 4
+          },
+          "name": "Diablo cosmos seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.992,
+            "knownfor": 8
+          },
+          "name": "Megatron jalapeño seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.96,
+            "knownfor": 2
+          },
+          "name": "Made in the shade seed packet"
+        },
+        {
+          "data": {
+            "confidence": 0.9604,
+            "knownfor": 62
+          },
+          "name": "Zinnia seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.97228,
+            "knownfor": 41
+          },
+          "name": "Sunflower seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.9604,
+            "knownfor": 12
+          },
+          "name": "Cosmos seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.8,
+            "knownfor": 21
+          },
+          "name": "Nasturtium seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.8,
+            "knownfor": 5
+          },
+          "name": "Zeolights calendula seeds"
+        }
+      ]
+    }
+  },
+  "1455831781558375": {
+    "details": {
+      "address": {
+        "city": "Corvallis",
+        "country": "US",
+        "postalcode": "97333",
+        "stateprovince": "OR",
+        "streetaddress": "2385 SE Thompson St"
+      },
+      "categories": [
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "peaceseedlingsseeds.blogspot.com",
+          "type": "website",
+          "url": "http://peaceseedlingsseeds.blogspot.com/"
+        }
+      ],
+      "location": {
+        "latitude": 44.54268691,
+        "longitude": -123.26018489
+      },
+      "name": "Peace Seedlings",
+      "opening_hours": [],
+      "opening_status": "UNKNOWN",
+      "phone_numbers": {
+        "display_number": "+1 541-752-0421",
+        "e164_number": "+15417520421"
+      },
+      "price_level": 1,
+      "rating": null,
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Carnelian cornucopia sweet"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Double red sweet"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Mashua mix"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Mixed oca"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Mixed ulluco"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Opal beauty snow vine"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Rainbow eyes"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "True gold sweet"
+        },
+        {
+          "data": {
+            "confidence": 0.1,
+            "knownfor": 2.4744039297115
+          },
+          "name": "Weaving willow sticks"
+        },
+        {
+          "data": {
+            "confidence": 0.1,
+            "knownfor": 2.4744039297115
+          },
+          "name": "Yacon - original"
+        }
+      ]
+    }
+  },
+  "1746651342363025": {
+    "details": {
+      "address": {
+        "city": "Decorah",
+        "country": "US",
+        "postalcode": "52101-7776",
+        "stateprovince": "IA",
+        "streetaddress": "3074 N Winn Rd"
+      },
+      "categories": [
+        {
+          "category_id": "2603",
+          "display_name": "Nonprofit Organization",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "191523214199822",
+          "display_name": "Environmental Conservation Organization",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "1555099458125522",
+          "display_name": "Agricultural Cooperative",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "162388707146588",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/162388707146588"
+        },
+        {
+          "id": "162388707146588",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/162388707146588"
+        },
+        {
+          "id": "seed_savers_exchange",
+          "type": "ig_account",
+          "url": "https://www.instagram.com/seed_savers_exchange"
+        },
+        {
+          "id": "seedsavers.org",
+          "type": "website",
+          "url": "http://www.seedsavers.org/"
+        }
+      ],
+      "location": {
+        "latitude": 43.38235417,
+        "longitude": -91.80669397
+      },
+      "name": "Seed Savers Exchange",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "SUNDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "FRIDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "SATURDAY",
+          "open_time": "1000"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 563-382-6104",
+        "e164_number": "+15633826104"
+      },
+      "price_level": 1,
+      "rating": {
+        "avg_local_rating": 0,
+        "avg_rating": 4.8202898550725,
+        "num_local_rating": 24,
+        "num_rating": 1035
+      },
+      "rich_offerings": []
+    }
+  },
+  "2269802953189979": {
+    "details": {
+      "address": {
+        "city": "Missoula",
+        "country": "US",
+        "postalcode": "59808",
+        "stateprovince": "MT",
+        "streetaddress": "6170 Butler Creek Rd Unit C"
+      },
+      "categories": [
+        {
+          "category_id": "192111490806699",
+          "display_name": "Florist",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "976528819900085",
+          "display_name": "Home & Garden",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "millayandmeadowlark.com",
+          "type": "website",
+          "url": "https://www.millayandmeadowlark.com/"
+        }
+      ],
+      "location": {
+        "latitude": 46.93010384,
+        "longitude": -114.09400256
+      },
+      "name": "Millay And Meadowlark Flower Farm",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "FRIDAY",
+          "open_time": "0900"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 406-529-6543",
+        "e164_number": "+14065296543"
+      },
+      "price_level": 2,
+      "rating": null,
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 4.7030629747688
+          },
+          "name": "Wedding & event florals"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Sweet pea 'burnished bronze'"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Sweet pea 'clotted cream'"
+        },
+        {
+          "data": {
+            "confidence": 0.1,
+            "knownfor": 2.4744039297115
+          },
+          "name": "On-farm events & workshops"
+        },
+        {
+          "data": {
+            "confidence": 0.1,
+            "knownfor": 2.4744039297115
+          },
+          "name": "Sweet pea 'bix'"
+        },
+        {
+          "data": {
+            "confidence": 0.1,
+            "knownfor": 2.4744039297115
+          },
+          "name": "Sweet pea 'cilla'"
+        }
+      ]
+    }
+  },
+  "2303140426863046": {
+    "details": {
+      "address": {
+        "city": "Wolcott",
+        "country": "US",
+        "postalcode": "05680",
+        "stateprovince": "VT",
+        "streetaddress": "76 Quarry Rd"
+      },
+      "categories": [
+        {
+          "category_id": "1574325646194878",
+          "display_name": "Agriculture",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "150815208309028",
+          "display_name": "Farm",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "66866610663",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/66866610663"
+        },
+        {
+          "id": "66866610663",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/66866610663"
+        },
+        {
+          "id": "highmowingorganicseeds",
+          "type": "ig_account",
+          "url": "https://www.instagram.com/highmowingorganicseeds"
+        },
+        {
+          "id": "highmowingseeds.com",
+          "type": "website",
+          "url": "https://www.highmowingseeds.com/"
+        }
+      ],
+      "location": {
+        "latitude": 44.531280784012,
+        "longitude": -72.424514299726
+      },
+      "name": "High Mowing Organic Seeds",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "FRIDAY",
+          "open_time": "0900"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 866-735-4454",
+        "e164_number": "+18667354454"
+      },
+      "price_level": 2,
+      "rating": {
+        "avg_local_rating": 0,
+        "avg_rating": 4.723865877712,
+        "num_local_rating": 1,
+        "num_rating": 1014
+      },
+      "rich_offerings": []
+    }
+  },
+  "481872633685842": {
+    "details": {
+      "address": {
+        "city": "Comer",
+        "country": "US",
+        "postalcode": "30629",
+        "stateprovince": "GA",
+        "streetaddress": "135 Francis Hill Rd"
+      },
+      "categories": [
+        {
+          "category_id": "150815208309028",
+          "display_name": "Farm",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "192111490806699",
+          "display_name": "Florist",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "242472079186076",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/242472079186076"
+        },
+        {
+          "id": "242472079186076",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/242472079186076"
+        },
+        {
+          "id": "3porchfarm",
+          "type": "ig_account",
+          "url": "https://www.instagram.com/3porchfarm"
+        },
+        {
+          "id": "3porchfarm.com",
+          "type": "website",
+          "url": "http://3porchfarm.com/"
+        }
+      ],
+      "location": {
+        "latitude": 34.045214481274,
+        "longitude": -83.077175584288
+      },
+      "name": "3 Porch Farm",
+      "opening_hours": [
+        {
+          "close_time": "1500",
+          "day_of_week": "THURSDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1500",
+          "day_of_week": "FRIDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1300",
+          "day_of_week": "SATURDAY",
+          "open_time": "0900"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": null,
+      "price_level": 2,
+      "rating": {
+        "avg_local_rating": 0,
+        "avg_rating": 5,
+        "num_local_rating": 3,
+        "num_rating": 5
+      },
+      "rich_offerings": []
+    }
+  },
+  "528911442344979": {
+    "details": {
+      "address": {
+        "city": "Felton",
+        "country": "US",
+        "postalcode": "95018",
+        "stateprovince": "CA",
+        "streetaddress": "6060 Graham Hill Rd"
+      },
+      "categories": [
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "1641351992772445",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/1641351992772445"
+        },
+        {
+          "id": "1641351992772445",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/1641351992772445"
+        },
+        {
+          "id": "0aPeZCH4sD7Mih0s5wtTQQ",
+          "type": "yelp",
+          "url": "https://www.yelp.com/biz/0aPeZCH4sD7Mih0s5wtTQQ"
+        },
+        {
+          "id": "reneesgarden.com",
+          "type": "website",
+          "url": "http://www.reneesgarden.com/"
+        }
+      ],
+      "location": {
+        "latitude": 37.05034333,
+        "longitude": -122.06645038
+      },
+      "name": "Renee's Garden",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "0830"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "0830"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0830"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "0830"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "FRIDAY",
+          "open_time": "0830"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 888-880-7228",
+        "e164_number": "+18888807228"
+      },
+      "price_level": 2,
+      "rating": null,
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Bouquet zinnias berry basket"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Butterfly zinnias apricot blush"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Double cutting zinnias cabaret"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "Kitchen herbs heirloom spearmint"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 3.0930049121394
+          },
+          "name": "“roma” sauce tomato pompeii"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 2.9649578564221
+          },
+          "name": "Asian melons golden giant"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 2.9649578564221
+          },
+          "name": "Baby turnips pastel duo"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 2.9649578564221
+          },
+          "name": "Container tomato prairie fire"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 2.9649578564221
+          },
+          "name": "Heirloom scabiosa dark night"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 2.9649578564221
+          },
+          "name": "Long-lasting sunflowers high noon"
+        }
+      ]
+    }
+  },
+  "645929516461544": {
+    "details": {
+      "address": {
+        "city": "Union",
+        "country": "US",
+        "postalcode": "06076",
+        "stateprovince": "CT",
+        "streetaddress": "180 Stickney Hill Rd"
+      },
+      "categories": [
+        {
+          "category_id": "189323644423254",
+          "display_name": "Agricultural Service",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "vR6HKtEh4JpycADOJKBKjg",
+          "type": "yelp",
+          "url": "https://www.yelp.com/biz/vR6HKtEh4JpycADOJKBKjg"
+        },
+        {
+          "id": "selectseeds.com",
+          "type": "website",
+          "url": "http://www.selectseeds.com/"
+        }
+      ],
+      "location": {
+        "latitude": 41.994512620194,
+        "longitude": -72.19737411631
+      },
+      "name": "Select Seeds, Co.",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "0900"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "FRIDAY",
+          "open_time": "0900"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 800-684-0395",
+        "e164_number": "+18006840395"
+      },
+      "price_level": 1,
+      "rating": null,
+      "rich_offerings": []
+    }
+  },
+  "827478421971378": {
+    "details": {
+      "address": {
+        "city": "Williston",
+        "country": "US",
+        "postalcode": "05401",
+        "stateprovince": "VT",
+        "streetaddress": "Avenue D"
+      },
+      "categories": [
+        {
+          "category_id": "189323644423254",
+          "display_name": "Agricultural Service",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [],
+      "location": {
+        "latitude": 44.46522357,
+        "longitude": -73.12371722
+      },
+      "name": "American Meadows",
+      "opening_hours": [],
+      "opening_status": "UNKNOWN",
+      "phone_numbers": {
+        "display_number": "+1 802-951-9089",
+        "e164_number": "+18029519089"
+      },
+      "price_level": null,
+      "rating": null,
+      "rich_offerings": []
+    }
+  },
+  "923491753097900": {
+    "details": {
+      "address": {
+        "city": "Winona",
+        "country": "US",
+        "postalcode": "55987",
+        "stateprovince": "MN",
+        "streetaddress": "32115 Prairie Ln"
+      },
+      "categories": [
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "182027820267",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/182027820267"
+        },
+        {
+          "id": "182027820267",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/182027820267"
+        },
+        {
+          "id": "Up5ET2CGeeoDGksZWMAbfw",
+          "type": "yelp",
+          "url": "https://www.yelp.com/biz/Up5ET2CGeeoDGksZWMAbfw"
+        },
+        {
+          "id": "prairiemoonnursery",
+          "type": "ig_account",
+          "url": "https://www.instagram.com/prairiemoonnursery"
+        },
+        {
+          "id": "prairiemoon.com",
+          "type": "website",
+          "url": "https://www.prairiemoon.com/"
+        }
+      ],
+      "location": {
+        "latitude": 43.903322420552,
+        "longitude": -91.637519043783
+      },
+      "name": "Prairie Moon Nursery",
+      "opening_hours": [
+        {
+          "close_time": "1700",
+          "day_of_week": "MONDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "TUESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "WEDNESDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "THURSDAY",
+          "open_time": "0800"
+        },
+        {
+          "close_time": "1700",
+          "day_of_week": "FRIDAY",
+          "open_time": "0800"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 866-417-8156",
+        "e164_number": "+18664178156"
+      },
+      "price_level": 2,
+      "rating": {
+        "avg_local_rating": 0,
+        "avg_rating": 4.7279411764706,
+        "num_local_rating": 18,
+        "num_rating": 136
+      },
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.802,
+            "knownfor": 9
+          },
+          "name": "Native seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.802,
+            "knownfor": 8
+          },
+          "name": "Native prairie plants"
+        },
+        {
+          "data": {
+            "confidence": 0.307,
+            "knownfor": 11
+          },
+          "name": "Milkweed"
+        },
+        {
+          "data": {
+            "confidence": 0.01,
+            "knownfor": 6
+          },
+          "name": "Purple coneflower"
+        },
+        {
+          "data": {
+            "confidence": 0.01,
+            "knownfor": 11
+          },
+          "name": "Rudbeckia"
+        },
+        {
+          "data": {
+            "confidence": 0.01,
+            "knownfor": 5
+          },
+          "name": "Asters"
+        },
+        {
+          "data": {
+            "confidence": 0.6535,
+            "knownfor": 3
+          },
+          "name": "Pollinator gardens"
+        },
+        {
+          "data": {
+            "confidence": 0.01,
+            "knownfor": 3
+          },
+          "name": "Cardinal flower"
+        },
+        {
+          "data": {
+            "confidence": 0.01,
+            "knownfor": 3
+          },
+          "name": "Mountain mint"
+        },
+        {
+          "data": {
+            "confidence": 0.5,
+            "knownfor": 0
+          },
+          "name": "Grasses and sedges"
+        }
+      ]
+    }
+  },
+  "958339862252637": {
+    "details": {
+      "address": {
+        "city": "Accord",
+        "country": "US",
+        "postalcode": "12404",
+        "stateprovince": "NY",
+        "streetaddress": "11 Airport Rd"
+      },
+      "categories": [
+        {
+          "category_id": "1307356979279301",
+          "display_name": "Nurseries & Gardening Store",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "193271047368648",
+          "display_name": "Garden Center",
+          "top_level_category_name": "NotAvailable"
+        },
+        {
+          "category_id": "657099944438695",
+          "display_name": "Home & Garden Store",
+          "top_level_category_name": "NotAvailable"
+        }
+      ],
+      "is_permanently_closed": false,
+      "is_temporarily_closed": false,
+      "links": [
+        {
+          "id": "310086332660",
+          "type": "fb_page",
+          "url": "https://www.facebook.com/310086332660"
+        },
+        {
+          "id": "310086332660",
+          "type": "ig_explore_place",
+          "url": "https://www.instagram.com/explore/locations/310086332660"
+        },
+        {
+          "id": "hudsonvalleyseed.com",
+          "type": "website",
+          "url": "http://hudsonvalleyseed.com/"
+        }
+      ],
+      "location": {
+        "latitude": 41.8039615,
+        "longitude": -74.20989239
+      },
+      "name": "Hudson Valley Seed Company",
+      "opening_hours": [
+        {
+          "close_time": "1630",
+          "day_of_week": "SUNDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1630",
+          "day_of_week": "MONDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1630",
+          "day_of_week": "THURSDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1630",
+          "day_of_week": "FRIDAY",
+          "open_time": "1000"
+        },
+        {
+          "close_time": "1630",
+          "day_of_week": "SATURDAY",
+          "open_time": "1000"
+        }
+      ],
+      "opening_status": "CLOSED",
+      "phone_numbers": {
+        "display_number": "+1 845-204-8769",
+        "e164_number": "+18452048769"
+      },
+      "price_level": 1,
+      "rating": {
+        "avg_local_rating": 0,
+        "avg_rating": 5,
+        "num_local_rating": 4,
+        "num_rating": 12
+      },
+      "rich_offerings": [
+        {
+          "data": {
+            "confidence": 0.994456,
+            "knownfor": 31
+          },
+          "name": "Artist seed packs"
+        },
+        {
+          "data": {
+            "confidence": 0.8,
+            "knownfor": 6
+          },
+          "name": "Seeds"
+        },
+        {
+          "data": {
+            "confidence": 0.5545,
+            "knownfor": 5
+          },
+          "name": "Seedlings"
+        },
+        {
+          "data": {
+            "confidence": 0.802,
+            "knownfor": 11
+          },
+          "name": "Dahlias"
+        },
+        {
+          "data": {
+            "confidence": 0.505,
+            "knownfor": 4
+          },
+          "name": "Milkweed"
+        },
+        {
+          "data": {
+            "confidence": 0.01,
+            "knownfor": 9
+          },
+          "name": "Garden tours"
+        },
+        {
+          "data": {
+            "confidence": 0.802,
+            "knownfor": 3
+          },
+          "name": "Cyanotype workshops"
+        }
+      ]
+    }
+  },
+  "_meta": {
+    "data": {
+      "fbids": [
+        45531817992,
+        66866610663,
+        168302345473,
+        182027820267,
+        310086332660,
+        162388707146588,
+        242472079186076,
+        481872633685842,
+        528911442344979,
+        645929516461544,
+        827478421971378,
+        923491753097900,
+        958339862252637,
+        992206487469908,
+        1070613063849982,
+        1108259913094783,
+        1113470793100517,
+        1143253486266818,
+        1455831781558375,
+        1641351992772445,
+        1746651342363025,
+        2269802953189979,
+        2303140426863046
+      ],
+      "message_ids": []
+    },
+    "tool_call_id": "call_01a1e796808d70af985ab0e6bdda4503"
+  }
+}

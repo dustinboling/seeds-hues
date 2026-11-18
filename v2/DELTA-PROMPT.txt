@@ -1,0 +1,16 @@
+You are building a DELTA on the existing seeds.hues.flowers v2 app in this directory (~/workspace/seeds-hues/v2). The app is complete and locally verified; do not rebuild it — modify it.
+
+READ FIRST, in this order:
+1. ~/workspace/seeds-hues/SPEC-CANONICAL.md — the adopted canonical spec (Nov 16, 2026). It supersedes conflicting parts of every earlier doc, including V2-BUILD-SPEC-FINAL.md.
+2. ~/workspace/seeds-hues/DELTA-PLAN-DEC16.md — the requirement-by-requirement gap map (§a) and the delta task list (§b).
+3. .kiro/specs/seeds-v2-delta/requirements.md, design.md, tasks.md — your build spec for this delta. Follow the design decisions exactly (schema shape, validation order, fallbacks).
+
+KEY FACTS:
+- seed-data/catalog.json has ALREADY been regenerated: 19 plants / 68 varieties / 6 sellers / 17 listings. Do not change the dataset or build-catalog.py. Seller records carry new approval fields; varieties carry a `series` field. Your importer must consume them.
+- Tasks are in .kiro/specs/seeds-v2-delta/tasks.md — work them in order, check boxes as they pass.
+- Task 19 (vinext check) is ALREADY DONE by Hue: `npx vinext check` reports 94% compatible (15 supported, 2 partial — typedRoutes and reactStrictMode App Router wrapping — 0 issues). Record that result in DELTA-REPORT.md. Do NOT switch adapters; OpenNext stays.
+- Hard constraints: NO deployment, NO remote Cloudflare changes, NO crawling or fetching any external seller site, NO email. Local-only verification (local D1/R2 via Miniflare, OpenNext preview on localhost).
+- House rules from the original build still bind: repositories are the only Drizzle importers; atomic() is the only db.batch(); services shared by pages + API with Zod validation; TypeScript strict; exact pins; guardrail tests updated, not deleted, when behaviour changes.
+- Where the design names a fallback (e.g. the seller-page 410 via middleware), try the primary route, and if it cannot be made to work under the local preview, take the fallback and log the divergence prominently in DELTA-REPORT.md.
+
+FINISH LINE: `npm run verify` green; fresh local db:setup; `npm run cf:build` green; OpenNext preview running locally; `npm run acceptance` green against it (including the planted evidence-validation tests and the throwaway-seller removal flow); DELTA-REPORT.md written in this directory covering: what changed (routes/schema/data), the vinext result, verification results item by item, and every divergence or fallback stated plainly.

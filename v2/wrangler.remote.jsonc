@@ -1,0 +1,55 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Production Worker for seeds.hues.flowers (deployed separately; see README "Deploy").
+  "name": "seeds-hues",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "account_id": "51080ac04974bef5a30d7ceb5b79e9e2",
+  "workers_dev": true,
+  "routes": [{ "pattern": "seeds.hues.flowers", "custom_domain": true }],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    // Self-reference used by the OpenNext memory queue for ISR revalidation.
+    { "binding": "WORKER_SELF_REFERENCE", "service": "seeds-hues" }
+  ],
+  "d1_databases": [
+    {
+      // Catalog database (created 2026-11-16).
+      "binding": "DB",
+      "database_name": "seeds-hues",
+      "database_id": "dcc6098e-e48c-4906-ac79-72cc77e04042",
+      "migrations_dir": "migrations",
+      "remote": true
+    },
+    {
+      // OpenNext tag cache (revalidations table created by `opennextjs-cloudflare deploy/populateCache`).
+      "binding": "NEXT_TAG_CACHE_D1",
+      "database_name": "seeds-hues-tag-cache",
+      "database_id": "01f11aba-a83b-4cdf-86c5-b5c6cab89611"
+    }
+  ],
+  "r2_buckets": [
+    // OpenNext ISR incremental cache (VERIFICATION-LOG V1/V16).
+    { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "seeds-hues-cache" },
+    // Published catalog snapshots: snapshots/catalog-v{N}.sqlite (spec §3.3).
+    { "binding": "SNAPSHOTS", "bucket_name": "seeds-hues-snapshots", "remote": true }
+  ],
+  "ratelimits": [
+    // 120 requests / 60 s / client IP on /api/v1/* (VERIFICATION-LOG V17).
+    { "name": "API_RATE_LIMITER", "namespace_id": "1201", "simple": { "limit": 120, "period": 60 } },
+    { "name": "SEARCH_RATE_LIMITER", "namespace_id": "1202", "simple": { "limit": 60, "period": 60 } },
+    { "name": "REPORTS_RATE_LIMITER", "namespace_id": "1203", "simple": { "limit": 3, "period": 60 } },
+    { "name": "INGEST_RATE_LIMITER", "namespace_id": "1204", "simple": { "limit": 600, "period": 60 } }
+  ],
+  "vars": {
+    "SITE_URL": "https://seeds.hues.flowers",
+    // Comma-separated exact origins. Append the Worker's workers.dev origin
+    // (https://seeds-hues.<account-subdomain>.workers.dev) once known — README "Deploy".
+    "CORS_ALLOWED_ORIGINS": "https://seeds.hues.flowers"
+  },
+  "observability": { "enabled": true }
+}
