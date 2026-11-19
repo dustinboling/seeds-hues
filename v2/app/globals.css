@@ -337,6 +337,22 @@
       opacity: 0.6;
     }
   }
+  /*
+   * Loading skeletons stay invisible for the first ~200 ms, so a navigation that resolves
+   * faster than that never flashes one (UX spec 2026-11-19 §1.2). This only delays the
+   * reveal; the pulse is .skeleton's own. Under prefers-reduced-motion the global rule
+   * collapses animation-duration, so on a slow load the skeleton appears at once after
+   * the delay — no fade, no pulse — which is the correct reduced-motion behaviour.
+   */
+  .skeleton-delayed {
+    opacity: 0;
+    animation: skeleton-reveal 160ms ease-out 200ms forwards;
+  }
+  @keyframes skeleton-reveal {
+    to {
+      opacity: 1;
+    }
+  }
   .sr-only-focusable:not(:focus) {
     position: absolute;
     width: 1px;

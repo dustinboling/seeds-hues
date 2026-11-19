@@ -99,7 +99,15 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
         </p>
       ) : null}
       {!status ? (
-        <p className="text-sm text-muted">Loading…</p>
+        <div>
+          <p className="sr-only" role="status">
+            Loading waiting-list status…
+          </p>
+          <div aria-hidden="true" className="skeleton-delayed flex flex-col gap-3">
+            <div className="skeleton h-11 w-52 max-w-full rounded-xl" />
+            <div className="skeleton h-4 w-64 max-w-full" />
+          </div>
+        </div>
       ) : status.signed_in && status.on_list ? (
         <div className="flex flex-col gap-3">
           <p className="font-semibold text-leaf">You’re on the waiting list.</p>
