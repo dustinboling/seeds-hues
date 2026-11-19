@@ -14,6 +14,7 @@ const MOTIF_B_WIDTHS = [600, 900, 1200] as const;
 const VARIANTS = {
   home: { width: "w-[min(480px,92vw)]", sizes: "min(480px, 92vw)" },
   footer: { width: "w-[min(440px,92vw)]", sizes: "min(440px, 92vw)" },
+  success: { width: "w-[min(440px,92vw)]", sizes: "min(440px, 92vw)" },
 } as const satisfies Record<string, { width: string; sizes: string }>;
 
 export type MotifDividerVariant = keyof typeof VARIANTS;
