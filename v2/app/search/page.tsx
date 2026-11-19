@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SearchBox } from "@/components/search/SearchBox";
 import { ThemeArt } from "@/components/ui/ThemeArt";
+import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
 import { BrowseFilters, activeFilterLabels, type BrowseFilterState } from "@/components/ui/BrowseFilters";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -46,6 +47,7 @@ export default async function SearchPage({ searchParams }: Props) {
     hue: parseHueParam(sp.color_family),
   };
   const active = activeFilterLabels(filters);
+  const navKey = [q, filters.season, filters.method, filters.hue].join("|");
   const { catalog } = await getServices();
   const r = q
     ? await catalog.search(q, {
@@ -93,8 +95,9 @@ export default async function SearchPage({ searchParams }: Props) {
           </ul>
         </section>
       ) : (
-        <section className="mt-8" aria-labelledby="results-title">
-          <h2 id="results-title" className="text-xl font-semibold" aria-live="polite">
+        <>
+        <section id="search-results" className="mt-8" aria-labelledby="results-title">
+          <h2 id="results-title" className="text-xl font-semibold" aria-live="polite" aria-atomic="true">
             {total > 0
               ? [`${total} result${total === 1 ? "" : "s"} for “${q}”`, ...active].join(" · ")
               : active.length
@@ -129,6 +132,8 @@ export default async function SearchPage({ searchParams }: Props) {
             ))
           )}
         </section>
+        <ResultsScrollClamp targetId="results-title" regionId="search-results" navKey={navKey} />
+        </>
       )}
     </>
   );

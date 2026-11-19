@@ -140,6 +140,7 @@ export function BrowseFilters({
             <li key={o.value ?? "all"} className="flex-none">
               <Link
                 href={chipHref(basePath, state, g, o.value, params)}
+                scroll={false}
                 className={`chip tap ${active ? "font-semibold" : ""}`}
                 aria-current={active ? "true" : undefined}
                 data-filter={g}

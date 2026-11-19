@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { permanentRedirect } from "next/navigation";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
 import { Pagination } from "@/components/ui/Pagination";
+import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
 import { PodDivider } from "@/components/ui/PodDivider";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { BrowseFilters, activeFilterLabels, filterParams, type BrowseFilterState } from "@/components/ui/BrowseFilters";
@@ -64,6 +65,7 @@ export default async function VarietiesPage({ searchParams }: Props) {
   const page = parsePage(sp.page);
   const filters = readFilters(sp);
   const active = activeFilterLabels(filters);
+  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue].join("|");
   const { catalog } = await getServices();
   const { items, total } = await catalog.listVarieties({
     filters: {
@@ -93,16 +95,17 @@ export default async function VarietiesPage({ searchParams }: Props) {
       />
       <Breadcrumbs items={crumbs} />
       <h1 className="text-3xl font-semibold text-leaf">Flower seed varieties</h1>
-      <p className="mt-2 text-muted">
+      <p id="variety-results-count" className="mt-2 text-muted" aria-live="polite" aria-atomic="true">
         {[plural(total, "variety", "varieties"), ...active].join(" · ")}, alphabetical.
         {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
       </p>
       <BrowseFilters basePath="/variety" state={filters} groups={["season", "method", "lifeCycle", "hue"]} />
-      <div className="mt-6">
+      <div id="variety-results" className="mt-6">
         <VarietyGrid items={items} wide />
       </div>
       <Pagination basePath="/variety" page={page} totalPages={pages} extra={filterParams(filters)} label="Varieties pages" />
       <PodDivider bundle="/ornaments/bundle-zinnia.webp" className="mt-8" />
+      <ResultsScrollClamp targetId="variety-results-count" regionId="variety-results" navKey={navKey} />
     </>
   );
 }

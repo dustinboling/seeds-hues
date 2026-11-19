@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Pagination } from "@/components/ui/Pagination";
+import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
 import { VarietyHeroImage } from "@/components/variety/VarietyHeroImage";
 import { GrowerGuide } from "@/components/crop/GrowerGuide";
@@ -101,13 +102,14 @@ export default async function CropPage({ params, searchParams }: Props) {
   const common = shortCommonName(c.commonName);
   const lifeCycle = lifeCycleFact(c.life_cycle, c.hardiness);
   const pod = podArtForPlant(c.slug);
+  const navKey = [page, f.color, f.series, f.hasSellers].join("|");
   const crumbs = [
     { name: "Home", href: "/" },
     { name: "Crops", href: "/crop" },
     { name: common, href: `/crop/${c.slug}` },
   ];
   const chip = (label: string, next: CropFilters, active: boolean) => (
-    <Link href={href(c.slug, next)} className={`chip tap ${active ? "border-leaf bg-leaf-50 font-semibold" : ""}`} aria-current={active ? "page" : undefined}>
+    <Link href={href(c.slug, next)} scroll={false} className={`chip tap ${active ? "border-leaf bg-leaf-50 font-semibold" : ""}`} aria-current={active ? "page" : undefined}>
       {label}
     </Link>
   );
@@ -203,11 +205,11 @@ export default async function CropPage({ params, searchParams }: Props) {
         ) : null}
       </nav>
 
-      <p className="mt-4 text-muted">
+      <p id="crop-results-count" className="mt-4 text-muted" aria-live="polite" aria-atomic="true">
         {filtered(f) ? `${plural(total, "variety", "varieties")} match. ` : ""}
         {pages > 1 ? `Page ${page} of ${pages}.` : ""}
       </p>
-      <div className="mt-3">
+      <div id="crop-variety-results" className="mt-3">
         {c.varieties.length ? (
           <VarietyGrid items={c.varieties} />
         ) : f.hasSellers === true && c.varietiesWithSellers === 0 ? (
@@ -244,6 +246,7 @@ export default async function CropPage({ params, searchParams }: Props) {
       <p className="mt-8">
         <Link href="/crop">All crops</Link>
       </p>
+      <ResultsScrollClamp targetId="crop-results-count" regionId="crop-variety-results" navKey={navKey} />
     </>
   );
 }

@@ -28,7 +28,7 @@ export function Pagination({
   return (
     <nav aria-label={label} className="mt-8 flex flex-wrap items-center justify-center gap-2">
       {page > 1 ? (
-        <Link className="btn btn-secondary" href={pageHref(basePath, page - 1, extra)} rel="prev">
+        <Link className="btn btn-secondary" href={pageHref(basePath, page - 1, extra)} rel="prev" scroll={false}>
           ← Previous
         </Link>
       ) : null}
@@ -44,7 +44,7 @@ export function Pagination({
                   {p}
                 </span>
               ) : (
-                <Link className="btn btn-secondary" href={pageHref(basePath, p, extra)}>
+                <Link className="btn btn-secondary" href={pageHref(basePath, p, extra)} scroll={false}>
                   <span className="sr-only">Page </span>
                   {p}
                 </Link>
@@ -54,7 +54,7 @@ export function Pagination({
         })}
       </ol>
       {page < totalPages ? (
-        <Link className="btn btn-secondary" href={pageHref(basePath, page + 1, extra)} rel="next">
+        <Link className="btn btn-secondary" href={pageHref(basePath, page + 1, extra)} rel="next" scroll={false}>
           Next →
         </Link>
       ) : null}
