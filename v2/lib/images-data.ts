@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 794 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 802 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -237,15 +237,19 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/pea.webp": "artwork/crops/pea.webp",
   "/artwork/crops/perennial-babys-breath-v2.webp": "artwork/crops/perennial-babys-breath-v2.webp",
   "/artwork/crops/perennial-babys-breath.webp": "artwork/crops/perennial-babys-breath.webp",
+  "/artwork/crops/phlox-v2.webp": "artwork/crops/phlox-v2.webp",
   "/artwork/crops/phlox.webp": "artwork/crops/phlox.webp",
   "/artwork/crops/pincushion-flower.webp": "artwork/crops/pincushion-flower.webp",
+  "/artwork/crops/poor-mans-orchid-v2.webp": "artwork/crops/poor-mans-orchid-v2.webp",
   "/artwork/crops/poor-mans-orchid.webp": "artwork/crops/poor-mans-orchid.webp",
+  "/artwork/crops/queen-annes-lace-v2.webp": "artwork/crops/queen-annes-lace-v2.webp",
   "/artwork/crops/queen-annes-lace.webp": "artwork/crops/queen-annes-lace.webp",
   "/artwork/crops/quinoa.webp": "artwork/crops/quinoa.webp",
   "/artwork/crops/ranunculus.webp": "artwork/crops/ranunculus.webp",
   "/artwork/crops/red-leaf-hibiscus.webp": "artwork/crops/red-leaf-hibiscus.webp",
   "/artwork/crops/rudbeckia.webp": "artwork/crops/rudbeckia.webp",
   "/artwork/crops/safflower.webp": "artwork/crops/safflower.webp",
+  "/artwork/crops/salvia-v2.webp": "artwork/crops/salvia-v2.webp",
   "/artwork/crops/salvia.webp": "artwork/crops/salvia.webp",
   "/artwork/crops/shirley-poppy.webp": "artwork/crops/shirley-poppy.webp",
   "/artwork/crops/shiso.webp": "artwork/crops/shiso.webp",
@@ -257,13 +261,17 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/soapwort.webp": "artwork/crops/soapwort.webp",
   "/artwork/crops/spike-speedwell.webp": "artwork/crops/spike-speedwell.webp",
   "/artwork/crops/statice.webp": "artwork/crops/statice.webp",
+  "/artwork/crops/stock-v2.webp": "artwork/crops/stock-v2.webp",
   "/artwork/crops/stock.webp": "artwork/crops/stock.webp",
+  "/artwork/crops/strawflower-v2.webp": "artwork/crops/strawflower-v2.webp",
   "/artwork/crops/strawflower.webp": "artwork/crops/strawflower.webp",
   "/artwork/crops/sunflower.webp": "artwork/crops/sunflower.webp",
   "/artwork/crops/sweet-pea.webp": "artwork/crops/sweet-pea.webp",
+  "/artwork/crops/sweet-rocket-v2.webp": "artwork/crops/sweet-rocket-v2.webp",
   "/artwork/crops/sweet-rocket.webp": "artwork/crops/sweet-rocket.webp",
   "/artwork/crops/sweet-sultan.webp": "artwork/crops/sweet-sultan.webp",
   "/artwork/crops/sweet-william.webp": "artwork/crops/sweet-william.webp",
+  "/artwork/crops/tickseed-v2.webp": "artwork/crops/tickseed-v2.webp",
   "/artwork/crops/tickseed.webp": "artwork/crops/tickseed.webp",
   "/artwork/crops/tomato.webp": "artwork/crops/tomato.webp",
   "/artwork/crops/trachelium.webp": "artwork/crops/trachelium.webp",
