@@ -188,11 +188,6 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
       // State D: verified, alerts held for another reason — the API's strings, verbatim.
       celebration = <p className="mt-3 max-w-xl">Your place is saved, and your alerts are waiting for now: {heldSentence(held)}</p>;
       nextTitle = "Why your alerts are held";
-      nextBody = held.map((reason, i) => (
-        <p key={i} className="text-sm">
-          {reason}
-        </p>
-      ));
     } else {
       // State A: verified, alerts genuinely on.
       celebration = (
