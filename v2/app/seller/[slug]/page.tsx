@@ -8,6 +8,7 @@ import { RatingDisplay } from "@/components/ui/RatingDisplay";
 import { OutboundLink } from "@/components/ui/OutboundLink";
 import { ListingRow } from "@/components/variety/ListingRow";
 import { StateShape } from "@/components/seller/StateShape";
+import { StatePlate } from "@/components/seller/StatePlate";
 import { ImportedRatingPanel } from "@/components/seller/ImportedRatingPanel";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
@@ -17,6 +18,7 @@ import { assertPageInRange, pagePath, pageTitleSuffix, parsePage, totalPages } f
 import { hostOf, plural, sellerTypeLabel } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/config";
 import { stateByCode } from "@/lib/data/states";
+import { statePlateFor } from "@/lib/data/state-plates";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +65,8 @@ export default async function SellerPage({ params, searchParams }: Props) {
   const where = s.location ?? [s.region, s.country].filter(Boolean).join(", ");
   // The seller's own state always has ≥ 1 visible seller (this one), so /state/{slug} resolves.
   const state = s.country === "US" ? stateByCode(s.region) : null;
+  // No state on file, non-US, or a state without a painted plate → no plate at all (no substitute).
+  const plate = state ? statePlateFor(state.slug) : null;
 
   return (
     <>
@@ -77,51 +81,56 @@ export default async function SellerPage({ params, searchParams }: Props) {
       />
       <Breadcrumbs items={crumbs} />
       <article aria-labelledby="seller-title">
-        <header>
-          <p className="eyebrow">{sellerTypeLabel(s.type)}</p>
-          <h1 id="seller-title" className="mt-1 text-3xl font-semibold text-leaf md:text-4xl">
-            {s.name}
-          </h1>
-          <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-3">
-            <div>
-              <dt className="text-sm text-muted">Location</dt>
-              <dd>
-                {where || "Unknown"}
-                {state ? (
-                  <Link
-                    href={`/state/${state.slug}`}
-                    className="mt-1 flex w-fit items-center gap-1.5 py-1"
-                    data-seller-state={state.code}
-                  >
-                    <StateShape region={state.code} size={22} />
-                    {state.name}
-                  </Link>
-                ) : null}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm text-muted">Varieties listed</dt>
-              <dd>{s.varietyCount}</dd>
-            </div>
-            <div>
-              <dt className="text-sm text-muted">Rating</dt>
-              <dd>
-                <RatingDisplay ratingCount={s.rating.review_count} />
-              </dd>
-            </div>
-          </dl>
-          {s.homepage ? (
-            <p className="mt-4">
-              <OutboundLink href={s.homepage} seller={s.slug} className="btn btn-primary">
-                Visit {s.name} ({hostOf(s.homepage)})
-              </OutboundLink>
-            </p>
-          ) : (
-            <p className="mt-4 text-sm text-muted">No website on file for this seller.</p>
-          )}
-          {s.isSiteOwner ? (
-            <p className="mt-3 text-sm text-muted">Disclosure: this seller is Hues Floral Park, which owns and operates this site.</p>
-          ) : null}
+        <header className="sm:flex sm:items-start sm:gap-8">
+          <div className="min-w-0 flex-1">
+            <p className="eyebrow">{sellerTypeLabel(s.type)}</p>
+            <h1 id="seller-title" className="mt-1 text-3xl font-semibold text-leaf md:text-4xl">
+              {s.name}
+            </h1>
+            <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-3">
+              <div>
+                <dt className="text-sm text-muted">Location</dt>
+                <dd>
+                  {where || "Unknown"}
+                  {state ? (
+                    <Link
+                      href={`/state/${state.slug}`}
+                      className="mt-1 flex w-fit items-center gap-1.5 py-1"
+                      data-seller-state={state.code}
+                    >
+                      <StateShape region={state.code} size={22} />
+                      {state.name}
+                    </Link>
+                  ) : null}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted">Varieties listed</dt>
+                <dd>{s.varietyCount}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted">Rating</dt>
+                <dd>
+                  <RatingDisplay ratingCount={s.rating.review_count} />
+                </dd>
+              </div>
+            </dl>
+            {s.homepage ? (
+              <p className="mt-4">
+                <OutboundLink href={s.homepage} seller={s.slug} className="btn btn-primary">
+                  Visit {s.name} ({hostOf(s.homepage)})
+                </OutboundLink>
+              </p>
+            ) : (
+              <p className="mt-4 text-sm text-muted">No website on file for this seller.</p>
+            )}
+            {s.isSiteOwner ? (
+              <p className="mt-3 text-sm text-muted">Disclosure: this seller is Hues Floral Park, which owns and operates this site.</p>
+            ) : null}
+          </div>
+          {/* State-flower plate (state-plates spec §2): after the summary in DOM and visual order;
+              eager (first viewport) with no fetchPriority — the <h1> stays the LCP (§A.5.3). */}
+          {state && plate ? <StatePlate code={state.code} plate={plate} loading="eager" /> : null}
         </header>
 
         {s.description || s.orderingNotes ? (

@@ -692,7 +692,18 @@ async function main() {
     assert(h.includes(`src="${cdn(1200, "theme/state-scenes/oregon.png")}"`), "scene hero artwork (1200-wide CDN transformation)");
     assert(h.includes('data-testid="state-hero"'), "state-hero figure");
     assert(h.includes("Oregon landscape with Oregon grape"), "scene hero alt text");
-    assert(!h.includes("artwork/states/oregon."), "masked state-flower artwork still on the page");
+    // State-plates delta (2026-11-19): this line used to assert the masked state-flower artwork
+    // (StateShape art variant) was GONE from the page. The state's flower now returns as the plate
+    // beside the intro — whole, in .art-frame, 640-wide, lazy — so the check pins that instead,
+    // and that no other state-flower rendering (the masked outline) came back with it.
+    const plateFig = /<figure\b[^>]*data-state-plate="OR"[^>]*>([\s\S]*?)<\/figure>/.exec(h);
+    assert(plateFig, "state plate figure (data-state-plate=OR)");
+    assert(plateFig[1]!.includes(`src="${cdn(640, "artwork/states/oregon.png")}"`), "plate src (640-wide CDN transformation)");
+    assert(plateFig[1]!.includes(`alt="Oregon grape, Oregon&#x27;s state flower"`), "plate alt (Ada §A.2)");
+    assert(/\bloading="lazy"/.test(plateFig[1]!) && !/fetchpriority/i.test(plateFig[1]!), "plate lazy, no fetchPriority");
+    assert(!/<figcaption|<a\b|\btitle=|aria-label/.test(plateFig[0]), "plate must have no caption, link, title or aria-label");
+    assert(h.indexOf('data-testid="state-add-farm"') < h.indexOf("data-state-plate") && h.indexOf("data-state-plate") < h.indexOf("data-state-sellers"), "plate sits after the CTA, before the farm grid");
+    assert((h.match(/artwork\/states\//g) ?? []).length === 1, "exactly one state-flower rendering (the plate)");
     crawled.set("/state/oregon", h);
     return `${got.length} sellers`;
   });
@@ -711,6 +722,36 @@ async function main() {
     assert(JSON.stringify(inMap) === JSON.stringify(slugs), `sitemap ${inMap.join(",")} ≠ ${slugs.join(",")}`);
     for (const sl of slugs) crawled.set(`/state/${sl}`, await html(`/state/${sl}`));
     return `${slugs.length} state pages`;
+  });
+  await check("state-flower plates: painted states/sellers show their own plate once; no state or no plate → none", async () => {
+    const { STATE_PLATES } = await import("@/lib/data/state-plates");
+    const { stateByCode } = await import("@/lib/data/states");
+    const all = (await getJson<{ data: { slug: string; region: string | null; country: string }[] }>("/api/v1/sellers?limit=100")).data;
+    let withPlate = 0;
+    let without = 0;
+    for (const s of all) {
+      const st = s.country === "US" ? stateByCode(s.region) : null;
+      const plate = st && Object.hasOwn(STATE_PLATES, st.slug) ? STATE_PLATES[st.slug]! : null;
+      const h = crawled.get(`/seller/${s.slug}`) ?? (await html(`/seller/${s.slug}`));
+      const figs = [...h.matchAll(/<figure\b[^>]*data-state-plate="([A-Z]{2})"[^>]*>([\s\S]*?)<\/figure>/g)];
+      if (plate && st) {
+        assert(figs.length === 1 && figs[0]![1] === st.code, `/seller/${s.slug}: expected one ${st.code} plate, got ${figs.map((f) => f[1]).join(",") || "none"}`);
+        assert(figs[0]![2]!.includes(`src="${cdn(640, `artwork/states/${st.slug}.png`)}"`), `/seller/${s.slug}: plate src`);
+        assert(figs[0]![2]!.includes(`alt="${plate.alt.replace(/'/g, "&#x27;")}"`), `/seller/${s.slug}: plate alt`);
+        assert(/\bloading="eager"/.test(figs[0]![2]!) && !/fetchpriority/i.test(figs[0]![2]!), `/seller/${s.slug}: eager, no fetchPriority`);
+        withPlate++;
+      } else {
+        assert(figs.length === 0 && !h.includes("artwork/states/"), `/seller/${s.slug}: no plate expected (region ${s.region ?? "none"})`);
+        without++;
+      }
+    }
+    for (const [path, h] of crawled) {
+      const m = /^\/state\/([a-z-]+)$/.exec(path);
+      if (!m) continue;
+      const n = (h.match(/data-state-plate="/g) ?? []).length;
+      assert(n === (Object.hasOwn(STATE_PLATES, m[1]!) ? 1 : 0), `${path}: ${n} plates`);
+    }
+    return `${withPlate} sellers with a plate, ${without} without`;
   });
   await check("seller with an imported rating: \"Reviews from Google\" panel AND our \"Not yet rated\"; nothing in JSON-LD", async () => {
     const h = await html("/seller/johnnys-selected-seeds");

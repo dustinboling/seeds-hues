@@ -9,6 +9,7 @@ import { COMPANY_NAME_EXCLUSION_PATTERN } from "@/lib/catalog/assertions";
 import { POD_ART_BY_PLANT } from "@/lib/data/pod-ornaments";
 import { MOTIF_B_PATH } from "@/components/ui/MotifDivider";
 import { STATE_SCENES } from "@/lib/data/state-scenes";
+import { STATE_PLATES } from "@/lib/data/state-plates";
 import { STATE_SHAPES } from "@/lib/data/state-paths";
 import { IMAGE_KEYS } from "@/lib/images-data";
 
@@ -181,6 +182,9 @@ describe("policy guardrails", () => {
       // Divider motif B (2026-11-19): the centred ornament for major breaks (home hero break and
       // the footer-adjacent slot), from the stored path /ornaments/motif-divider-b.webp.
       "components/ui/MotifDivider.tsx": [/src=\{imageUrl\(MOTIF_B_PATH, \{ width: 1200 \}\)\}/],
+      // State-plates delta (2026-11-19): the state-flower plate on seller + state pages, from the
+      // stored /artwork/states/{slug}.webp paths in lib/data/state-plates.ts, at width 640.
+      "components/seller/StatePlate.tsx": [/src=\{imageUrl\(plate\.path, \{ width: 640 \}\)\}/],
     };
     const allowed = Object.keys(IMG_FILES);
     expect(offenders(ui, /<img\b/, allowed)).toEqual([]);
@@ -236,6 +240,11 @@ describe("policy guardrails", () => {
     }
     for (const shape of Object.values(STATE_SHAPES)) {
       expect(Object.hasOwn(IMAGE_KEYS, `/artwork/states/${shape.slug}.webp`), shape.slug).toBe(true);
+    }
+    // …and every state-flower plate (state-plates delta, 2026-11-19).
+    for (const [slug, plate] of Object.entries(STATE_PLATES)) {
+      expect(plate.path, slug).toBe(`/artwork/states/${slug}.webp`);
+      expect(Object.hasOwn(IMAGE_KEYS, plate.path), slug).toBe(true);
     }
   });
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { SellerCard } from "@/components/seller/SellerCard";
+import { StatePlate } from "@/components/seller/StatePlate";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Pagination } from "@/components/ui/Pagination";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -12,6 +13,7 @@ import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage, totalPages } from "@/lib/paging";
 import { PAGE_SIZE } from "@/lib/config";
 import { STATE_SCENES } from "@/lib/data/state-scenes";
+import { statePlateFor } from "@/lib/data/state-plates";
 import { imageUrl } from "@/lib/images";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +56,8 @@ export default async function StatePage({ params, searchParams }: Props) {
   assertPageInRange(page, total);
   const pages = totalPages(total);
   const scene = STATE_SCENES[st.slug];
+  // Scenes and plates are independent tables: a state may have either, both or neither.
+  const plate = statePlateFor(st.slug);
   const crumbs = [
     { name: "Home", href: "/" },
     { name: "Sellers", href: "/seller" },
@@ -89,20 +93,25 @@ export default async function StatePage({ params, searchParams }: Props) {
             />
           </figure>
         ) : null}
-        <div className="mt-6 min-w-0">
-          <h1 className="text-3xl font-semibold text-leaf md:text-4xl">{`Seed farms in ${st.name}`}</h1>
-          <p className="mt-2 max-w-2xl text-muted" data-state-intro>
-            {total === 1
-              ? `1 seed farm or company in ${st.name} lists seed with the Seed Directory.`
-              : `${total} seed farms and companies in ${st.name} list seed with the Seed Directory.`}
-            {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
-          </p>
-          <p className="mt-4">
-            <Link href={`/add-your-farm?state=${st.code}`} className="btn btn-primary btn-pill" data-testid="state-add-farm">
-              Add Your Farm
-            </Link>
-            <span className="ml-3 text-sm text-muted">Sell seed from a farm in {st.name}? Listing is free.</span>
-          </p>
+        <div className="mt-6 min-w-0 sm:flex sm:items-start sm:gap-8">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl font-semibold text-leaf md:text-4xl">{`Seed farms in ${st.name}`}</h1>
+            <p className="mt-2 max-w-2xl text-muted" data-state-intro>
+              {total === 1
+                ? `1 seed farm or company in ${st.name} lists seed with the Seed Directory.`
+                : `${total} seed farms and companies in ${st.name} list seed with the Seed Directory.`}
+              {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
+            </p>
+            <p className="mt-4">
+              <Link href={`/add-your-farm?state=${st.code}`} className="btn btn-primary btn-pill" data-testid="state-add-farm">
+                Add Your Farm
+              </Link>
+              <span className="ml-3 text-sm text-muted">Sell seed from a farm in {st.name}? Listing is free.</span>
+            </p>
+          </div>
+          {/* State-flower plate (state-plates spec §3): beside the intro, never beside the card grid;
+              lazy with no fetchPriority so it never competes with the eager hero above. */}
+          {plate ? <StatePlate code={st.code} plate={plate} loading="lazy" /> : null}
         </div>
       </header>
       <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3" data-state-sellers={st.code}>
