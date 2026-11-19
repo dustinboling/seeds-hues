@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 786 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 794 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -219,15 +219,23 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/nasturtium.webp": "artwork/crops/nasturtium.webp",
   "/artwork/crops/nigella-v2.webp": "artwork/crops/nigella-v2.webp",
   "/artwork/crops/nigella.webp": "artwork/crops/nigella.webp",
+  "/artwork/crops/orach-v2.webp": "artwork/crops/orach-v2.webp",
   "/artwork/crops/orach.webp": "artwork/crops/orach.webp",
   "/artwork/crops/oregano.webp": "artwork/crops/oregano.webp",
   "/artwork/crops/orlaya.webp": "artwork/crops/orlaya.webp",
+  "/artwork/crops/ornamental-grass-v2.webp": "artwork/crops/ornamental-grass-v2.webp",
   "/artwork/crops/ornamental-grass.webp": "artwork/crops/ornamental-grass.webp",
+  "/artwork/crops/ornamental-squash-v2.webp": "artwork/crops/ornamental-squash-v2.webp",
   "/artwork/crops/ornamental-squash.webp": "artwork/crops/ornamental-squash.webp",
+  "/artwork/crops/painted-tongue-v2.webp": "artwork/crops/painted-tongue-v2.webp",
   "/artwork/crops/painted-tongue.webp": "artwork/crops/painted-tongue.webp",
+  "/artwork/crops/pansy-v2.webp": "artwork/crops/pansy-v2.webp",
   "/artwork/crops/pansy.webp": "artwork/crops/pansy.webp",
+  "/artwork/crops/paper-daisy-v2.webp": "artwork/crops/paper-daisy-v2.webp",
   "/artwork/crops/paper-daisy.webp": "artwork/crops/paper-daisy.webp",
+  "/artwork/crops/pea-v2.webp": "artwork/crops/pea-v2.webp",
   "/artwork/crops/pea.webp": "artwork/crops/pea.webp",
+  "/artwork/crops/perennial-babys-breath-v2.webp": "artwork/crops/perennial-babys-breath-v2.webp",
   "/artwork/crops/perennial-babys-breath.webp": "artwork/crops/perennial-babys-breath.webp",
   "/artwork/crops/phlox.webp": "artwork/crops/phlox.webp",
   "/artwork/crops/pincushion-flower.webp": "artwork/crops/pincushion-flower.webp",
