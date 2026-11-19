@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 810 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 819 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -532,6 +532,11 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-monaco-orange.webp": "artwork/snapdragon-monaco-orange.png",
   "/artwork/snapdragon-opus-early-bronze.webp": "artwork/snapdragon-opus-early-bronze.png",
   "/artwork/snapdragon-potomac-appleblossom.webp": "artwork/snapdragon-potomac-appleblossom.png",
+  "/artwork/snapdragon-potomac-dark-pink.webp": "artwork/snapdragon-potomac-dark-pink.png",
+  "/artwork/snapdragon-potomac-lavender.webp": "artwork/snapdragon-potomac-lavender.png",
+  "/artwork/snapdragon-potomac-red.webp": "artwork/snapdragon-potomac-red.png",
+  "/artwork/snapdragon-potomac-white.webp": "artwork/snapdragon-potomac-white.png",
+  "/artwork/snapdragon-potomac-yellow.webp": "artwork/snapdragon-potomac-yellow.png",
   "/artwork/snapdragon-sherbet-toned-chantilly-mix.webp": "artwork/snapdragon-sherbet-toned-chantilly-mix.png",
   "/artwork/soapwort-beauty-pink.webp": "artwork/soapwort-beauty-pink.png",
   "/artwork/soapwort-graciella-white.webp": "artwork/soapwort-graciella-white.png",
@@ -553,6 +558,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/states/wisconsin.webp": "artwork/states/wisconsin.png",
   "/artwork/statice-light-blue.webp": "artwork/statice-light-blue.png",
   "/artwork/statice-pastel-mix.webp": "artwork/statice-pastel-mix.png",
+  "/artwork/statice-qis-dark-blue.webp": "artwork/statice-qis-dark-blue.png",
+  "/artwork/statice-qis-lavender.webp": "artwork/statice-qis-lavender.png",
+  "/artwork/statice-qis-white.webp": "artwork/statice-qis-white.png",
+  "/artwork/statice-qis-yellow.webp": "artwork/statice-qis-yellow.png",
   "/artwork/statice-rat-tail.webp": "artwork/statice-rat-tail.png",
   "/artwork/statice-sunset-mix.webp": "artwork/statice-sunset-mix.png",
   "/artwork/stock-antique-pink.webp": "artwork/stock-antique-pink.png",
