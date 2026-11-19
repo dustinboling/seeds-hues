@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 770 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 778 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -170,20 +170,28 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/false-indigo.webp": "artwork/crops/false-indigo.webp",
   "/artwork/crops/false-sunflower.webp": "artwork/crops/false-sunflower.webp",
   "/artwork/crops/feverfew.webp": "artwork/crops/feverfew.webp",
+  "/artwork/crops/figwort-v2.webp": "artwork/crops/figwort-v2.webp",
   "/artwork/crops/figwort.webp": "artwork/crops/figwort.webp",
+  "/artwork/crops/flax-v2.webp": "artwork/crops/flax-v2.webp",
   "/artwork/crops/flax.webp": "artwork/crops/flax.webp",
   "/artwork/crops/flowering-kale.webp": "artwork/crops/flowering-kale.webp",
   "/artwork/crops/flowering-tobacco.webp": "artwork/crops/flowering-tobacco.webp",
+  "/artwork/crops/formosa-lily-v2.webp": "artwork/crops/formosa-lily-v2.webp",
   "/artwork/crops/formosa-lily.webp": "artwork/crops/formosa-lily.webp",
+  "/artwork/crops/foxglove-v2.webp": "artwork/crops/foxglove-v2.webp",
   "/artwork/crops/foxglove.webp": "artwork/crops/foxglove.webp",
   "/artwork/crops/globe-thistle.webp": "artwork/crops/globe-thistle.webp",
   "/artwork/crops/godetia.webp": "artwork/crops/godetia.webp",
   "/artwork/crops/goldenrod.webp": "artwork/crops/goldenrod.webp",
+  "/artwork/crops/gomphrena-v2.webp": "artwork/crops/gomphrena-v2.webp",
   "/artwork/crops/gomphrena.webp": "artwork/crops/gomphrena.webp",
+  "/artwork/crops/hollyhock-v2.webp": "artwork/crops/hollyhock-v2.webp",
   "/artwork/crops/hollyhock.webp": "artwork/crops/hollyhock.webp",
   "/artwork/crops/honesty.webp": "artwork/crops/honesty.webp",
+  "/artwork/crops/honeywort-v2.webp": "artwork/crops/honeywort-v2.webp",
   "/artwork/crops/honeywort.webp": "artwork/crops/honeywort.webp",
   "/artwork/crops/hyacinth-bean.webp": "artwork/crops/hyacinth-bean.webp",
+  "/artwork/crops/iceland-poppy-v2.webp": "artwork/crops/iceland-poppy-v2.webp",
   "/artwork/crops/iceland-poppy.webp": "artwork/crops/iceland-poppy.webp",
   "/artwork/crops/jewels-of-opar.webp": "artwork/crops/jewels-of-opar.webp",
   "/artwork/crops/kiss-me-over-the-garden-gate.webp": "artwork/crops/kiss-me-over-the-garden-gate.webp",
