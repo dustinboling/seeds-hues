@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 778 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 786 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -194,22 +194,30 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/iceland-poppy-v2.webp": "artwork/crops/iceland-poppy-v2.webp",
   "/artwork/crops/iceland-poppy.webp": "artwork/crops/iceland-poppy.webp",
   "/artwork/crops/jewels-of-opar.webp": "artwork/crops/jewels-of-opar.webp",
+  "/artwork/crops/kiss-me-over-the-garden-gate-v2.webp": "artwork/crops/kiss-me-over-the-garden-gate-v2.webp",
   "/artwork/crops/kiss-me-over-the-garden-gate.webp": "artwork/crops/kiss-me-over-the-garden-gate.webp",
   "/artwork/crops/lace-flower.webp": "artwork/crops/lace-flower.webp",
+  "/artwork/crops/larkspur-v2.webp": "artwork/crops/larkspur-v2.webp",
   "/artwork/crops/larkspur.webp": "artwork/crops/larkspur.webp",
   "/artwork/crops/lavatera.webp": "artwork/crops/lavatera.webp",
   "/artwork/crops/lavender.webp": "artwork/crops/lavender.webp",
   "/artwork/crops/linaria.webp": "artwork/crops/linaria.webp",
   "/artwork/crops/lisianthus.webp": "artwork/crops/lisianthus.webp",
+  "/artwork/crops/love-in-a-puff-v2.webp": "artwork/crops/love-in-a-puff-v2.webp",
   "/artwork/crops/love-in-a-puff.webp": "artwork/crops/love-in-a-puff.webp",
+  "/artwork/crops/lupine-v2.webp": "artwork/crops/lupine-v2.webp",
   "/artwork/crops/lupine.webp": "artwork/crops/lupine.webp",
+  "/artwork/crops/malope-v2.webp": "artwork/crops/malope-v2.webp",
   "/artwork/crops/malope.webp": "artwork/crops/malope.webp",
   "/artwork/crops/marigold.webp": "artwork/crops/marigold.webp",
   "/artwork/crops/masterwort.webp": "artwork/crops/masterwort.webp",
   "/artwork/crops/mignonette.webp": "artwork/crops/mignonette.webp",
+  "/artwork/crops/milkweed-v2.webp": "artwork/crops/milkweed-v2.webp",
   "/artwork/crops/milkweed.webp": "artwork/crops/milkweed.webp",
+  "/artwork/crops/mullein-v2.webp": "artwork/crops/mullein-v2.webp",
   "/artwork/crops/mullein.webp": "artwork/crops/mullein.webp",
   "/artwork/crops/nasturtium.webp": "artwork/crops/nasturtium.webp",
+  "/artwork/crops/nigella-v2.webp": "artwork/crops/nigella-v2.webp",
   "/artwork/crops/nigella.webp": "artwork/crops/nigella.webp",
   "/artwork/crops/orach.webp": "artwork/crops/orach.webp",
   "/artwork/crops/oregano.webp": "artwork/crops/oregano.webp",

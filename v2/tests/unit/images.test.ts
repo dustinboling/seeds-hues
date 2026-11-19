@@ -123,13 +123,15 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 778 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 786 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
     // +8 for the crop-painting redraw Batch 2: figwort, flax, formosa-lily, foxglove,
-    // gomphrena, hollyhock, honeywort, iceland-poppy v2 (2026-11-19).
-    expect(entries).toHaveLength(778);
+    // gomphrena, hollyhock, honeywort, iceland-poppy v2 (2026-11-19);
+    // +8 for the crop-painting redraw Batch 3: kiss-me-over-the-garden-gate, larkspur,
+    // love-in-a-puff, lupine, malope, milkweed, mullein, nigella v2 (2026-11-19).
+    expect(entries).toHaveLength(786);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
