@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 802 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 808 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -274,14 +274,20 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/tickseed-v2.webp": "artwork/crops/tickseed-v2.webp",
   "/artwork/crops/tickseed.webp": "artwork/crops/tickseed.webp",
   "/artwork/crops/tomato.webp": "artwork/crops/tomato.webp",
+  "/artwork/crops/trachelium-v2.webp": "artwork/crops/trachelium-v2.webp",
   "/artwork/crops/trachelium.webp": "artwork/crops/trachelium.webp",
   "/artwork/crops/verbena.webp": "artwork/crops/verbena.webp",
+  "/artwork/crops/viola-v2.webp": "artwork/crops/viola-v2.webp",
   "/artwork/crops/viola.webp": "artwork/crops/viola.webp",
+  "/artwork/crops/virginia-stock-v2.webp": "artwork/crops/virginia-stock-v2.webp",
   "/artwork/crops/virginia-stock.webp": "artwork/crops/virginia-stock.webp",
+  "/artwork/crops/wallflower-v2.webp": "artwork/crops/wallflower-v2.webp",
   "/artwork/crops/wallflower.webp": "artwork/crops/wallflower.webp",
   "/artwork/crops/winged-everlasting.webp": "artwork/crops/winged-everlasting.webp",
+  "/artwork/crops/xeranthemum-v2.webp": "artwork/crops/xeranthemum-v2.webp",
   "/artwork/crops/xeranthemum.webp": "artwork/crops/xeranthemum.webp",
   "/artwork/crops/yarrow.webp": "artwork/crops/yarrow.webp",
+  "/artwork/crops/zinnia-v2.webp": "artwork/crops/zinnia-v2.webp",
   "/artwork/crops/zinnia.webp": "artwork/crops/zinnia.webp",
   "/artwork/cup-and-saucer-vine-alba.webp": "artwork/cup-and-saucer-vine-alba.png",
   "/artwork/cup-and-saucer-vine-purple.webp": "artwork/cup-and-saucer-vine-purple.png",
