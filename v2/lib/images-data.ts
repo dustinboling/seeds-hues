@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 808 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 810 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -791,9 +791,11 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/ornaments/motif-sweet-pea.webp": "ornaments/motif-sweet-pea.png",
   "/ornaments/motif-zinnia.webp": "ornaments/motif-zinnia.png",
   "/theme/about-data.webp": "theme/about-data.webp",
+  "/theme/account-organizer.webp": "theme/account-organizer.webp",
   "/theme/divider-stem.svg": "theme/divider-stem.svg",
   "/theme/empty-no-sellers.webp": "theme/empty-no-sellers.webp",
   "/theme/empty-search.webp": "theme/empty-search.webp",
+  "/theme/farm-gate.webp": "theme/farm-gate.webp",
   "/theme/farms-basket.webp": "theme/farms-basket.webp",
   "/theme/hero-cutting-garden-1600.webp": "theme/hero-cutting-garden-1600.webp",
   "/theme/hero-cutting-garden-960.webp": "theme/hero-cutting-garden-1600.webp",
