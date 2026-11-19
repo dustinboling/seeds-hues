@@ -532,10 +532,43 @@ const listingSelect = {
   ...plantRefCols,
 };
 
-export type PublicListingRow = Awaited<ReturnType<typeof publicListingRows>>[number];
+export type PublicListingRow = Awaited<ReturnType<typeof publicListingRowsQuery>>[number];
 
-/** Visible listings, in-stock first, then seller name (variety view) / crop + variety (seller view). */
+/** Mirror of publicListingRowsQuery()'s ORDER BY for rows already fetched (ids chunking below). */
+function listingComparator(q: ListingQuery): (a: PublicListingRow, b: PublicListingRow) => number {
+  if (q.sellerId !== undefined) {
+    return (a, b) =>
+      a.commonName.toLowerCase().localeCompare(b.commonName.toLowerCase()) ||
+      a.varietyName.toLowerCase().localeCompare(b.varietyName.toLowerCase()) ||
+      (a.varietySlug < b.varietySlug ? -1 : a.varietySlug > b.varietySlug ? 1 : 0);
+  }
+  return (a, b) =>
+    (a.availability === "in_stock" ? 0 : 1) - (b.availability === "in_stock" ? 0 : 1) ||
+    a.sellerName.toLowerCase().localeCompare(b.sellerName.toLowerCase()) ||
+    (a.sellerSlug < b.sellerSlug ? -1 : a.sellerSlug > b.sellerSlug ? 1 : 0) ||
+    a.id - b.id;
+}
+
+/**
+ * Visible listings, in-stock first, then seller name (variety view) / crop + variety (seller
+ * view). Bound-parameter discipline (V20): an ids list binds one parameter per id on top of the
+ * query's fixed binds, so a >50-id list is fetched in chunks of 50 and merged with the same
+ * ordering the SQL would produce, as the summary loader does — /recent asks for up to 100 ids,
+ * which overflows D1's 100-bound-parameter cap unchunked (same failure as packetRows, 2026-11-18).
+ */
 export async function publicListingRows(db: Db, q: ListingQuery) {
+  if (q.ids && q.ids.length > 50) {
+    const ids = [...new Set(q.ids)];
+    const parts: PublicListingRow[][] = [];
+    for (let i = 0; i < ids.length; i += 50) {
+      parts.push(await publicListingRowsQuery(db, { ...q, ids: ids.slice(i, i + 50) }));
+    }
+    return parts.flat().sort(listingComparator(q));
+  }
+  return publicListingRowsQuery(db, q);
+}
+
+async function publicListingRowsQuery(db: Db, q: ListingQuery) {
   const conds: (SQL | undefined)[] = [visibleListing, activeVariety];
   if (q.varietyId !== undefined) conds.push(eq(listings.varietyId, q.varietyId));
   if (q.sellerId !== undefined) conds.push(eq(listings.sellerId, q.sellerId));
@@ -563,18 +596,32 @@ export async function publicListingRows(db: Db, q: ListingQuery) {
 
 export type PacketRow = Awaited<ReturnType<typeof packetRows>>[number];
 
-/** Packet labels + seed counts only — price columns are deliberately not selected (R1). */
+/**
+ * Packet labels + seed counts only — price columns are deliberately not selected (R1). Ids are
+ * queried in chunks of 50 to stay under D1's 100-bound-parameter cap, as the media loaders do —
+ * a seller passed 100 visible listings in Nov 2026 (Select Seeds, 103), and one unchunked
+ * IN (…) over every listing id fails with "too many SQL variables", 500ing the seller page.
+ * Chunks partition listing ids, so each listing's packets stay in (sortOrder, id) order within
+ * its chunk — the only ordering groupPackets() in the service relies on.
+ */
 export async function packetRows(db: Db, listingIds: number[]) {
-  if (listingIds.length === 0) return [];
-  return db
-    .select({
-      listingId: listingPacketSizes.listingId,
-      label: listingPacketSizes.label,
-      seedCount: listingPacketSizes.seedCount,
-    })
-    .from(listingPacketSizes)
-    .where(inArray(listingPacketSizes.listingId, listingIds))
-    .orderBy(asc(listingPacketSizes.listingId), asc(listingPacketSizes.sortOrder), asc(listingPacketSizes.id));
+  const ids = [...new Set(listingIds)];
+  if (ids.length === 0) return [];
+  const out: { listingId: number; label: string; seedCount: number | null }[] = [];
+  for (let i = 0; i < ids.length; i += 50) {
+    const chunk = ids.slice(i, i + 50);
+    const rows = await db
+      .select({
+        listingId: listingPacketSizes.listingId,
+        label: listingPacketSizes.label,
+        seedCount: listingPacketSizes.seedCount,
+      })
+      .from(listingPacketSizes)
+      .where(inArray(listingPacketSizes.listingId, chunk))
+      .orderBy(asc(listingPacketSizes.listingId), asc(listingPacketSizes.sortOrder), asc(listingPacketSizes.id));
+    out.push(...rows);
+  }
+  return out;
 }
 
 /** Listing + seller state for /go/{id} (any status — the route decides 302 / 404 / 410). */

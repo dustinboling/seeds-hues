@@ -178,6 +178,90 @@ describe("listing visibility", () => {
   });
 });
 
+describe("packet sizes for a seller with >100 listings (D1 bound-parameter cap)", () => {
+  // Regression (2026-11-18): packetRows() bound every listing id in ONE inArray(...) — when
+  // Select Seeds passed 100 visible listings (103), production D1 rejected the statement with
+  // "too many SQL variables" and /seller/select-seeds 500ed. packetRows now chunks ids at 50,
+  // like the media loaders. This test drives the exact getSeller path with 103 listings.
+  it("getSeller returns every listing with its packets in order, across chunk boundaries", async () => {
+    const s = svc();
+    const before = (await s.getSeller("songbird-seed-co"))!;
+    const marker = "https://example.invalid/packet-cap-regression/";
+    try {
+      // 103 listings for varieties this seller does not already list, each with two packet
+      // sizes (sort_order 0 then 1). One statement, no bound ids — the cap is per-statement
+      // binds, and the read path under test is what must chunk.
+      await raw(
+        `INSERT INTO listings (variety_id, seller_id, source_id, product_url, status, availability, match_method, confidence, first_seen_at, last_checked_at, created_at, updated_at)
+         SELECT v.id, (SELECT id FROM sellers WHERE slug = 'songbird-seed-co'),
+                (SELECT source_id FROM listings WHERE seller_id = (SELECT id FROM sellers WHERE slug = 'songbird-seed-co') LIMIT 1),
+                '${marker}' || v.slug, 'published', 'in_stock', 'human', 1,
+                '2026-11-18T00:00:00.000Z', '2026-11-18T00:00:00.000Z', '2026-11-18T00:00:00.000Z', '2026-11-18T00:00:00.000Z'
+         FROM varieties v
+         WHERE NOT EXISTS (SELECT 1 FROM listings l WHERE l.variety_id = v.id AND l.seller_id = (SELECT id FROM sellers WHERE slug = 'songbird-seed-co'))
+         ORDER BY v.id LIMIT 103`,
+      ).run();
+      await raw(
+        `INSERT INTO listing_packet_sizes (listing_id, label, seed_count, sort_order)
+         SELECT l.id, '10 seeds', 10, 0 FROM listings l WHERE l.product_url LIKE '${marker}%'
+         UNION ALL
+         SELECT l.id, '25 seeds', 25, 1 FROM listings l WHERE l.product_url LIKE '${marker}%'`,
+      ).run();
+
+      const after = (await s.getSeller("songbird-seed-co"))!;
+      expect(after.listings).toHaveLength(before.listings.length + 103);
+      const inserted = after.listings.filter((l) => l.productUrl?.startsWith(marker));
+      expect(inserted).toHaveLength(103);
+      for (const l of inserted) {
+        expect(l.packetSizes).toEqual([
+          { label: "10 seeds", seedCount: 10 },
+          { label: "25 seeds", seedCount: 25 },
+        ]);
+      }
+    } finally {
+      await raw(`DELETE FROM listing_packet_sizes WHERE listing_id IN (SELECT id FROM listings WHERE product_url LIKE '${marker}%')`).run();
+      await raw(`DELETE FROM listings WHERE product_url LIKE '${marker}%'`).run();
+    }
+    expect((await s.getSeller("songbird-seed-co"))!.listings).toHaveLength(before.listings.length);
+  });
+});
+
+describe("recent with >100 distinct listings (D1 bound-parameter cap)", () => {
+  // Regression (2026-11-18), same failure family as packetRows above: recent() passes up to
+  // 100 listing ids into publicListingRows(), which bound them all in one IN (…) — with the
+  // query's fixed binds the statement overflowed D1's 100-bound-parameter cap and
+  // /api/v1/recent?limit=100 500ed in production. publicListingRows now chunks ids at 50.
+  it("recent returns items for more than 100 distinct listings without overflowing", async () => {
+    const s = svc();
+    const marker = "https://example.invalid/recent-cap-regression/";
+    try {
+      // 90 fresh listings (the seed catalog's 17 already have first_seen events), each with
+      // a first_seen event — 107 distinct ids flow into the listings() ids path.
+      await raw(
+        `INSERT INTO listings (variety_id, seller_id, source_id, product_url, status, availability, match_method, confidence, first_seen_at, last_checked_at, created_at, updated_at)
+         SELECT v.id, (SELECT id FROM sellers WHERE slug = 'songbird-seed-co'),
+                (SELECT source_id FROM listings WHERE seller_id = (SELECT id FROM sellers WHERE slug = 'songbird-seed-co') LIMIT 1),
+                '${marker}' || v.slug, 'published', 'in_stock', 'human', 1,
+                '2026-11-18T01:00:00.000Z', '2026-11-18T01:00:00.000Z', '2026-11-18T01:00:00.000Z', '2026-11-18T01:00:00.000Z'
+         FROM varieties v
+         WHERE NOT EXISTS (SELECT 1 FROM listings l WHERE l.variety_id = v.id AND l.seller_id = (SELECT id FROM sellers WHERE slug = 'songbird-seed-co'))
+         ORDER BY v.id LIMIT 90`,
+      ).run();
+      await raw(
+        `INSERT INTO listing_events (listing_id, event, at)
+         SELECT id, 'first_seen', '2026-11-18T01:00:00.000Z' FROM listings WHERE product_url LIKE '${marker}%'`,
+      ).run();
+
+      const items = await s.recent({ limit: 200 });
+      const inserted = items.filter((i) => i.listing.productUrl?.startsWith(marker));
+      expect(inserted).toHaveLength(90);
+    } finally {
+      await raw(`DELETE FROM listing_events WHERE listing_id IN (SELECT id FROM listings WHERE product_url LIKE '${marker}%')`).run();
+      await raw(`DELETE FROM listings WHERE product_url LIKE '${marker}%'`).run();
+    }
+  });
+});
+
 describe("search (R12)", () => {
   const slugsFor = async (q: string) => {
     const matches = await searchVarieties(t.db, q, { limit: 50 });
