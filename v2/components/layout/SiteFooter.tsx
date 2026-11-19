@@ -17,9 +17,10 @@ const LINKS = [
 export function SiteFooter() {
   return (
     <>
-      {/* The botanical stem motif, centred above the footer (theme §3). Decorative. Where a
-          bundle divider (PodDivider) is the page's final content, that bundle replaces the
-          sprout rule and FooterStem renders nothing. */}
+      {/* Divider motif B, the centred ornament above the footer — on the page's paper ground,
+          outside this paper-deep <footer> element (its painted cream ground must never sit on
+          paper-deep). Decorative. Where a bundle divider (PodDivider) is the page's final
+          content, that bundle closes the page instead and FooterStem renders nothing. */}
       <FooterStem />
       <footer className="mt-4 border-t border-line bg-paper-deep pb-24 md:pb-8">
         <div className="container-page flex flex-col gap-4 py-8 text-sm text-ink-soft">

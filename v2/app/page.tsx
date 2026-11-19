@@ -5,6 +5,7 @@ import { CropCardImage } from "@/components/crop/CropCardImage";
 import { AvailabilityBadge } from "@/components/variety/Availability";
 import { ThemeArt } from "@/components/ui/ThemeArt";
 import { PodDivider } from "@/components/ui/PodDivider";
+import { MotifDivider } from "@/components/ui/MotifDivider";
 import { BrowseFilters, activeFilterLabels, type BrowseFilterState } from "@/components/ui/BrowseFilters";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
@@ -77,7 +78,10 @@ export default async function HomePage({ searchParams }: Props) {
           </p>
         </div>
       </section>
-      <div aria-hidden="true" className="divider-stem my-2" />
+      {/* Divider motif B: the centred ornament for this major break (hero → browse). ~104px tall at
+          480px wide, so clear space ≥52px each side: mt-10 (40px) + the hero's pb-4 (16px) = 56px
+          above; mb-8 (32px) + the crops section's py-6 top (24px) = 56px below. */}
+      <MotifDivider variant="home" className="mb-8 mt-10" />
 
       <section aria-labelledby="crops-title" className="py-6">
         <div className="flex items-baseline justify-between gap-4">

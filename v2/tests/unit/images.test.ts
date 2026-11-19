@@ -123,9 +123,11 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 759 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 760 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
-    expect(entries).toHaveLength(759);
+    // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19).
+    expect(entries).toHaveLength(760);
+    expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
       expect(key).toMatch(/^(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|png|svg)$/);

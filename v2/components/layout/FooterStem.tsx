@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useLayoutEffect, useState } from "react";
+import { MotifDivider } from "@/components/ui/MotifDivider";
 
 /** How far down main's lastElementChild chain a closing bundle divider may sit. */
 const MAX_DEPTH = 5;
@@ -26,10 +27,17 @@ function pageEndsWithBundle(): boolean {
 }
 
 /**
- * The sprout-rule divider above the footer (theme §3). Decorative. Where a bundle divider is the
- * page's final content, the bundle replaces the sprout rule and this renders nothing, so the two
- * dividers never stack. Re-checked on every route change; the layout effect runs before paint,
- * so the stem does not flash before hiding on client navigations.
+ * The footer-adjacent centrepiece: divider motif B (MotifDivider, footer variant — a centred
+ * ornament, not a footer rule) on the page's paper ground, just above the paper-deep <footer>
+ * element and never inside it. Decorative. Where a bundle divider is the page's final content, the
+ * bundle closes the page instead and this renders nothing, so two painted dividers never stack.
+ * Re-checked on every route change; the layout effect runs before paint, so the ornament does not
+ * flash before hiding on client navigations. Server HTML always includes the slot (suppression is
+ * client-side). The slot keeps data-testid="footer-stem" for existing checks.
+ *
+ * Whitespace: the motif is ~95px tall at 440px wide, so clear space ≥48px each side: mt-16 (64px)
+ * above; mb-10 (40px) + the footer's mt-4 (16px) = 56px below. (The body is a flex column, so
+ * these margins add rather than collapse.)
  */
 export function FooterStem() {
   const pathname = usePathname();
@@ -41,5 +49,9 @@ export function FooterStem() {
     setHidden(pageEndsWithBundle());
   }, [pathname]);
   if (hidden) return null;
-  return <div aria-hidden="true" className="divider-stem mt-16" data-testid="footer-stem" />;
+  return (
+    <div aria-hidden="true" className="mb-10 mt-16" data-testid="footer-stem">
+      <MotifDivider variant="footer" />
+    </div>
+  );
 }
