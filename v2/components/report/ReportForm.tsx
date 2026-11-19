@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { callApi } from "@/components/account/api";
+import { Turnstile } from "@/components/ui/Turnstile";
+import { REPORT_TURNSTILE_PENDING, reportErrorMessage } from "./report-errors";
 
 type Intent = "correct" | "claim" | "remove";
 
@@ -11,41 +14,43 @@ const INTENTS: { value: Intent; label: string; hint: string }[] = [
 ];
 
 /**
- * One form, three intents (R8). Posts JSON to /api/v1/reports. Turnstile renders only when
- * NEXT_PUBLIC_TURNSTILE_SITE_KEY is set at build time (the server verifies only when its secret
- * is configured).
+ * One form, three intents (R8). Posts JSON to /api/v1/reports through the shared account-form
+ * API helper. The human check is the shared explicit-render <Turnstile> widget (same pattern as
+ * the account, waiting-list and Add Your Farm forms): its token arrives through onToken, is sent
+ * as turnstile_token, and the widget is reset after every attempt because tokens are single-use.
+ * When a site key is configured, the form refuses to send until a token exists and says why;
+ * server-side verification (lib/services/reports.ts) is unchanged. API failures are shown as
+ * plain copy (./report-errors), never as raw validator detail.
  */
 export function ReportForm(props: { type: Intent; targetType: "variety" | "seller"; targetRef: string; siteKey: string | null }) {
   const [type, setType] = useState<Intent>(props.type);
   const [targetType, setTargetType] = useState(props.targetType);
+  const [token, setToken] = useState<string | null>(null);
+  const [reset, setReset] = useState(0);
   const [state, setState] = useState<{ status: "idle" | "sending" | "done" | "error"; message: string }>({ status: "idle", message: "" });
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (props.siteKey && !token) {
+      setState({ status: "error", message: REPORT_TURNSTILE_PENDING });
+      return;
+    }
     const form = new FormData(e.currentTarget);
     setState({ status: "sending", message: "" });
-    try {
-      const res = await fetch("/api/v1/reports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type,
-          target_type: targetType,
-          target_ref: String(form.get("target_ref") ?? "").trim().toLowerCase(),
-          message: String(form.get("message") ?? ""),
-          contact: String(form.get("contact") ?? "").trim(),
-          ...(form.get("cf-turnstile-response") ? { turnstile_token: String(form.get("cf-turnstile-response")) } : {}),
-        }),
-      });
-      if (res.ok) {
-        setState({ status: "done", message: "Thank you — your request is in our review queue. We reply by email." });
-        return;
-      }
-      const p = (await res.json().catch(() => ({}))) as { detail?: string };
-      setState({ status: "error", message: p.detail ?? `Something went wrong (${res.status}).` });
-    } catch {
-      setState({ status: "error", message: "Could not send. Check your connection and try again." });
+    const r = await callApi("/api/v1/reports", {
+      type,
+      target_type: targetType,
+      target_ref: String(form.get("target_ref") ?? "").trim().toLowerCase(),
+      message: String(form.get("message") ?? ""),
+      contact: String(form.get("contact") ?? "").trim(),
+      ...(token ? { turnstile_token: token } : {}),
+    });
+    if (r.ok) {
+      setState({ status: "done", message: "Thank you — your request is in our review queue. We reply by email." });
+      return;
     }
+    setState({ status: "error", message: reportErrorMessage(r.status, r.code, r.message) });
+    setReset((n) => n + 1);
   }
 
   if (state.status === "done") {
@@ -95,12 +100,7 @@ export function ReportForm(props: { type: Intent; targetType: "variety" | "selle
         </label>
         <input id="contact" name="contact" type="email" required maxLength={320} className="tap rounded-[10px] border border-line-strong bg-surface px-3" />
       </div>
-      {props.siteKey ? (
-        <>
-          <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
-          <div className="cf-turnstile" data-sitekey={props.siteKey} />
-        </>
-      ) : null}
+      <Turnstile siteKey={props.siteKey} onToken={setToken} resetKey={reset} action="report" />
       <div>
         <button type="submit" className="btn btn-primary" disabled={state.status === "sending"}>
           {state.status === "sending" ? "Sending…" : "Send request"}

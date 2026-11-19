@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ReportForm } from "@/components/report/ReportForm";
+import { getRuntimeEnv } from "@/lib/api/runtime-env";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { legacySlug } from "@/lib/legacy";
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = pageMetadata({
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export default async function ReportPage({ searchParams }: Props) {
-  const sp = await searchParams;
+  const [sp, env] = await Promise.all([searchParams, getRuntimeEnv()]);
   const rawType = Array.isArray(sp.type) ? sp.type[0] : sp.type;
   const type = rawType === "claim" || rawType === "remove" ? rawType : "correct";
   const seller = legacySlug(sp.seller);
@@ -35,7 +36,7 @@ export default async function ReportPage({ searchParams }: Props) {
         goes to a person. A removal takes the farm’s page and all its listings down within 48 hours and stops our crawler
         from visiting the farm’s site. See <Link href="/about/data">About the data</Link>.
       </p>
-      <ReportForm type={type} targetType={targetType} targetRef={targetRef} siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || null} />
+      <ReportForm type={type} targetType={targetType} targetRef={targetRef} siteKey={env.turnstileSiteKey ?? null} />
     </article>
   );
 }

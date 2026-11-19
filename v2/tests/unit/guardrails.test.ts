@@ -239,6 +239,41 @@ describe("policy guardrails", () => {
     }
   });
 
+  // /report fix (2026-11-19): implicit Turnstile rendering (a `.cf-turnstile` div scanned once by
+  // a plain api.js load) never mounted in this React shell, so the token was silently dropped.
+  // Every human-check form uses the shared explicit-render widget; only it loads Cloudflare's script.
+  it("Turnstile renders only through the shared explicit widget (no implicit .cf-turnstile, no inline api.js)", () => {
+    const ui = RUNTIME.filter((f) => f.startsWith("app/") || f.startsWith("components/"));
+    expect(offenders(ui, /challenges\.cloudflare\.com\/turnstile\/v0\/api\.js/, ["components/ui/Turnstile.tsx"])).toEqual([]);
+    expect(stripComments(read("components/ui/Turnstile.tsx"))).toMatch(/turnstile\/v0\/api\.js\?render=explicit"/);
+    expect(offenders(ui, /["'\s]cf-turnstile["'\s]|data-sitekey/)).toEqual([]);
+    const FORMS: Record<string, string> = {
+      "components/account/CreateAccountForm.tsx": "create-account",
+      "components/account/SignInForm.tsx": "sign-in",
+      "components/farm/AddYourFarmForm.tsx": "add-your-farm",
+      "components/variety/WaitlistBlock.tsx": "waitlist-join",
+      "components/report/ReportForm.tsx": "report",
+    };
+    for (const [file, action] of Object.entries(FORMS)) {
+      const code = stripComments(read(file));
+      expect(code, file).toMatch(/from "@\/components\/ui\/Turnstile"/);
+      expect(code, file).toMatch(new RegExp(`<Turnstile [^>]*onToken=\\{setToken\\}[^>]*resetKey=\\{reset\\}[^>]*action="${action}"`));
+    }
+    // Pages must source the site key from the runtime env (the TURNSTILE_SITE_KEY Worker var),
+    // never from NEXT_PUBLIC_TURNSTILE_SITE_KEY directly — that build-time var is unset in
+    // production, so a page reading it directly renders no widget (the /report bug, 2026-11-19).
+    // The NEXT_PUBLIC_ fallback lives only in lib/api/env-config.ts (runtimeEnvFrom).
+    expect(offenders(ui, /NEXT_PUBLIC_TURNSTILE_SITE_KEY/)).toEqual([]);
+    for (const page of ["app/report/page.tsx", "app/account/page.tsx", "app/add-your-farm/page.tsx"]) {
+      const code = stripComments(read(page));
+      expect(code, page).toMatch(/from "@\/lib\/api\/runtime-env"/);
+      expect(code, page).toMatch(/getRuntimeEnv\(\)/);
+      expect(code, page).toMatch(/turnstileSiteKey/);
+    }
+    // The scanner is not vacuous: the fallback still exists in env-config.
+    expect(offenders(["lib/api/env-config.ts"], /NEXT_PUBLIC_TURNSTILE_SITE_KEY/)).toHaveLength(1);
+  });
+
   it("no wildcard CORS, no next-pwa", () => {
     expect(offenders(RUNTIME, /Allow-Origin["']?\s*[:,]\s*["']\*["']/)).toEqual([]);
     const pkg = JSON.parse(read("package.json")) as { dependencies: Record<string, string>; devDependencies: Record<string, string> };
