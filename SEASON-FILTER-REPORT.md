@@ -589,3 +589,81 @@ Dustin's call (2026-11-20, options widget): build the endpoint rather than autho
 - **Retirements executed through the endpoint** (each returned `already_removed: false`): High Country Gardens **1518, 1519, 1520, 1521, 1522, 1523** with reason `plants-not-seed` (perennial plant pages listed as seed), and Seedman **993** with reason `category-link` (pointed at the stocks.htm category page, no individual product page exists).
 - **Quinn post-ship verification: PASS, all 5 checks** (record `v2/tmp/quinn-verify-listing-remove.md`): all 7 variety pages show no trace of the retired listings (`/go/<id>` count 0, seller name absent); `/go/<id>` returns 404 for all 7; control listing **1524** (HCG Swamp Milkweed, genuine seed) untouched — still on its page, `/go/1524` → 302, status `published`; production counts exactly **1,784 live** (1782 published + 2 active; removed 13 → 20); exactly one 'gone' event per retired listing with the correct reason.
 - **Still live, awaiting Dustin's individual calls (NOT retired):** Johnny's wrong-variants 490 (Paper Daisy 'Pierrot') and 452 (Eucalyptus 'Baby Blue'); the breadseed-poppy 'Black Beauty' cluster 1354, 1355, 1374, 1375, 1496; TGW Stock 'Apricot' 381; and **listing 1617** — Marigold 'Sparkler' at Sow True Seed, whose product URL is `sowtrueseed.com/products/radish-sparkler` (a radish page), identified during this run from hunt run 13's flag. The endpoint now makes any of these a one-call retirement when Dustin rules.
+
+## 2026-11-20 — Hue's badge review: all 56 DEFAULT (unreviewed) sellers judged — 24 BADGE flips LIVE, 32 confirmed NO BADGE
+
+The badge build shipped with 56 hunt-added sellers recorded NO BADGE — DEFAULT (unreviewed) (commit `eb116e0`), explicitly pending Hue's individual review. That review is complete. Each of the 56 was judged against the seller's own site (homepage + About/story pages) under Dustin's standing rule — clearly small and family-run → BADGE; when in doubt, flag OFF. The settled original classification (20 BADGE + 8 judged NO BADGE) was not re-opened. **Outcome: 24 BADGE, 32 NO BADGE. Production is now 44 badged / 40 not, of 84 sellers.**
+
+- **Record (source of truth first):** `open-directory/seller-classification.md` — all 56 rows moved out of the DEFAULT section into the BADGE (24) and NO BADGE (32) sections with their judgments; the DEFAULT section now records the completed review (0 remaining). Mirrored in `v2/lib/catalog/small-farm-classification.ts` (BADGE 44, judged NO BADGE 40, DEFAULT empty, `SMALL_FARM_PRODUCTION_TARGET` 84/44/40); the apply script's recorded-count guards (`scripts/lib/small-farm-badges.ts`), its header, the `lib/catalog/assertions.ts` comments, and the `catalog-assertions` test pins were updated to match. Affected suites green (catalog-assertions, small-farm, guardrails, listing-row — 63/63).
+- **Flips applied through the admin path:** `POST /api/v1/admin/sellers/:id/small-farm` once per BADGE judgment (24 calls, each returned `is_small_farm: true`) — the same admin path the badge build used; no hand-written D1. NO BADGE judgments needed no writes (already off).
+- **Verification (production):** public API reads 84 sellers / 44 badged; all 24 flips badged, all 32 reviewed NO BADGE still unbadged, the original 20 BADGE and 8 judged NO BADGE untouched. Rendered seller pages spot-checked: badge present on Sweet Pea Gardens, Urban Farmer, Strictly Medicinal Seeds; absent on Fedco Seeds and Southern Seeds (both confirmed NO BADGE).
+- **Quinn spot-check (read-only):** sampled 13 judgments — every scale-suggestive BADGE flip plus three NO BADGE calls that could have erred the other way. **11 confirmed. 2 DISPUTED (both BADGE flips she would call NO BADGE), returned here as a list per protocol — NOT silently flipped; both remain badged pending a ruling:**
+  - **urban-farmer** — Quinn: its own About headlines 2,500+ varieties, 100,000+ customers annually worldwide, a 75+ grower network, an 8,000 sq ft building, and a wholesale program — a national aggregator/distributor; the volume exceeds Fedco's 60,000 orders (confirmed NO BADGE), and like Baker Creek the garage/founder origin is outweighed by current scale; it does not *clearly* look small.
+  - **halden-garden** — Quinn: owner-operators Sara & Mitchell Haller are supported, but Halden's own About says the small seed shop "quickly grew into a large online nursery," it pivoted to education in 2023, sold its mum mother stock that year, and its current offer is a curated monthly box sourced from professional growers nationwide — self-described as large, no longer clearly a small farm/seed shop.
+- **Hardest calls (besides the two disputes):** Fedco Seeds (NO BADGE — a cooperative, but ~150 workers / 60,000+ orders / $10M+ a year is national-institution scale, the Seed Savers pattern); Southern Seeds (NO BADGE — genuinely family-founded, now a 2M+-packet marketplace reseller sourcing from other farms); Outsidepride (NO BADGE — its "small, family-run" claim outweighed by bulk/wholesale scale; this is the badge Quinn's 2026-11-19 audit had disputed, now settled OFF on the evidence); Osborne Seed, Trailing Petunia, Everwilde Farms (NO BADGE — family/small claims outweighed by commercial-dealer, bulk-store, and bulk-bag presentations).
+
+### BADGE — flipped live (24)
+
+| Slug | Seller | Judgment |
+|---|---|---|
+| `sweet-pea-gardens` | Sweet Pea Gardens | Husband-and-wife farm in Chehalis, WA growing all of its own sweet pea seed on its farm. |
+| `uprising-seeds` | Uprising Seeds | Small family-run certified organic seed farm in Bellingham, WA growing most of its own seed. |
+| `adaptive-seeds` | Adaptive Seeds | Founder-led certified organic farm-based seed company near Sweet Home, OR growing most of its own seed. |
+| `thresh-seed-co` | Thresh Seed Co. | Husband-and-wife heirloom seed business on their own small 1880s farmstead in Guthrie County, IA. |
+| `south-ga-seed-co` | South GA Seed Co. | Small husband-and-wife heirloom seed farm — family of four, off-grid, doing everything by hand. |
+| `alliance-of-native-seedkeepers` | Alliance of Native Seedkeepers | Native-led country seed store in Colerain, NC led day-to-day by co-founders Frank and Beth Cain, rooted in their own seedkeeping and a Cashie River microfarm — clearly small and personal. |
+| `urban-farmer` | Urban Farmer | Founder-led small seed shop — Noah Herron started it hand-packing saved seed in his garage and it still presents from a single five-acre Indiana farmstead in Westfield with a personal founder story. |
+| `halden-garden` | Halden Garden | Husband-and-wife owner-operated business — Sara Haller runs Halden with her husband Mitchell, founded by them as a small seed shop in Salt Lake City. |
+| `bucktown-seed-co` | Bucktown Seed Co. | Family-run seed company started at Jeff and Christa's Chester County home in 2021, growing some seed itself under Certified Naturally Grown practices. |
+| `autumn-prairie-pumpkins` | Autumn Prairie Pumpkins | A Snow family backyard micro-farm in Newton, KS, started in 2025, growing and seed-saving its own pumpkins and squash. |
+| `fellabees-nativeseeds` | Fellabees & Nativeseeds | A small, independently owned native-seed shop that hand-harvests and hand-packs seed from prairies under its own management, deliberately staying small. |
+| `homestead-culture` | Homestead Culture | Founders Ann Nguyen and Noel Ruiz's family homestead in Southern Oregon selling its own homestead-grown, small-batch perennial seeds. |
+| `j-l-hudson-seeds` | J.L. Hudson Seeds | A one-proprietor public-access seed bank run by seedsman David Theodoropoulos from La Honda — a tiny, personal, non-commercial seed shop, not a large catalog. |
+| `plant-good-seed` | Plant Good Seed | Founder Quin Shakra's small seed company — about 2 acres at most in his own production, gathering seed from a small network of about 15 small growers. |
+| `sandhill-preservation` | Sandhill Preservation | Glenn and Linda's small, home-based gene bank on their 40-acre Iowa farm, doing most of the work themselves and growing most of the seed they sell. |
+| `sow-true-seed` | Sow True Seed | Small employee-owned Asheville seed shop founded by a single gardener, run by a tiny dedicated team, not a national catalog. |
+| `wild-garden-seed` | Wild Garden Seed | True owner-operated organic seed farm in the Willamette Valley breeding and growing its own farm-original varieties. |
+| `san-diego-seed-company` | San Diego Seed Company | Founder-led, women-owned urban seed farm producing regionally adapted, hand-harvested seed on about an acre in San Diego. |
+| `jerras-garden` | Jerra's Garden | Solo micro-nursery in Florida run personally by Jerra, selling rare heat-tolerant seed from her own garden in the first person. |
+| `marys-heirloom-seeds` | Mary's Heirloom Seeds | Explicit mom-and-pop seed shop run by Mary and her husband, hand-packing seed sourced from small US family growers. |
+| `flower-people` | Flower People | Family-run flower farm and seed company in SW Washington, run by a husband-and-wife team growing and sourcing flower seed on their own farm. |
+| `prairie-road-organic-seed` | Prairie Road Organic Seed | Two named farmer-founders growing, breeding, selecting and hand-harvesting all their organic seed personally on their North Dakota farm. |
+| `deep-harvest-farm` | Deep Harvest Farm | Two named owners farming a single 10-acre certified-organic seed, vegetable and flower farm on Whidbey Island and selling their own farm-grown seed. |
+| `strictly-medicinal-seeds` | Strictly Medicinal Seeds | Cech family farm in Williams, Oregon, founded 1985, growing medicinal herb seed in its own gardens and greenhouses with the founder's personal voice throughout. |
+
+### NO BADGE — reviewed and confirmed (32)
+
+| Slug | Seller | Judgment |
+|---|---|---|
+| `territorial-seed-company` | Territorial Seed Company | Large national seed catalog company, despite a family-owned since 1979 claim. |
+| `outsidepride` | Outsidepride | Bulk and wholesale seed supplier with 1,500+ varieties, not a small farm growing its own seed. |
+| `eden-brothers` | Eden Brothers | Large national seed and bulb retailer with millions of customers and one of the largest assortments in the US. |
+| `reimer-seeds` | Reimer Seeds | Very large catalog seed seller with 5,000+ varieties and no farm or family presentation found. |
+| `tomorrowseeds` | TomorrowSeeds | Generic large online seed catalog with no farm, founder or family presentation found. |
+| `osborne-seed` | Osborne Seed | Family-owned but presents as a professional seed dealer for farmers and commercial growers across the U.S. and Canada, sourcing from vendors worldwide — a commercial distributor, not a small farm selling its own seed. |
+| `rupp-seeds` | Rupp Seeds | Family-founded and third-generation, but now a leading commercial/wholesale vegetable seed provider to wholesale producers, fresh-market growers and the processing industry. |
+| `harris-seeds` | Harris Seeds | Large national supplier since 1879 serving commercial growers and home gardeners with the biggest selection — now under private ownership, not a small family farm. |
+| `park-seed` | Park Seed | National catalog brand operating since 1868 with exclusive collections and proprietary seed-starting systems — no small or family presentation. |
+| `fedco-seeds` | Fedco Seeds | A worker/consumer cooperative, but at national institution scale — warehouses, famous print catalogs and tens of thousands of orders — not a small family farm. |
+| `trailing-petunia` | Trailing Petunia | Started in a small greenhouse and calls itself a small business, but now a 4,000+ variety reseller with a separate bulk store for growers and landscapers, sourcing seed from suppliers rather than clearly farm-growing it. |
+| `epic-gardening` | Epic Gardening | Large venture-backed content-to-commerce brand with tens of millions in revenue that acquired Botanical Interests — the opposite of a small family seed farm. |
+| `everwilde-farms` | Everwilde Farms | Family-owned with farm origins, but its current presentation is bulk seed supply — about 1,500 varieties sold worldwide in up to 100 lb bulk bags, after a decade wholesale-only. |
+| `seedman` | Seedman | Family-owned since 1992, but presents as a huge global catalog reseller with 3,000+ varieties sourced worldwide, not a small farm or small seed shop. |
+| `hirts-gardens` | Hirt's Gardens | Four-generation family greenhouse, but now a large national online plant retailer with 10 greenhouses, an Amazon store, and year-round US-wide shipping — not clearly small. |
+| `trf-la` | TRF-LA | TRF-LA is "the rice factory Los Angeles," a Japanese rice and food importer/retailer selling milled eating rice and condiments, not a farm or seed shop. |
+| `high-country-gardens` | High Country Gardens | Founder-led Santa Fe nursery originally, but sold in 2012 to American Meadows and now operates as its national sister e-retail brand. |
+| `tomato-growers-supply-co` | Tomato Growers Supply Co. | Long-running national mail-order catalog reselling commercial/breeder hybrid seed at large scale, with no clear family/farm presentation found — thin evidence of smallness. |
+| `true-leaf-market` | True Leaf Market | Large national seed company and brand steward producing millions of pounds of seed yearly, with bulk/wholesale and professional-grower programs. |
+| `baker-creek-heirloom-seed-co` | Baker Creek Heirloom Seed Co. | Family-farm origin story, but a large national catalog company with 1,300–1,500+ varieties, big print catalogs, and free US shipping. |
+| `gertens-garden-center` | Gertens Garden Center | Family-founded but now one of North America's largest garden centers — a large regional retail and professional-landscaper operation, not a small farm or seed shop. |
+| `angletok` | AngleTok | Presents only as a California gift brand making plantable seed calendars and cards, with no named family, farm, or farm-grown seed evidence — thin and conflicting evidence means doubt. |
+| `grow-organic-peaceful-valley-farm-garden-supply` | Grow Organic (Peaceful Valley Farm & Garden Supply) | Family-owned in name, but a national commercial farm-and-garden supplier since 1976 — the largest independent U.S. organic supplier, with wholesale/commercial programs, not a small farm. |
+| `survival-garden-seeds` | Survival Garden Seeds | Family-founded seed-packing business scaled into national marketplace and big-box distribution, not a small farm growing its own seed. |
+| `ujamaa-seeds` | UJAMAA Seeds | National cooperative alliance and nonprofit program aggregating many growers and bulk seed, not a single small family farm or shop. |
+| `grow-hoss` | Grow Hoss | Family-founded but now a tools, supplies, and subscription-box commerce brand, not a seed farm or small seed shop growing seed. |
+| `vermont-wildflower-farm` | Vermont Wildflower Farm | Long-established wildflower seller serving commercial landscape and bulk custom-mix projects at claimed national scale, despite family ownership. |
+| `garden-tree-nursery` | Garden Tree Nursery | Generic online plant reseller with a vast discount catalog and no family, farm, or founder presentation at all. |
+| `garden-pro-hub` | Garden Pro Hub | General-goods dropship-style store selling seed alongside unrelated merchandise, with no farm, family, or grower identity. |
+| `southern-seeds` | Southern Seeds | Family-founded but now a large national e-commerce seed reseller sourcing seed from other U.S. farms at over 2 million packets and 800+ varieties — no longer clearly a small farm. |
+| `walnut-creek-supply` | Walnut Creek Supply | Broad general reseller — actually Walnut Creek Pets LLC — selling pet, aquarium, greenhouse and garden goods from many brands, with seed only a minor sideline and no farm presentation. |
+| `seedway` | Seedway | Large commercial/wholesale seed company serving professional growers nationally, a GROWMARK subsidiary with hundreds of staff and multiple locations. |

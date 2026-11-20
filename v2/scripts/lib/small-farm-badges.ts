@@ -5,9 +5,9 @@
  * Steps, in order, all fail-closed:
  *   1. backup   — every column of every `sellers` row, frozen before any write (JSON) plus a
  *                 targeted rollback file (one UPDATE per seller restoring its prior badge value).
- *   2. resolve  — the 20 BADGE slugs to seller ids; abort unless exactly 20 distinct rows resolve,
+ *   2. resolve  — the 44 BADGE slugs to seller ids; abort unless exactly 44 distinct rows resolve,
  *                 none removed at its request, and every NO BADGE slug present — judged or
- *                 DEFAULT (unreviewed hunt-added sellers, flag OFF pending Hue's review) — is
+ *                 DEFAULT (the list is empty since Hue's 2026-11-20 review judged all 56) — is
  *                 still unbadged. A seller in none of the three recorded lists is unclassified
  *                 and fails the pre-flight (fail-closed).
  *   3. apply    — setSellerSmallFarm(db, id, true, now) per seller NOT already badged. The admin
@@ -79,11 +79,11 @@ export async function applySmallFarmBadges(db: Db, opts: ApplyOptions): Promise<
   const defaultNoBadgeSlugs: readonly string[] = SMALL_FARM_DEFAULT_NO_BADGE_SLUGS;
 
   // Guard the recorded lists themselves before touching the database.
-  if (new Set(badgeSlugs).size !== badgeSlugs.length || badgeSlugs.length !== 20) {
-    throw new BadgeApplyError(`classification BADGE list must hold 20 distinct slugs (has ${badgeSlugs.length})`);
+  if (new Set(badgeSlugs).size !== badgeSlugs.length || badgeSlugs.length !== 44) {
+    throw new BadgeApplyError(`classification BADGE list must hold 44 distinct slugs (has ${badgeSlugs.length})`);
   }
-  if (new Set(defaultNoBadgeSlugs).size !== defaultNoBadgeSlugs.length || defaultNoBadgeSlugs.length !== 56) {
-    throw new BadgeApplyError(`classification DEFAULT NO BADGE list must hold 56 distinct slugs (has ${defaultNoBadgeSlugs.length})`);
+  if (new Set(defaultNoBadgeSlugs).size !== defaultNoBadgeSlugs.length || defaultNoBadgeSlugs.length !== 0) {
+    throw new BadgeApplyError(`classification DEFAULT NO BADGE list must hold 0 distinct slugs (has ${defaultNoBadgeSlugs.length})`);
   }
   const overlap = badgeSlugs.filter((s) => noBadgeSlugs.includes(s));
   if (overlap.length) throw new BadgeApplyError(`slugs in both BADGE and NO BADGE: ${overlap.join(", ")}`);

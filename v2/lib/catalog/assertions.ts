@@ -28,8 +28,10 @@ export const EXPECTED_COUNTS = { varieties: 778, sellers: 25, listings: 17, plan
  *   - its "Small farm" badge value equals the recorded judgment (small-farm-classification.ts,
  *     from seller-classification.md), so a re-import can never silently flip or drop a badge —
  *     the recorded judgment is one of three lists: BADGE, judged NO BADGE, or NO BADGE by
- *     DEFAULT (unreviewed hunt-added sellers, flag OFF pending Hue's review, 2026-11-20); a
- *     seller in none of the three still fails (fail-closed);
+ *     DEFAULT (unreviewed hunt-added sellers, flag OFF pending Hue's review — the 56
+ *     hunt-added sellers sat in DEFAULT until Hue's review on 2026-11-20 judged every one;
+ *     the list is empty until the next unreviewed seller arrives); a seller in none of the
+ *     three still fails (fail-closed);
  *   - approved ⇒ approvedAt, domain/homepage/product-URL consistency (data integrity).
  * Size is never a rejection anywhere.
  */
@@ -138,8 +140,9 @@ export function collectCatalogProblems(c: CatalogInput): string[] {
   // seller's domain matches its homepage and every listing URL sits on its seller's domain.
   const badge = new Set<string>(SMALL_FARM_BADGE_SLUGS);
   const noBadge = new Set<string>(SMALL_FARM_NO_BADGE_SLUGS);
-  // Defaults count as recorded (NO BADGE, unreviewed) — anything in none of the three lists
-  // still fails below, so the fail-closed property survives.
+  // Defaults count as recorded (NO BADGE, unreviewed; the list is empty since the
+  // 2026-11-20 review) — anything in none of the three lists still fails below, so the
+  // fail-closed property survives.
   const defaultNoBadge = new Set<string>(SMALL_FARM_DEFAULT_NO_BADGE_SLUGS);
   const sellerBySlug = new Map(c.sellers.map((s) => [s.slug, s]));
   for (const s of c.sellers) {
