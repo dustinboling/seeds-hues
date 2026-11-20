@@ -20,7 +20,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { COMPANY_NAME_EXCLUSION_PATTERN } from "@/lib/catalog/assertions";
+import { SMALL_FARM_BADGE_SLUGS } from "@/lib/catalog/small-farm-classification";
 import { openPlatform, parseArgs } from "./lib/platform";
 
 const args = parseArgs();
@@ -545,7 +545,7 @@ async function main() {
   await check("King's Ransom: answer sentence, seller, region, stock state, Last checked, Shop → /go, no source attributions", async () => {
     const h = crawled.get("/variety/sweet-pea-kings-ransom")!;
     const t = text(h);
-    assert(t.includes("As of 2026-11-15, 1 small farm lists King's Ransom: Songbird Seed Co."), "answer sentence");
+    assert(t.includes("As of 2026-11-15, 1 seller lists King's Ransom: Songbird Seed Co."), "answer sentence");
     assert(t.includes("Songbird Seed Co.") && /Skagit Valley, WA/.test(t), "seller + region");
     assert(t.includes("In stock") && t.includes("Last checked 2026-11-15"), "stock state / last checked");
     assert(/<a href="\/go\/\d+" rel="nofollow noopener noreferrer"/.test(h) && t.includes("Shop at Songbird Seed Co."), "Shop button via /go");
@@ -582,9 +582,9 @@ async function main() {
     // is checked on a variety that still has none.
     for (const f of ["Pollination Unknown", "Days to bloom Unknown"]) assert(t.includes(f), `missing "${f}"`);
     assert(text(crawled.get("/variety/sweet-pea-susan-burgess")!).includes("Hue Unknown"), 'missing "Hue Unknown"');
-    assert(t.includes("No small farm found selling Katz Mix yet."), "zero-seller answer");
+    assert(t.includes("No seller found selling Katz Mix yet."), "zero-seller answer");
     assert(t.includes("No sellers yet — currently unavailable."), "zero-seller where-to-buy state");
-    assert(t.includes("Know a farm that sells it?"), "zero-seller report prompt");
+    assert(t.includes("Know a seller who sells it?"), "zero-seller report prompt");
   });
   await check("Emma sold out; Dawn Creek Pastels unknown availability (labels)", async () => {
     assert(text(crawled.get("/variety/sweet-pea-emma")!).includes("Sold out"), "Emma");
@@ -656,20 +656,29 @@ async function main() {
     assert((await l("sweet-pea-emma", "songbird-seed-co")).availability === "sold_out", "Emma");
     assert((await l("zinnia-dawn-creek-pastels", "floret")).availability === "unknown", "Dawn Creek Pastels");
   });
-  await check("no excluded company names in sitemap, llms.txt, API payloads or any crawled page", async () => {
-    const bodies: [string, string][] = [
-      ["/sitemap.xml", await html("/sitemap.xml")],
-      ["/llms.txt", await html("/llms.txt")],
-      ["/api/v1/sync/snapshot", await html("/api/v1/sync/snapshot")],
-      ["/api/v1/openapi.json", await html("/api/v1/openapi.json")],
-      // Crawled pages are scanned as rendered text: the raw HTML carries generated JSON-LD
-      // names like "Small farms selling Sun Ball seed", where a variety name ending in "Ball"
-      // sits next to the word "seed" — a template artifact, not a company mention. The catalog
-      // values those names are built from are scanned directly by the import assertions.
-      ...[...crawled.entries()].map(([p, h]): [string, string] => [p, text(h)]),
-    ];
-    for (const [p, b] of bodies) assert(!COMPANY_NAME_EXCLUSION_PATTERN.test(b), `excluded name found in ${p}`);
-    return `${bodies.length} documents`;
+  await check("Open Directory: every seller is a US seller and its badge matches the recorded judgment", async () => {
+    // The retired small-farms-only exclusion scan (COMPANY_NAME_EXCLUSION_PATTERN) is gone with
+    // the model that created it (Dustin's ruling, 2026-11-19): large US sellers — GeoSeed
+    // included — are listable now. What acceptance guards instead is the new model, read from
+    // the live API: US-only, and isSmallFarm equal to the recorded judgment in
+    // lib/catalog/small-farm-classification.ts (GeoSeed is pre-recorded NO BADGE, so a badged
+    // GeoSeed fails here). Sellers with no recorded judgment yet (a brand-new crawl find) are
+    // reported, not failed — badging is a judgment applied after listing.
+    const badge = new Set<string>(SMALL_FARM_BADGE_SLUGS);
+    const sellers = (
+      await getJson<{ data: { slug: string; country: string; isSmallFarm: boolean }[] }>("/api/v1/sellers?limit=100")
+    ).data;
+    assert(sellers.length > 0, "no sellers returned");
+    const unjudged: string[] = [];
+    for (const s of sellers) {
+      assert(s.country === "US", `${s.slug} is not a US seller (${s.country})`);
+      if (badge.has(s.slug)) assert(s.isSmallFarm === true, `${s.slug} should carry the Small farm badge`);
+      else if (s.slug === "geoseed" || ["american-meadows", "botanical-interests", "great-basin-seed", "high-mowing-organic-seeds", "johnnys-selected-seeds", "seed-savers-exchange", "wild-west-seed"].includes(s.slug))
+        assert(s.isSmallFarm === false, `${s.slug} is recorded NO BADGE but surfaces badged`);
+      else unjudged.push(s.slug);
+    }
+    const badged = sellers.filter((s) => s.isSmallFarm).length;
+    return `${sellers.length} sellers · ${badged} badged${unjudged.length ? ` · unjudged: ${unjudged.join(", ")}` : ""}`;
   });
 
   section("Seller states + imported ratings (brief #4)");
@@ -682,9 +691,16 @@ async function main() {
     assert(want.length > 0, "API has no OR sellers");
     const got = sellerSlugsIn(h);
     assert(JSON.stringify(got) === JSON.stringify(want), `cards ${got.join(",")} ≠ ${want.join(",")}`);
-    assert(/<h1[^>]*>Seed farms in Oregon<\/h1>/.test(h), "H1");
-    assert(titleOf(h) === "Seed farms in Oregon — Seed Directory", `title "${titleOf(h)}"`);
-    assert(text(h).includes(`${want.length} seed farms and companies in Oregon list seed with the Seed Directory.`), "intro");
+    assert(/<h1[^>]*>Seed sellers in Oregon<\/h1>/.test(h), "H1");
+    assert(titleOf(h) === "Seed sellers in Oregon — Seed Directory", `title "${titleOf(h)}"`);
+    assert(
+      text(h).includes(
+        want.length === 1
+          ? "1 seed seller in Oregon lists seed with the Seed Directory."
+          : `${want.length} seed sellers in Oregon list seed with the Seed Directory.`,
+      ),
+      "intro",
+    );
     assert(robotsMeta(h).startsWith("index"), `robots ${robotsMeta(h)}`);
     assert(canonicalOf(h) === "https://seeds.hues.flowers/state/oregon", `canonical ${canonicalOf(h)}`);
     // Phase 3 (brief #3 addendum 5): the state page now carries the Add Your Farm CTA, prefilled with its state.
@@ -975,7 +991,7 @@ async function main() {
         // The whole card is one link, labelled with the name and crop, ending in the availability line.
         assert((card.match(/<a\b/g) ?? []).length === 1, "card has more than one link");
         assert(/<a\b[^>]*aria-label="Queen Lime Blush — Zinnia"/.test(card), "card link aria-label");
-        assert(/>(No sellers yet|\d+ farms?)</.test(card), "availability line");
+        assert(/>(No sellers yet|\d+ sellers?)</.test(card), "availability line");
         assert(!/Last checked|in stock|<h[23]\b/.test(card), "old card content (Last checked / in-stock / heading)");
         // Every other card on the page has the placeholder; its only <img> is the decorative zinnia
         // pod motif inside the placeholder frame (pod-ornament delta).
