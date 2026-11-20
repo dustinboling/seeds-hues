@@ -212,6 +212,7 @@ export function mapListing(l: PublicListingRow, packets: PacketSize[]): PublicLi
         location: l.sellerLocation,
         region: l.sellerRegion,
         country: l.sellerCountry,
+        isSmallFarm: l.sellerIsSmallFarm,
       },
       availability: l.availability,
       lastCheckedAt: l.lastCheckedAt,
@@ -233,9 +234,9 @@ export function mapListing(l: PublicListingRow, packets: PacketSize[]): PublicLi
   );
 }
 
-/** "As of 2026-11-15, 3 small farms list King's Ransom: A, B and C." — data only (canonical §5 GEO). */
+/** "As of 2026-11-15, 3 sellers list King's Ransom: A, B and C." — data only (canonical §5 GEO). */
 export function answerSentence(varietyName: string, listings: PublicListing[]): string {
-  if (listings.length === 0) return `No small farm found selling ${varietyName} yet.`;
+  if (listings.length === 0) return `No seller found selling ${varietyName} yet.`;
   const names = [...new Set(listings.map((l) => l.seller.name))];
   const date = listings
     .map((l) => l.lastCheckedAt?.slice(0, 10))
@@ -245,7 +246,7 @@ export function answerSentence(varietyName: string, listings: PublicListing[]): 
   const list = names.length === 1 ? names[0]! : `${names.slice(0, -1).join(", ")} and ${names.at(-1)!}`;
   const n = names.length;
   const lead = date ? `As of ${date}, ` : "";
-  const verb = n === 1 ? "small farm lists" : "small farms list";
+  const verb = n === 1 ? "seller lists" : "sellers list";
   // "Songbird Seed Co." already ends the sentence.
   return `${lead}${n} ${verb} ${varietyName}: ${list}${list.endsWith(".") ? "" : "."}`;
 }
@@ -313,6 +314,7 @@ function sellerBase(r: SellerRow) {
     ratingAverage: r.ratingCount > 0 ? r.ratingAverage : null,
     rating: ratingOf(r.ratingCount, r.ratingCount > 0 ? r.ratingAverage : null),
     importedRating: importedRatingOf(r),
+    isSmallFarm: r.isSmallFarm,
   };
 }
 
@@ -465,7 +467,7 @@ export function createCatalogService(db: Db) {
     /** Surviving slug for a merged variety (pages 308 to it). */
     mergedVarietyTarget: (slug: string) => repo.mergedVarietyTarget(db, slug),
 
-    async varietyListings(slug: string, q: Pick<ListingQuery, "availability" | "shipsTo"> = {}): Promise<PublicListing[] | null> {
+    async varietyListings(slug: string, q: Pick<ListingQuery, "availability" | "shipsTo" | "smallFarmOnly"> = {}): Promise<PublicListing[] | null> {
       const row = await repo.varietyDetailRow(db, slug);
       if (!row) return null;
       return listings({ varietyId: row.id, ...q });
@@ -641,7 +643,7 @@ export function createCatalogService(db: Db) {
         type: "variety",
         slug: v.slug,
         title: v.varietyName,
-        subtitle: `${proseCommonName(v.plant.commonName)} · ${v.listingCount === 0 ? "no farm listing yet" : `${v.listingCount} farm${v.listingCount === 1 ? "" : "s"}`}`,
+        subtitle: `${proseCommonName(v.plant.commonName)} · ${v.listingCount === 0 ? "no seller listing yet" : `${v.listingCount} seller${v.listingCount === 1 ? "" : "s"}`}`,
         href: `/variety/${v.slug}`,
         matchedAlias: m.matchedAlias,
       }));

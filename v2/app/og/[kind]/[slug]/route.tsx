@@ -43,7 +43,7 @@ async function cardFor(kind: string, slug: string): Promise<Card | null> {
     return {
       eyebrow: "Flower seed directory",
       title: "Find where to buy any flower seed",
-      subtitle: "Small farms · stock as last seen · direct links",
+      subtitle: "Every US seller · stock as last seen · direct links",
       swatch: "#8E2A52",
       footer: "seeds.hues.flowers",
     };
@@ -56,7 +56,7 @@ async function cardFor(kind: string, slug: string): Promise<Card | null> {
     return {
       eyebrow: v.plant.latinName ? `${shortCommonName(v.plant.commonName)} · ${v.plant.latinName}` : shortCommonName(v.plant.commonName),
       title: v.varietyName,
-      subtitle: n === 0 ? "No small farm found selling this yet" : `${n} small farm${n === 1 ? "" : "s"} list it`,
+      subtitle: n === 0 ? "No seller found selling this yet" : `${n} seller${n === 1 ? "" : "s"} list it`,
       swatch: v.colorSwatch,
       footer: "seeds.hues.flowers",
     };
@@ -65,7 +65,7 @@ async function cardFor(kind: string, slug: string): Promise<Card | null> {
     const s = await catalog.getSeller(slug);
     if (!s) return null;
     return {
-      eyebrow: s.location ?? "Small-farm seed seller",
+      eyebrow: s.location ?? "Flower seed seller",
       title: s.name,
       subtitle: `${s.varietyCount} flower seed ${s.varietyCount === 1 ? "variety" : "varieties"} listed`,
       swatch: null,

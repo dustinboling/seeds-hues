@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 810 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 824 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -130,6 +130,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/bells-of-ireland.webp": "artwork/crops/bells-of-ireland.webp",
   "/artwork/crops/breadseed-poppy.webp": "artwork/crops/breadseed-poppy.webp",
   "/artwork/crops/bupleurum-v2.webp": "artwork/crops/bupleurum-v2.webp",
+  "/artwork/crops/bupleurum-v3.webp": "artwork/crops/bupleurum-v3.webp",
   "/artwork/crops/bupleurum.webp": "artwork/crops/bupleurum.webp",
   "/artwork/crops/calendula.webp": "artwork/crops/calendula.webp",
   "/artwork/crops/california-poppy.webp": "artwork/crops/california-poppy.webp",
@@ -156,6 +157,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/cup-and-saucer-vine-v2.webp": "artwork/crops/cup-and-saucer-vine-v2.webp",
   "/artwork/crops/cup-and-saucer-vine.webp": "artwork/crops/cup-and-saucer-vine.webp",
   "/artwork/crops/dahlia-v2.webp": "artwork/crops/dahlia-v2.webp",
+  "/artwork/crops/dahlia-v3.webp": "artwork/crops/dahlia-v3.webp",
   "/artwork/crops/dahlia.webp": "artwork/crops/dahlia.webp",
   "/artwork/crops/delphinium-v2.webp": "artwork/crops/delphinium-v2.webp",
   "/artwork/crops/delphinium.webp": "artwork/crops/delphinium.webp",
@@ -184,11 +186,13 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/godetia.webp": "artwork/crops/godetia.webp",
   "/artwork/crops/goldenrod.webp": "artwork/crops/goldenrod.webp",
   "/artwork/crops/gomphrena-v2.webp": "artwork/crops/gomphrena-v2.webp",
+  "/artwork/crops/gomphrena-v3.webp": "artwork/crops/gomphrena-v3.webp",
   "/artwork/crops/gomphrena.webp": "artwork/crops/gomphrena.webp",
   "/artwork/crops/hollyhock-v2.webp": "artwork/crops/hollyhock-v2.webp",
   "/artwork/crops/hollyhock.webp": "artwork/crops/hollyhock.webp",
   "/artwork/crops/honesty.webp": "artwork/crops/honesty.webp",
   "/artwork/crops/honeywort-v2.webp": "artwork/crops/honeywort-v2.webp",
+  "/artwork/crops/honeywort-v4.webp": "artwork/crops/honeywort-v4.webp",
   "/artwork/crops/honeywort.webp": "artwork/crops/honeywort.webp",
   "/artwork/crops/hyacinth-bean.webp": "artwork/crops/hyacinth-bean.webp",
   "/artwork/crops/iceland-poppy-v2.webp": "artwork/crops/iceland-poppy-v2.webp",
@@ -254,6 +258,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/shirley-poppy.webp": "artwork/crops/shirley-poppy.webp",
   "/artwork/crops/shiso.webp": "artwork/crops/shiso.webp",
   "/artwork/crops/silene-v2.webp": "artwork/crops/silene-v2.webp",
+  "/artwork/crops/silene-v4.webp": "artwork/crops/silene-v4.webp",
   "/artwork/crops/silene.webp": "artwork/crops/silene.webp",
   "/artwork/crops/silver-lace.webp": "artwork/crops/silver-lace.webp",
   "/artwork/crops/snapdragon-v2.webp": "artwork/crops/snapdragon-v2.webp",
@@ -532,6 +537,11 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-monaco-orange.webp": "artwork/snapdragon-monaco-orange.png",
   "/artwork/snapdragon-opus-early-bronze.webp": "artwork/snapdragon-opus-early-bronze.png",
   "/artwork/snapdragon-potomac-appleblossom.webp": "artwork/snapdragon-potomac-appleblossom.png",
+  "/artwork/snapdragon-potomac-dark-pink.webp": "artwork/snapdragon-potomac-dark-pink.png",
+  "/artwork/snapdragon-potomac-lavender.webp": "artwork/snapdragon-potomac-lavender.png",
+  "/artwork/snapdragon-potomac-red.webp": "artwork/snapdragon-potomac-red.png",
+  "/artwork/snapdragon-potomac-white.webp": "artwork/snapdragon-potomac-white.png",
+  "/artwork/snapdragon-potomac-yellow.webp": "artwork/snapdragon-potomac-yellow.png",
   "/artwork/snapdragon-sherbet-toned-chantilly-mix.webp": "artwork/snapdragon-sherbet-toned-chantilly-mix.png",
   "/artwork/soapwort-beauty-pink.webp": "artwork/soapwort-beauty-pink.png",
   "/artwork/soapwort-graciella-white.webp": "artwork/soapwort-graciella-white.png",
@@ -553,6 +563,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/states/wisconsin.webp": "artwork/states/wisconsin.png",
   "/artwork/statice-light-blue.webp": "artwork/statice-light-blue.png",
   "/artwork/statice-pastel-mix.webp": "artwork/statice-pastel-mix.png",
+  "/artwork/statice-qis-dark-blue.webp": "artwork/statice-qis-dark-blue.png",
+  "/artwork/statice-qis-lavender.webp": "artwork/statice-qis-lavender.png",
+  "/artwork/statice-qis-white.webp": "artwork/statice-qis-white.png",
+  "/artwork/statice-qis-yellow.webp": "artwork/statice-qis-yellow.png",
   "/artwork/statice-rat-tail.webp": "artwork/statice-rat-tail.png",
   "/artwork/statice-sunset-mix.webp": "artwork/statice-sunset-mix.png",
   "/artwork/stock-antique-pink.webp": "artwork/stock-antique-pink.png",

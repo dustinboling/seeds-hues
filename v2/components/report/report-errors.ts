@@ -15,7 +15,7 @@ export const REPORT_NETWORK_ERROR = "Could not send. Check your connection and t
 
 const FIELD_COPY: Record<string, string> = {
   target_ref: "Check the page address name — use the last part of the page’s URL, e.g. songbird-seed-co.",
-  target_type: "Choose whether this is about a farm or a variety.",
+  target_type: "Choose whether this is about a seller or a variety.",
   type: "Choose what you would like to do.",
   message: "Please add a few words of detail (at least 5 characters, at most 4,000).",
   contact: "Please enter a valid email address so we can reply.",
@@ -26,7 +26,7 @@ export function reportErrorMessage(status: number, code: string, detail: string)
   if (code === "network" || status === 0) return REPORT_NETWORK_ERROR;
   if (code === "turnstile_required" || code === "turnstile_failed" || /turnstile/i.test(detail)) return REPORT_TURNSTILE_FAILED;
   if (code === "rate_limited" || status === 429) return "That’s a lot of requests in a short time — please wait a minute and try again.";
-  if (code === "unknown_target") return "We couldn’t find a page with that address name. Check the farm or variety and the spelling, then try again.";
+  if (code === "unknown_target") return "We couldn’t find a page with that address name. Check the seller or variety and the spelling, then try again.";
   if (code === "validation_error") {
     // Validator detail is "field: message; field: message" — name the first field in plain words.
     const field = /^([a-z_]+):/.exec(detail)?.[1];

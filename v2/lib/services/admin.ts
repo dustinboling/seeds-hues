@@ -45,6 +45,9 @@ export const MergeBodySchema = z.strictObject({
 
 export const SellerActionBodySchema = z.strictObject({ reason: z.string().max(500).optional(), note: z.string().max(500).optional() }).default({});
 
+/** POST /admin/sellers/{ref}/small-farm — the Small farm badge judgment (Open Directory). */
+export const SellerBadgeBodySchema = z.strictObject({ is_small_farm: z.boolean() });
+
 export const JobBodySchema = z.strictObject({ type: z.string().min(1).max(50), target: z.string().min(1).max(2000) });
 
 type ListingProposal = {
@@ -207,6 +210,25 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
       return {
         data: { seller: seller.slug, id: seller.id, eligibility: action === "approve" ? "approved" : "rejected" },
         revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml"],
+      };
+    },
+
+    /**
+     * Set or clear the "Small farm" badge. A judgment call recorded in seller-classification.md
+     * (edit that record in the same change); independent of eligibility. A seller removed at its
+     * request is not re-badged.
+     */
+    async sellerBadge(ref: string, isSmallFarm: boolean) {
+      const seller = await ingest.sellerByRef(db, ref);
+      if (!seller) throw new AdminError(404, "seller_not_found", `seller ${ref} not found`);
+      if (seller.eligibility === "removed_by_request") throw new AdminError(409, "seller_removed", `${seller.slug} was removed at its request`);
+      const { varietySlugs } = await admin.setSellerSmallFarm(db, seller.id, isSmallFarm, iso());
+      return {
+        data: { seller: seller.slug, id: seller.id, is_small_farm: isSmallFarm },
+        // sellerAction's set, plus every variety page that lists this seller: those ISR pages show
+        // the badge on its rows and decide the Small-farms chip pair from it (each variety path is
+        // expanded to its small-farms view by withVariantPaths).
+        revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
       };
     },
 

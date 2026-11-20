@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = pageMetadata({
   title: "Add Your Farm",
-  description: "Sell flower seed from your small farm? Add your farm to the Seed Directory — free, reviewed by hand, never pay-for-placement.",
+  description: "Sell flower seed in the US, from a farm or a seed company of any size? Add your seller to the Seed Directory — free, reviewed by hand, never pay-for-placement.",
   path: "/add-your-farm",
 });
 
@@ -33,7 +33,7 @@ export default async function AddYourFarmPage({ searchParams }: Props) {
             Add Your Farm
           </h1>
           <p className="mt-3 text-lg">
-            Grow and sell flower seed? Put your farm in front of gardeners looking for exactly the varieties you grow. Listing is free, sellers never pay for placement, and every farm is reviewed by a person.
+            Sell flower seed in the US? Farms and seed companies of any size are welcome here. Put your business in front of gardeners looking for exactly the varieties you sell. Listing is free, sellers never pay for placement, and every submission is reviewed by a person.
           </p>
           <p className="mt-2 text-muted">
             {user ? (

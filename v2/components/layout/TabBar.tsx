@@ -8,7 +8,7 @@ const TABS = [
   { href: "/", label: "Home", Icon: HomeIcon, match: (p: string) => p === "/" },
   { href: "/crop", label: "Crops", Icon: SeedIcon, match: (p: string) => p.startsWith("/crop") || p.startsWith("/series") },
   { href: "/variety", label: "Varieties", Icon: BloomIcon, match: (p: string) => p.startsWith("/variety") },
-  { href: "/seller", label: "Farms", Icon: FarmIcon, match: (p: string) => p.startsWith("/seller") || p.startsWith("/state") },
+  { href: "/seller", label: "Sellers", Icon: FarmIcon, match: (p: string) => p.startsWith("/seller") || p.startsWith("/state") },
   { href: "/search", label: "Search", Icon: SearchIcon, match: (p: string) => p.startsWith("/search") },
 ];
 

@@ -212,6 +212,12 @@ export function buildOpenApiDocument(siteUrl: string): Json {
         lifeCycleParam("Only varieties"),
         { name: "has_listings", in: "query", schema: { type: "boolean" } },
         { name: "in_stock", in: "query", schema: { type: "boolean" } },
+        {
+          name: "small_farm",
+          in: "query",
+          description: "true = only varieties with at least one listing from a seller carrying the Small farm badge",
+          schema: { type: "boolean" },
+        },
         p.filter("category", "Category slug"),
         p.filter("subcategory", "Subcategory slug"),
         p.filter("seller", "Seller slug"),
@@ -237,7 +243,11 @@ export function buildOpenApiDocument(siteUrl: string): Json {
     "/varieties/{slug}/listings": listing(
       "Published listings for a variety",
       "listVarietyListings",
-      [listParam("availability", "in_stock | sold_out | preorder | shop_closed | unknown"), listParam("ships_to", "Region code")],
+      [
+        listParam("availability", "in_stock | sold_out | preorder | shop_closed | unknown"),
+        listParam("ships_to", "Region code"),
+        { name: "small_farm", in: "query", description: "true = only listings from sellers carrying the Small farm badge", schema: { type: "boolean" } },
+      ],
       "varieties",
     ),
     "/series/{slug}": get(
@@ -249,8 +259,14 @@ export function buildOpenApiDocument(siteUrl: string): Json {
     ),
     "/sellers": get(
       "listSellers",
-      "Approved sellers",
-      [listParam("region", "Region code, e.g. WA"), p.filter("q", "Name contains"), p.cursor, p.limit],
+      "Listed sellers",
+      [
+        listParam("region", "Region code, e.g. WA"),
+        p.filter("q", "Name contains"),
+        { name: "small_farm", in: "query", description: "true = only sellers carrying the Small farm badge", schema: { type: "boolean" } },
+        p.cursor,
+        p.limit,
+      ],
       { ...ok("Page of sellers", envelope({ type: "array", items: ref("SellerListItem") })), ...errorResponses([400, 429, 500]) },
       ["sellers"],
     ),
@@ -393,7 +409,7 @@ export function buildOpenApiDocument(siteUrl: string): Json {
       title: "seeds.hues.flowers public API",
       version: "1.0.0",
       description:
-        "Catalog of flower seed varieties and the small farms that sell them. Reads are public. Envelope " +
+        "Catalog of flower seed varieties and the US sellers who sell them. Reads are public. Envelope " +
         "{ data, page, meta, error }; page holds next_cursor + has_more, meta holds catalog_seq + generated_at. " +
         "No prices are published. Every listing carries provenance; every variety and seller carries rating " +
         '("not_yet_rated" until real reviews exist). Unknown values are explicit ("unknown" or null). ' +

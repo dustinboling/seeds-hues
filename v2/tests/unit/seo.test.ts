@@ -17,7 +17,7 @@ import type { PublicListing, SellerDetail, VarietyDetail } from "@/lib/validator
 const listing = (id: number, sellerSlug: string, sellerName: string, checked: string): PublicListing => ({
   id,
   variety: { slug: "test-variety", varietyName: "Test", plant: { slug: "p", commonName: "Sweet Pea", latinName: "Lathyrus odoratus", season_class: null, season_source_label: null, sowing_methods: [], sowing_method_source_label: null }, colorSwatch: null },
-  seller: { slug: sellerSlug, name: sellerName, location: null, region: "WA", country: "US" },
+  seller: { slug: sellerSlug, name: sellerName, location: null, region: "WA", country: "US", isSmallFarm: false },
   availability: "in_stock",
   lastCheckedAt: checked,
   firstSeenAt: checked,

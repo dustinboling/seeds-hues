@@ -177,6 +177,8 @@ export const SellerRefSchema = z
     location: z.string().nullable(),
     region: z.string().nullable(),
     country: z.string().min(2),
+    /** The seller carries the "Small farm" badge (a recorded judgment call, not a measured size). */
+    isSmallFarm: z.boolean(),
   })
   .meta({ id: "SellerRef" });
 
@@ -240,6 +242,8 @@ export const SellerSummarySchema = z
     rating: RatingSchema,
     /** Never omitted: null when no third-party rating was imported. */
     importedRating: ImportedRatingSchema.nullable(),
+    /** The seller carries the "Small farm" badge (a recorded judgment call, not a measured size). */
+    isSmallFarm: z.boolean(),
   })
   .refine((s) => s.ratingCount > 0 || s.ratingAverage === null, {
     message: "ratingAverage must be null while ratingCount is 0",
@@ -547,6 +551,8 @@ export const SyncSellerSchema = z
         fetched_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
       })
       .nullable(),
+    /** The seller carries the "Small farm" badge. */
+    is_small_farm: z.boolean(),
     updated_seq: z.number().int(),
   })
   .meta({ id: "SyncSeller" });

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AvailabilityBadge } from "./Availability";
 import { PacketList } from "./PacketList";
+import { SmallFarmBadge } from "@/components/seller/SmallFarmBadge";
 import type { PublicListing } from "@/lib/validators";
 
 /**
@@ -18,13 +19,20 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
     <article className="flex flex-col gap-2 px-4 py-4" aria-labelledby={`listing-${l.id}`}>
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 id={`listing-${l.id}`} className="text-lg font-medium">
-            {context === "variety" ? (
-              <Link href={`/seller/${l.seller.slug}`}>{l.seller.name}</Link>
-            ) : (
-              <Link href={`/variety/${l.variety.slug}`}>{l.variety.varietyName}</Link>
-            )}
-          </h3>
+          {/* Small farm badge (ux §2.1, RULING F1): a SIBLING after the h3 — outside the heading
+              and the link, so neither accessible name changes; flex-wrap drops it below a long
+              name on mobile. Variety-page rows only: on a seller page every row is the same
+              seller, and the header carries the badge once. */}
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 id={`listing-${l.id}`} className="text-lg font-medium">
+              {context === "variety" ? (
+                <Link href={`/seller/${l.seller.slug}`}>{l.seller.name}</Link>
+              ) : (
+                <Link href={`/variety/${l.variety.slug}`}>{l.variety.varietyName}</Link>
+              )}
+            </h3>
+            {context === "variety" && l.seller.isSmallFarm ? <SmallFarmBadge /> : null}
+          </div>
           <p className="text-sm text-muted">
             {context === "variety" ? (l.seller.location ?? (region || "Location unknown")) : l.variety.plant.commonName}
           </p>

@@ -13,6 +13,7 @@ import { baseHeaders, CACHE_NO_STORE } from "./http";
 import { Problem, problemResponse } from "./problem";
 import { allowKeyed, clientKey, RETRY_AFTER_SECONDS, type LimitBucket } from "./rate-limit";
 import { getRuntimeEnv, type RuntimeEnv } from "./runtime-env";
+import { withVariantPaths } from "./revalidate";
 
 export const MAX_BODY_BYTES = 2_500_000;
 
@@ -76,7 +77,7 @@ async function revalidateAll(paths: string[]): Promise<void> {
   if (paths.length === 0) return;
   try {
     const { revalidatePath } = await import("next/cache");
-    for (const p of new Set(paths)) revalidatePath(p);
+    for (const p of withVariantPaths(paths)) revalidatePath(p);
   } catch (err) {
     // Outside a Next request (tests/scripts) there is no cache to revalidate.
     console.warn("revalidatePath skipped", err instanceof Error ? err.message : err);

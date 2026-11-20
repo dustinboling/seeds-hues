@@ -21,6 +21,8 @@ export default function Loading() {
           { legendWidth: 104, chips: [48, 96, 108] },
           { legendWidth: 76, chips: [48, 64, 76, 84] },
           { legendWidth: 30, chips: [48, 72, 70, 66, 74, 78, 74, 66, 86, 74, 66, 86, 74, 78] },
+          // Sellers (ux-spec §3.4.4): "All" · "Small farms only".
+          { legendWidth: 56, chips: [48, 150] },
         ]}
       />
       <div className="mt-6">

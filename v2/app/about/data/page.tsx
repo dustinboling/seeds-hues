@@ -7,7 +7,7 @@ import { ThemeArt } from "@/components/ui/ThemeArt";
 export const metadata: Metadata = pageMetadata({
   title: "About the data",
   description:
-    "How the directory collects listings, who qualifies as a seller, the source and date on every listing, how to opt out, and who owns the site.",
+    "How the directory collects listings, which US sellers are listed, the source and date on every listing, how to opt out, and who owns the site.",
   path: "/about/data",
 });
 
@@ -19,30 +19,31 @@ export default function AboutDataPage() {
       </h1>
       <ThemeArt name="about-data" priority className="art-frame mt-4 h-auto w-full" />
       <p className="mt-3 text-lg">
-        This page explains where every listing comes from, which sellers qualify, and how a farm can correct, claim or
-        remove its page.
+        This page explains where every listing comes from, which sellers are listed, and how a seller can correct, claim
+        or remove its page.
       </p>
 
       <h2>How data is collected</h2>
       <ul>
         <li>
-          Listings come from each approved farm’s own shop. At launch they are checked by hand; automated checks by our
+          Listings come from each seller’s own shop. At launch they are checked by hand; automated checks by our
           crawler follow the rules on the <Link href="/about/bot">crawler page</Link>.
         </li>
         <li>
-          A listing is published automatically only when the variety name on the farm’s page matches a name we already
+          A listing is published automatically only when the variety name on the seller’s page matches a name we already
           know exactly, and every fact we record is quoted word for word from the stored copy of that page. Anything
           else waits for a person to review it.
         </li>
         <li>Stock states (“In stock”, “Sold out”) are as last seen on the date shown, not live availability.</li>
-        <li>No prices are shown. Always confirm price and stock on the farm’s own site.</li>
+        <li>No prices are shown. Always confirm price and stock on the seller’s own site.</li>
       </ul>
 
-      <h2>Who qualifies</h2>
+      <h2>Who is listed</h2>
       <p>
-        A seller is a small farm or seed shop that the owner approves by hand, one at a time. Large seed companies are not
-        listed. A seller does not have to grow the seed it sells — bought-in seed is listed the same way as seed the
-        farm grows itself.
+        Any US farm or seed company that sells flower seed can be listed, whatever its size. Small family farms carry a
+        Small farm badge — our judgment call, not a formal test — so shoppers can spot them and choose to buy from them.
+        A seller does not have to grow the seed it sells — bought-in seed is listed the same way as seed the seller
+        grows itself.
       </p>
 
       <h2>A checked date on every listing</h2>
@@ -53,22 +54,22 @@ export default function AboutDataPage() {
 
       <h2>Corrections, claims and opting out</h2>
       <p>
-        Any farm can correct a listing, claim its page, or ask to be removed using the{" "}
-        <Link href="/report">report form</Link>. We honour removal requests within 48 hours: the farm’s page answers
+        Any seller can correct a listing, claim its page, or ask to be removed using the{" "}
+        <Link href="/report">report form</Link>. We honour removal requests within 48 hours: the seller’s page answers
         “gone”, all its listings come down, and its domain goes on a permanent block list so our crawler never visits
         it again. To stop crawling without leaving the directory, disallow our crawler in robots.txt —{" "}
         <code className="break-all">{BOT_USER_AGENT}</code>.
       </p>
 
       <h2>Ratings</h2>
-      <p>Farms and varieties show “Not yet rated”. We do not show stars or scores until real reviews exist, and we never invent them.</p>
+      <p>Sellers and varieties show “Not yet rated”. We do not show stars or scores until real reviews exist, and we never invent them.</p>
 
       <h2>Your account data</h2>
       <p>
         If you create an account to join waiting lists, we store your name, email, phone number and ZIP code, the
         varieties you’re waiting for, and whether each alert has been sent. We use them only to sign you in, to text and
         email you when a variety you’re waiting for is found, and — as anonymous totals — to see which varieties people
-        most want, so we know which farms to look for. Your phone number and ZIP code are never shown publicly; we use
+        most want, so we know which sellers to look for. Your phone number and ZIP code are never shown publicly; we use
         your ZIP only to work out your growing zone. Account data is never part of the public data feed, the API or the
         app download, and we never sell or share it. You can delete your account, and everything in it, from{" "}
         <Link href="/account">your account page</Link>. Farms that use Add Your Farm give us their business details for

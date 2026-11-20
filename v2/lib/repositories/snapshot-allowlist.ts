@@ -75,6 +75,8 @@ export const SNAPSHOT_ALLOWLIST: AllowlistedTable[] = [
       "shipsTo",
       "claimStatus",
       "isSiteOwner",
+      // Small farm badge (Open Directory) — public; drives the badge in the JSON API too.
+      "isSmallFarm",
       // Imported third-party aggregate (brief #4) — public, separate from our rating columns.
       "importedRatingSource",
       "importedRatingPlaceName",

@@ -10,6 +10,7 @@ import { ListingRow } from "@/components/variety/ListingRow";
 import { StateShape } from "@/components/seller/StateShape";
 import { StatePlate } from "@/components/seller/StatePlate";
 import { ImportedRatingPanel } from "@/components/seller/ImportedRatingPanel";
+import { SmallFarmBadge } from "@/components/seller/SmallFarmBadge";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { ogImage, pageMetadata, sellerDescription, sellerTitle } from "@/lib/seo/metadata";
@@ -19,6 +20,7 @@ import { hostOf, plural, sellerTypeLabel } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/config";
 import { stateByCode } from "@/lib/data/states";
 import { statePlateFor } from "@/lib/data/state-plates";
+import { SMALL_FARM_LEGEND } from "@/lib/small-farm";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +89,15 @@ export default async function SellerPage({ params, searchParams }: Props) {
             <h1 id="seller-title" className="mt-1 text-3xl font-semibold text-leaf md:text-4xl">
               {s.name}
             </h1>
+            {/* Small farm badge (ux §2.2 + §5.4, RULING F1): its own row under the h1 — outside it,
+                so the page heading stays the seller's name — at the larger size, with the legend
+                on the same row. Badged sellers only: no badge, no row, no legend. */}
+            {s.isSmallFarm ? (
+              <div className="mt-2 flex flex-wrap items-center gap-2" data-small-farm-legend="">
+                <SmallFarmBadge size="large" />
+                <p className="text-sm text-muted">{SMALL_FARM_LEGEND}</p>
+              </div>
+            ) : null}
             <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-3">
               <div>
                 <dt className="text-sm text-muted">Location</dt>
@@ -176,7 +187,7 @@ export default async function SellerPage({ params, searchParams }: Props) {
         </section>
 
         <p className="mt-8">
-          Is this your farm? <Link href={`/report?seller=${s.slug}`}>Claim, correct or remove</Link> this listing.
+          Is this your farm or company? <Link href={`/report?seller=${s.slug}`}>Claim, correct or remove</Link> this listing.
         </p>
       </article>
     </>

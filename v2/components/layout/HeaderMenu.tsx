@@ -8,7 +8,7 @@ import { MenuIcon } from "./icons";
 const ITEMS = [
   { href: "/crop", label: "Crops" },
   { href: "/variety", label: "Varieties" },
-  { href: "/seller", label: "Farms" },
+  { href: "/seller", label: "Sellers" },
   { href: "/search", label: "Search" },
   { href: "/add-your-farm", label: "Add Your Farm" },
   { href: "/about", label: "About" },

@@ -23,7 +23,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const q = readQ((await searchParams).q);
   return pageMetadata({
     title: q ? `Search: ${q}` : "Search flower seeds",
-    description: "Search flower seed varieties, crops, series and small-farm sellers by any name a variety goes by.",
+    description: "Search flower seed varieties, crops, series and sellers by any name a variety goes by.",
     path: "/search",
     noindex: true,
     follow: true,
@@ -34,7 +34,7 @@ const GROUPS = [
   ["crops", "Crops"],
   ["series", "Series"],
   ["varieties", "Varieties"],
-  ["sellers", "Farms"],
+  ["sellers", "Sellers"],
 ] as const;
 
 export default async function SearchPage({ searchParams }: Props) {
@@ -45,6 +45,7 @@ export default async function SearchPage({ searchParams }: Props) {
     method: parseMethodParam(sp.method),
     lifeCycle: null,
     hue: parseHueParam(sp.color_family),
+    smallFarm: false,
   };
   const active = activeFilterLabels(filters);
   const navKey = [q, filters.season, filters.method, filters.hue].join("|");
@@ -89,7 +90,7 @@ export default async function SearchPage({ searchParams }: Props) {
             </li>
             <li>
               <Link href="/seller" className="chip tap">
-                Browse farms
+                Browse sellers
               </Link>
             </li>
           </ul>
@@ -110,7 +111,7 @@ export default async function SearchPage({ searchParams }: Props) {
             <ThemeArt name="empty-search" className="art-frame mx-auto mt-4 h-[220px] w-auto" />
             <p className="mt-2 text-muted" data-testid="zero-results">
               Nothing matches “{q}”. Check the spelling or try fewer words — or{" "}
-              <Link href="/report?type=correct">tell us about a variety or farm we’re missing</Link>.
+              <Link href="/report?type=correct">tell us about a variety or seller we’re missing</Link>.
             </p>
             </>
           ) : (

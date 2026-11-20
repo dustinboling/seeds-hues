@@ -68,6 +68,7 @@ const seller = (r: repo.SyncSellerRow) => ({
   claim_status: r.claimStatus,
   rating: ratingOf(r.ratingCount, r.ratingCount > 0 ? r.ratingAverage : null),
   imported_rating: importedRatingSync(r),
+  is_small_farm: r.isSmallFarm,
   updated_seq: r.updatedSeq,
 });
 function importedRatingSync(r: repo.SyncSellerRow) {

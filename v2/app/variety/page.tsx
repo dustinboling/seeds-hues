@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
 import { Pagination } from "@/components/ui/Pagination";
@@ -26,6 +27,7 @@ import { legacySlug } from "@/lib/legacy";
 import { plural } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/config";
 import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
+import { EMPTY_BROWSE, SMALL_FARM_EMPTY_BROWSE, parseSmallFarmParam } from "@/lib/small-farm";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +39,7 @@ function readFilters(sp: Record<string, string | string[] | undefined>): BrowseF
     method: parseMethodParam(sp.method),
     lifeCycle: parseLifeCycleParam(sp.life_cycle),
     hue: parseHueParam(sp.color_family),
+    smallFarm: parseSmallFarmParam(sp.small_farm),
   };
 }
 
@@ -48,8 +51,8 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return pageMetadata({
     title: `${filtered ? `${active.join(" · ")} — flower seed varieties` : "All flower seed varieties"}${pageTitleSuffix(page)}`,
     description:
-      "Every flower seed variety in the directory, alphabetical, with how many small farms list it and when each listing was last checked.",
-    // Filtered views (season, sowing method, life cycle, hue) are crawlable but not indexed; the canonical
+      "Every flower seed variety in the directory, alphabetical, with how many sellers list it and when each listing was last checked.",
+    // Filtered views (season, sowing method, life cycle, hue, small farms) are crawlable but not indexed; the canonical
     // is the unfiltered list (same rule as crop-page filters).
     path: filtered ? "/variety" : pagePath("/variety", page),
     noindex: filtered,
@@ -65,7 +68,8 @@ export default async function VarietiesPage({ searchParams }: Props) {
   const page = parsePage(sp.page);
   const filters = readFilters(sp);
   const active = activeFilterLabels(filters);
-  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue].join("|");
+  // Every filter group joins navKey, so ResultsScrollClamp fires on each list navigation (ux-spec §3.4.2).
+  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue, filters.smallFarm].join("|");
   const { catalog } = await getServices();
   const { items, total } = await catalog.listVarieties({
     filters: {
@@ -73,6 +77,7 @@ export default async function VarietiesPage({ searchParams }: Props) {
       methods: filters.method ? [METHOD_PARAMS[filters.method]] : undefined,
       lifeCycle: filters.lifeCycle ? [filters.lifeCycle] : undefined,
       colorFamily: filters.hue ? [filters.hue] : undefined,
+      smallFarmOnly: filters.smallFarm || undefined,
     },
     page: pageWindow(page),
   });
@@ -99,9 +104,22 @@ export default async function VarietiesPage({ searchParams }: Props) {
         {[plural(total, "variety", "varieties"), ...active].join(" · ")}, alphabetical.
         {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
       </p>
-      <BrowseFilters basePath="/variety" state={filters} groups={["season", "method", "lifeCycle", "hue"]} />
+      <BrowseFilters basePath="/variety" state={filters} groups={["season", "method", "lifeCycle", "hue", "smallFarm"]} />
       <div id="variety-results" className="mt-6">
-        <VarietyGrid items={items} wide />
+        {total > 0 ? (
+          <VarietyGrid items={items} wide />
+        ) : (
+          // Empty state (ux-spec §3.5) — announced first by the count line's zero above.
+          <p className="text-muted" data-testid="variety-empty">
+            {filters.smallFarm ? SMALL_FARM_EMPTY_BROWSE : EMPTY_BROWSE}
+            {active.length > 0 ? (
+              <>
+                {" "}
+                <Link href="/variety">Clear filters</Link>.
+              </>
+            ) : null}
+          </p>
+        )}
       </div>
       <Pagination basePath="/variety" page={page} totalPages={pages} extra={filterParams(filters)} label="Varieties pages" />
       <PodDivider bundle="/ornaments/bundle-zinnia.webp" className="mt-8" />

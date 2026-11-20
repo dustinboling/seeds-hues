@@ -119,6 +119,11 @@ export interface VarietyFilters {
   methods?: SowingMethod[];
   /** The variety's crop is in ANY of these life-cycle buckets; crops without one never match. */
   lifeCycle?: LifeCycleParam[];
+  /**
+   * Small farms filter (Open Directory): the variety has ≥1 visible listing whose seller carries
+   * the Small farm badge. Availability is a separate filter (inStock); counts stay global.
+   */
+  smallFarmOnly?: boolean;
 }
 
 /** Canonical §3 sorts (leading "-" = descending). Price sorts were removed (R1). */
@@ -184,6 +189,18 @@ function varietyWhere(db: Db, f: VarietyFilters, ls: ReturnType<typeof listingSt
           .from(listings)
           .innerJoin(sellers, eq(sellers.id, listings.sellerId))
           .where(and(visibleListing, eq(sellers.slug, f.seller))),
+      ),
+    );
+  }
+  if (f.smallFarmOnly) {
+    conds.push(
+      inArray(
+        varieties.id,
+        db
+          .select({ id: listings.varietyId })
+          .from(listings)
+          .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+          .where(and(visibleListing, eq(sellers.isSmallFarm, true))),
       ),
     );
   }
@@ -502,6 +519,8 @@ export interface ListingQuery {
   availability?: string[];
   plant?: string[];
   shipsTo?: string[];
+  /** Only rows whose own seller carries the Small farm badge (direct predicate on the join). */
+  smallFarmOnly?: boolean;
 }
 
 const listingSelect = {
@@ -518,6 +537,7 @@ const listingSelect = {
   sellerId: sellers.id,
   sellerSlug: sellers.slug,
   sellerName: sellers.name,
+  sellerIsSmallFarm: sellers.isSmallFarm,
   varietyId: varieties.id,
   sellerLocation: sellers.location,
   sellerRegion: sellers.region,
@@ -575,6 +595,7 @@ async function publicListingRowsQuery(db: Db, q: ListingQuery) {
   if (q.ids) conds.push(q.ids.length ? inArray(listings.id, q.ids) : sql`0 = 1`);
   if (q.availability?.length) conds.push(inArray(listings.availability, q.availability as ("in_stock" | "sold_out" | "preorder" | "shop_closed" | "unknown")[]));
   if (q.plant?.length) conds.push(inArray(plants.slug, q.plant));
+  if (q.smallFarmOnly) conds.push(eq(sellers.isSmallFarm, true));
   if (q.shipsTo?.length) {
     conds.push(sql`EXISTS (SELECT 1 FROM json_each(${sellers.shipsTo}) j WHERE j.value IN (${sql.join(q.shipsTo.map((s) => sql`${s}`), sql`, `)}))`);
   }
@@ -677,6 +698,7 @@ const sellerSelect = (svc: ReturnType<typeof sellerVarietyCountsSq>) => ({
   claimStatus: sellers.claimStatus,
   shipsTo: sellers.shipsTo,
   isSiteOwner: sellers.isSiteOwner,
+  isSmallFarm: sellers.isSmallFarm,
   updatedAt: sellers.updatedAt,
   importedRatingSource: sellers.importedRatingSource,
   importedRatingPlaceName: sellers.importedRatingPlaceName,
@@ -690,11 +712,14 @@ const sellerSelect = (svc: ReturnType<typeof sellerVarietyCountsSq>) => ({
 export interface SellerFilters {
   region?: string[];
   q?: string;
+  /** Only sellers carrying the Small farm badge. */
+  smallFarmOnly?: boolean;
 }
 
 function sellerWhere(f: SellerFilters): SQL | undefined {
   const conds: (SQL | undefined)[] = [visibleSeller];
   if (f.region?.length) conds.push(inArray(sellers.region, f.region));
+  if (f.smallFarmOnly) conds.push(eq(sellers.isSmallFarm, true));
   if (f.q) conds.push(sql`lower(${sellers.name}) LIKE ${`%${f.q.replace(/[%_\\]/g, "").toLowerCase()}%`}`);
   return and(...conds);
 }

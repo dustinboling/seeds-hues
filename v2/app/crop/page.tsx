@@ -24,7 +24,7 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 export default async function CropsPage({ searchParams }: Props) {
   const sp = await searchParams;
-  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: null };
+  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: null, smallFarm: false };
   const active = activeFilterLabels(filters);
   const { catalog } = await getServices();
   const { items } = await catalog.listCrops(

@@ -8,9 +8,9 @@ import { REPORT_TURNSTILE_PENDING, reportErrorMessage } from "./report-errors";
 type Intent = "correct" | "claim" | "remove";
 
 const INTENTS: { value: Intent; label: string; hint: string }[] = [
-  { value: "correct", label: "Correct something", hint: "A wrong fact, a dead link, a missing farm or variety." },
-  { value: "claim", label: "Claim my farm’s page", hint: "You run this farm and want to manage its listing." },
-  { value: "remove", label: "Remove my farm", hint: "We take the page and all listings down within 48 hours and stop checking your site." },
+  { value: "correct", label: "Correct something", hint: "A wrong fact, a dead link, a missing seller or variety." },
+  { value: "claim", label: "Claim my seller page", hint: "You run this farm or company and want to manage its listing." },
+  { value: "remove", label: "Remove my listing", hint: "We take the page and all listings down within 48 hours and stop checking your site." },
 ];
 
 /**
@@ -80,7 +80,7 @@ export function ReportForm(props: { type: Intent; targetType: "variety" | "selle
           About
         </label>
         <select id="target_type" value={targetType} onChange={(e) => setTargetType(e.target.value as "variety" | "seller")} className="tap rounded-[10px] border border-line-strong bg-surface px-3">
-          <option value="seller">A farm (seller)</option>
+          <option value="seller">A seller</option>
           <option value="variety">A variety</option>
         </select>
         <label className="text-sm text-muted" htmlFor="target_ref">
@@ -96,7 +96,7 @@ export function ReportForm(props: { type: Intent; targetType: "variety" | "selle
       </div>
       <div className="flex flex-col gap-2">
         <label className="text-sm font-semibold" htmlFor="contact">
-          Your email (so we can reply and, for claims and removals, confirm you run the farm)
+          Your email (so we can reply and, for claims and removals, confirm you run the seller)
         </label>
         <input id="contact" name="contact" type="email" required maxLength={320} className="tap rounded-[10px] border border-line-strong bg-surface px-3" />
       </div>

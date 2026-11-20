@@ -94,6 +94,7 @@ const SELLER: SellerDetail = {
   ratingAverage: null,
   rating: { state: "not_yet_rated", average: null, review_count: 0 },
   importedRating: null,
+  isSmallFarm: false,
   description: "A test farm.",
   orderingNotes: null,
   varietyCount: 0,
@@ -255,6 +256,7 @@ describe("state page placement (§3)", () => {
     ratingAverage: null,
     rating: { state: "not_yet_rated", average: null, review_count: 0 },
     importedRating: null,
+    isSmallFarm: false,
     varietyCount: 0,
   });
 

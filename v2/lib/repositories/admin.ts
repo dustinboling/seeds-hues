@@ -131,6 +131,34 @@ export async function setSellerEligibility(db: Db, sellerId: number, eligibility
 }
 
 /**
+ * The "Small farm" badge (Open Directory): a recorded judgment call, independent of eligibility.
+ * Bumps catalog_seq + the seller's updated_seq so sync/snapshot consumers see the change. No
+ * listing side-effects: badging or unbadging a seller never publishes or unpublishes a listing.
+ * Returns the slugs of the varieties this seller lists — their (ISR) pages render the badge on the
+ * seller's rows, so the caller revalidates them.
+ */
+export async function setSellerSmallFarm(
+  db: Db,
+  sellerId: number,
+  isSmallFarm: boolean,
+  at: string,
+): Promise<{ varietySlugs: string[] }> {
+  await atomic(db, [
+    ...nextSeq(db),
+    db
+      .update(sellers)
+      .set({ isSmallFarm, updatedAt: at, updatedSeq: currentSeq() })
+      .where(eq(sellers.id, sellerId)) as unknown as AtomicOp,
+  ]);
+  const rows = await db
+    .selectDistinct({ slug: varieties.slug })
+    .from(listings)
+    .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+    .where(and(eq(listings.sellerId, sellerId), ne(listings.status, "removed"), isNull(listings.deletedAt)));
+  return { varietySlugs: rows.map((r) => r.slug).sort() };
+}
+
+/**
  * Removal at the seller's request (R8): eligibility → removed_by_request, every listing →
  * removed, domain → blocked_domains. Returns the slugs whose pages must be revalidated.
  */

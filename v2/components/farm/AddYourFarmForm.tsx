@@ -61,12 +61,12 @@ export function AddYourFarmForm(props: {
   if (done) {
     return (
       <div role="status" className="card mt-6 flex flex-col gap-2 p-4" data-testid="farm-thanks">
-        <p className="text-lg font-semibold">Thank you — your farm is in our review queue.</p>
+        <p className="text-lg font-semibold">Thank you — your submission is in our review queue.</p>
         <p>
-          We review every farm by hand, usually within a few days, and we’ll email you at the contact address you gave. Nothing is published until we’ve checked it with you.
+          We review every submission by hand, usually within a few days, and we’ll email you at the contact address you gave. Nothing is published until we’ve checked it with you.
         </p>
         <p>
-          <Link href="/seller">Browse the farms already listed</Link>
+          <Link href="/seller">Browse the sellers already listed</Link>
         </p>
       </div>
     );
@@ -94,8 +94,8 @@ export function AddYourFarmForm(props: {
   return (
     <form onSubmit={submit} className="mt-6 flex max-w-2xl flex-col gap-5" aria-label="Add your farm">
       <fieldset className="flex flex-col gap-4">
-        <legend className="text-xl font-semibold">Your farm</legend>
-        {field("farm_name", "Farm name", <input id="farm_name" name="farm_name" required maxLength={200} autoComplete="organization" className="field" />)}
+        <legend className="text-xl font-semibold">Your farm or company</legend>
+        {field("farm_name", "Farm or company name", <input id="farm_name" name="farm_name" required maxLength={200} autoComplete="organization" className="field" />)}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_14rem]">
           {field("city", "City", <input id="city" name="city" required maxLength={120} autoComplete="address-level2" className="field" />)}
           {field(
@@ -113,14 +113,14 @@ export function AddYourFarmForm(props: {
             </select>,
           )}
         </div>
-        {field("website", "Website or online shop", <input id="website" name="website" type="url" required maxLength={500} placeholder="https://" aria-describedby="website-hint" className="field" />, "We use it to verify the farm and to draft your profile for your review.")}
+        {field("website", "Website or online shop", <input id="website" name="website" type="url" required maxLength={500} placeholder="https://" aria-describedby="website-hint" className="field" />, "We use it to verify your business and to draft your profile for your review.")}
         {field(
           "business_phone",
           "Business phone",
           <input id="business_phone" name="business_phone" type="tel" required maxLength={32} inputMode="tel" aria-describedby="business_phone-hint" className="field max-w-xs" />,
-          "The farm’s public contact number, shown on your farm’s page. (Your account phone stays private.)",
+          "Your business’s public contact number, shown on your seller page. (Your account phone stays private.)",
         )}
-        {field("about", "About your farm", <textarea id="about" name="about" required minLength={10} maxLength={2000} rows={4} aria-describedby="about-hint" className="field" />, "A few sentences: what you grow, how, and where.")}
+        {field("about", "About your farm or company", <textarea id="about" name="about" required minLength={10} maxLength={2000} rows={4} aria-describedby="about-hint" className="field" />, "A few sentences: what you sell, and where you are. If you grow your own seed, tell us about that too.")}
         {field("varieties", "Varieties you want listed", <textarea id="varieties" name="varieties" required maxLength={5000} rows={5} aria-describedby="varieties-hint" className="field" />, "One per line, e.g. “Zinnia — Queen Lime Blush”.")}
       </fieldset>
 
@@ -155,7 +155,7 @@ export function AddYourFarmForm(props: {
       <div className="flex items-start gap-2">
         <input id="authorized" name="authorized" type="checkbox" required className="mt-1 h-5 w-5" />
         <label htmlFor="authorized" className="font-medium">
-          I own or am authorized to represent this farm
+          I own or am authorized to represent this farm or company
         </label>
       </div>
 

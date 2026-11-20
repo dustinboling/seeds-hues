@@ -30,7 +30,7 @@ function StatusLine({ s }: { s: AlertItem["status"] }) {
     return (
       <span className="flex flex-wrap items-center gap-2">
         <span className="inline-flex rounded-full border border-leaf-600/40 bg-surface px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-leaf-600">Waiting · active</span>
-        <span className="text-sm text-muted">We’ll send {s.channels.map((c) => CHANNEL_LABEL[c]).join(" + ")} the moment a farm lists it.</span>
+        <span className="text-sm text-muted">We’ll send {s.channels.map((c) => CHANNEL_LABEL[c]).join(" + ")} the moment a seller lists it.</span>
       </span>
     );
   }
@@ -125,7 +125,7 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
           Alerts
         </h2>
         <p className="text-muted">
-          The varieties you’ve asked us to find. When a farm lists one, we send a text (if you’ve switched texts on) and an email.
+          The varieties you’ve asked us to find. When a seller lists one, we send a text (if you’ve switched texts on) and an email.
         </p>
         {alerts.length === 0 ? (
           <p className="card p-4">

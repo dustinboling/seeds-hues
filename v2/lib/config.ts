@@ -3,7 +3,7 @@ export const SITE_URL = "https://seeds.hues.flowers";
 export const SITE_NAME = "seeds.hues.flowers";
 export const SITE_TITLE = "seeds.hues.flowers — Find Where to Buy Any Flower Seed";
 export const SITE_DESCRIPTION =
-  "A directory of flower seed varieties and the small farms that sell them — with stock state as last seen, the date each listing was checked, and a direct link to the farm.";
+  "A directory of flower seed varieties and the US sellers who sell them — with stock state as last seen, the date each listing was checked, and a direct link to the seller.";
 export const APP_NAME = "seeds.hues.flowers — Seed Directory";
 export const APP_SHORT_NAME = "Seed Directory";
 export const THEME_COLOR = "#F8F1E1";

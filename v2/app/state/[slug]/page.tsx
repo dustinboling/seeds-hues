@@ -69,7 +69,7 @@ export default async function StatePage({ params, searchParams }: Props) {
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
       <JsonLd
         data={itemListJsonLd(
-          `Seed farms in ${st.name}`,
+          `Seed sellers in ${st.name}`,
           items.map((s) => ({ name: s.name, href: `/seller/${s.slug}` })),
           (page - 1) * PAGE_SIZE + 1,
         )}
@@ -95,18 +95,18 @@ export default async function StatePage({ params, searchParams }: Props) {
         ) : null}
         <div className="mt-6 min-w-0 sm:flex sm:items-start sm:gap-8">
           <div className="min-w-0 flex-1">
-            <h1 className="text-3xl font-semibold text-leaf md:text-4xl">{`Seed farms in ${st.name}`}</h1>
+            <h1 className="text-3xl font-semibold text-leaf md:text-4xl">{`Seed sellers in ${st.name}`}</h1>
             <p className="mt-2 max-w-2xl text-muted" data-state-intro>
               {total === 1
-                ? `1 seed farm or company in ${st.name} lists seed with the Seed Directory.`
-                : `${total} seed farms and companies in ${st.name} list seed with the Seed Directory.`}
+                ? `1 seed seller in ${st.name} lists seed with the Seed Directory.`
+                : `${total} seed sellers in ${st.name} list seed with the Seed Directory.`}
               {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
             </p>
             <p className="mt-4">
               <Link href={`/add-your-farm?state=${st.code}`} className="btn btn-primary btn-pill" data-testid="state-add-farm">
                 Add Your Farm
               </Link>
-              <span className="ml-3 text-sm text-muted">Sell seed from a farm in {st.name}? Listing is free.</span>
+              <span className="ml-3 text-sm text-muted">Sell seed from a farm or company in {st.name}? Listing is free.</span>
             </p>
           </div>
           {/* State-flower plate (state-plates spec §3): beside the intro, never beside the card grid;
@@ -123,7 +123,7 @@ export default async function StatePage({ params, searchParams }: Props) {
       </ul>
       <Pagination basePath={`/state/${st.slug}`} page={page} totalPages={pages} label={`${st.name} seller pages`} />
       <p className="mt-8">
-        Is your {st.name} farm missing? <Link href={`/add-your-farm?state=${st.code}`}>Add Your Farm</Link> — we review every farm by hand.
+        Is your {st.name} farm or company missing? <Link href={`/add-your-farm?state=${st.code}`}>Add Your Farm</Link> — we review every submission by hand.
       </p>
       <p className="mt-3">
         <Link href="/seller">All sellers</Link>

@@ -158,7 +158,7 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
       // States B (createdDelivery set this session) and C (returning, nothing sent this session).
       celebration = (
         <p className="mt-3 max-w-xl">
-          Your place is saved now, and once your email is confirmed we’ll send one alert when a farm first lists {varietyName} — until
+          Your place is saved now, and once your email is confirmed we’ll send one alert when a seller first lists {varietyName} — until
           then, alerts are held.
         </p>
       );
@@ -193,7 +193,7 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
       celebration = (
         <>
           <p className="mt-3 max-w-xl">
-            When a farm first lists {varietyName}, we’ll send you one alert by {channels} — and that’s all.
+            When a seller first lists {varietyName}, we’ll send you one alert by {channels} — and that’s all.
           </p>
           <p className="text-sm text-muted">Alerts on: {channels}.</p>
         </>
@@ -234,7 +234,7 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
   return (
     <section aria-labelledby="waitlist-title" className="card mt-4 flex flex-col gap-3 p-4" data-testid="waitlist-block">
       <h3 id="waitlist-title" ref={joinHeadingRef} tabIndex={-1} className="text-xl font-semibold">
-        Join the waiting list — we’ll let you know when a farm lists {varietyName}.
+        Join the waiting list — we’ll let you know when a seller lists {varietyName}.
       </h3>
       <p className="text-sm text-muted">You can also choose a text alert. One alert when it’s first found; leave the list any time.</p>
       {noteBlock}

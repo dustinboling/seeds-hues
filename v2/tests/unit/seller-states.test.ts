@@ -170,6 +170,7 @@ describe("importedRating validation", () => {
       ratingAverage: null,
       rating: { state: "not_yet_rated", average: null, review_count: 0 },
       importedRating: { ...ok, source: "Google" },
+      isSmallFarm: false,
       description: null,
       orderingNotes: null,
       varietyCount: 0,
