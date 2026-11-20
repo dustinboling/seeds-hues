@@ -21,15 +21,13 @@ export default function AboutPage() {
       <ThemeArt name="about-data" priority className="art-frame mt-4 h-auto w-full" />
       <p className="mt-3 text-lg">
         seeds.hues.flowers is a free directory of flower seed varieties and the US farms and seed companies that sell
-        them, large and small. Search a variety, see who carries it, and follow a direct link to buy from the seller.
-        Small family farms carry a Small farm badge, so you can choose to buy from one.
+        them. Search a variety, see who carries it, and follow a direct link to buy from the seller.
       </p>
 
       <h2>Who is listed</h2>
       <p>
-        Any US seller who sells flower seed can be listed, from a small family farm to a large seed company. Small
-        family farms carry a Small farm badge, so you can spot them and choose to buy from them. A seller does not have
-        to grow the seed it sells. Read <Link href="/about/data">About the data</Link> for how listings
+        Any US seller who sells flower seed can be listed, from a small family farm to a large seed company. A seller
+        does not have to grow the seed it sells. Read <Link href="/about/data">About the data</Link> for how listings
         are collected and checked.
       </p>
 

@@ -60,14 +60,14 @@ export default async function HomePage({ searchParams }: Props) {
           <ThemeArt name="hero" priority className="art-frame h-auto w-full" />
         </div>
         <div>
-          <p className="eyebrow">Every US seller · stock as last seen · direct links</p>
+          <p className="eyebrow">Hard-to-find flower seed · stock as last seen · direct links</p>
           <h1 id="hero-title" className="mt-2 text-3xl font-semibold text-leaf md:text-5xl">
             Find where to buy any flower seed
           </h1>
           <p className="mt-3 max-w-2xl text-base text-muted md:text-lg">
-            Search a variety by any name it goes by and see every US seller who sells it — with its stock state as last
-            seen, the date we checked, and a direct link to the seller’s shop. Sellers with a Small farm badge are small
-            family farms, if you’d like to buy from one.
+            Some flower seed is hard to track down — a variety may turn up at only one seller, under a slightly
+            different name, or not at all this year. Search by any name it goes by and see who has it, with its stock
+            state as last seen, the date we checked, and a direct link to the seller’s shop.
           </p>
           <div className="mt-5 max-w-2xl">
             <SearchBox label="Search flower seeds" />
@@ -158,10 +158,10 @@ export default async function HomePage({ searchParams }: Props) {
         </h2>
         <ul className="mt-4 grid gap-3 md:grid-cols-3">
           <li className="card p-4">
-            <h3 className="font-semibold">Every US seller, large and small</h3>
+            <h3 className="font-semibold">Hard to find, in one place</h3>
             <p className="mt-1 text-sm text-muted">
-              If a US farm or seed company sells a variety, we list it. Small family farms carry a Small farm badge, so
-              you can choose to buy from one.
+              If a US farm or seed company sells a variety, we list it. Every seller we find for a variety sits on that
+              variety’s page, so one search shows you who has it.
             </p>
           </li>
           <li className="card p-4">

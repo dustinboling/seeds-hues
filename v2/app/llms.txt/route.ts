@@ -23,7 +23,7 @@ export async function GET(): Promise<Response> {
     `The directory currently lists ${counts.varieties} flower seed varieties across ${counts.plants} crops, sold by ${counts.sellers} US sellers (${counts.listings} listings). Each listing shows its stock state as last seen and the date it was last checked. No prices are shown. Hues Floral Park owns and operates the site.`,
     "",
     "## Seller policy",
-    "- Sellers are US farms and seed companies of any size. Small family farms carry a Small farm badge, so shoppers can spot them and choose to buy from them.",
+    "- Sellers are US farms and seed companies of any size.",
     "- A seller does not have to grow the seed it sells; bought-in seed is listed the same way.",
     "- Sellers do not pay for placement. Any seller may correct, claim or remove its listing; removals are honoured within 48 hours.",
     `- ${CONFLICT_OF_INTEREST}`,

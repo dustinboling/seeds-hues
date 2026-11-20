@@ -43,7 +43,7 @@ async function cardFor(kind: string, slug: string): Promise<Card | null> {
     return {
       eyebrow: "Flower seed directory",
       title: "Find where to buy any flower seed",
-      subtitle: "Every US seller · stock as last seen · direct links",
+      subtitle: "Hard-to-find flower seed · stock as last seen · direct links",
       swatch: "#8E2A52",
       footer: "seeds.hues.flowers",
     };
