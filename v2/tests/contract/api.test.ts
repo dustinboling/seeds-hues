@@ -579,6 +579,34 @@ describe("reports + key-gated trees (problem+json)", () => {
     expect((await json(gone)).error?.code).toBe("gone");
     expect((await call(sellerListingsRoute.GET, "/sellers/wild-west-seed/listings", { slug: "wild-west-seed" })).status).toBe(410);
   });
+
+  it("POST /admin/listings/:id/remove: 401 without a key, 404 unknown, 200 + idempotent repeat, body optional", async () => {
+    const admin = await services.auth.mint("listing-remove-admin", ["admin"]);
+    const auth = { Authorization: `Bearer ${admin.token}` };
+    const row = await t.env.DB.prepare("SELECT l.id FROM listings l JOIN sellers s ON s.id = l.seller_id WHERE l.status <> 'removed' AND s.slug <> 'wild-west-seed' ORDER BY l.id LIMIT 1").first<{ id: number }>();
+    const id = row!.id;
+    const path = `/admin/listings/${id}/remove`;
+
+    const none = await post(adminRoute.POST as Handler, path, {});
+    expect(none.status).toBe(401);
+    expect(none.headers.get("Content-Type")).toBe("application/problem+json");
+    const wrongScope = await services.auth.mint("listing-remove-ingest", ["ingest"]);
+    expect((await post(adminRoute.POST as Handler, path, {}, { Authorization: `Bearer ${wrongScope.token}` })).status).toBe(403);
+    expect((await t.env.DB.prepare("SELECT status FROM listings WHERE id = ?").bind(id).first<{ status: string }>())!.status).not.toBe("removed");
+
+    const missing = await post(adminRoute.POST as Handler, "/admin/listings/999999/remove", {}, auth);
+    expect(missing.status).toBe(404);
+    expect(await missing.json()).toMatchObject({ code: "listing_not_found" });
+
+    const ok = await post(adminRoute.POST as Handler, path, { reason: "contract test" }, auth);
+    expect(ok.status).toBe(200);
+    expect(((await ok.json()) as { data: unknown }).data).toEqual({ listing_id: id, status: "removed", already_removed: false });
+    const again = await call(adminRoute.POST as Handler, path, {}, { method: "POST", headers: auth });
+    expect(again.status).toBe(200);
+    expect(((await again.json()) as { data: unknown }).data).toEqual({ listing_id: id, status: "removed", already_removed: true });
+    const events = await t.env.DB.prepare("SELECT reason FROM listing_events WHERE listing_id = ? AND event = 'gone'").bind(id).all<{ reason: string | null }>();
+    expect(events.results).toEqual([{ reason: "contract test" }]);
+  });
 });
 
 describe("catalog endpoints (kept untouched)", () => {

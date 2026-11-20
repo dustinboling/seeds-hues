@@ -203,6 +203,19 @@ Removal sets `eligibility = 'removed_by_request'`, every listing to `removed`, a
 `blocked_domains`, revalidates the affected pages, and makes `/seller/{slug}`, the seller API and
 `/go/{id}` answer 410. Prices are never shown, so the old `no_prices` policy has no visible effect.
 
+### Removing a single listing
+
+A wrong or dead listing can be taken down on its own (the seller stays approved):
+
+```bash
+curl -X POST -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" \
+  -d '{"reason":"product page is gone"}' $BASE/api/v1/admin/listings/<listing id>/remove
+```
+
+`reason` is optional (max 500 chars) and is stored on the listing's `gone` event. The body may be
+omitted. Idempotent: repeating it returns 200 with `already_removed: true` and writes nothing. An
+unknown id is a 404 (`listing_not_found`). The variety and seller pages are revalidated.
+
 ### Outbound clicks
 
 Shop buttons go through `GET /go/{listing_id}`, which writes `click_events` (no cookies, no IP:

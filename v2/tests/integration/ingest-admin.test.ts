@@ -456,3 +456,46 @@ describe("crawl jobs", () => {
     expect((await later.lease({ count: 5 })).jobs.map((j) => j.id)).toEqual([b.id]);
   });
 });
+
+describe("admin listing removal (POST /admin/listings/:id/remove)", () => {
+  const liveListing = () =>
+    raw("SELECT l.id, v.slug variety FROM listings l JOIN varieties v ON v.id = l.variety_id WHERE l.status <> 'removed' ORDER BY l.id LIMIT 1").first<{
+      id: number;
+      variety: string;
+    }>();
+  const goneEvents = (id: number) =>
+    raw("SELECT reason FROM listing_events WHERE listing_id = ? AND event = 'gone'", id).all<{ reason: string | null }>();
+
+  it("removes one listing: status flipped, one 'gone' event with the reason, seq bumped, pages revalidated", async () => {
+    const l = (await liveListing())!;
+    const seqBefore = await s.catalog.catalogSeq();
+    const r = await s.admin.removeListing(l.id, { reason: "product page is gone" });
+    expect(r.data).toEqual({ listing_id: l.id, status: "removed", already_removed: false });
+    expect(r.revalidate).toHaveLength(2);
+    expect(r.revalidate[0]).toBe(`/variety/${l.variety}`);
+    expect(r.revalidate[1]).toMatch(/^\/seller\/.+/);
+
+    const row = await raw("SELECT status, updated_seq FROM listings WHERE id = ?", l.id).first<{ status: string; updated_seq: number }>();
+    expect(row!.status).toBe("removed");
+    const seqAfter = await s.catalog.catalogSeq();
+    expect(seqAfter).toBeGreaterThan(seqBefore);
+    expect(row!.updated_seq).toBe(seqAfter);
+    expect((await goneEvents(l.id)).results).toEqual([{ reason: "product page is gone" }]);
+    // The variety keeps its public page (indexable is status-based, not listing-based).
+    expect((await s.catalog.getVariety(l.variety))!.indexable).toBe(true);
+  });
+
+  it("is idempotent: a repeat succeeds with already_removed and writes nothing", async () => {
+    const l = (await liveListing())!;
+    await s.admin.removeListing(l.id, {});
+    const seq = await s.catalog.catalogSeq();
+    const again = await s.admin.removeListing(l.id, { reason: "second call" });
+    expect(again.data).toEqual({ listing_id: l.id, status: "removed", already_removed: true });
+    expect(await s.catalog.catalogSeq()).toBe(seq);
+    expect((await goneEvents(l.id)).results).toEqual([{ reason: null }]); // one event; no reason was supplied the first time
+  });
+
+  it("404 listing_not_found for an unknown id", async () => {
+    await expect(s.admin.removeListing(999_999, {})).rejects.toMatchObject({ status: 404, code: "listing_not_found" });
+  });
+});
