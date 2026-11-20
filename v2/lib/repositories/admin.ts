@@ -155,7 +155,7 @@ export async function removeSeller(db: Db, sellerId: number, reason: string, at:
       .where(eq(listings.sellerId, sellerId)) as unknown as AtomicOp,
   ];
   for (const l of affected) {
-    ops.push(db.insert(listingEvents).values({ listingId: l.id, event: "gone", at }) as unknown as AtomicOp);
+    ops.push(db.insert(listingEvents).values({ listingId: l.id, event: "gone", at, reason }) as unknown as AtomicOp);
   }
   if (s.domain) {
     ops.push(db.insert(blockedDomains).values({ domain: s.domain, reason, createdAt: at }).onConflictDoNothing() as unknown as AtomicOp);
@@ -163,6 +163,40 @@ export async function removeSeller(db: Db, sellerId: number, reason: string, at:
   await atomic(db, ops);
   await recomputeIndexable(db, affected.map((a) => a.varietyId));
   return { sellerSlug: s.slug, domain: s.domain, listings: affected.length, varietySlugs: [...new Set(affected.map((a) => a.slug))] };
+}
+
+/**
+ * Remove one listing (admin). Unknown id → null. Already removed → `alreadyRemoved: true` with
+ * nothing written (no second 'gone' event, no seq bump). Otherwise the status flip and the 'gone'
+ * event (carrying `reason`, null when none was given) land atomically, then the variety's
+ * indexable flag is recomputed.
+ */
+export async function removeListing(db: Db, listingId: number, reason: string | null, at: string) {
+  const [l] = await db
+    .select({
+      status: listings.status,
+      varietyId: listings.varietyId,
+      varietySlug: varieties.slug,
+      sellerSlug: sellers.slug,
+    })
+    .from(listings)
+    .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+    .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+    .where(eq(listings.id, listingId))
+    .limit(1);
+  if (!l) return null;
+  const slugs = { varietySlug: l.varietySlug, sellerSlug: l.sellerSlug };
+  if (l.status === "removed") return { alreadyRemoved: true, ...slugs };
+  await atomic(db, [
+    ...nextSeq(db),
+    db
+      .update(listings)
+      .set({ status: "removed", updatedAt: at, updatedSeq: currentSeq() })
+      .where(eq(listings.id, listingId)) as unknown as AtomicOp,
+    db.insert(listingEvents).values({ listingId, event: "gone", at, reason }) as unknown as AtomicOp,
+  ]);
+  await recomputeIndexable(db, [l.varietyId]);
+  return { alreadyRemoved: false, ...slugs };
 }
 
 const CORRECTABLE = ["name", "location", "region", "homepage", "description", "orderingNotes", "shipsTo"] as const;

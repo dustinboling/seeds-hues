@@ -551,6 +551,8 @@ export const listingEvents = sqliteTable(
       .references(() => listings.id),
     event: text("event", { enum: LISTING_EVENT }).notNull(),
     at: text("at").notNull(),
+    /** Why a 'gone' event happened (admin removals); NULL = none given / not applicable. */
+    reason: text("reason"),
   },
   (t) => [
     index("listing_events_listing_idx").on(t.listingId),

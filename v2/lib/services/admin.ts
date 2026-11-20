@@ -45,6 +45,8 @@ export const MergeBodySchema = z.strictObject({
 
 export const SellerActionBodySchema = z.strictObject({ reason: z.string().max(500).optional(), note: z.string().max(500).optional() }).default({});
 
+export const ListingRemoveBodySchema = z.strictObject({ reason: z.string().max(500).optional() }).default({});
+
 export const JobBodySchema = z.strictObject({ type: z.string().min(1).max(50), target: z.string().min(1).max(2000) });
 
 type ListingProposal = {
@@ -92,6 +94,16 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
     };
   }
 
+  async function removeListing(id: number, body: z.infer<typeof ListingRemoveBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+    const r = await admin.removeListing(db, id, body.reason ?? null, iso());
+    if (!r) throw new AdminError(404, "listing_not_found", `listing ${id} not found`);
+    return {
+      data: { listing_id: id, status: "removed", already_removed: r.alreadyRemoved },
+      // The variety page lists it and the seller page counts it; the variety stays indexable, so no sitemap change.
+      revalidate: [`/variety/${r.varietySlug}`, `/seller/${r.sellerSlug}`],
+    };
+  }
+
   async function itemOr404(id: number) {
     const item = await admin.reviewItemById(db, id);
     if (!item) throw new AdminError(404, "not_found", `review item ${id} not found`);
@@ -105,6 +117,8 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
   }
 
   return {
+    removeListing,
+
     listReview: (q: z.infer<typeof ReviewListQuerySchema>, limit: number) => admin.listReviewItems(db, { ...q, limit }),
 
     async approve(id: number, body: z.infer<typeof ApproveBodySchema>): Promise<AdminResult<Record<string, unknown>>> {

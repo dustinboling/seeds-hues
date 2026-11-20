@@ -9,6 +9,7 @@ import {
   MergeBodySchema,
   ReviewListQuerySchema,
   SellerActionBodySchema,
+  ListingRemoveBodySchema,
 } from "@/lib/services/admin";
 import { LeaseBodySchema, ObservationsBodySchema, SellerCandidateBodySchema, SourceBodySchema } from "@/lib/services/ingest";
 import { ApproveFarmSchema, FarmOwnerSchema } from "@/lib/services/farms";
@@ -142,6 +143,17 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       },
     }),
   ),
+  {
+    method: "POST",
+    pattern: "listings/:id/remove",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const r = await services.admin.removeListing(intParam(params.id, "listing"), parseBody(ListingRemoveBodySchema, body ?? {}));
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
   {
     method: "GET",
     pattern: "stats/demand",
