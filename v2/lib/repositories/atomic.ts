@@ -11,8 +11,9 @@ import type { Db } from "@/lib/db/client";
 
 export type AtomicOp = BatchItem<"sqlite">;
 
-export async function atomic(db: Db, ops: AtomicOp[]): Promise<void> {
-  if (ops.length === 0) return;
+/** Runs the ops as one transaction; resolves to each op's result (rows for `.returning()` ops). */
+export async function atomic(db: Db, ops: AtomicOp[]): Promise<unknown[]> {
+  if (ops.length === 0) return [];
   const [first, ...rest] = ops;
-  await db.batch([first as AtomicOp, ...rest]);
+  return (await db.batch([first as AtomicOp, ...rest])) as unknown[];
 }
