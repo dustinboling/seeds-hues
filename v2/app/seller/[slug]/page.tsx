@@ -175,7 +175,7 @@ export default async function SellerPage({ params, searchParams }: Props) {
               No listings for this seller yet. <Link href="/variety">Browse all varieties</Link>.
             </p>
           ) : (
-            <ul className="mt-3 divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card">
+            <ul className="mt-3 flex flex-col gap-3">
               {shown.map((l) => (
                 <li key={l.id}>
                   <ListingRow listing={l} context="seller" />

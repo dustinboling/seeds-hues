@@ -109,6 +109,13 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
 
   const common = shortCommonName(v.plant.commonName);
   const sf = sellerFilterView(v.listings, smallFarmOnly);
+  // Quiet Ledger sorting (2026-11-20): in-stock listings above sold-out in the card stack.
+  // Applied to the filter's shown set as a stable view-layer sort — sellerFilterView narrows
+  // first and never re-sorts; this then orders in stock, everything else in its existing
+  // order, then sold out, without disturbing order within groups.
+  const availabilityRank = (a: (typeof v.listings)[number]["availability"]) =>
+    a === "in_stock" ? 0 : a === "sold_out" ? 2 : 1;
+  const sortedListings = [...sf.shown].sort((a, b) => availabilityRank(a.availability) - availabilityRank(b.availability));
   const label = `${v.varietyName} ${common}`;
   const crumbs = [
     { name: "Home", href: "/" },
@@ -180,6 +187,19 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
           <h2 id="buy-title" className="text-2xl font-semibold">
             Where to buy {label} seeds
           </h2>
+          {/* Quiet Ledger header block (2026-11-20): the "N shops · M in stock" summary over the
+              variety's full listing set, then the honesty line — relocated here, directly under
+              the header, from below the list (the old lower wording is gone; it appears once). */}
+          {v.listings.length > 0 ? (
+            <p className="mt-2.5 font-sans text-[13px] font-semibold text-ink-soft">
+              {v.listings.length} {v.listings.length === 1 ? "shop" : "shops"} ·{" "}
+              {v.listings.filter((l) => l.availability === "in_stock").length} in stock
+            </p>
+          ) : null}
+          <p className="mt-[5px] max-w-[34ch] text-[15px] leading-[1.45] text-muted">
+            Stock is as last seen when we checked each shop — it may have changed since. Prices are shown at the
+            shop, not here.
+          </p>
           {v.listings.length === 0 ? (
             <>
             <ThemeArt name="empty-no-sellers" className="art-frame mx-auto mt-4 h-[220px] w-auto" />
@@ -200,9 +220,9 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
               </p>
               {sf.showLegend ? <SmallFarmLegend className="mt-1" /> : null}
               <div id="variety-listings">
-                {sf.shown.length > 0 ? (
-                  <ul className="mt-3 divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card">
-                    {sf.shown.map((l) => (
+                {sortedListings.length > 0 ? (
+                  <ul className="mt-3 flex flex-col gap-3">
+                    {sortedListings.map((l) => (
                       <li key={l.id}>
                         <ListingRow listing={l} context="variety" />
                       </li>
@@ -222,10 +242,6 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
               <ResultsScrollClamp targetId="variety-listing-count" regionId="variety-listings" navKey={smallFarmOnly ? "small_farm" : "all"} />
             </>
           )}
-          <p className="mt-3 text-sm text-muted">
-            Stock is shown as last seen on the date checked. Prices are not shown — always confirm on the seller’s own
-            site before ordering.
-          </p>
         </section>
 
         <section aria-labelledby="facts-title" className="mt-8">
