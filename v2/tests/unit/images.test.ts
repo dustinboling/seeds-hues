@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 819 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 824 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -141,8 +141,11 @@ describe("lib/images-data (generated)", () => {
     // account-organizer (account page) theme art (2026-11-19);
     // +9 for the new-variety plates batch 1: Snapdragon Potomac Dark Pink / Lavender /
     // White / Yellow / Red and Statice QIS Dark Blue / Lavender / White / Yellow
-    // (2026-11-19, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(819);
+    // (2026-11-19, Quinn PASS WITH NOTES);
+    // +5 for the audit-defect crop-plate repaints: bupleurum v3, dahlia v3, gomphrena v3,
+    // honeywort v4, silene v4 (2026-11-19/20) — regenerated into images-data with the plates
+    // above; the count catches up here.
+    expect(entries).toHaveLength(824);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
