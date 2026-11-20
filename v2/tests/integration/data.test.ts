@@ -211,6 +211,14 @@ describe("listing visibility", () => {
   });
 });
 
+describe("unknown slugs (soft-404 regression 2026-11-20)", () => {
+  it("getSeller / getCrop return null (so the pages call notFound() → a real 404); status is missing", async () => {
+    expect(await svc().getSeller("does-not-exist")).toBeNull();
+    expect(await svc().getCrop("does-not-exist", { page: { offset: 0, limit: 1 } })).toBeNull();
+    expect(await svc().sellerStatus("does-not-exist")).toBe("missing");
+  });
+});
+
 describe("packet sizes for a seller with >100 listings (D1 bound-parameter cap)", () => {
   // Regression (2026-11-18): packetRows() bound every listing id in ONE inArray(...) — when
   // Select Seeds passed 100 visible listings (103), production D1 rejected the statement with
