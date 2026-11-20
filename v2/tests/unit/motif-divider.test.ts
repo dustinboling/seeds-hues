@@ -4,13 +4,16 @@
  *
  * History: it also shipped in a footer-adjacent slot (FooterStem, "footer" variant) on every page;
  * that placement was removed 2026-11-19 at Dustin's direction — the motif's painted ground did not
- * match the page ground and read as a visible band above the footer. Pages now go straight from
- * content to the footer; the SiteFooter regression test below keeps it removed.
+ * match the page ground and read as a visible band above the footer. On 2026-11-20 Dustin directed
+ * the slot's original occupant restored instead: FooterStem renders the thin divider-stem rule
+ * (theme §3), a transparent-ground vector that takes the page's own paper and cannot band. The
+ * SiteFooter regression test below keeps Motif B out of the slot and the stem in it.
  */
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { MOTIF_B_PATH, MotifDivider } from "@/components/ui/MotifDivider";
+import { FooterStem } from "@/components/layout/FooterStem";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
 const T = (w: number) => `https://images.seeds.hues.flowers/cdn-cgi/image/width=${w},quality=80,format=auto,fit=scale-down/ornaments/motif-divider-b.webp`;
@@ -52,16 +55,23 @@ describe("MotifDivider (divider motif B)", () => {
     }
   });
 
-  it("is not placed adjacent to the footer: SiteFooter renders no footer-stem slot and no motif", () => {
+  it("FooterStem renders the thin stem rule in its slot in server HTML (suppression is client-side)", () => {
+    const h = renderToStaticMarkup(createElement(FooterStem));
+    expect(h).toBe('<div aria-hidden="true" class="divider-stem mt-16" data-testid="footer-stem"></div>');
+  });
+
+  it("is not placed adjacent to the footer: SiteFooter renders the thin stem rule above the footer and no Motif B band", () => {
     const h = renderToStaticMarkup(createElement(SiteFooter));
-    // The <footer> element is the component's whole output: nothing renders before or after it
-    // (React 19 prepends a <link rel="preload"> resource hint for the logo image; not an element).
-    expect(h.replace(/^(?:<link rel="preload"[^>]*\/>)+/, "")).toMatch(/^<footer\b[\s\S]*<\/footer>$/);
-    expect(h).not.toContain("footer-stem");
+    // The stem slot renders first, then the <footer> element, and nothing after it: the rule sits
+    // above the footer on the page ground, never inside the paper-deep footer element.
+    // (React 19 prepends a <link rel="preload"> resource hint for the logo image; not an element.)
+    expect(h.replace(/^(?:<link rel="preload"[^>]*\/>)+/, "")).toMatch(
+      /^<div aria-hidden="true" class="divider-stem mt-16" data-testid="footer-stem"><\/div>(?:<!-- -->)?<footer\b[\s\S]*<\/footer>$/,
+    );
     expect(h).not.toContain("motif-b");
     expect(h).not.toContain(MOTIF_B_PATH.slice(1));
     expect(h).not.toContain("ornaments/");
-    // The only image in the footer is the Hues wordmark — no motif image.
+    // The only image in the footer is the Hues wordmark — the stem is a CSS background, not an <img>.
     expect([...h.matchAll(/<img\b[^>]*>/g)].map((m) => attr(m[0], "src"))).toEqual(["/brand/hues-logo.svg"]);
   });
 });
