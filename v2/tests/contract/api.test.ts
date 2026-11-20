@@ -583,8 +583,11 @@ describe("reports + key-gated trees (problem+json)", () => {
   it("POST /admin/listings/:id/remove: 401 without a key, 404 unknown, 200 + idempotent repeat, body optional", async () => {
     const admin = await services.auth.mint("listing-remove-admin", ["admin"]);
     const auth = { Authorization: `Bearer ${admin.token}` };
-    const row = await t.env.DB.prepare("SELECT l.id FROM listings l JOIN sellers s ON s.id = l.seller_id WHERE l.status <> 'removed' AND s.slug <> 'wild-west-seed' ORDER BY l.id LIMIT 1").first<{ id: number }>();
-    const id = row!.id;
+    // Insert a throwaway listing cloned from a seed row: removing shared seed data here would
+    // shift the counts the small-farm filter tests below assert on.
+    const seed = await t.env.DB.prepare("SELECT l.variety_id, l.seller_id, l.source_id FROM listings l JOIN sellers s ON s.id = l.seller_id WHERE l.status <> 'removed' AND s.slug <> 'wild-west-seed' ORDER BY l.id LIMIT 1").first<{ variety_id: number; seller_id: number; source_id: number }>();
+    const ins = await t.env.DB.prepare("INSERT INTO listings (variety_id, seller_id, source_id, product_url, status, created_at, updated_at) VALUES (?, ?, ?, 'https://example.com/listing-remove-contract-test', 'published', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z') RETURNING id").bind(seed!.variety_id, seed!.seller_id, seed!.source_id).first<{ id: number }>();
+    const id = ins!.id;
     const path = `/admin/listings/${id}/remove`;
 
     const none = await post(adminRoute.POST as Handler, path, {});
