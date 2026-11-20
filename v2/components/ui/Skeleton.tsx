@@ -102,23 +102,20 @@ export function CropCardSkeleton() {
   );
 }
 
-/** ListingRow stand-in: the row's real padding and stack (px-4 py-4, gap-2), inside the real sheet. */
+/** ListingRow stand-in (Quiet Ledger cards, 2026-11-20): a stack of separate cards, 12 px apart. */
 export function ListingSheetSkeleton({ rows, className }: { rows: number; className?: string }) {
   return (
-    <ul
-      className={`divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card ${className ?? ""}`}
-    >
+    <ul className={`flex flex-col gap-3 ${className ?? ""}`}>
       {Array.from({ length: rows }, (_, i) => (
         <li key={i}>
-          <div className="flex flex-col gap-2 px-4 py-4">
-            <div className="flex items-start justify-between gap-2">
-              <Bar className="h-6 w-44 max-w-[55%]" />
-              <Bar className="h-6 w-20 shrink-0 rounded-full" />
+          <div className="rounded-[18px] border border-[#e9dfc2] bg-surface px-4 pb-3 pt-[18px] shadow-[0_6px_20px_rgba(151,134,95,0.14)]">
+            <Bar className="h-6 w-44 max-w-[55%]" />
+            <Bar className="mt-1 h-4 w-32" />
+            <Bar className="mt-2 h-3 w-40" />
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-[rgba(151,134,95,0.45)] pt-2">
+              <Bar className="h-4 w-24" />
+              <Bar className="h-11 w-32 shrink-0 rounded-full" />
             </div>
-            <Bar className="h-4 w-32" />
-            <Bar className="h-3 w-28" />
-            <Bar className="h-4 w-40" />
-            <Bar className="mt-1 h-11 w-48 max-w-full rounded-xl" />
           </div>
         </li>
       ))}

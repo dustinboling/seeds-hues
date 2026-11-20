@@ -309,6 +309,37 @@
     height: 24px;
     background: url("/theme/divider-stem.svg") center / 220px 24px no-repeat;
   }
+  /*
+   * Quiet Ledger listing card (2026-11-20): the wheat-stem hairline between the status line
+   * and the footer. A 1 px warm hairline with the site's divider-stem motif centred on it
+   * (15 px tall, rendered as a CSS background from the self-hosted /theme/divider-stem.svg —
+   * the same asset as .divider-stem, never an <img> and never hotlinked). The centred stem
+   * sits on a patch of the card's own ground so the line appears to pass behind it: surface
+   * on a standard card, paper on a sold-out card (.listing-card-soldout).
+   */
+  .listing-stem-rule {
+    position: relative;
+    border-top: 1px solid rgb(151 134 95 / 0.45);
+    margin: 16px 0 4px;
+  }
+  .listing-stem-rule > span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    width: 158px;
+    height: 15px;
+    padding: 0 10px;
+    background-color: var(--color-surface);
+    background-image: url("/theme/divider-stem.svg");
+    background-position: center;
+    background-size: auto 15px;
+    background-repeat: no-repeat;
+  }
+  .listing-card-soldout .listing-stem-rule > span {
+    background-color: var(--color-paper);
+  }
   /* The stem's centre (two leaves) at wordmark size, between "Seed Directory" and the site name. */
   .divider-stem-mini {
     width: 2.5rem;
