@@ -495,6 +495,16 @@ describe("admin listing removal (POST /admin/listings/:id/remove)", () => {
     expect((await goneEvents(l.id)).results).toEqual([{ reason: null }]); // one event; no reason was supplied the first time
   });
 
+  it("concurrent removes of the same live listing: one winner, one 'gone' event, one seq bump", async () => {
+    const l = (await liveListing())!;
+    const seqBefore = await s.catalog.catalogSeq();
+    const [a, b] = await Promise.all([s.admin.removeListing(l.id, { reason: "race a" }), s.admin.removeListing(l.id, { reason: "race b" })]);
+    expect([a.data.already_removed, b.data.already_removed].sort()).toEqual([false, true]);
+    expect((await goneEvents(l.id)).results).toHaveLength(1);
+    expect(await s.catalog.catalogSeq()).toBe(seqBefore + 1);
+    expect((await raw("SELECT status FROM listings WHERE id = ?", l.id).first<{ status: string }>())!.status).toBe("removed");
+  });
+
   it("404 listing_not_found for an unknown id", async () => {
     await expect(s.admin.removeListing(999_999, {})).rejects.toMatchObject({ status: 404, code: "listing_not_found" });
   });

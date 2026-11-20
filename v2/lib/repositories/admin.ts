@@ -7,6 +7,7 @@ import { and, asc, count, desc, eq, inArray, isNull, min, ne, sql } from "drizzl
 import type { Db } from "@/lib/db/client";
 import {
   blockedDomains,
+  catalogMeta,
   listingEvents,
   listings,
   plants,
@@ -21,7 +22,7 @@ import {
 import { normalizeName, slugify } from "@/lib/names";
 import { atomic, type AtomicOp } from "./atomic";
 import { ensureIngestSource, recomputeIndexable } from "./ingest";
-import { currentSeq, nextSeq } from "./seq";
+import { CATALOG_SEQ_KEY, currentSeq, nextSeq } from "./seq";
 
 export type ReviewType = (typeof REVIEW_ITEM_TYPE)[number];
 export type ReviewStatus = (typeof REVIEW_ITEM_STATUS)[number];
@@ -187,14 +188,30 @@ export async function removeListing(db: Db, listingId: number, reason: string | 
   if (!l) return null;
   const slugs = { varietySlug: l.varietySlug, sellerSlug: l.sellerSlug };
   if (l.status === "removed") return { alreadyRemoved: true, ...slugs };
-  await atomic(db, [
-    ...nextSeq(db),
+  // Single winner (a concurrent remove can pass the SELECT above too). D1 runs a batch as one
+  // transaction and batches never interleave, so every statement below sees the same pre-state as
+  // long as the guarded flip is LAST: the seq bump and the 'gone' event are written only while the
+  // listing is still live (INSERT … SELECT … WHERE), then the flip itself is guarded the same way.
+  // A loser's three statements all match nothing: no bump, no event, no row change.
+  const stillLive = sql`EXISTS (SELECT 1 FROM listings WHERE id = ${listingId} AND status <> 'removed')`;
+  const results = await atomic(db, [
+    // = nextSeq(), conditional (INSERT … SELECT needs the WHERE to disambiguate ON CONFLICT).
+    db
+      .insert(catalogMeta)
+      .select(sql`SELECT ${CATALOG_SEQ_KEY}, 1 WHERE ${stillLive}`)
+      .onConflictDoUpdate({ target: catalogMeta.key, set: { value: sql`${catalogMeta.value} + 1` } }) as unknown as AtomicOp,
+    // Columns in table order: id (NULL → rowid), listing_id, event, at, reason.
+    db
+      .insert(listingEvents)
+      .select(sql`SELECT NULL, ${listingId}, 'gone', ${at}, ${reason} WHERE ${stillLive}`) as unknown as AtomicOp,
     db
       .update(listings)
       .set({ status: "removed", updatedAt: at, updatedSeq: currentSeq() })
-      .where(eq(listings.id, listingId)) as unknown as AtomicOp,
-    db.insert(listingEvents).values({ listingId, event: "gone", at, reason }) as unknown as AtomicOp,
+      .where(and(eq(listings.id, listingId), ne(listings.status, "removed")))
+      .returning({ id: listings.id }) as unknown as AtomicOp,
   ]);
+  const won = (results[2] as { id: number }[]).length === 1;
+  if (!won) return { alreadyRemoved: true, ...slugs };
   await recomputeIndexable(db, [l.varietyId]);
   return { alreadyRemoved: false, ...slugs };
 }
