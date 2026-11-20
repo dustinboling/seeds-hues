@@ -11,7 +11,7 @@
  * curated catalog.
  */
 
-/** BADGE — small farms and small seed sellers (44: the original 20 plus 24 hunt-added sellers judged BADGE in Hue's 2026-11-20 review). */
+/** BADGE — small farms and small seed sellers (42: the original 20 plus 22 of the 24 hunt-added sellers judged BADGE in Hue's 2026-11-20 review; Urban Farmer and Halden Garden were flipped to NO BADGE by Hue's ruling on Quinn's dispute later that day). */
 export const SMALL_FARM_BADGE_SLUGS = [
   "3-porch-farm",
   "blomma-flower-farm",
@@ -39,8 +39,6 @@ export const SMALL_FARM_BADGE_SLUGS = [
   "thresh-seed-co",
   "south-ga-seed-co",
   "alliance-of-native-seedkeepers",
-  "urban-farmer",
-  "halden-garden",
   "bucktown-seed-co",
   "autumn-prairie-pumpkins",
   "fellabees-nativeseeds",
@@ -60,8 +58,10 @@ export const SMALL_FARM_BADGE_SLUGS = [
 ] as const;
 
 /**
- * NO BADGE — national catalogs, wholesale, and national-scale institutions (39: the original 7
- * plus 32 hunt-added sellers judged NO BADGE in Hue's 2026-11-20 review), plus GeoSeed,
+ * NO BADGE — national catalogs, wholesale, and national-scale institutions (41: the original 7
+ * plus 34 hunt-added sellers judged NO BADGE in Hue's 2026-11-20 review — the 32 judged
+ * NO BADGE at review plus Urban Farmer and Halden Garden, flipped from BADGE by Hue's ruling
+ * on Quinn's dispute), plus GeoSeed,
  * pre-recorded NO BADGE in the classification and live in production as seller 28 since the
  * 2026-11-19 crawl.
  */
@@ -106,6 +106,8 @@ export const SMALL_FARM_NO_BADGE_SLUGS = [
   "southern-seeds",
   "walnut-creek-supply",
   "seedway",
+  "urban-farmer",
+  "halden-garden",
 ] as const;
 
 /**
@@ -122,10 +124,12 @@ export const SMALL_FARM_NO_BADGE_SLUGS = [
 export const SMALL_FARM_DEFAULT_NO_BADGE_SLUGS = [] as const;
 
 /**
- * Production reconciliation target (updated 2026-11-20, after Hue's badge review): 84 sellers —
+ * Production reconciliation target (updated 2026-11-20, after Hue's badge review and her
+ * same-day ruling on Quinn's dispute): 84 sellers —
  * the original 28 (verified against the live API 2026-11-19: the 25 in seed-data/catalog.json,
  * seedtime + davids-garden-seeds (ingest), geoseed (crawl)) plus the 56 sellers added by the
- * 2026-11-19/20 seller hunts, all 56 individually reviewed 2026-11-20 (24 BADGE, 32 NO BADGE).
- * Badged is 44; not-badged is 40 judged — no unreviewed defaults remain.
+ * 2026-11-19/20 seller hunts, all 56 individually reviewed 2026-11-20 (24 BADGE at review,
+ * 32 NO BADGE; Urban Farmer and Halden Garden then flipped BADGE → NO BADGE by the ruling).
+ * Badged is 42; not-badged is 42 judged — no unreviewed defaults remain.
  */
-export const SMALL_FARM_PRODUCTION_TARGET = { total: 84, badged: 44, notBadged: 40 } as const;
+export const SMALL_FARM_PRODUCTION_TARGET = { total: 84, badged: 42, notBadged: 42 } as const;

@@ -5,7 +5,7 @@
  * Steps, in order, all fail-closed:
  *   1. backup   — every column of every `sellers` row, frozen before any write (JSON) plus a
  *                 targeted rollback file (one UPDATE per seller restoring its prior badge value).
- *   2. resolve  — the 44 BADGE slugs to seller ids; abort unless exactly 44 distinct rows resolve,
+ *   2. resolve  — the 42 BADGE slugs to seller ids; abort unless exactly 42 distinct rows resolve,
  *                 none removed at its request, and every NO BADGE slug present — judged or
  *                 DEFAULT (the list is empty since Hue's 2026-11-20 review judged all 56) — is
  *                 still unbadged. A seller in none of the three recorded lists is unclassified
@@ -79,8 +79,8 @@ export async function applySmallFarmBadges(db: Db, opts: ApplyOptions): Promise<
   const defaultNoBadgeSlugs: readonly string[] = SMALL_FARM_DEFAULT_NO_BADGE_SLUGS;
 
   // Guard the recorded lists themselves before touching the database.
-  if (new Set(badgeSlugs).size !== badgeSlugs.length || badgeSlugs.length !== 44) {
-    throw new BadgeApplyError(`classification BADGE list must hold 44 distinct slugs (has ${badgeSlugs.length})`);
+  if (new Set(badgeSlugs).size !== badgeSlugs.length || badgeSlugs.length !== 42) {
+    throw new BadgeApplyError(`classification BADGE list must hold 42 distinct slugs (has ${badgeSlugs.length})`);
   }
   if (new Set(defaultNoBadgeSlugs).size !== defaultNoBadgeSlugs.length || defaultNoBadgeSlugs.length !== 0) {
     throw new BadgeApplyError(`classification DEFAULT NO BADGE list must hold 0 distinct slugs (has ${defaultNoBadgeSlugs.length})`);

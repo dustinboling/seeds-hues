@@ -40,6 +40,13 @@ describe("catalog.json assertions (FINAL §6)", () => {
     // badge matches the recorded judgment. GeoSeed is the standing example — pre-recorded
     // NO BADGE in the classification, live in production as seller 28.
     expect(SMALL_FARM_NO_BADGE_SLUGS).toContain("geoseed");
+    // Hue's 2026-11-20 ruling on Quinn's dispute: Urban Farmer and Halden Garden were judged
+    // BADGE in the badge review and flipped to NO BADGE the same day (scale per each seller's
+    // own About) — pinned here so the flip cannot silently revert.
+    expect(SMALL_FARM_NO_BADGE_SLUGS).toContain("urban-farmer");
+    expect(SMALL_FARM_NO_BADGE_SLUGS).toContain("halden-garden");
+    expect(SMALL_FARM_BADGE_SLUGS).not.toContain("urban-farmer");
+    expect(SMALL_FARM_BADGE_SLUGS).not.toContain("halden-garden");
     const c = fresh();
     const geo = c.sellers.find((s) => s.slug === "johnnys-selected-seeds")!;
     geo.slug = "geoseed";
@@ -57,22 +64,23 @@ describe("catalog.json assertions (FINAL §6)", () => {
   });
 
   it("Open Directory: the badge must equal the recorded judgment (seller-classification.md)", () => {
-    // The classification is the source of truth: 44 BADGE slugs, 40 judged NO BADGE slugs
+    // The classification is the source of truth: 42 BADGE slugs, 42 judged NO BADGE slugs
     // (GeoSeed among them), and an empty DEFAULT NO BADGE list. The 56 sellers the
     // 2026-11-19/20 hunts added sat in DEFAULT as unreviewed, flag-OFF defaults until Hue's
-    // individual review on 2026-11-20 judged every one — 24 to BADGE, 32 to NO BADGE — so
-    // no unreviewed defaults remain. The production reconciliation target is 84 total /
-    // 44 badged / 40 not.
-    expect(SMALL_FARM_BADGE_SLUGS).toHaveLength(44);
-    expect(new Set(SMALL_FARM_BADGE_SLUGS).size).toBe(44);
-    expect(SMALL_FARM_NO_BADGE_SLUGS).toHaveLength(40);
-    expect(new Set(SMALL_FARM_NO_BADGE_SLUGS).size).toBe(40);
+    // individual review on 2026-11-20 judged every one — 24 to BADGE, 32 to NO BADGE — and
+    // Hue's same-day ruling on Quinn's dispute then flipped Urban Farmer and Halden Garden
+    // from BADGE to NO BADGE, so no unreviewed defaults remain. The production
+    // reconciliation target is 84 total / 42 badged / 42 not.
+    expect(SMALL_FARM_BADGE_SLUGS).toHaveLength(42);
+    expect(new Set(SMALL_FARM_BADGE_SLUGS).size).toBe(42);
+    expect(SMALL_FARM_NO_BADGE_SLUGS).toHaveLength(42);
+    expect(new Set(SMALL_FARM_NO_BADGE_SLUGS).size).toBe(42);
     expect(SMALL_FARM_DEFAULT_NO_BADGE_SLUGS).toHaveLength(0);
     expect(new Set(SMALL_FARM_DEFAULT_NO_BADGE_SLUGS).size).toBe(0);
     // No overlaps across any of the three lists; together they cover all 84 production sellers.
     const allRecorded = [...SMALL_FARM_BADGE_SLUGS, ...SMALL_FARM_NO_BADGE_SLUGS, ...SMALL_FARM_DEFAULT_NO_BADGE_SLUGS];
     expect(new Set(allRecorded).size).toBe(84);
-    expect(SMALL_FARM_PRODUCTION_TARGET).toEqual({ total: 84, badged: 44, notBadged: 40 });
+    expect(SMALL_FARM_PRODUCTION_TARGET).toEqual({ total: 84, badged: 42, notBadged: 42 });
     // Flipping a badge either way contradicts the recorded judgment and fails the import.
     const badged = fresh();
     const b = badged.sellers.find((s) => s.isSmallFarm)!;
@@ -106,7 +114,7 @@ describe("catalog.json assertions (FINAL §6)", () => {
     // 18 badged + 7 not (seedtime + davids-garden-seeds, the other two BADGE slugs, are
     // ingest sellers and GeoSeed arrived by crawl — together the original 28; the 56
     // hunt-added sellers (all reviewed 2026-11-20) sit outside the curated catalog and
-    // bring production to 84 / 44 / 40).
+    // bring production to 84 / 42 / 42).
     const real = parseCatalog(loadCatalogJson());
     expect(real.sellers.filter((s) => s.isSmallFarm)).toHaveLength(18);
     expect(real.sellers.filter((s) => !s.isSmallFarm)).toHaveLength(7);

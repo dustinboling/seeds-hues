@@ -1,5 +1,5 @@
 /**
- * One-off: apply the "Small farm" badge judgment (seller-classification.md, 44 BADGE slugs) to
+ * One-off: apply the "Small farm" badge judgment (seller-classification.md, 42 BADGE slugs) to
  * the sellers table through the admin path — repositories/admin.ts setSellerSmallFarm, which
  * bumps catalog_seq + updated_seq so /sync/changes and the next snapshot carry the change
  * (Open Directory data-spec §4.1–§4.4). Never raw SQL.
@@ -15,8 +15,9 @@
  * Production covers all 84 sellers (updated 2026-11-20): the original 28 (the 25 in
  * seed-data/catalog.json, seedtime + davids-garden-seeds (ingest) and geoseed (crawl)) plus the
  * 56 sellers added by the 2026-11-19/20 seller hunts, all individually reviewed by Hue
- * on 2026-11-20 (24 BADGE, 32 NO BADGE); no unreviewed defaults remain. Default
- * expectation: 84 total / 44 / 40.
+ * on 2026-11-20 (24 BADGE at review, 32 NO BADGE; Urban Farmer and Halden Garden then
+ * flipped BADGE → NO BADGE by Hue's ruling on Quinn's dispute); no unreviewed defaults
+ * remain. Default expectation: 84 total / 42 / 42.
  *
  * Every run (dry runs included) first writes a full `sellers` backup + a targeted rollback file to
  * tmp/backups/ (override with --backup-dir). D1 export is blocked by the FTS5 tables, so the
