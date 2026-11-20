@@ -694,7 +694,8 @@ async function main() {
     assert(h.includes("Oregon landscape with Oregon grape"), "scene hero alt text");
     // State-plates delta (2026-11-19): this line used to assert the masked state-flower artwork
     // (StateShape art variant) was GONE from the page. The state's flower now returns as the plate
-    // beside the intro — whole, in .art-frame, 640-wide, lazy — so the check pins that instead,
+    // directly above the farm grid — whole, in .art-frame, 640-wide, lazy (placement amended
+    // 2026-11-20, Dustin's call: Elena's B-05) — so the check pins that instead,
     // and that no other state-flower rendering (the masked outline) came back with it.
     const plateFig = /<figure\b[^>]*data-state-plate="OR"[^>]*>([\s\S]*?)<\/figure>/.exec(h);
     assert(plateFig, "state plate figure (data-state-plate=OR)");
