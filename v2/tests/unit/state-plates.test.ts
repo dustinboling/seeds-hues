@@ -298,7 +298,7 @@ describe("state page placement (§3)", () => {
 
   it("a state with sellers but no plate (Texas) renders the header as before: no figure, no substitute", async () => {
     const h = await renderState("texas", [card("lone-star-test-farm", "TX")]);
-    expect(h).toContain("Seed farms in Texas");
+    expect(h).toContain("Seed sellers in Texas");
     expect(h).not.toMatch(/data-state-plate|<figure|artwork\/states|<img/);
   });
 });

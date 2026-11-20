@@ -110,18 +110,18 @@ describe("JSON-LD per the canonical §5 table (R4)", () => {
 });
 
 describe("answer sentence + titles (canonical §5 GEO/SEO) — data only, no prices", () => {
-  it("names the date, the count and the farms", () => {
+  it("names the date, the count and the sellers", () => {
     expect(answerSentence("King's Ransom", [listing(1, "a", "Farm A", "2026-11-15"), listing(2, "b", "Farm B", "2026-11-14")])).toBe(
-      "As of 2026-11-15, 2 small farms list King's Ransom: Farm A and Farm B.",
+      "As of 2026-11-15, 2 sellers list King's Ransom: Farm A and Farm B.",
     );
-    expect(answerSentence("Emma", [listing(1, "a", "Farm A", "2026-11-15T09:12:00Z")])).toBe("As of 2026-11-15, 1 small farm lists Emma: Farm A.");
-    expect(answerSentence("Katz Mix", [])).toBe("No small farm found selling Katz Mix yet.");
+    expect(answerSentence("Emma", [listing(1, "a", "Farm A", "2026-11-15T09:12:00Z")])).toBe("As of 2026-11-15, 1 seller lists Emma: Farm A.");
+    expect(answerSentence("Katz Mix", [])).toBe("No seller found selling Katz Mix yet.");
   });
 
-  it("titles aim at where-to-buy intent with the farm count; descriptions carry no price", () => {
+  it("titles aim at where-to-buy intent with the seller count; descriptions carry no price", () => {
     const v = variety([listing(1, "a", "Farm A", "2026-11-15")]);
-    expect(varietyTitle(v)).toBe("Test Sweet Pea Seeds — Where to Buy (1 Farm)");
-    expect(varietyTitle(variety([]))).toBe("Test Sweet Pea Seeds — Where to Buy (No Farm Listing Yet)");
+    expect(varietyTitle(v)).toBe("Test Sweet Pea Seeds — Where to Buy (1 Seller)");
+    expect(varietyTitle(variety([]))).toBe("Test Sweet Pea Seeds — Where to Buy (No Seller Listing Yet)");
     expect(varietyDescription(v)).not.toMatch(/\$\d/);
   });
 });
@@ -131,7 +131,7 @@ describe("template descriptions", () => {
     const a = templateDescription({ varietyName: "Katz Mix", commonName: "Stock", latinName: "Matthiola incana", listingCount: 0 });
     expect(a).toBe("Katz Mix is a Stock variety (Matthiola incana). No seller in this directory lists it yet.");
     const b = templateDescription({ varietyName: "Juliet", commonName: "Iceland Poppy", latinName: "Papaver nudicaule", listingCount: 2 });
-    expect(b).toBe("Juliet is an Iceland Poppy variety (Papaver nudicaule). It is listed by 2 independent seed sellers in this directory.");
+    expect(b).toBe("Juliet is an Iceland Poppy variety (Papaver nudicaule). It is listed by 2 seed sellers in this directory.");
     expect(templateDescription({ varietyName: "X", commonName: "Cornflower / Bachelor's Buttons", latinName: "Centaurea cyanus", listingCount: 1 })).toContain(
       "a Cornflower (Bachelor's Buttons) variety",
     );

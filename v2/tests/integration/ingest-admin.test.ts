@@ -304,7 +304,7 @@ describe("admin review (R11)", () => {
       ["songbird-seed-co", "in_stock"],
       [sellerSlug, "sold_out"],
     ]);
-    expect(v.answer).toMatch(/2 small farms list King's Ransom: Songbird Seed Co\. and Throwaway Test Farm\.$/);
+    expect(v.answer).toMatch(/2 sellers list King's Ransom: Songbird Seed Co\. and Throwaway Test Farm\.$/);
   });
 
   it("health: no invariant violations on clean data; flags an off-domain listing", async () => {

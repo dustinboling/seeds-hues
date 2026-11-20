@@ -22,8 +22,8 @@ export const EXPECTED_COUNTS = { varieties: 778, sellers: 25, listings: 17, plan
 /**
  * Seller model — the Open Directory (Dustin's ruling, 2026-11-19). The directory lists any US
  * seller regardless of size: the old small-farms-only model, with its large-company exclusion
- * lists (Ball, GeoSeed, Territorial, Park Seed, Baker Creek, …) and its every-seller-hand-approved
- * assertion, is RETIRED. What the import still asserts about a seller:
+ * lists (Ball, GeoSeed, Territorial, Park Seed, Baker Creek, …) and its hand-approval assertion,
+ * is RETIRED. What the import still asserts about a seller:
  *   - US sellers only (country "US") — the one eligibility rule on size-independent grounds;
  *   - its "Small farm" badge value equals the recorded judgment (small-farm-classification.ts,
  *     from seller-classification.md), so a re-import can never silently flip or drop a badge;

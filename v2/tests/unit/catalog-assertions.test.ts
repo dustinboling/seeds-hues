@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { parseCatalog } from "@/lib/catalog/importer";
+import { CatalogAssertionError, contentLevel, isIndexable, SELLER_COUNTRY } from "@/lib/catalog/assertions";
 import {
-  CatalogAssertionError,
-  contentLevel,
-  EXCLUDED_COMPANY_NAMES,
-  EXCLUDED_SELLER_TOKENS,
-  isIndexable,
-} from "@/lib/catalog/assertions";
+  SMALL_FARM_BADGE_SLUGS,
+  SMALL_FARM_NO_BADGE_SLUGS,
+  SMALL_FARM_PRODUCTION_TARGET,
+} from "@/lib/catalog/small-farm-classification";
 import type { CatalogInput } from "@/lib/catalog/input";
 import { loadCatalogJson } from "../helpers/d1";
 
@@ -34,24 +33,55 @@ describe("catalog.json assertions (FINAL §6)", () => {
     expect(problemsOf(c).join("\n")).toMatch(/count varieties: expected 778, got 777/);
   });
 
-  it("fails on an excluded large-company seller (slug or name)", () => {
-    // Every token on the exclusion list is rejected; names come from the list itself.
-    for (const token of EXCLUDED_SELLER_TOKENS) {
-      const c = fresh();
-      c.sellers[0]!.slug = `${token}-farm`.replace(/[^a-z0-9-]/g, "");
-      expect(problemsOf(c).join("\n")).toMatch(/excluded large-company seller/);
-      const d = fresh();
-      d.sellers[1]!.name = `${token.toUpperCase()} Farm`;
-      expect(problemsOf(d).join("\n")).toMatch(/excluded large-company seller/);
-    }
+  it("Open Directory: size is never a rejection — a large US seller imports clean", () => {
+    // The retired exclusion model (Ball / GeoSeed / Territorial / …) is gone: renaming a seller
+    // to a formerly excluded company changes nothing, as long as it stays a US seller whose
+    // badge matches the recorded judgment. GeoSeed is the standing example — pre-recorded
+    // NO BADGE in the classification, live in production as seller 28.
+    expect(SMALL_FARM_NO_BADGE_SLUGS).toContain("geoseed");
+    const c = fresh();
+    const geo = c.sellers.find((s) => s.slug === "johnnys-selected-seeds")!;
+    geo.slug = "geoseed";
+    geo.name = "GeoSeed";
+    geo.isSmallFarm = false;
+    const problems = problemsOf(c).join("\n");
+    expect(problems).not.toMatch(/badge|recorded judgment|US seller/);
   });
 
-  it("fails when any string anywhere names an excluded company", () => {
-    for (const name of EXCLUDED_COMPANY_NAMES) {
-      const c = fresh();
-      c.listings[0]!.notes = `Also sold by ${name}.`;
-      expect(problemsOf(c).join("\n")).toMatch(/excluded company name at catalog\.listings\[0\]\.notes/);
-    }
+  it("Open Directory: US sellers only — a non-US seller fails", () => {
+    expect(SELLER_COUNTRY).toBe("US");
+    const c = fresh();
+    c.sellers[0]!.country = "CA";
+    expect(problemsOf(c).join("\n")).toMatch(/is not a US seller \(country CA\) — US sellers only/);
+  });
+
+  it("Open Directory: the badge must equal the recorded judgment (seller-classification.md)", () => {
+    // The classification is the source of truth: 20 BADGE slugs, GeoSeed among the NO BADGE
+    // slugs, and the production reconciliation target is 28 total / 20 badged / 8 not.
+    expect(SMALL_FARM_BADGE_SLUGS).toHaveLength(20);
+    expect(new Set(SMALL_FARM_BADGE_SLUGS).size).toBe(20);
+    expect(SMALL_FARM_BADGE_SLUGS.filter((s) => (SMALL_FARM_NO_BADGE_SLUGS as readonly string[]).includes(s))).toEqual([]);
+    expect(SMALL_FARM_PRODUCTION_TARGET).toEqual({ total: 28, badged: 20, notBadged: 8 });
+    // Flipping a badge either way contradicts the recorded judgment and fails the import.
+    const badged = fresh();
+    const b = badged.sellers.find((s) => s.isSmallFarm)!;
+    b.isSmallFarm = false;
+    expect(problemsOf(badged).join("\n")).toMatch(new RegExp(`seller ${b.slug} isSmallFarm false contradicts the recorded judgment`));
+    const unbadged = fresh();
+    const u = unbadged.sellers.find((s) => !s.isSmallFarm)!;
+    u.isSmallFarm = true;
+    expect(problemsOf(unbadged).join("\n")).toMatch(new RegExp(`seller ${u.slug} isSmallFarm true contradicts the recorded judgment`));
+    // A seller with no recorded judgment at all fails too — the call must be recorded first.
+    const unknown = fresh();
+    unknown.sellers[0]!.slug = "brand-new-seller";
+    expect(problemsOf(unknown).join("\n")).toMatch(/seller brand-new-seller has no recorded Small farm judgment/);
+    // The curated catalog itself carries the judgment for every one of its 25 sellers:
+    // 18 badged + 7 not (seedtime + davids-garden-seeds, the other two BADGE slugs, are
+    // ingest sellers and GeoSeed arrived by crawl — together they make the 28 / 20 / 8 target).
+    const real = parseCatalog(loadCatalogJson());
+    expect(real.sellers.filter((s) => s.isSmallFarm)).toHaveLength(18);
+    expect(real.sellers.filter((s) => !s.isSmallFarm)).toHaveLength(7);
+    expect(real.sellers.every((s) => s.country === "US")).toBe(true);
   });
 
   it("fails when a listing has no valid source", () => {

@@ -14,7 +14,7 @@ vi.mock("@/lib/api/runtime-env", () => ({ getRuntimeEnv: async () => ctx.env }))
 import { createTestD1, type TestD1 } from "../helpers/d1";
 import { createServices } from "@/lib/services";
 import { resetTokenBuckets } from "@/lib/api/rate-limit";
-import { COMPANY_NAME_EXCLUSION_PATTERN } from "@/lib/catalog/assertions";
+import { SMALL_FARM_BADGE_SLUGS, SMALL_FARM_NO_BADGE_SLUGS } from "@/lib/catalog/small-farm-classification";
 import { DOCUMENTED_PATHS } from "@/lib/api/openapi";
 import * as V from "@/lib/validators";
 import * as varietiesRoute from "@/app/api/v1/varieties/route";
@@ -705,7 +705,7 @@ describe("OpenAPI 3.1", () => {
 });
 
 describe("data policy in API payloads", () => {
-  it("no excluded company names, no prices and no AggregateRating anywhere in payloads", async () => {
+  it("no prices and no AggregateRating anywhere in payloads; sellers are US-only with badges per the recorded judgment", async () => {
     const bodies: string[] = [];
     bodies.push(await (await call(varietiesRoute.GET, "/varieties?limit=100")).text());
     bodies.push(await (await call(sellersRoute.GET, "/sellers?limit=100")).text());
@@ -714,8 +714,79 @@ describe("data policy in API payloads", () => {
       bodies.push(await (await call(sellerRoute.GET, `/sellers/${s.slug}`, { slug: s.slug })).text());
     }
     for (const b of bodies) {
-      expect(COMPANY_NAME_EXCLUSION_PATTERN.test(b)).toBe(false);
       expect(b).not.toMatch(/AggregateRating|priceCents|"price/);
+    }
+    // Open Directory (2026-11-19) replaces the retired large-company exclusion scan: any US
+    // seller may be listed (GeoSeed included — it is pre-recorded NO BADGE and must never
+    // surface badged), and every payload's isSmallFarm equals the recorded judgment.
+    const badge = new Set<string>(SMALL_FARM_BADGE_SLUGS);
+    const sellers = (await services.catalog.listSellers({ offset: 0, limit: 100 })).items;
+    expect(sellers.length).toBeGreaterThan(0);
+    for (const s of sellers) {
+      expect(s.country, s.slug).toBe("US");
+      expect(s.isSmallFarm, s.slug).toBe(badge.has(s.slug));
+    }
+    const geoseed = sellers.find((s) => s.slug === "geoseed");
+    if (geoseed) expect(geoseed.isSmallFarm).toBe(false);
+    expect(SMALL_FARM_NO_BADGE_SLUGS).toContain("geoseed");
+  });
+});
+
+describe("small farm badge + filter (Open Directory, data-spec §2/§3)", () => {
+  it("the flag rides seller list + detail payloads and every listing's seller ref", async () => {
+    const list = (await json(await call(sellersRoute.GET, "/sellers?limit=100"))).data as V.SellerListItem[];
+    expect(list.find((s) => s.slug === "songbird-seed-co")!.isSmallFarm).toBe(true);
+    expect(list.find((s) => s.slug === "johnnys-selected-seeds")!.isSmallFarm).toBe(false);
+    expect(list.filter((s) => s.isSmallFarm)).toHaveLength(18); // curated catalog: 18 badged of 25
+    const detail = (await json(await call(sellerRoute.GET, "/sellers/songbird-seed-co", { slug: "songbird-seed-co" }))).data as V.SellerDetail;
+    expect(detail.isSmallFarm).toBe(true);
+    const listings = (await json(await call(varietyListingsRoute.GET, "/varieties/sweet-pea-kings-ransom/listings", { slug: "sweet-pea-kings-ransom" })))
+      .data as V.PublicListing[];
+    expect(listings).toHaveLength(1);
+    expect(listings[0]!.seller).toMatchObject({ slug: "songbird-seed-co", isSmallFarm: true });
+  });
+
+  it("GET /sellers?small_farm=true returns only badged sellers (parity with the service)", async () => {
+    const res = await json(await call(sellersRoute.GET, "/sellers?small_farm=true&limit=100"));
+    expect(res.meta).toMatchObject({ total: 18 });
+    expect((res.data as V.SellerListItem[]).every((s) => s.isSmallFarm)).toBe(true);
+    expect(res.data).toEqual((await services.catalog.listSellers({ offset: 0, limit: 100 }, { smallFarmOnly: true })).items);
+  });
+
+  it("GET /varieties?small_farm=true returns only varieties with a badged-seller listing; counts stay global", async () => {
+    const all = (await json(await call(varietiesRoute.GET, "/varieties?has_listings=true&limit=100"))).data as V.VarietySummary[];
+    const filtered = await json(await call(varietiesRoute.GET, "/varieties?small_farm=true&limit=100"));
+    // Every seed-catalog listing is from a badged seller, so the filtered set is exactly the
+    // 17 varieties with listings — and each summary still reports its global listing count.
+    expect(filtered.meta).toMatchObject({ total: 17 });
+    const bySlug = new Map(all.map((v) => [v.slug, v]));
+    for (const v of filtered.data as V.VarietySummary[]) {
+      expect(v.listingCount).toBeGreaterThan(0);
+      expect(v.listingCount).toBe(bySlug.get(v.slug)!.listingCount);
+    }
+    expect((await json(await call(varietiesRoute.GET, "/varieties?limit=1"))).meta).toMatchObject({ total: 778 });
+  });
+
+  it("GET /varieties/{slug}/listings?small_farm=true keeps badged rows and drops unbadged ones", async () => {
+    // Seed data has no mixed variety, so flip one badge in the test D1 (restored in finally):
+    // Hudson Valley Seed Co. lists zinnia-gift, snapdragon-rembrandt, shirley-poppy-mother-of-pearl.
+    await t.env.DB.prepare("UPDATE sellers SET is_small_farm = 0 WHERE slug = 'hudson-valley-seed-co'").run();
+    try {
+      const gift = (await json(await call(varietyListingsRoute.GET, "/varieties/zinnia-gift/listings?small_farm=true", { slug: "zinnia-gift" })))
+        .data as V.PublicListing[];
+      expect(gift).toEqual([]);
+      const giftAll = (await json(await call(varietyListingsRoute.GET, "/varieties/zinnia-gift/listings", { slug: "zinnia-gift" })))
+        .data as V.PublicListing[];
+      expect(giftAll).toHaveLength(1);
+      expect(giftAll[0]!.seller.isSmallFarm).toBe(false);
+      expect((await json(await call(varietiesRoute.GET, "/varieties?small_farm=true&limit=1"))).meta).toMatchObject({ total: 14 });
+      expect((await json(await call(sellersRoute.GET, "/sellers?small_farm=true&limit=1"))).meta).toMatchObject({ total: 17 });
+      // A still-badged seller's rows are untouched by the filter.
+      const kr = (await json(await call(varietyListingsRoute.GET, "/varieties/sweet-pea-kings-ransom/listings?small_farm=true", { slug: "sweet-pea-kings-ransom" })))
+        .data as V.PublicListing[];
+      expect(kr).toHaveLength(1);
+    } finally {
+      await t.env.DB.prepare("UPDATE sellers SET is_small_farm = 1 WHERE slug = 'hudson-valley-seed-co'").run();
     }
   });
 });
