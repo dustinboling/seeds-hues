@@ -123,6 +123,22 @@ saturation capped at the pilot's (nothing neon, nothing greyscale); stems/leaves
 in the sage→leaf range; verify real varieties against references; record every
 asset in artwork-theme/SOURCES.md with prompt + verification note.
 
+**Composition standard — flower first, natural base (Dustin, 2026-11-19,
+supersedes any whole-plant default in earlier briefs):**
+
+- **Flower detail is the priority.** The bloom must read clearly at card size.
+- **The whole plant is NOT required in frame.** If fitting the whole plant
+  would shrink the flower, compose closer — a partial plant, a flowering stem
+  section, or a cut-stem view is correct.
+- **Stems must never just poke straight out of bare ground.** Where the base
+  is in view, show the plant's natural growth habit: basal foliage, crown,
+  branching, leaf nodes — how the plant actually grows. Where a closer
+  composition excludes the base, that is fine and preferred over an unnatural
+  ground-line.
+- This is a composition rule for the painting itself. The handling rules are
+  unchanged: finished illustrations are 1120×2240, padded onto paper, shown
+  whole, never cropped or stretched in display.
+
 ## 5. Components
 
 - **Cards (crop, variety, seller):** surface ground, 1 px line border, radius
