@@ -52,7 +52,80 @@ export const SMALL_FARM_NO_BADGE_SLUGS = [
 ] as const;
 
 /**
- * Production reconciliation target (verified against the live API 2026-11-19): 28 sellers —
- * the 25 in seed-data/catalog.json, seedtime + davids-garden-seeds (ingest), geoseed (crawl).
+ * NO BADGE — DEFAULT (unreviewed) (56). Sellers added by the 2026-11-19/20 seller hunts after
+ * the classification above was written (production grew 28 → 84 sellers). No individual Small
+ * farm judgment has been recorded for any of them: the flag is OFF by default per the standing
+ * when-in-doubt rule — "when in doubt, leave the flag OFF — Hue reviews new sellers from the
+ * reports and adjusts badges afterward." These are NOT affirmative NO BADGE judgments like
+ * SMALL_FARM_NO_BADGE_SLUGS above; each entry is a default pending Hue's individual review and
+ * is flippable via the admin path. When Hue judges one, move its slug into BADGE or NO BADGE
+ * (in seller-classification.md first, then here, same change). Mirrors the "NO BADGE — DEFAULT
+ * (unreviewed)" section of seller-classification.md, recorded 2026-11-20.
  */
-export const SMALL_FARM_PRODUCTION_TARGET = { total: 28, badged: 20, notBadged: 8 } as const;
+export const SMALL_FARM_DEFAULT_NO_BADGE_SLUGS = [
+  "sweet-pea-gardens",
+  "uprising-seeds",
+  "territorial-seed-company",
+  "outsidepride",
+  "adaptive-seeds",
+  "eden-brothers",
+  "reimer-seeds",
+  "thresh-seed-co",
+  "tomorrowseeds",
+  "south-ga-seed-co",
+  "alliance-of-native-seedkeepers",
+  "osborne-seed",
+  "rupp-seeds",
+  "urban-farmer",
+  "harris-seeds",
+  "park-seed",
+  "fedco-seeds",
+  "trailing-petunia",
+  "epic-gardening",
+  "everwilde-farms",
+  "seedman",
+  "halden-garden",
+  "hirts-gardens",
+  "trf-la",
+  "high-country-gardens",
+  "tomato-growers-supply-co",
+  "true-leaf-market",
+  "bucktown-seed-co",
+  "baker-creek-heirloom-seed-co",
+  "gertens-garden-center",
+  "angletok",
+  "autumn-prairie-pumpkins",
+  "fellabees-nativeseeds",
+  "grow-organic-peaceful-valley-farm-garden-supply",
+  "homestead-culture",
+  "j-l-hudson-seeds",
+  "plant-good-seed",
+  "sandhill-preservation",
+  "sow-true-seed",
+  "survival-garden-seeds",
+  "ujamaa-seeds",
+  "wild-garden-seed",
+  "san-diego-seed-company",
+  "jerras-garden",
+  "marys-heirloom-seeds",
+  "grow-hoss",
+  "vermont-wildflower-farm",
+  "flower-people",
+  "garden-tree-nursery",
+  "prairie-road-organic-seed",
+  "garden-pro-hub",
+  "southern-seeds",
+  "walnut-creek-supply",
+  "seedway",
+  "deep-harvest-farm",
+  "strictly-medicinal-seeds",
+] as const;
+
+/**
+ * Production reconciliation target (updated 2026-11-20): 84 sellers — the original 28
+ * (verified against the live API 2026-11-19: the 25 in seed-data/catalog.json, seedtime +
+ * davids-garden-seeds (ingest), geoseed (crawl)) plus the 56 sellers added by the 2026-11-19/20
+ * seller hunts, recorded above as NO BADGE — DEFAULT (unreviewed) pending Hue's review.
+ * Badged stays 20; not-badged is 8 judged + 56 defaults = 64.
+ */
+export const SMALL_FARM_PRODUCTION_TARGET = { total: 84, badged: 20, notBadged: 64 } as const;

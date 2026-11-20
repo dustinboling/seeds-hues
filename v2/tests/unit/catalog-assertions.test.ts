@@ -3,6 +3,7 @@ import { parseCatalog } from "@/lib/catalog/importer";
 import { CatalogAssertionError, contentLevel, isIndexable, SELLER_COUNTRY } from "@/lib/catalog/assertions";
 import {
   SMALL_FARM_BADGE_SLUGS,
+  SMALL_FARM_DEFAULT_NO_BADGE_SLUGS,
   SMALL_FARM_NO_BADGE_SLUGS,
   SMALL_FARM_PRODUCTION_TARGET,
 } from "@/lib/catalog/small-farm-classification";
@@ -56,12 +57,21 @@ describe("catalog.json assertions (FINAL §6)", () => {
   });
 
   it("Open Directory: the badge must equal the recorded judgment (seller-classification.md)", () => {
-    // The classification is the source of truth: 20 BADGE slugs, GeoSeed among the NO BADGE
-    // slugs, and the production reconciliation target is 28 total / 20 badged / 8 not.
+    // The classification is the source of truth: 20 BADGE slugs, 8 judged NO BADGE slugs
+    // (GeoSeed among them), and — since 2026-11-20 — 56 DEFAULT NO BADGE slugs: sellers the
+    // 2026-11-19/20 hunts added after the classification was written, recorded flag-OFF as
+    // unreviewed defaults pending Hue's review, NOT as affirmative judgments. The production
+    // reconciliation target is 84 total / 20 badged / 64 not (8 judged + 56 defaults).
     expect(SMALL_FARM_BADGE_SLUGS).toHaveLength(20);
     expect(new Set(SMALL_FARM_BADGE_SLUGS).size).toBe(20);
-    expect(SMALL_FARM_BADGE_SLUGS.filter((s) => (SMALL_FARM_NO_BADGE_SLUGS as readonly string[]).includes(s))).toEqual([]);
-    expect(SMALL_FARM_PRODUCTION_TARGET).toEqual({ total: 28, badged: 20, notBadged: 8 });
+    expect(SMALL_FARM_NO_BADGE_SLUGS).toHaveLength(8);
+    expect(new Set(SMALL_FARM_NO_BADGE_SLUGS).size).toBe(8);
+    expect(SMALL_FARM_DEFAULT_NO_BADGE_SLUGS).toHaveLength(56);
+    expect(new Set(SMALL_FARM_DEFAULT_NO_BADGE_SLUGS).size).toBe(56);
+    // No overlaps across any of the three lists; together they cover all 84 production sellers.
+    const allRecorded = [...SMALL_FARM_BADGE_SLUGS, ...SMALL_FARM_NO_BADGE_SLUGS, ...SMALL_FARM_DEFAULT_NO_BADGE_SLUGS];
+    expect(new Set(allRecorded).size).toBe(84);
+    expect(SMALL_FARM_PRODUCTION_TARGET).toEqual({ total: 84, badged: 20, notBadged: 64 });
     // Flipping a badge either way contradicts the recorded judgment and fails the import.
     const badged = fresh();
     const b = badged.sellers.find((s) => s.isSmallFarm)!;
@@ -75,9 +85,23 @@ describe("catalog.json assertions (FINAL §6)", () => {
     const unknown = fresh();
     unknown.sellers[0]!.slug = "brand-new-seller";
     expect(problemsOf(unknown).join("\n")).toMatch(/seller brand-new-seller has no recorded Small farm judgment/);
+    // A DEFAULT (unreviewed) seller resolves as NO BADGE: flag OFF imports clean, flag ON
+    // contradicts the recorded default — the defaults widen coverage without opening the gate.
+    expect(SMALL_FARM_DEFAULT_NO_BADGE_SLUGS).toContain("park-seed");
+    const defaulted = fresh();
+    const d = defaulted.sellers.find((s) => s.slug === "johnnys-selected-seeds")!;
+    d.slug = "park-seed";
+    d.isSmallFarm = false;
+    expect(problemsOf(defaulted).join("\n")).not.toMatch(/badge|recorded judgment/);
+    const defaultFlipped = fresh();
+    const df = defaultFlipped.sellers.find((s) => s.slug === "johnnys-selected-seeds")!;
+    df.slug = "park-seed";
+    df.isSmallFarm = true;
+    expect(problemsOf(defaultFlipped).join("\n")).toMatch(/seller park-seed isSmallFarm true contradicts the recorded judgment/);
     // The curated catalog itself carries the judgment for every one of its 25 sellers:
     // 18 badged + 7 not (seedtime + davids-garden-seeds, the other two BADGE slugs, are
-    // ingest sellers and GeoSeed arrived by crawl — together they make the 28 / 20 / 8 target).
+    // ingest sellers and GeoSeed arrived by crawl — together the original 28; the 56
+    // hunt-added defaults sit outside the curated catalog and bring production to 84 / 20 / 64).
     const real = parseCatalog(loadCatalogJson());
     expect(real.sellers.filter((s) => s.isSmallFarm)).toHaveLength(18);
     expect(real.sellers.filter((s) => !s.isSmallFarm)).toHaveLength(7);

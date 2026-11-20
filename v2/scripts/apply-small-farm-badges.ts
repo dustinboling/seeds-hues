@@ -12,8 +12,10 @@
  * PRODUCTION (ship step only — not run during the build): migration 0010 first, then this script
  * with --remote (dry run, then real), THEN the code deploy, so every ISR page renders fresh with
  * the badges (a deploy starts a new build-id cache; this script cannot revalidate pages itself).
- * Production covers all 28 sellers: the 25 in seed-data/catalog.json, seedtime +
- * davids-garden-seeds (ingest) and geoseed (crawl). Default expectation: 28 total / 20 / 8.
+ * Production covers all 84 sellers (updated 2026-11-20): the original 28 (the 25 in
+ * seed-data/catalog.json, seedtime + davids-garden-seeds (ingest) and geoseed (crawl)) plus the
+ * 56 sellers added by the 2026-11-19/20 seller hunts, recorded as NO BADGE — DEFAULT
+ * (unreviewed) pending Hue's review. Default expectation: 84 total / 20 / 64.
  *
  * Every run (dry runs included) first writes a full `sellers` backup + a targeted rollback file to
  * tmp/backups/ (override with --backup-dir). D1 export is blocked by the FTS5 tables, so the
@@ -28,7 +30,7 @@ import { BadgeApplyError, applySmallFarmBadges, type BadgeTarget } from "./lib/s
 function parseExpect(v: string | undefined): BadgeTarget {
   if (v === undefined) return { ...SMALL_FARM_PRODUCTION_TARGET };
   const m = /^(\d+)\/(\d+)\/(\d+)$/.exec(v);
-  if (!m) throw new BadgeApplyError(`--expect takes total/badged/notBadged, e.g. 28/20/8 (got "${v}")`);
+  if (!m) throw new BadgeApplyError(`--expect takes total/badged/notBadged, e.g. 84/20/64 (got "${v}")`);
   const [total, badged, notBadged] = [Number(m[1]), Number(m[2]), Number(m[3])];
   if (badged + notBadged !== total) throw new BadgeApplyError(`--expect ${v}: badged + notBadged must equal total`);
   return { total, badged, notBadged };

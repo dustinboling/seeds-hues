@@ -6,7 +6,10 @@
  *   1. backup   — every column of every `sellers` row, frozen before any write (JSON) plus a
  *                 targeted rollback file (one UPDATE per seller restoring its prior badge value).
  *   2. resolve  — the 20 BADGE slugs to seller ids; abort unless exactly 20 distinct rows resolve,
- *                 none removed at its request, and every NO BADGE slug present is still unbadged.
+ *                 none removed at its request, and every NO BADGE slug present — judged or
+ *                 DEFAULT (unreviewed hunt-added sellers, flag OFF pending Hue's review) — is
+ *                 still unbadged. A seller in none of the three recorded lists is unclassified
+ *                 and fails the pre-flight (fail-closed).
  *   3. apply    — setSellerSmallFarm(db, id, true, now) per seller NOT already badged. The admin
  *                 repository bumps catalog_seq + the seller's updated_seq in one atomic batch, so
  *                 sync/snapshot consumers see the change (§4.3/§4.4). Already-badged sellers are
@@ -21,7 +24,7 @@ import type { Db } from "@/lib/db/client";
 import { sellers } from "@/lib/db/schema";
 import { setSellerSmallFarm } from "@/lib/repositories/admin";
 import { catalogSeq } from "@/lib/repositories/seq";
-import { SMALL_FARM_BADGE_SLUGS, SMALL_FARM_NO_BADGE_SLUGS } from "@/lib/catalog/small-farm-classification";
+import { SMALL_FARM_BADGE_SLUGS, SMALL_FARM_DEFAULT_NO_BADGE_SLUGS, SMALL_FARM_NO_BADGE_SLUGS } from "@/lib/catalog/small-farm-classification";
 
 export interface BadgeTarget {
   total: number;
@@ -73,13 +76,21 @@ export async function applySmallFarmBadges(db: Db, opts: ApplyOptions): Promise<
   const dryRun = opts.dryRun ?? false;
   const badgeSlugs: readonly string[] = SMALL_FARM_BADGE_SLUGS;
   const noBadgeSlugs: readonly string[] = SMALL_FARM_NO_BADGE_SLUGS;
+  const defaultNoBadgeSlugs: readonly string[] = SMALL_FARM_DEFAULT_NO_BADGE_SLUGS;
 
   // Guard the recorded lists themselves before touching the database.
   if (new Set(badgeSlugs).size !== badgeSlugs.length || badgeSlugs.length !== 20) {
     throw new BadgeApplyError(`classification BADGE list must hold 20 distinct slugs (has ${badgeSlugs.length})`);
   }
+  if (new Set(defaultNoBadgeSlugs).size !== defaultNoBadgeSlugs.length || defaultNoBadgeSlugs.length !== 56) {
+    throw new BadgeApplyError(`classification DEFAULT NO BADGE list must hold 56 distinct slugs (has ${defaultNoBadgeSlugs.length})`);
+  }
   const overlap = badgeSlugs.filter((s) => noBadgeSlugs.includes(s));
   if (overlap.length) throw new BadgeApplyError(`slugs in both BADGE and NO BADGE: ${overlap.join(", ")}`);
+  const overlapDefaultBadge = badgeSlugs.filter((s) => defaultNoBadgeSlugs.includes(s));
+  if (overlapDefaultBadge.length) throw new BadgeApplyError(`slugs in both BADGE and DEFAULT NO BADGE: ${overlapDefaultBadge.join(", ")}`);
+  const overlapDefaultJudged = noBadgeSlugs.filter((s) => defaultNoBadgeSlugs.includes(s));
+  if (overlapDefaultJudged.length) throw new BadgeApplyError(`slugs in both NO BADGE and DEFAULT NO BADGE: ${overlapDefaultJudged.join(", ")}`);
 
   // ── 1. Backup (always, even on a dry run) ────────────────────────────────────────────────
   const before = await readAllSellers(db);
@@ -123,7 +134,7 @@ export async function applySmallFarmBadges(db: Db, opts: ApplyOptions): Promise<
   }
   const removed = rows.filter((r) => r.eligibility === "removed_by_request").map((r) => r.slug);
   if (removed.length) throw new BadgeApplyError(`sellers removed at their request are never re-badged: ${removed.join(", ")}`);
-  const strayBefore = before.filter((r) => r.isSmallFarm && noBadgeSlugs.includes(r.slug)).map((r) => r.slug);
+  const strayBefore = before.filter((r) => r.isSmallFarm && (noBadgeSlugs.includes(r.slug) || defaultNoBadgeSlugs.includes(r.slug))).map((r) => r.slug);
   if (strayBefore.length) throw new BadgeApplyError(`NO BADGE sellers already carry the badge — investigate first: ${strayBefore.join(", ")}`);
   const resolved = badgeSlugs.map((slug) => {
     const r = bySlug.get(slug)![0]!;
@@ -133,7 +144,7 @@ export async function applySmallFarmBadges(db: Db, opts: ApplyOptions): Promise<
 
   // Pre-flight: project the end state from the frozen rows and refuse to write at all if it
   // cannot reconcile (unexpected seller count, an unclassified seller, a stray badge).
-  const preflight = reconcile(before, (r) => r.isSmallFarm || badgeSlugs.includes(r.slug), badgeSlugs, noBadgeSlugs);
+  const preflight = reconcile(before, (r) => r.isSmallFarm || badgeSlugs.includes(r.slug), badgeSlugs, noBadgeSlugs, defaultNoBadgeSlugs);
   const preProblems = problemsOf(preflight, opts.expect);
   if (preProblems.length) {
     throw new BadgeApplyError(`pre-flight FAILED — nothing was written:\n  - ${preProblems.join("\n  - ")}`);
@@ -154,7 +165,7 @@ export async function applySmallFarmBadges(db: Db, opts: ApplyOptions): Promise<
 
   // ── 4. Reconcile (re-read; a dry run reconciles the projection) ─────────────────────────
   const after = await readAllSellers(db);
-  const reconciliation = reconcile(after, (r) => r.isSmallFarm || (dryRun && written.includes(r.slug)), badgeSlugs, noBadgeSlugs);
+  const reconciliation = reconcile(after, (r) => r.isSmallFarm || (dryRun && written.includes(r.slug)), badgeSlugs, noBadgeSlugs, defaultNoBadgeSlugs);
   log(
     `reconcile: total ${reconciliation.total} · badged ${reconciliation.badged} · not ${reconciliation.notBadged}` +
       ` (expected ${opts.expect.total} / ${opts.expect.badged} / ${opts.expect.notBadged})` +
@@ -178,9 +189,12 @@ function reconcile(
   isBadged: (r: SellerRow) => boolean,
   badgeSlugs: readonly string[],
   noBadgeSlugs: readonly string[],
+  defaultNoBadgeSlugs: readonly string[],
 ): ApplyResult["reconciliation"] {
   const badged = rows.filter(isBadged);
-  const known = new Set([...badgeSlugs, ...noBadgeSlugs]);
+  // Known = judged BADGE + judged NO BADGE + DEFAULT NO BADGE (unreviewed). A seller in none
+  // of the three is unclassified and fails reconciliation — fail-closed survives the defaults.
+  const known = new Set([...badgeSlugs, ...noBadgeSlugs, ...defaultNoBadgeSlugs]);
   return {
     total: rows.length,
     badged: badged.length,
