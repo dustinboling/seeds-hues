@@ -8,13 +8,14 @@ const MOTIF_B_WIDTHS = [600, 900, 1200] as const;
 
 /**
  * Display width per placement, inside the art-direction bands (FINAL-B-PLACEMENT-GUIDANCE.md):
- * home-page section break 420–540 px desktop, footer-adjacent centrepiece 360–520 px. The 92vw cap
+ * home-page section break 420–540 px desktop; the waitlist success moment at 440 px. The 92vw cap
  * holds small phones at the guidance's mobile floor case; `sizes` mirrors the CSS width exactly.
+ * (The footer-adjacent placement was removed 2026-11-19 at Dustin's direction: the motif's painted
+ * ground read as a visible band against the page ground above the footer.)
  */
 const VARIANTS = {
   home: { width: "w-[min(480px,92vw)]", sizes: "min(480px, 92vw)" },
-  footer: { width: "w-[min(440px,92vw)]", sizes: "min(440px, 92vw)" },
-  success: { width: "w-[min(440px,92vw)]", sizes: "min(440px, 92vw)" },
+  success:{ width: "w-[min(440px,92vw)]", sizes: "min(440px, 92vw)" },
 } as const satisfies Record<string, { width: string; sizes: string }>;
 
 export type MotifDividerVariant = keyof typeof VARIANTS;
@@ -26,7 +27,8 @@ export type MotifDividerVariant = keyof typeof VARIANTS;
  * stretched (height auto at the intrinsic 2400×518 aspect), never upscaled past the served file.
  *
  * Its warm cream ground is painted in and matches --color-paper, so it must only be placed on the
- * page's paper ground (never inside the paper-deep <footer> or a bordered card/panel).
+ * page's paper ground (never inside the paper-deep <footer> or a bordered card/panel), and never
+ * adjacent to the footer.
  *
  * Below a 360 px viewport the slot would fall under the guidance's ~320 px minimum, so the motif
  * gives way to the thin divider-stem rule there (also covers text-zoom reflow). A lazy image that

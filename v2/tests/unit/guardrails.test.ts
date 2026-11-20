@@ -180,7 +180,7 @@ describe("policy guardrails", () => {
       "components/ui/PodDivider.tsx": [/src=\{imageUrl\(bundle, \{ width: 1600 \}\)\}/],
       "app/crop/[slug]/page.tsx": [/src=\{imageUrl\(pod\.motif, \{ width: 480 \}\)\}/],
       // Divider motif B (2026-11-19): the centred ornament for major breaks (home hero break and
-      // the footer-adjacent slot), from the stored path /ornaments/motif-divider-b.webp.
+      // the waitlist success moment), from the stored path /ornaments/motif-divider-b.webp.
       "components/ui/MotifDivider.tsx": [/src=\{imageUrl\(MOTIF_B_PATH, \{ width: 1200 \}\)\}/],
       // State-plates delta (2026-11-19): the state-flower plate on seller + state pages, from the
       // stored /artwork/states/{slug}.webp paths in lib/data/state-plates.ts, at width 640.

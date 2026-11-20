@@ -1,12 +1,17 @@
 /**
  * Divider motif B (2026-11-19): the centred ornament for major breaks — the home hero break and the
- * footer-adjacent slot (FooterStem). Decorative, rendered whole through lib/images.
+ * waitlist success moment. Decorative, rendered whole through lib/images.
+ *
+ * History: it also shipped in a footer-adjacent slot (FooterStem, "footer" variant) on every page;
+ * that placement was removed 2026-11-19 at Dustin's direction — the motif's painted ground did not
+ * match the page ground and read as a visible band above the footer. Pages now go straight from
+ * content to the footer; the SiteFooter regression test below keeps it removed.
  */
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { MOTIF_B_PATH, MotifDivider } from "@/components/ui/MotifDivider";
-import { FooterStem } from "@/components/layout/FooterStem";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 
 const T = (w: number) => `https://images.seeds.hues.flowers/cdn-cgi/image/width=${w},quality=80,format=auto,fit=scale-down/ornaments/motif-divider-b.webp`;
 const attr = (tag: string, name: string) => new RegExp(`\\b${name}="([^"]*)"`).exec(tag)?.[1] ?? null;
@@ -37,21 +42,26 @@ describe("MotifDivider (divider motif B)", () => {
     const home = img(renderToStaticMarkup(createElement(MotifDivider, { variant: "home" })));
     expect(attr(home, "sizes")).toBe("min(480px, 92vw)");
     expect(attr(home, "class")).toContain("w-[min(480px,92vw)]");
-    const footer = img(renderToStaticMarkup(createElement(MotifDivider, { variant: "footer" })));
-    expect(attr(footer, "sizes")).toBe("min(440px, 92vw)");
-    expect(attr(footer, "class")).toContain("w-[min(440px,92vw)]");
   });
 
-  it("gives way to the thin stem rule below a 360px viewport", () => {
-    const h = renderToStaticMarkup(createElement(MotifDivider, { variant: "footer" }));
-    expect(attr(img(h), "class")).toContain("max-[360px]:hidden");
-    expect(h).toContain('<span class="divider-stem hidden max-[360px]:block"></span>');
+  it("gives way to the thin stem rule below a 360px viewport (shared markup, every variant)", () => {
+    for (const variant of ["home", "success"] as const) {
+      const h = renderToStaticMarkup(createElement(MotifDivider, { variant }));
+      expect(attr(img(h), "class"), variant).toContain("max-[360px]:hidden");
+      expect(h, variant).toContain('<span class="divider-stem hidden max-[360px]:block"></span>');
+    }
   });
 
-  it("FooterStem renders the footer-variant motif in its slot on the server", () => {
-    const h = renderToStaticMarkup(createElement(FooterStem));
-    expect(h).toMatch(/^<div aria-hidden="true" class="mb-10 mt-16" data-testid="footer-stem"><div aria-hidden="true" data-testid="motif-b" class="w-full"><img /);
-    expect(attr(img(h), "sizes")).toBe("min(440px, 92vw)");
-    expect(h).not.toContain("<footer");
+  it("is not placed adjacent to the footer: SiteFooter renders no footer-stem slot and no motif", () => {
+    const h = renderToStaticMarkup(createElement(SiteFooter));
+    // The <footer> element is the component's whole output: nothing renders before or after it
+    // (React 19 prepends a <link rel="preload"> resource hint for the logo image; not an element).
+    expect(h.replace(/^(?:<link rel="preload"[^>]*\/>)+/, "")).toMatch(/^<footer\b[\s\S]*<\/footer>$/);
+    expect(h).not.toContain("footer-stem");
+    expect(h).not.toContain("motif-b");
+    expect(h).not.toContain(MOTIF_B_PATH.slice(1));
+    expect(h).not.toContain("ornaments/");
+    // The only image in the footer is the Hues wordmark — no motif image.
+    expect([...h.matchAll(/<img\b[^>]*>/g)].map((m) => attr(m[0], "src"))).toEqual(["/brand/hues-logo.svg"]);
   });
 });
