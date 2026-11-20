@@ -61,11 +61,16 @@ const preloadsOf = (h: string) => [...h.matchAll(/<link rel="preload" as="image"
 const withoutPreloads = (h: string) => h.replace(/<link rel="preload" as="image"[^>]*>/g, "");
 const decode = (s: string) => s.replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"');
 
+/** The figure class of the seller-page beside-the-summary placement (the component default). */
+const BESIDE_SUMMARY_CLASS = "mx-auto mt-6 w-[280px] shrink-0 sm:mx-0 sm:mt-1 sm:w-[300px] lg:w-[320px]";
+/** The figure class of the state-page above-the-farm-list placement (Dustin's call 2026-11-20). */
+const ABOVE_LIST_CLASS = "mx-auto mt-8 w-[280px] shrink-0 sm:mx-0 sm:w-[300px] lg:w-[320px]";
+
 /** The markup invariants every plate carries, whichever page it is on (§1.3–1.5, §A.3, §A.5). */
-function expectPlate(fig: string, code: string, slug: string, loading: "eager" | "lazy") {
+function expectPlate(fig: string, code: string, slug: string, loading: "eager" | "lazy", figureClass = BESIDE_SUMMARY_CLASS) {
   const tag = imgOf(fig);
   expect(attr(fig, "data-state-plate")).toBe(code);
-  expect(attr(fig, "class")).toBe("mx-auto mt-6 w-[280px] shrink-0 sm:mx-0 sm:mt-1 sm:w-[300px] lg:w-[320px]");
+  expect(attr(fig, "class")).toBe(figureClass);
   expect(attr(tag, "src")).toBe(T(640, `artwork/states/${slug}.png`));
   expect(decode(attr(tag, "alt") ?? "")).toBe(ADA_A2[slug]);
   expect(attr(tag, "width")).toBe("1600");
@@ -260,19 +265,25 @@ describe("state page placement (§3)", () => {
     varietyCount: 0,
   });
 
-  it("renders its own state's plate, lazy, beside the intro inside <header>; the hero is untouched", async () => {
+  it("renders its own state's plate, lazy, directly above the farm list (Dustin 2026-11-20); the hero is untouched", async () => {
     const h = await renderState("oregon", [card("willamette-test-farm", "OR")]);
     const head = header(h);
-    const fig = figureOf(head);
+    // The header is plate-free now: hero → h1 → intro → CTA, nothing else.
+    expect(head).toContain('<div class="mt-6 min-w-0"><h1');
+    expect(head).not.toMatch(/data-state-plate|artwork\/states/);
+    const atHead = (s: string) => head.indexOf(s);
+    expect(atHead('data-testid="state-hero"')).toBeLessThan(atHead("<h1"));
+    expect(atHead("data-state-intro")).toBeLessThan(atHead('data-testid="state-add-farm"'));
+    // The plate follows the header, directly above the farm grid — in DOM order too, so the
+    // reading order matches the visual order (geography → flower → farms).
+    const after = h.slice(h.indexOf("</header>"));
+    const fig = figureOf(after);
     expect(fig).not.toBeNull();
-    expectPlate(fig!, "OR", "oregon", "lazy");
-    expect(head).toContain('<div class="mt-6 min-w-0 sm:flex sm:items-start sm:gap-8"><div class="min-w-0 flex-1"><h1');
-    // Order: hero → h1 → intro → CTA → plate; the farm grid follows the header, plate-free.
-    const at = (s: string) => head.indexOf(s);
-    expect(at('data-testid="state-hero"')).toBeLessThan(at("<h1"));
-    expect(at("data-state-intro")).toBeLessThan(at('data-testid="state-add-farm"'));
+    expectPlate(fig!, "OR", "oregon", "lazy", ABOVE_LIST_CLASS);
+    const at = (s: string) => h.indexOf(s);
     expect(at('data-testid="state-add-farm"')).toBeLessThan(at("data-state-plate"));
-    const grid = h.slice(h.indexOf("</header>"));
+    expect(at("data-state-plate")).toBeLessThan(at('data-state-sellers="OR"'));
+    const grid = h.slice(h.indexOf("<ul"));
     expect(grid).toContain('data-state-sellers="OR"');
     expect(grid).not.toMatch(/data-state-plate|artwork\/states/);
     expect(h.match(/data-state-plate=/g)).toHaveLength(1);
@@ -290,9 +301,9 @@ describe("state page placement (§3)", () => {
   it("every painted state's page shows that state's plate", async () => {
     for (const slug of Object.keys(ADA_A2)) {
       const st = stateBySlug(slug)!;
-      const fig = figureOf(header(await renderState(slug, [card("willamette-test-farm", st.code)])));
+      const fig = figureOf(await renderState(slug, [card("willamette-test-farm", st.code)]));
       expect(fig, slug).not.toBeNull();
-      expectPlate(fig!, st.code, slug, "lazy");
+      expectPlate(fig!, st.code, slug, "lazy", ABOVE_LIST_CLASS);
     }
   });
 

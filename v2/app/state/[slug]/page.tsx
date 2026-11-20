@@ -93,27 +93,34 @@ export default async function StatePage({ params, searchParams }: Props) {
             />
           </figure>
         ) : null}
-        <div className="mt-6 min-w-0 sm:flex sm:items-start sm:gap-8">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-3xl font-semibold text-leaf md:text-4xl">{`Seed sellers in ${st.name}`}</h1>
-            <p className="mt-2 max-w-2xl text-muted" data-state-intro>
-              {total === 1
-                ? `1 seed seller in ${st.name} lists seed with the Seed Directory.`
-                : `${total} seed sellers in ${st.name} list seed with the Seed Directory.`}
-              {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
-            </p>
-            <p className="mt-4">
-              <Link href={`/add-your-farm?state=${st.code}`} className="btn btn-primary btn-pill" data-testid="state-add-farm">
-                Add Your Farm
-              </Link>
-              <span className="ml-3 text-sm text-muted">Sell seed from a farm or company in {st.name}? Listing is free.</span>
-            </p>
-          </div>
-          {/* State-flower plate (state-plates spec §3): beside the intro, never beside the card grid;
-              lazy with no fetchPriority so it never competes with the eager hero above. */}
-          {plate ? <StatePlate code={st.code} plate={plate} loading="lazy" /> : null}
+        <div className="mt-6 min-w-0">
+          <h1 className="text-3xl font-semibold text-leaf md:text-4xl">{`Seed sellers in ${st.name}`}</h1>
+          <p className="mt-2 max-w-2xl text-muted" data-state-intro>
+            {total === 1
+              ? `1 seed seller in ${st.name} lists seed with the Seed Directory.`
+              : `${total} seed sellers in ${st.name} list seed with the Seed Directory.`}
+            {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
+          </p>
+          <p className="mt-4">
+            <Link href={`/add-your-farm?state=${st.code}`} className="btn btn-primary btn-pill" data-testid="state-add-farm">
+              Add Your Farm
+            </Link>
+            <span className="ml-3 text-sm text-muted">Sell seed from a farm or company in {st.name}? Listing is free.</span>
+          </p>
         </div>
       </header>
+      {/* State-flower plate (state-plates spec §3, placement amended by Dustin's call 2026-11-20 —
+          Elena's B-05 over Nadia's S-14): directly above the farm list, in the DOM as well as
+          visually, so the page reads geography → flower → farms and the reading order matches the
+          visual order. Lazy with no fetchPriority so it never competes with the eager hero above. */}
+      {plate ? (
+        <StatePlate
+          code={st.code}
+          plate={plate}
+          loading="lazy"
+          className="mx-auto mt-8 w-[280px] shrink-0 sm:mx-0 sm:w-[300px] lg:w-[320px]"
+        />
+      ) : null}
       <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3" data-state-sellers={st.code}>
         {items.map((s) => (
           <li key={s.slug}>
