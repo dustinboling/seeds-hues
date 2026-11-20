@@ -53,7 +53,7 @@ export function SiteFooter() {
         <p>{CONFLICT_OF_INTEREST}</p>
         <p>
           No prices are shown. Every listing shows its stock state as last seen and the date it was last checked.
-          No checkout — every Shop button goes straight to the farm.
+          No checkout — every Shop button goes straight to the seller.
         </p>
       </div>
     </footer>

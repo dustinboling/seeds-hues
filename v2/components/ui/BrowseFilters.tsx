@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { FilterStrip } from "@/components/ui/FilterStrip";
+import { SmallFarmLegend } from "@/components/seller/SmallFarmBadge";
+import { SMALL_FARM_CHIP_LABEL, SMALL_FARM_FILTER_LABEL, SMALL_FARM_PARAM } from "@/lib/small-farm";
 import {
   COLOR_FAMILIES,
   COLOR_FAMILY_LABELS,
@@ -16,24 +18,45 @@ import {
   type SeasonParam,
 } from "@/lib/validators";
 
-/** The active browse filters. Each group is single-select; null = "All". */
+/** The active browse filters. Each group is single-select; null / false = "All". */
 export interface BrowseFilterState {
   season: SeasonParam | null;
   method: MethodParam | null;
   lifeCycle: LifeCycleParam | null;
   hue: ColorFamily | null;
+  /**
+   * "Sellers" group (Open Directory, ux-spec §3): only varieties with at least one listing from a
+   * seller carrying the Small farm badge. Shown on /variety only; every other surface passes false.
+   */
+  smallFarm: boolean;
 }
 
 export type BrowseFilterGroup = keyof BrowseFilterState;
 
 /** Query-param name per group (the same names /api/v1 uses). */
-const PARAM: Record<BrowseFilterGroup, string> = { season: "season", method: "method", lifeCycle: "life_cycle", hue: "color_family" };
+const PARAM: Record<BrowseFilterGroup, string> = {
+  season: "season",
+  method: "method",
+  lifeCycle: "life_cycle",
+  hue: "color_family",
+  smallFarm: SMALL_FARM_PARAM,
+};
+
+/** A group's active value as its URL value; null = "All". The Sellers group is on = "true" (never "false"). */
+function groupValue(state: BrowseFilterState, g: BrowseFilterGroup): string | null {
+  if (g === "smallFarm") return state.smallFarm ? "true" : null;
+  return state[g];
+}
+
+function withGroup(state: BrowseFilterState, g: BrowseFilterGroup, value: string | null): BrowseFilterState {
+  return g === "smallFarm" ? { ...state, smallFarm: value === "true" } : { ...state, [g]: value };
+}
 
 /** The filter params to carry on links (e.g. Pagination) — only the active groups. */
 export function filterParams(state: BrowseFilterState): Record<string, string> {
   const out: Record<string, string> = {};
   for (const g of Object.keys(PARAM) as BrowseFilterGroup[]) {
-    const v = state[g];
+    const v = groupValue(state, g);
     if (v) out[PARAM[g]] = v;
   }
   return out;
@@ -46,6 +69,7 @@ export function activeFilterLabels(state: BrowseFilterState): string[] {
     state.method ? SOWING_METHOD_LABELS[METHOD_PARAMS[state.method]] : null,
     state.lifeCycle ? LIFE_CYCLE_LABELS[state.lifeCycle] : null,
     state.hue ? COLOR_FAMILY_LABELS[state.hue] : null,
+    state.smallFarm ? SMALL_FARM_FILTER_LABEL : null,
   ].filter((x): x is string => x !== null);
 }
 
@@ -62,7 +86,7 @@ function chipHref(
 ): string {
   const p = new URLSearchParams(params);
   p.delete("page");
-  for (const [k, v] of Object.entries(filterParams({ ...state, [group]: value }))) p.set(k, v);
+  for (const [k, v] of Object.entries(filterParams(withGroup(state, group, value)))) p.set(k, v);
   const qs = p.toString();
   return qs ? `${basePath}?${qs}` : basePath;
 }
@@ -108,11 +132,21 @@ const OPTIONS: Record<BrowseFilterGroup, { legend: string; options: Option[] }> 
     legend: "Hue",
     options: [{ value: null, label: "All" }, ...COLOR_FAMILIES.map((f) => ({ value: f, label: COLOR_FAMILY_LABELS[f], hue: f }))],
   },
+  // An attribute of the variety's sellers, not of the variety — its own group, last (ux-spec §3.1).
+  // Plain text chips: the mark is NOT inside the filter chip (RULING carry-over); the legend line
+  // under this strip is where the badge appears beside the filter.
+  smallFarm: {
+    legend: "Sellers",
+    options: [
+      { value: null, label: "All" },
+      { value: "true", label: SMALL_FARM_CHIP_LABEL },
+    ],
+  },
 };
 
 /**
  * Browse filters: one fieldset per group — Season, Sowing method and, on variety lists, Life
- * cycle (on /variety) and Hue. Chips are plain server-rendered links; groups combine: every chip
+ * cycle (on /variety), Hue and Sellers (on /variety; followed by the Small farm badge legend). Chips are plain server-rendered links; groups combine: every chip
  * keeps the other groups' active values. The active chip carries aria-current="true", so the state
  * is announced, not only shown by colour; hue chips pair the swatch dot with a text label.
  * Every group is a single-line, horizontally scrollable strip (FilterStrip, a small client
@@ -135,7 +169,7 @@ export function BrowseFilters({
     <nav aria-label="Filters" className="mt-4 flex flex-col gap-3">
       {groups.map((g) => {
         const items = OPTIONS[g].options.map((o) => {
-          const active = o.value === state[g];
+          const active = o.value === groupValue(state, g);
           return (
             <li key={o.value ?? "all"} className="flex-none">
               <Link
@@ -155,6 +189,8 @@ export function BrowseFilters({
           <fieldset key={g} className="min-w-0">
             <legend className="eyebrow mb-1">{OPTIONS[g].legend}</legend>
             <FilterStrip legend={OPTIONS[g].legend}>{items}</FilterStrip>
+            {/* The page's one legend line (ux-spec §5.1): directly under the Sellers strip. */}
+            {g === "smallFarm" ? <SmallFarmLegend className="mt-1" /> : null}
           </fieldset>
         );
       })}

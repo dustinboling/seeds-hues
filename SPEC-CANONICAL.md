@@ -9,24 +9,26 @@
 
 > **RENAME (2026-11-16):** the product was renamed from "Seed Finder" to **"Seed Directory"** by Dustin. All user-visible strings use the new name; the domain (seeds.hues.flowers), URL paths, and internal identifiers are unchanged. The spec text below is the verbatim adopted document and keeps the original name where it appears.
 
+> **OPEN DIRECTORY AMENDMENT (2026-11-19):** Dustin ruled the directory **open**: it lists a variety wherever the seed is available, from **any US seller, whatever its size** — the small-farms-only rule is **superseded** (principle 3, the seller-qualification paragraph, open question 1's default, and the size scope of decisions 5 and 25; see decision 26). Small family farms carry a **"Small farm" badge** — Hue's judgment call, recorded per seller on `sellers.is_small_farm`, with no formal test — and a **"Small farms" filter** narrows browse and variety listings to badged sellers. **US sellers only still holds.** The "Add Your Farm" page and route keep their name. Passages below that stated the old rule have been amended in place.
+
 ---
 
 # Seed Finder: product, API and data spec
 
 Nov 16, 2026 · @Dustin Boling
 
-Seed Finder launches Dec 16, 2026 as a read-only directory: about 30 cut-flower crops, a hand-approved list of small-farm sellers, and no prices, reviews or accounts until after launch.
+Seed Finder launches Dec 16, 2026 as a read-only directory: about 30 cut-flower crops, US sellers of every size (open directory — see the 2026-11-19 amendment), and no prices, reviews or accounts until after launch.
 
 ## 1. Product spec
 
-Phase 1 earns trust and traffic and sells nothing: every cut flower seed variety, every small farm that sells it, in one place.
+Phase 1 earns trust and traffic and sells nothing: every cut flower seed variety, every US seller that sells it, in one place.
 
 ### Users and jobs
 
 | User | Job to be done | What Phase 1 gives them |
 | --- | --- | --- |
 | Flower farmer planning a season | Find who has a named variety in stock from a real farm, before it sells out | Search by any name, sellers with stock state and check date, one tap to the shop |
-| Home cutting gardener | Buy a variety they saw online from a small farm, not a seed house | Plain pages that rank in search and AI answers |
+| Home cutting gardener | Buy a variety they saw online from a seller they choose — small farms are badged so they can pick one | Plain pages that rank in search and AI answers |
 | Small seed farm | Be found without paying for ads, and control how they appear | An accurate listing, traffic they can see in their own analytics, claim / correct / remove |
 | Hues, as operator | Learn what growers want and cannot find | Outbound clicks, zero-result searches, views of varieties with no seller |
 | Search and AI answer engines | Quote a sourced fact | Server-rendered pages, structured data, a public read API |
@@ -35,7 +37,7 @@ Phase 1 earns trust and traffic and sells nothing: every cut flower seed variety
 
 1. **Nothing invented.** Unknown is a valid value, and the page prints "Unknown".
 2. **Every fact carries a source and a date,** and the page shows both.
-3. **Small farms only.** A human approves every seller; agents only propose.
+3. **Open directory (amended 2026-11-19; supersedes "Small farms only").** Any US seller, whatever its size, may be listed. Small family farms carry a "Small farm" badge — a judgment call, recorded on `sellers.is_small_farm` — and a "Small farms" filter narrows to badged sellers. Agents propose sellers; a seller is listed after review, and badging is an independent judgment applied afterwards.
 4. **The farm gets the sale.** Phase 1 sends the click and takes nothing.
 5. **Sellers can correct or leave at any time.** Removals are done within 48 hours.
 6. **One backend.** The site, the apps and the agents all go through /api/v1.
@@ -45,20 +47,20 @@ Phase 1 earns trust and traffic and sells nothing: every cut flower seed variety
 
 | Phase | In | Out |
 | --- | --- | --- |
-| 1. Directory, launch Dec 16, 2026 | About 30 crops; hand-approved US sellers; variety, seller, crop and series pages; search; stock state with check date; outbound click tracking; claim / correct / remove; "Not yet rated"; public read API; installable PWA; agent ingestion with a review queue | Prices; review submission; user accounts; photos taken from sellers; non-US sellers; native apps; checkout; email alerts |
+| 1. Directory, launch Dec 16, 2026 | About 30 crops; US sellers of every size; variety, seller, crop and series pages; search; stock state with check date; outbound click tracking; claim / correct / remove; "Not yet rated"; public read API; installable PWA; agent ingestion with a review queue | Prices; review submission; user accounts; photos taken from sellers; non-US sellers; native apps; checkout; email alerts |
 | 2. Native apps, no earlier than Mar 16, 2027 | iOS and Android on the same API; full catalog on device; push alerts for restocks and new sellers; accounts and review submission | Checkout; seller-managed inventory |
-| 3. Marketplace | Third-party sellers selling on the platform; Hues selling its own seed beside them; a commission on sales; later, Fulfilled by Hues | Large seed houses, in every phase |
+| 3. Marketplace | Third-party sellers selling on the platform; Hues selling its own seed beside them; a commission on sales; later, Fulfilled by Hues | Non-US sellers, in every phase |
 
 Proposed launch crops, yours to edit: zinnia, snapdragon, sweet pea, cosmos, celosia, sunflower, dahlia from seed, strawflower, scabiosa, lisianthus, stock, larkspur, delphinium, statice, gomphrena, amaranth, ammi, bells of Ireland, bachelor's button, calendula, nigella, poppy, rudbeckia, foxglove, yarrow, marigold, China aster, phlox, orlaya, dianthus.
 
-Work the crops in the order approved sellers stock them. A page with a seller is a page that gets indexed, so seller catalogs come before reference catalogs.
+Work the crops in the order listed sellers stock them. A page with a seller is a page that gets indexed, so seller catalogs come before reference catalogs.
 
 ### User stories and acceptance criteria
 
 | # | Story | Acceptance criteria |
 | --- | --- | --- |
 | 1 | As a grower, I search for a variety by any name it goes by. | Two typed characters return matches on primary names and synonyms. A synonym match shows "also sold as". Zero results shows "Not in the catalog yet" and a report link. Every query is logged with its result count. |
-| 2 | As a grower, I see every small farm selling a variety. | Each listing shows seller, state, stock state as last seen, the date last checked and a source link. In-stock listings sort first. No price appears. A variety with no seller says "No small farm found selling this yet". |
+| 2 | As a grower, I see every seller selling a variety. | Each listing shows seller, state, stock state as last seen, the date last checked and a source link. In-stock listings sort first. No price appears. A variety with no seller says "No seller found selling this yet". |
 | 3 | As a grower, I go to the farm's shop in one tap. | The button routes through /go/\<listing id>, logs the click, and redirects to the farm's own product page with UTM tags. A dead link can be reported from the same row. |
 | 4 | As a grower, I browse a crop. | The crop page filters by color family, series and "has sellers". It states how many varieties are cataloged, how many have sellers, and the date last updated. |
 | 5 | As a grower, I judge a seller. | The seller page shows location, a link to the seller's own site, all its listings, and "Not yet rated". |
@@ -133,7 +135,7 @@ Every published record points at a fetched source, and the database refuses a li
 | breeders | Who bred a variety; never a seller by this table | name, kind (commercial, farm, unknown), seller\_id if also an approved seller |
 | varieties | The page unit | see DDL |
 | variety\_names | Every name a variety goes by | name, name\_normalized, kind (primary, synonym, trade\_name, misspelling, seller\_alias) |
-| sellers | A small farm or seed shop, hand-approved | see DDL |
+| sellers | A US farm or seed company of any size; `is_small_farm` records the "Small farm" badge judgment | see DDL |
 | listings | One seller offering one variety | see DDL |
 | listing\_events | Append-only log of state changes | listing\_id, event (first\_seen, restocked, sold\_out, gone), at |
 | sources | One row per fetched document | url, fetched\_at, http\_status, content\_hash, snapshot\_key, robots\_allowed, kind (web, human, seller) |
@@ -141,7 +143,7 @@ Every published record points at a fetched source, and the database refuses a li
 | review\_items | The human queue | type, proposal, reason, confidence, status, resolved\_at |
 | crawl\_jobs | The job queue, with leases | type, target, status, lease\_expires\_at, attempts, next\_run\_at |
 | agent\_runs | One row per agent run | agent, model, prompt\_version, tokens, cost |
-| blocked\_domains | Large seed houses and farms that opted out | domain, reason |
+| blocked\_domains | Sellers that opted out (removal requests) | domain, reason |
 | assets | Photos with a license on every row | storage key, license, license\_url, attribution, owner |
 | seller\_claims | A farm proving it controls a listing | seller\_id, email, token\_hash, verified\_at |
 | reports | Public corrections, claims and removals | type, target, message, contact, status |
@@ -206,6 +208,7 @@ CREATE TABLE sellers (
   claim_status      TEXT NOT NULL DEFAULT 'unclaimed'
                     CHECK (claim_status IN ('unclaimed','claimed')),
   is_site_owner     INTEGER NOT NULL DEFAULT 0,  -- 1 for Hues, shown as a disclosure
+  is_small_farm     INTEGER NOT NULL DEFAULT 0,  -- "Small farm" badge (2026-11-19): a recorded judgment call, not a measured size; set only through the admin path
   contact_email     TEXT,                        -- private, never in the API
   created_at        TEXT NOT NULL,
   updated_at        TEXT NOT NULL,
@@ -260,7 +263,7 @@ CREATE TABLE rating_summaries (
 
 Rules that span tables live in one place, the publish function. A listing publishes only if its seller is approved, its URL is on the seller's domain, and that domain is not blocked. A nightly invariant query re-checks all three and alerts on any row that breaks them.
 
-A seller qualifies by being a small farm or seed shop that you approve. Who grew the seed is not recorded and does not affect a listing: bought-in seed is listed the same way as farm-grown.
+A seller qualifies by being a US seller of flower seed, of any size (open directory, 2026-11-19 — this supersedes the original small-farm qualification). Seller size is never a listing test. Small family farms are instead marked with the "Small farm" badge: a judgment call recorded on the seller (`is_small_farm`), applied independently of listing, after the seller is listed. Who grew the seed is not recorded and does not affect a listing: bought-in seed is listed the same way as farm-grown.
 
 ### Provenance
 
@@ -480,7 +483,7 @@ A table-backed queue is one less system to run, and it moves to Postgres unchang
 | 2 | [Floret Library](https://library.floretflowers.com/), seed collections only | Which cultivars matter first: names and crop | Its page says the words and images are copyrighted. Take names and plain facts, link back, and ask Floret before crawling. |
 | 3 | Breeder and wholesale catalogs | Series structure, pollination type, height, days to bloom | Facts only; these companies are never sellers |
 | 4 | A botanical name authority | Accepted species names and synonyms | Check its license before bulk use |
-| 5 | Web search for small farms and seed shops | Seller candidates only | Every candidate goes to you |
+| 5 | Web search for US farms and seed companies of any size | Seller candidates only | Every candidate goes to you |
 
 The Floret Library profiles more than 1,500 varieties across seeds, bulbs and tubers, all grown and trialed on their farm. It is the best single list of what cut-flower growers care about, and it is not a popularity ranking. No source is mirrored: the catalog is a union, and each variety keeps its own source row.
 
@@ -830,7 +833,7 @@ Two questions block week 1; the rest have defaults that hold until you say other
 
 | # | Question | Why it matters | Default until answered | Needed by |
 | --- | --- | --- | --- | --- |
-| 1 | Do large seed houses stay out, and what makes a seller small enough to list? | Growing its own seed was the test that kept them out. With that test gone, the allowlist needs a rule you can apply by hand. | Large seed houses stay out, blocked by domain. Any independent farm or small seed shop you approve can be listed. | Nov 18, 2026 |
+| 1 | Do large seed houses stay out, and what makes a seller small enough to list? | Growing its own seed was the test that kept them out. With that test gone, the allowlist needs a rule you can apply by hand. | **Resolved 2026-11-19 (decision 26):** large seed houses do not stay out — any US seller may be listed. "Small" is no longer a listing test; it is the "Small farm" badge, a judgment call recorded per seller. | Nov 18, 2026 |
 | 2 | What v2 holds today, and which adapter the preview uses | Decides vinext or OpenNext, and what week 1 can reuse | Treat it as a fresh start; the account shows a preview Worker and no seed database | Nov 17, 2026 |
 | 3 | Will Floret agree to its library being a name reference? | It is one of your exemplars, and its page asks that the work be respected | Ask this week. Until then use it by hand to set crop order, not by crawl. | Nov 23, 2026 |
 | 4 | The color vocabulary for `color_family` | It is a filter on every crop page | A fixed list of about 12 families, set in week 1 | Week 1 |
@@ -844,7 +847,7 @@ Two questions block week 1; the rest have defaults that hold until you say other
 
 ### Decisions log
 
-All decided Nov 16, 2026.
+All decided Nov 16, 2026, except decision 26 (2026-11-19).
 
 | # | Decision | Basis |
 | --- | --- | --- |
@@ -852,7 +855,7 @@ All decided Nov 16, 2026.
 | 2 | One page per cultivar, series color, mix or strain; crop and series pages are hubs | Your answer; the crop page doubles as the species hub |
 | 3 | No prices shown at launch; stock state with a check date | Your answer |
 | 4 | Photos are your own, openly licensed or seller-supplied | Your answer |
-| 5 | Every seller is approved by hand; agents only propose | Your answer |
+| 5 | Every seller is approved by hand; agents only propose *(seller size is no longer a criterion — see decision 26)* | Your answer |
 | 6 | Farms are listed without asking, emailed before launch, and removed within 48 hours on request | Your answer |
 | 7 | US sellers only at launch | Your answer |
 | 8 | Zero-seller pages are noindex and out of the sitemap | Your answer |
@@ -872,7 +875,8 @@ All decided Nov 16, 2026.
 | 22 | No Product markup until prices or ratings exist | Google's product snippet rules |
 | 23 | Prices are captured but not exposed | My recommendation; first on the cut list |
 | 24 | A seller does not have to grow the seed it sells; bought-in seed is listed the same way | Your message |
-| 25 | The 20 research candidates are dropped; sellers come from the six exemplars plus agent discovery, each approved by hand | Your message |
+| 25 | The 20 research candidates are dropped; sellers come from the six exemplars plus agent discovery, each approved by hand *(the hand-approval framing is superseded for seller size by decision 26)* | Your message |
+| 26 | **Open directory (2026-11-19):** the directory lists any US seller regardless of size — the small-farms-only rule is superseded. Small family farms carry a "Small farm" badge (Hue's judgment call, no formal test; `sellers.is_small_farm`, set only through the admin path) and a "Small farms" filter narrows browse and variety listings to badged sellers. US-only (decision 7) holds. "Add Your Farm" keeps its name. | Dustin's ruling, 2026-11-19 |
 
 Decisions 17 to 23 are mine. Strike any you disagree with and I will rework the sections they touch.
 

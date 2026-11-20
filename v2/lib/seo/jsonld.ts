@@ -74,7 +74,7 @@ export function siteOrganizationJsonLd(): Json {
     "@type": "Organization",
     name: "Hues Floral Park",
     url: OWNER_SITE_URL,
-    description: `Hues Floral Park owns and operates ${SITE_NAME}, a directory of small farms that sell flower seed.`,
+    description: `Hues Floral Park owns and operates ${SITE_NAME}, a directory of flower seed varieties and the US sellers who sell them.`,
   };
 }
 
@@ -106,7 +106,7 @@ export function varietySellersJsonLd(v: VarietyDetail): Json {
   const seen = new Set<string>();
   const sellers = v.listings.filter((l) => !seen.has(l.seller.slug) && seen.add(l.seller.slug));
   return itemListJsonLd(
-    `Small farms selling ${v.varietyName} seed`,
+    `Where to buy ${v.varietyName} seed`,
     sellers.map((l) => ({ name: l.seller.name, href: `/seller/${l.seller.slug}` })),
   );
 }

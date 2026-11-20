@@ -9,7 +9,7 @@ import { importCatalog } from "@/lib/catalog/importer";
 import { createServices } from "@/lib/services";
 import { searchVarieties } from "@/lib/repositories/fts";
 import { tableCounts } from "@/lib/repositories/catalog-write";
-import { COMPANY_NAME_EXCLUSION_PATTERN } from "@/lib/catalog/assertions";
+import { SMALL_FARM_BADGE_SLUGS } from "@/lib/catalog/small-farm-classification";
 
 let t: TestD1;
 beforeAll(async () => {
@@ -66,11 +66,44 @@ describe("importer (design D2)", () => {
     }
   });
 
-  it("every listing has provenance; no seller names an excluded company", async () => {
+  it("every listing has provenance; sellers are US-only and badges match the recorded judgment", async () => {
     const l = await raw("SELECT count(*) n FROM listings WHERE source_id IS NULL OR last_checked_at IS NULL OR match_method <> 'human'").first<{ n: number }>();
     expect(l?.n).toBe(0);
-    const rows = await raw("SELECT slug, name FROM sellers").all<{ slug: string; name: string }>();
-    for (const r of rows.results) expect(COMPANY_NAME_EXCLUSION_PATTERN.test(`${r.slug} ${r.name}`)).toBe(false);
+    // Open Directory (2026-11-19): size is never a rejection — the gates are US-only and the
+    // recorded "Small farm" judgment. The curated import carries 25 sellers: 18 badged + 7 not.
+    // (GeoSeed, pre-recorded NO BADGE, exists only in production — it arrived by crawl.)
+    const badge = new Set<string>(SMALL_FARM_BADGE_SLUGS);
+    const rows = await raw("SELECT slug, country, is_small_farm FROM sellers").all<{ slug: string; country: string; is_small_farm: number }>();
+    expect(rows.results).toHaveLength(25);
+    for (const r of rows.results) {
+      expect(r.country, r.slug).toBe("US");
+      expect(Boolean(r.is_small_farm), r.slug).toBe(badge.has(r.slug));
+    }
+    expect(rows.results.filter((r) => r.is_small_farm === 1)).toHaveLength(18);
+  });
+
+  it("badges survive a full re-import (the importer carries isSmallFarm from the catalog)", async () => {
+    await raw("UPDATE sellers SET is_small_farm = 0 WHERE slug = 'songbird-seed-co'").run();
+    const r = await importCatalog(t.db, loadCatalogJson());
+    expect(r.status).toBe("replaced");
+    const row = await raw("SELECT is_small_farm FROM sellers WHERE slug = 'songbird-seed-co'").first<{ is_small_farm: number }>();
+    expect(row?.is_small_farm).toBe(1);
+  });
+
+  it("smallFarmOnly narrows varieties to those with a badged-seller listing and AND-composes", async () => {
+    const all = await svc().listVarieties({ filters: { smallFarmOnly: true }, page: { offset: 0, limit: 100 } });
+    expect(all.total).toBe(17); // every seed-catalog listing is from a badged seller
+    expect(all.items.every((v) => v.listingCount > 0)).toBe(true);
+    // AND with another group: sweet peas only (9 Songbird listings), counts stay global.
+    const peas = await svc().listVarieties({ filters: { smallFarmOnly: true, plant: ["sweet-pea"] }, page: { offset: 0, limit: 100 } });
+    expect(peas.total).toBe(9);
+    expect(peas.items.map((v) => v.slug)).toContain("sweet-pea-kings-ransom");
+    expect(peas.items.map((v) => v.slug)).not.toContain("zinnia-gift");
+    const kr = peas.items.find((v) => v.slug === "sweet-pea-kings-ransom")!;
+    const unfiltered = (await svc().listVarieties({ filters: { plant: ["sweet-pea"] }, page: { offset: 0, limit: 100 } })).items.find(
+      (v) => v.slug === "sweet-pea-kings-ransom",
+    )!;
+    expect(kr.listingCount).toBe(unfiltered.listingCount);
   });
 
   it("the DB still refuses a stored price without source/date (storage unchanged)", async () => {
@@ -92,7 +125,7 @@ describe("derivations + spot checks (task 3)", () => {
       confidence: 1,
     });
     expect(l.goUrl).toBe(`https://seeds.hues.flowers/go/${l.id}`);
-    expect(v.answer).toBe("As of 2026-11-15, 1 small farm lists King's Ransom: Songbird Seed Co.");
+    expect(v.answer).toBe("As of 2026-11-15, 1 seller lists King's Ransom: Songbird Seed Co.");
   });
 
   it("Songbird × Emma: sold_out; Floret × Dawn Creek Pastels: unknown availability", async () => {
@@ -116,7 +149,7 @@ describe("derivations + spot checks (task 3)", () => {
     expect(v.facts.pollination).toBe("unknown");
     expect(v.facts.days_to_bloom).toEqual({ min: null, max: null });
     expect(v.rating).toEqual({ state: "not_yet_rated", average: null, review_count: 0 });
-    expect(v.answer).toBe("No small farm found selling Katz Mix yet.");
+    expect(v.answer).toBe("No seller found selling Katz Mix yet.");
   });
 
   it("series: Dearest is one zinnia series with its member varieties", async () => {
@@ -296,8 +329,8 @@ describe("search (R12)", () => {
     expect(r.varieties[0]!.slug).toBe("sweet-pea-kings-ransom");
     const z = await svc().search("zinnia", { limit: 50 });
     z.varieties = z.varieties.filter((v) => v.href.startsWith("/variety/zinnia-")); // the prefix tier
-    const firstNoSeller = z.varieties.findIndex((v) => v.subtitle.includes("no farm listing yet"));
-    const lastWithSeller = z.varieties.map((v) => !v.subtitle.includes("no farm listing yet")).lastIndexOf(true);
+    const firstNoSeller = z.varieties.findIndex((v) => v.subtitle.includes("no seller listing yet"));
+    const lastWithSeller = z.varieties.map((v) => !v.subtitle.includes("no seller listing yet")).lastIndexOf(true);
     expect(firstNoSeller).toBeGreaterThan(-1);
     expect(lastWithSeller).toBeLessThan(firstNoSeller);
   });

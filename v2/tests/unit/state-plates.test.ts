@@ -94,6 +94,7 @@ const SELLER: SellerDetail = {
   ratingAverage: null,
   rating: { state: "not_yet_rated", average: null, review_count: 0 },
   importedRating: null,
+  isSmallFarm: false,
   description: "A test farm.",
   orderingNotes: null,
   varietyCount: 0,
@@ -255,6 +256,7 @@ describe("state page placement (§3)", () => {
     ratingAverage: null,
     rating: { state: "not_yet_rated", average: null, review_count: 0 },
     importedRating: null,
+    isSmallFarm: false,
     varietyCount: 0,
   });
 
@@ -296,7 +298,7 @@ describe("state page placement (§3)", () => {
 
   it("a state with sellers but no plate (Texas) renders the header as before: no figure, no substitute", async () => {
     const h = await renderState("texas", [card("lone-star-test-farm", "TX")]);
-    expect(h).toContain("Seed farms in Texas");
+    expect(h).toContain("Seed sellers in Texas");
     expect(h).not.toMatch(/data-state-plate|<figure|artwork\/states|<img/);
   });
 });

@@ -5,7 +5,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
-import { COMPANY_NAME_EXCLUSION_PATTERN } from "@/lib/catalog/assertions";
 import { POD_ART_BY_PLANT } from "@/lib/data/pod-ornaments";
 import { MOTIF_B_PATH } from "@/components/ui/MotifDivider";
 import { STATE_SCENES } from "@/lib/data/state-scenes";
@@ -110,13 +109,25 @@ describe("prices are stored, never shown (R1)", () => {
 
 describe("policy guardrails", () => {
   it("scanners are not vacuous (they do see the allow-listed files)", () => {
-    expect(offenders(["lib/catalog/assertions.ts"], COMPANY_NAME_EXCLUSION_PATTERN)).toHaveLength(1);
+    expect(offenders(["lib/catalog/small-farm-classification.ts"], /SMALL_FARM_BADGE_SLUGS/)).toHaveLength(1);
     expect(offenders(["lib/repositories/atomic.ts"], /\.batch\(/)).toHaveLength(1);
     expect(offenders(["lib/db/client.ts"], /\benv\.DB\b/)).toHaveLength(1);
   });
-  it("no large seed company names outside comments and the exclusion list", () => {
-    const allow = ["lib/catalog/assertions.ts"];
-    expect(offenders(ALL, COMPANY_NAME_EXCLUSION_PATTERN, allow)).toEqual([]);
+  it("the retired small-farms-only exclusion model never comes back (Open Directory, 2026-11-19)", () => {
+    // The old model rejected sellers by size through exclusion constants in
+    // lib/catalog/assertions.ts. Those constants are retired: they must not reappear in
+    // runtime code, scripts or tests (this file is the scanner, so it is exempt via SELF).
+    const RETIRED = /COMPANY_NAME_EXCLUSION_PATTERN|EXCLUDED_COMPANY_NAMES|EXCLUDED_SELLER_TOKENS|SELLER_EXCLUSION_PATTERN/;
+    expect(offenders(RUNTIME, RETIRED)).toEqual([]);
+    expect(offenders(ALL, RETIRED)).toEqual([]);
+    // The scanner is not vacuous, and the replacement model is really there: assertions.ts
+    // gates sellers on US-only + the recorded badge judgment instead.
+    expect(RETIRED.test("EXCLUDED_SELLER_TOKENS")).toBe(true);
+    const assertions = stripComments(read("lib/catalog/assertions.ts"));
+    expect(assertions).toMatch(/US sellers only/);
+    expect(assertions).toMatch(/SMALL_FARM_BADGE_SLUGS/);
+    // GeoSeed — the standing formerly-excluded example — is recorded NO BADGE, not excluded.
+    expect(stripComments(read("lib/catalog/small-farm-classification.ts"))).toMatch(/"geoseed"/);
   });
 
   it("no Product / Offer / AggregateRating / FAQPage / Review / priceValidUntil outside the prohibition list (R4)", () => {

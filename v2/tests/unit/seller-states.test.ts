@@ -170,6 +170,7 @@ describe("importedRating validation", () => {
       ratingAverage: null,
       rating: { state: "not_yet_rated", average: null, review_count: 0 },
       importedRating: { ...ok, source: "Google" },
+      isSmallFarm: false,
       description: null,
       orderingNotes: null,
       varietyCount: 0,
@@ -188,9 +189,9 @@ describe("importedRating validation", () => {
 describe("state page SEO copy", () => {
   it("title + description come from data", () => {
     const st = { code: "OR", name: "Oregon", slug: "oregon", sellerCount: 3 };
-    expect(stateTitle(st)).toBe("Seed farms in Oregon — Seed Directory");
-    expect(stateDescription(st)).toMatch(/^3 small farms and seed companies in Oregon list flower seed with the Seed Directory/);
-    expect(stateDescription({ ...st, sellerCount: 1 })).toMatch(/^1 small farm or seed company in Oregon lists /);
+    expect(stateTitle(st)).toBe("Seed sellers in Oregon — Seed Directory");
+    expect(stateDescription(st)).toMatch(/^3 farms and seed companies in Oregon list flower seed with the Seed Directory/);
+    expect(stateDescription({ ...st, sellerCount: 1 })).toMatch(/^1 farm or seed company in Oregon lists /);
     expect(stateDescription(st).length).toBeLessThanOrEqual(160);
   });
 });

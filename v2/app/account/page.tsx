@@ -49,7 +49,7 @@ export default async function AccountPage({ searchParams }: Props) {
             </p>
           ) : null}
           <p className="mt-3 text-lg">
-            An account lets you join waiting lists: we’ll text and email you when a farm lists a variety you’re after. No password — you sign in with your email and phone number.
+            An account lets you join waiting lists: we’ll text and email you when a seller lists a variety you’re after. No password — you sign in with your email and phone number.
           </p>
         </div>
         <div>

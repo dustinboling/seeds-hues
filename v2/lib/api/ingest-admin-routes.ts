@@ -9,6 +9,7 @@ import {
   MergeBodySchema,
   ReviewListQuerySchema,
   SellerActionBodySchema,
+  SellerBadgeBodySchema,
 } from "@/lib/services/admin";
 import { LeaseBodySchema, ObservationsBodySchema, SellerCandidateBodySchema, SourceBodySchema } from "@/lib/services/ingest";
 import { ApproveFarmSchema, FarmOwnerSchema } from "@/lib/services/farms";
@@ -142,6 +143,21 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       },
     }),
   ),
+  {
+    // The Small farm badge (Open Directory): a judgment call, set beside — not inside — eligibility.
+    method: "POST",
+    pattern: "sellers/:id/small-farm",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "seller not found");
+      const b = parseBody(SellerBadgeBodySchema, body);
+      const r = await services.admin.sellerBadge(ref, b.is_small_farm);
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
   {
     method: "GET",
     pattern: "stats/demand",

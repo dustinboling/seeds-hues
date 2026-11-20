@@ -8,7 +8,7 @@ import type { VarietyListItem } from "@/lib/validators";
  * link to /variety/{slug}. Top to bottom: the variety illustration shown WHOLE on paper in a 1:2
  * frame (VarietyCardImage; without media, the crop's pod motif or the divider-stem placeholder),
  * the mini stem, then a fixed-height name zone at the BOTTOM holding the name, one muted crop line and one
- * availability line ("No sellers yet" or "N farms"). Nothing else: no swatch, no latin eyebrow,
+ * availability line ("No sellers yet" or "N sellers"). Nothing else: no swatch, no latin eyebrow,
  * no stock counts, no "Last checked", no credits, no prices. Fixed-aspect art + fixed name zone +
  * full-height link keep every card in a row the same height. No per-card heading: the page's own
  * headings structure the grid.
@@ -28,7 +28,7 @@ export function VarietyCard({ v }: { v: VarietyListItem }) {
       <span className="flex h-[6.25rem] flex-col items-center justify-center gap-0.5">
         <span className="line-clamp-2 font-display text-lg font-semibold leading-snug text-ink">{v.varietyName}</span>
         <span className="text-sm text-muted">{crop}</span>
-        <span className="text-sm text-muted">{v.listingCount === 0 ? "No sellers yet" : plural(v.listingCount, "farm")}</span>
+        <span className="text-sm text-muted">{v.listingCount === 0 ? "No sellers yet" : plural(v.listingCount, "seller")}</span>
       </span>
     </Link>
   );

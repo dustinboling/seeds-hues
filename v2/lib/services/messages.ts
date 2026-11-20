@@ -57,7 +57,7 @@ export function foundEmail(opts: {
               `<li style="margin:6px 0;"><strong>${escapeHtml(i.varietyName)}</strong> (${escapeHtml(i.crop)}) — listed by ${escapeHtml(i.sellerName)}: <a href="${goUrl(i)}" style="color:#1f5c3d;">see it</a></li>`,
           )
           .join("")}</ul>`;
-  const note = `<p style="font-size:14px;color:#4a4438;">Stock changes quickly at small farms — check the farm’s own page before ordering.</p>`;
+  const note = `<p style="font-size:14px;color:#4a4438;">Stock changes quickly — check the seller’s own page before ordering.</p>`;
   const lists = `You’re on the waiting list for ${opts.listCount} ${opts.listCount === 1 ? "variety" : "varieties"}.`;
   const per = items.map((i) => `<a href="${i.unsubscribeUrl}" style="color:#6a5f4c;">unsubscribe from ${escapeHtml(i.varietyName)}</a>`).join(" · ");
   const footer = `<p style="margin:0 0 8px 0;">${lists} <a href="${site}/account" style="color:#6a5f4c;">Manage your waiting lists</a> · ${per} · <a href="${opts.unsubscribeAllUrl}" style="color:#6a5f4c;">unsubscribe from all</a></p>
@@ -71,7 +71,7 @@ export function foundEmail(opts: {
 
 ${textItems}
 
-Stock changes quickly at small farms — check the farm's own page before ordering.
+Stock changes quickly — check the seller's own page before ordering.
 
 ${lists} Manage your waiting lists: ${site}/account
 ${items.map((i) => `Unsubscribe from ${i.varietyName}: ${i.unsubscribeUrl}`).join("\n")}

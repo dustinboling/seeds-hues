@@ -71,6 +71,13 @@
       "when": 1794920000000,
       "tag": "0009_plants_grower_guide",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1794930000000,
+      "tag": "0010_seller_small_farm",
+      "breakpoints": true
     }
   ]
 }

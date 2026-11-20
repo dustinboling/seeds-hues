@@ -16,7 +16,7 @@ export default function BotPage() {
         Our crawler
       </h1>
       <p className="mt-3 text-lg">
-        {BOT_NAME} reads the public shop pages of farms listed in this directory to keep stock states and check dates
+        {BOT_NAME} reads the public shop pages of sellers listed in this directory to keep stock states and check dates
         current. At launch, listings are checked by hand; when automated checks start they follow every rule below.
       </p>
 

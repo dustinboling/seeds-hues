@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const crop = shortCommonName(s.crop.commonName);
   return pageMetadata({
     title: `${s.name} ${crop} Series — ${plural(s.varietyCount, "Variety", "Varieties")}, ${s.varietiesWithSellers} With Sellers`,
-    description: `The ${s.name} series of ${proseCommonName(s.crop.commonName)}${s.crop.latinName ? ` (${s.crop.latinName})` : ""}: ${plural(s.varietyCount, "variety", "varieties")} cataloged, ${s.varietiesWithSellers} sold by small farms in the directory.`,
+    description: `The ${s.name} series of ${proseCommonName(s.crop.commonName)}${s.crop.latinName ? ` (${s.crop.latinName})` : ""}: ${plural(s.varietyCount, "variety", "varieties")} cataloged, ${s.varietiesWithSellers} sold by sellers in the directory.`,
     path: `/series/${s.slug}`,
   });
 }

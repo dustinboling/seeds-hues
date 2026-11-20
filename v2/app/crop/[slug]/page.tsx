@@ -81,7 +81,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const common = shortCommonName(c.commonName);
   return pageMetadata({
     title: `${common} Seeds${c.latinName ? ` (${c.latinName})` : ""} — ${plural(c.varietyCount, "Variety", "Varieties")}, ${c.varietiesWithSellers} With Sellers${pageTitleSuffix(page)}`,
-    description: `${plural(c.varietyCount, "variety", "varieties")} of ${proseCommonName(c.commonName)}${c.latinName ? ` (${c.latinName})` : ""} cataloged; ${c.varietiesWithSellers} sold by small farms in the directory.${c.lastUpdated ? ` Last updated ${c.lastUpdated}.` : ""}`,
+    description: `${plural(c.varietyCount, "variety", "varieties")} of ${proseCommonName(c.commonName)}${c.latinName ? ` (${c.latinName})` : ""} cataloged; ${c.varietiesWithSellers} sold by sellers in the directory.${c.lastUpdated ? ` Last updated ${c.lastUpdated}.` : ""}`,
     // Filtered views are crawlable but not indexed; the canonical is the unfiltered crop page.
     path: filtered(f) ? `/crop/${c.slug}` : href(c.slug, f, page),
     noindex: filtered(f),
@@ -214,7 +214,7 @@ export default async function CropPage({ params, searchParams }: Props) {
           <VarietyGrid items={c.varieties} />
         ) : f.hasSellers === true && c.varietiesWithSellers === 0 ? (
           <p className="text-muted">
-            No sellers yet for this crop — join a waiting list on any variety page and we will let you know when a farm lists one.{" "}
+            No sellers yet for this crop — join a waiting list on any variety page and we will let you know when a seller lists one.{" "}
             <Link href={`/crop/${c.slug}`}>Clear filters</Link>.
           </p>
         ) : (

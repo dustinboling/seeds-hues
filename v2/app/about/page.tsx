@@ -8,7 +8,7 @@ import { ThemeArt } from "@/components/ui/ThemeArt";
 export const metadata: Metadata = pageMetadata({
   title: "About the directory",
   description:
-    "What seeds.hues.flowers is, which sellers are listed, how ratings work, and how farms can correct, claim or remove their listings.",
+    "What seeds.hues.flowers is, which sellers are listed, how ratings work, and how sellers can correct, claim or remove their listings.",
   path: "/about",
 });
 
@@ -20,28 +20,27 @@ export default function AboutPage() {
       </h1>
       <ThemeArt name="about-data" priority className="art-frame mt-4 h-auto w-full" />
       <p className="mt-3 text-lg">
-        seeds.hues.flowers is a free directory of flower seed varieties and the small, independent farms and seed
-        shops that sell them. Search a variety, see which farms carry it, and follow a direct link to buy from the
-        farm.
+        seeds.hues.flowers is a free directory of flower seed varieties and the US farms and seed companies that sell
+        them. Search a variety, see who carries it, and follow a direct link to buy from the seller.
       </p>
 
       <h2>Who is listed</h2>
       <p>
-        Sellers are small farms and seed shops, each approved by hand. Large seed companies are not listed. A seller
+        Any US seller who sells flower seed can be listed, from a small family farm to a large seed company. A seller
         does not have to grow the seed it sells. Read <Link href="/about/data">About the data</Link> for how listings
         are collected and checked.
       </p>
 
       <h2>No prices, no checkout</h2>
       <p>
-        Listings show the stock state as last seen, the date checked and the source — not prices. This site never sells
+        Listings show the stock state as last seen, the date checked and the source — not prices. This site doesn’t sell
         seed and never takes payment: every Shop button goes through a short redirect that counts the click (no
-        cookies, no stored IP addresses) and then straight to the farm’s own shop. See <Link href="/privacy">Privacy</Link>.
+        cookies, no stored IP addresses) and then straight to the seller’s own shop. See <Link href="/privacy">Privacy</Link>.
       </p>
 
       <h2>Ratings</h2>
       <p>
-        Farms and varieties show “Not yet rated”. We do not display star ratings or scores until we have real, collected
+        Sellers and varieties show “Not yet rated”. We do not display star ratings or scores until we have real, collected
         ratings, and we never copy or invent reviews.
       </p>
 
@@ -53,7 +52,7 @@ export default function AboutPage() {
 
       <h2>Corrections, claims and removal</h2>
       <p>
-        Any listed farm may correct a listing, claim its page, or have it removed with the{" "}
+        Any listed seller may correct a listing, claim its page, or have it removed with the{" "}
         <Link href="/report">report form</Link>. Removal requests are honoured within 48 hours. Contact:{" "}
         <ContactLine subject="Seller listing request" />.
       </p>

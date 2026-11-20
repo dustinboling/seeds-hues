@@ -177,7 +177,7 @@ export function createAccountService(db: Db, deps: AccountDeps) {
     const existing = await wl.entryFor(db, user.id, v.id);
     if (existing) return { variety: v.slug, joined: false, on_list: true };
     if ((await wl.visibleListingCounts(db, [v.id])).get(v.id)) {
-      throw new ServiceError(409, "already_listed", `Good news — ${v.name} is already listed by a farm. Reload the page to see where to buy it.`);
+      throw new ServiceError(409, "already_listed", `Good news — ${v.name} is already listed by a seller. Reload the page to see where to buy it.`);
     }
     const joined = await wl.joinWaitlist(db, user.id, v.id, iso());
     return { variety: v.slug, joined, on_list: true };

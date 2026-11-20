@@ -5,6 +5,7 @@
 import { lifeCycleBuckets } from "@/lib/life-cycle";
 import { hostOf, hostOnDomain } from "@/lib/names";
 import type { CatalogInput, CatalogListingInput, CatalogPlantInput, CatalogVarietyInput } from "./input";
+import { SMALL_FARM_BADGE_SLUGS, SMALL_FARM_NO_BADGE_SLUGS } from "./small-farm-classification";
 
 /**
  * Canonical decision 25: six owner-named exemplar sellers (seed-data regenerated 2026-11-16).
@@ -19,36 +20,17 @@ import type { CatalogInput, CatalogListingInput, CatalogPlantInput, CatalogVarie
 export const EXPECTED_COUNTS = { varieties: 778, sellers: 25, listings: 17, plants: 124 } as const;
 
 /**
- * EXCLUSION LISTS (FINAL §1.1 / §6). Large seed companies are never sellers in v2. These names
- * exist in the codebase ONLY here, as exclusion lists; tests and scans import them from here.
- * EXCEPTION (owner ruling, 2026-11-16): Johnny's Selected Seeds IS an approved seller, so
- * "johnny" no longer appears in either list. The exception is for Johnny's only — Ball,
- * GeoSeed, Territorial and the rest stay excluded.
+ * Seller model — the Open Directory (Dustin's ruling, 2026-11-19). The directory lists any US
+ * seller regardless of size: the old small-farms-only model, with its large-company exclusion
+ * lists (Ball, GeoSeed, Territorial, Park Seed, Baker Creek, …) and its hand-approval assertion,
+ * is RETIRED. What the import still asserts about a seller:
+ *   - US sellers only (country "US") — the one eligibility rule on size-independent grounds;
+ *   - its "Small farm" badge value equals the recorded judgment (small-farm-classification.ts,
+ *     from seller-classification.md), so a re-import can never silently flip or drop a badge;
+ *   - approved ⇒ approvedAt, domain/homepage/product-URL consistency (data integrity).
+ * Size is never a rejection anywhere.
  */
-export const EXCLUDED_SELLER_TOKENS = ["ball", "geoseed", "park-seed", "baker", "everwilde", "reimer", "onings"] as const;
-export const EXCLUDED_COMPANY_NAMES = [
-  "ball seed",
-  "geoseed",
-  "park seed",
-  "baker creek",
-  "everwilde",
-  "reimer",
-  "onings",
-  "silver falls",
-  "todd's seeds",
-  "todds seeds",
-] as const;
-
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-/** Seller slug/name scan (substring, case-insensitive). */
-export const SELLER_EXCLUSION_PATTERN = new RegExp(EXCLUDED_SELLER_TOKENS.map(escapeRe).join("|"), "i");
-
-/** Whole-catalog scan for excluded company names in any string value (word-bounded). */
-export const COMPANY_NAME_EXCLUSION_PATTERN = new RegExp(
-  `\\b(?:${EXCLUDED_COMPANY_NAMES.map(escapeRe).join("|")})\\b`,
-  "i",
-);
+export const SELLER_COUNTRY = "US";
 
 export class CatalogAssertionError extends Error {
   constructor(public readonly problems: string[]) {
@@ -62,13 +44,6 @@ function dupes(values: string[]): string[] {
   const out = new Set<string>();
   for (const v of values) (seen.has(v) ? out : seen).add(v);
   return [...out];
-}
-
-function* strings(value: unknown, path: string): Generator<[string, string]> {
-  if (typeof value === "string") yield [path, value];
-  else if (Array.isArray(value)) for (const [i, v] of value.entries()) yield* strings(v, `${path}[${i}]`);
-  else if (value && typeof value === "object")
-    for (const [k, v] of Object.entries(value)) yield* strings(v, `${path}.${k}`);
 }
 
 export function collectCatalogProblems(c: CatalogInput): string[] {
@@ -156,12 +131,19 @@ export function collectCatalogProblems(c: CatalogInput): string[] {
     }
   }
 
-  // Approval block (canonical §2): every launch seller is hand-approved, with a domain that
-  // matches its homepage; every listing URL sits on its seller's domain.
+  // Seller model (Open Directory): US sellers only; the badge matches the recorded judgment; a
+  // seller's domain matches its homepage and every listing URL sits on its seller's domain.
+  const badge = new Set<string>(SMALL_FARM_BADGE_SLUGS);
+  const noBadge = new Set<string>(SMALL_FARM_NO_BADGE_SLUGS);
   const sellerBySlug = new Map(c.sellers.map((s) => [s.slug, s]));
   for (const s of c.sellers) {
-    if (s.eligibility !== "approved") p.push(`seller ${s.slug} is not approved (eligibility ${s.eligibility})`);
+    if (s.country !== SELLER_COUNTRY) p.push(`seller ${s.slug} is not a US seller (country ${s.country}) — US sellers only`);
     if (s.eligibility === "approved" && !s.approvedAt) p.push(`seller ${s.slug} is approved without approvedAt`);
+    if (!badge.has(s.slug) && !noBadge.has(s.slug)) {
+      p.push(`seller ${s.slug} has no recorded Small farm judgment (seller-classification.md / small-farm-classification.ts)`);
+    } else if (s.isSmallFarm !== badge.has(s.slug)) {
+      p.push(`seller ${s.slug} isSmallFarm ${s.isSmallFarm} contradicts the recorded judgment (${badge.has(s.slug) ? "BADGE" : "NO BADGE"})`);
+    }
     if (s.homepage && !hostOnDomain(hostOf(s.homepage), s.domain)) p.push(`seller ${s.slug} homepage is not on domain ${s.domain}`);
   }
   for (const d of dupes(c.sellers.map((s) => s.domain))) p.push(`duplicate seller domain: ${d}`);
@@ -170,17 +152,6 @@ export function collectCatalogProblems(c: CatalogInput): string[] {
     if (s && l.productUrl && !hostOnDomain(hostOf(l.productUrl), s.domain)) {
       p.push(`listing ${l.variety}×${l.seller} product URL is off the seller's domain (${s.domain})`);
     }
-  }
-
-  // Seller exclusion scan (slug or name).
-  for (const s of c.sellers) {
-    if (SELLER_EXCLUSION_PATTERN.test(s.slug) || SELLER_EXCLUSION_PATTERN.test(s.name)) {
-      p.push(`excluded large-company seller: ${s.slug} (${s.name})`);
-    }
-  }
-  // Whole-file scan for excluded company names anywhere in the data.
-  for (const [path, value] of strings(c, "catalog")) {
-    if (COMPANY_NAME_EXCLUSION_PATTERN.test(value)) p.push(`excluded company name at ${path}: "${value.slice(0, 80)}"`);
   }
 
   return p;

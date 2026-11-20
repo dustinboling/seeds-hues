@@ -71,12 +71,12 @@ export function pageMetadata(opts: {
   };
 }
 
-const farms = (n: number) => (n === 0 ? "No Farm Listing Yet" : `${n} Farm${n === 1 ? "" : "s"}`);
+const sellerCount = (n: number) => (n === 0 ? "No Seller Listing Yet" : `${n} Seller${n === 1 ? "" : "s"}`);
 
-/** "Where to buy" intent, written from facts: variety, crop, and the number of farms listing it. */
+/** "Where to buy" intent, written from facts: variety, crop, and the number of sellers listing it. */
 export function varietyTitle(v: VarietyDetail): string {
   const n = new Set(v.listings.map((l) => l.seller.slug)).size;
-  return `${v.varietyName} ${shortCommonName(v.plant.commonName)} Seeds — Where to Buy (${farms(n)})`;
+  return `${v.varietyName} ${shortCommonName(v.plant.commonName)} Seeds — Where to Buy (${sellerCount(n)})`;
 }
 
 export function varietyDescription(v: VarietyDetail): string {
@@ -84,7 +84,7 @@ export function varietyDescription(v: VarietyDetail): string {
 }
 
 export function sellerTitle(s: SellerDetail): string {
-  return `${s.name} — Small-Farm Seed Seller`;
+  return `${s.name} — Flower Seed Seller`;
 }
 
 export function sellerDescription(s: SellerDetail): string {
@@ -96,12 +96,12 @@ export function sellerDescription(s: SellerDetail): string {
 
 /** /state/{slug}: an absolute title (no site-name template suffix). */
 export function stateTitle(st: SellerState): string {
-  return `Seed farms in ${st.name} — Seed Directory`;
+  return `Seed sellers in ${st.name} — Seed Directory`;
 }
 
 export function stateDescription(st: SellerState): string {
   const n = st.sellerCount;
   return clip(
-    `${n} small ${n === 1 ? "farm or seed company" : "farms and seed companies"} in ${st.name} ${n === 1 ? "lists" : "list"} flower seed with the Seed Directory, each approved by hand, with the varieties each one carries and when each listing was last checked.`,
+    `${n} ${n === 1 ? "farm or seed company" : "farms and seed companies"} in ${st.name} ${n === 1 ? "lists" : "list"} flower seed with the Seed Directory, with the varieties each one carries and when each listing was last checked.`,
   );
 }

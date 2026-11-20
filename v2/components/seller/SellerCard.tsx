@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { RatingDisplay } from "@/components/ui/RatingDisplay";
+import { SmallFarmBadge } from "@/components/seller/SmallFarmBadge";
 import { StateShape } from "@/components/seller/StateShape";
 import { plural, sellerTypeLabel } from "@/lib/format";
 import { stateByCode } from "@/lib/data/states";
 import type { SellerListItem } from "@/lib/validators";
 
-export function SellerCard({ s }: { s: SellerListItem }) {
+/**
+ * `smallFarmBadge`: the seller index (/seller) passes true. Nadia's ux-spec §2.4 limits the badge
+ * to exactly three surfaces (variety listing rows, seller page, seller index cards) and names
+ * state pages as excluded, so /state/{slug}, which reuses this card, leaves it off.
+ */
+export function SellerCard({ s, smallFarmBadge = false }: { s: SellerListItem; smallFarmBadge?: boolean }) {
   // The whole card is one stretched link, so the state is plain icon + name text (no nested link).
   const state = s.country === "US" ? stateByCode(s.region) : null;
   return (
@@ -15,6 +21,14 @@ export function SellerCard({ s }: { s: SellerListItem }) {
           {s.name}
         </Link>
       </h2>
+      {/* Small farm badge (ux §2.3, RULING F1): its own row, the card's second child — outside the
+          stretched link, so the link's name stays the seller's alone. Unbadged cards reserve no
+          space. */}
+      {smallFarmBadge && s.isSmallFarm ? (
+        <p>
+          <SmallFarmBadge />
+        </p>
+      ) : null}
       <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-muted">
         <span>
           {sellerTypeLabel(s.type)}

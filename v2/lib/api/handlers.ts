@@ -149,6 +149,7 @@ export const listVarieties: ApiHandler = async ({ url, services }) => {
     season: season ? [season] : undefined,
     methods: methodParam(url),
     lifeCycle: lifeCycleParam(url),
+    smallFarmOnly: boolParam(url, "small_farm"),
   };
   const { items, total } = await services.catalog.listVarieties({
     filters,
@@ -168,6 +169,7 @@ export const listVarietyListings: ApiHandler = async ({ url, params, services })
   const ls = await services.catalog.varietyListings(slugParam(params.slug, "variety"), {
     availability: listParam(url, "availability", AVAILABILITY),
     shipsTo: listParam(url, "ships_to", undefined, /^[A-Za-z]{2,10}$/),
+    smallFarmOnly: boolParam(url, "small_farm"),
   });
   if (!ls) throw notFound("variety");
   return { data: ls, meta: { nextCursor: null, count: ls.length, total: ls.length } };
@@ -179,7 +181,11 @@ export const listSellers: ApiHandler = async ({ url, services }) => {
   if (q && q.length > 100) throw validationError("q must be at most 100 characters");
   const { items, total } = await services.catalog.listSellers(
     { offset: page.offset, limit: page.limit },
-    { region: listParam(url, "region", undefined, /^[A-Za-z]{2,10}$/)?.map((r) => r.toUpperCase()), q: q || undefined },
+    {
+      region: listParam(url, "region", undefined, /^[A-Za-z]{2,10}$/)?.map((r) => r.toUpperCase()),
+      q: q || undefined,
+      smallFarmOnly: boolParam(url, "small_farm"),
+    },
   );
   return paged(page, items, total);
 };

@@ -59,6 +59,7 @@ const sellerSelect = {
   homepage: sellers.homepage,
   shipsTo: sellers.shipsTo,
   claimStatus: sellers.claimStatus,
+  isSmallFarm: sellers.isSmallFarm,
   ratingCount: sellers.ratingCount,
   ratingAverage: sellers.ratingAverage,
   importedRatingSource: sellers.importedRatingSource,

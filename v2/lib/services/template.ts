@@ -30,8 +30,8 @@ export function templateDescription(f: TemplateFacts): string {
     f.listingCount === 0
       ? "No seller in this directory lists it yet."
       : f.listingCount === 1
-        ? "It is listed by 1 independent seed seller in this directory."
-        : `It is listed by ${f.listingCount} independent seed sellers in this directory.`,
+        ? "It is listed by 1 seed seller in this directory."
+        : `It is listed by ${f.listingCount} seed sellers in this directory.`,
   );
   return parts.join(" ");
 }

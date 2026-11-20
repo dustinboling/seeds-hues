@@ -4,6 +4,7 @@
  * to the D1 tag cache) and also expires the tag itself.
  */
 import { z } from "zod";
+import { smallFarmVariantPath } from "@/lib/small-farm";
 
 const SLUG = "[a-z0-9]+(?:-[a-z0-9]+)*";
 export const TAG_PATTERN = new RegExp(`^(?:(?:variety|seller|crop|series):${SLUG}|list:(?:home|variety|seller|crop))$`);
@@ -42,6 +43,24 @@ export function pathsForTag(tag: string): string[] {
     default:
       return [];
   }
+}
+
+const VARIETY_PAGE = new RegExp(`^/variety/(${SLUG})$`);
+
+/**
+ * Every variety page has a second ISR entry — its "Small farms only" view (Open Directory; public
+ * URL /variety/{slug}?small_farm=true, rendered at /variety/{slug}/small-farms). Whatever
+ * invalidates /variety/{slug} must invalidate that view too, or the two would disagree for up to
+ * 24 h. Every revalidation entry point runs its paths through this (write routes + /api/revalidate).
+ */
+export function withVariantPaths(paths: Iterable<string>): string[] {
+  const out = new Set<string>();
+  for (const p of paths) {
+    out.add(p);
+    const m = VARIETY_PAGE.exec(p);
+    if (m) out.add(smallFarmVariantPath(m[1]!));
+  }
+  return [...out];
 }
 
 /** Constant-time string comparison (bearer token check). */

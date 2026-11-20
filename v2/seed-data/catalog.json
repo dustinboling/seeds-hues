@@ -15139,6 +15139,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15166,6 +15167,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15193,6 +15195,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15220,6 +15223,7 @@
         "US"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15247,6 +15251,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": {
         "source": "Google",
         "placeName": "Hudson Valley Seed Company",
@@ -15281,6 +15286,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": false,
       "importedRating": null
     },
     {
@@ -15308,6 +15314,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": {
         "source": "Google",
         "placeName": "3 Porch Farm",
@@ -15342,6 +15349,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15369,6 +15377,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15396,6 +15405,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15423,6 +15433,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15450,6 +15461,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15477,6 +15489,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15504,6 +15517,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15531,6 +15545,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15558,6 +15573,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": false,
       "importedRating": null
     },
     {
@@ -15585,6 +15601,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": false,
       "importedRating": {
         "source": "Google",
         "placeName": "Botanical Interests",
@@ -15619,6 +15636,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": false,
       "importedRating": null
     },
     {
@@ -15646,6 +15664,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": false,
       "importedRating": {
         "source": "Google",
         "placeName": "High Mowing Organic Seeds",
@@ -15680,6 +15699,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": {
         "source": "Google",
         "placeName": "Prairie Moon Nursery",
@@ -15714,6 +15734,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15741,6 +15762,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": false,
       "importedRating": {
         "source": "Google",
         "placeName": "Seed Savers Exchange",
@@ -15775,6 +15797,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     },
     {
@@ -15802,6 +15825,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": false,
       "importedRating": {
         "source": "Google",
         "placeName": "Johnny's Selected Seeds",
@@ -15836,6 +15860,7 @@
         "unknown"
       ],
       "isSiteOwner": false,
+      "isSmallFarm": true,
       "importedRating": null
     }
   ],

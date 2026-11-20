@@ -158,6 +158,8 @@ export const CatalogSellerInput = z.strictObject({
   region: z.string().min(1).nullable(),
   shipsTo: z.array(z.string().min(1)).min(1),
   isSiteOwner: z.boolean(),
+  /** "Small farm" badge — the recorded judgment (seller-classification.md); required, never inferred. */
+  isSmallFarm: z.boolean(),
   /** Absent or null = no imported rating. */
   importedRating: CatalogImportedRatingInput.nullable().optional(),
 });

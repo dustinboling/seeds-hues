@@ -239,6 +239,7 @@ export function planRows(c: CatalogInput, batchId: number, now: string) {
     region: s.region,
     shipsTo: JSON.stringify(s.shipsTo),
     isSiteOwner: s.isSiteOwner,
+    isSmallFarm: s.isSmallFarm,
     importedRatingSource: s.importedRating?.source ?? null,
     importedRatingPlaceName: s.importedRating?.placeName ?? null,
     importedRatingPlaceId: s.importedRating?.placeId ?? null,

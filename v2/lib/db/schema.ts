@@ -335,6 +335,11 @@ export const sellers = sqliteTable(
     /** JSON array of region codes; ["unknown"] when not sourced. */
     shipsTo: text("ships_to").notNull().default('["unknown"]'),
     isSiteOwner: integer("is_site_owner", { mode: "boolean" }).notNull().default(false),
+    // "Small farm" badge (Open Directory, migration 0010): a recorded judgment call (Hue/Dustin),
+    // not a measured size. true = the seller presents as a small family farm or small seed seller.
+    // Set only through the admin path (repositories/admin.ts setSellerSmallFarm); never set by the
+    // crawler/ingester. One fact in one place: listings and varieties derive it through the join.
+    isSmallFarm: integer("is_small_farm", { mode: "boolean" }).notNull().default(false),
     /** Private — never in any public payload. */
     contactEmail: text("contact_email"),
     updatedSeq: integer("updated_seq").notNull().default(0),

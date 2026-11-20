@@ -8,8 +8,8 @@ import { legacySlug } from "@/lib/legacy";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Report a problem, claim or remove a farm",
-  description: "Correct a listing, claim your farm’s page, or ask us to remove it. Removals are honoured within 48 hours.",
+  title: "Report a problem, claim or remove a seller",
+  description: "Correct a listing, claim your seller page, or ask us to remove it. Removals are honoured within 48 hours.",
   path: "/report",
   noindex: true,
   follow: true,
@@ -32,9 +32,9 @@ export default async function ReportPage({ searchParams }: Props) {
         Correct, claim or remove
       </h1>
       <p className="mt-3 text-lg">
-        One form for everything: tell us what is wrong, claim your farm’s page, or ask us to take it down. Every request
-        goes to a person. A removal takes the farm’s page and all its listings down within 48 hours and stops our crawler
-        from visiting the farm’s site. See <Link href="/about/data">About the data</Link>.
+        One form for everything: tell us what is wrong, claim your seller page, or ask us to take it down. Every request
+        goes to a person. A removal takes the seller’s page and all its listings down within 48 hours and stops our
+        crawler from visiting the seller’s site. See <Link href="/about/data">About the data</Link>.
       </p>
       <ReportForm type={type} targetType={targetType} targetRef={targetRef} siteKey={env.turnstileSiteKey ?? null} />
     </article>

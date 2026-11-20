@@ -142,8 +142,9 @@ describe("lib/images-data (generated)", () => {
     // +9 for the new-variety plates batch 1: Snapdragon Potomac Dark Pink / Lavender /
     // White / Yellow / Red and Statice QIS Dark Blue / Lavender / White / Yellow
     // (2026-11-19, Quinn PASS WITH NOTES).
-    // +5 for the composition repaint Batch 7: bupleurum, dahlia, gomphrena v3 and
-    // honeywort, silene v4 (2026-11-19, Quinn PASS + fix-pass re-gate PASS).
+    // +5 for the composition repaint Batch 7 (the audit-defect crop-plate repaints):
+    // bupleurum, dahlia, gomphrena v3 and honeywort, silene v4
+    // (2026-11-19, Quinn PASS + fix-pass re-gate PASS).
     expect(entries).toHaveLength(824);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {

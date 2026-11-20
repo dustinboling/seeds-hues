@@ -6,7 +6,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { jsonError } from "@/lib/api/http";
 import { getRuntimeEnv } from "@/lib/api/runtime-env";
-import { pathsForTag, RevalidateBodySchema, timingSafeEqual } from "@/lib/api/revalidate";
+import { pathsForTag, RevalidateBodySchema, timingSafeEqual, withVariantPaths } from "@/lib/api/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +32,12 @@ export async function POST(req: Request): Promise<Response> {
   const tags = parsed.data.tags ?? [];
   const paths = new Set(parsed.data.paths ?? []);
   for (const t of tags) for (const p of pathsForTag(t)) paths.add(p);
+  // A variety page's "Small farms only" view is its own ISR entry: invalidate it alongside.
+  const all = withVariantPaths(paths);
   for (const t of tags) revalidateTag(t, { expire: 0 });
-  for (const p of paths) revalidatePath(p);
+  for (const p of all) revalidatePath(p);
   return Response.json(
-    { data: { revalidated: true, tags, paths: [...paths].sort() }, meta: null, error: null },
+    { data: { revalidated: true, tags, paths: [...all].sort() }, meta: null, error: null },
     { status: 200, headers },
   );
 }

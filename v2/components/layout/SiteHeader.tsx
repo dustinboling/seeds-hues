@@ -6,7 +6,7 @@ import { PersonIcon } from "./icons";
 const NAV = [
   { href: "/crop", label: "Crops" },
   { href: "/variety", label: "Varieties" },
-  { href: "/seller", label: "Farms" },
+  { href: "/seller", label: "Sellers" },
   { href: "/search", label: "Search" },
 ];
 

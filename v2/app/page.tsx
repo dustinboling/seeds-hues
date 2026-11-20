@@ -31,7 +31,7 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 export default async function HomePage({ searchParams }: Props) {
   const sp = await searchParams;
-  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: null };
+  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: null, smallFarm: false };
   const active = activeFilterLabels(filters);
   const { catalog } = await getServices();
   const [counts, crops, coverage, recent] = await Promise.all([
@@ -60,20 +60,21 @@ export default async function HomePage({ searchParams }: Props) {
           <ThemeArt name="hero" priority className="art-frame h-auto w-full" />
         </div>
         <div>
-          <p className="eyebrow">Small farms · stock as last seen · direct links</p>
+          <p className="eyebrow">Hard-to-find flower seed · stock as last seen · direct links</p>
           <h1 id="hero-title" className="mt-2 text-3xl font-semibold text-leaf md:text-5xl">
             Find where to buy any flower seed
           </h1>
           <p className="mt-3 max-w-2xl text-base text-muted md:text-lg">
-            Search a variety by any name it goes by and see every small farm that sells it — with its stock state as last
-            seen, the date we checked, and a direct link to the farm’s shop.
+            Some flower seed is hard to track down — a variety may turn up at only one seller, under a slightly
+            different name, or not at all this year. Search by any name it goes by and see who has it, with its stock
+            state as last seen, the date we checked, and a direct link to the seller’s shop.
           </p>
           <div className="mt-5 max-w-2xl">
             <SearchBox label="Search flower seeds" />
           </div>
           <p className="mt-4 font-display text-sm text-muted" data-testid="coverage-line">
             {plural(counts.varieties, "variety", "varieties")} cataloged across {plural(counts.plants, "crop")} ·{" "}
-            {withSellers} with a small-farm seller · {plural(counts.sellers, "farm")} · {plural(counts.listings, "listing")}
+            {withSellers} with a seller · {plural(counts.sellers, "seller")} · {plural(counts.listings, "listing")}
             {lastUpdated ? ` · updated ${lastUpdated}` : ""}
           </p>
         </div>
@@ -157,9 +158,10 @@ export default async function HomePage({ searchParams }: Props) {
         </h2>
         <ul className="mt-4 grid gap-3 md:grid-cols-3">
           <li className="card p-4">
-            <h3 className="font-semibold">Small farms, approved by hand</h3>
+            <h3 className="font-semibold">Hard to find, in one place</h3>
             <p className="mt-1 text-sm text-muted">
-              Every seller is a small farm or seed shop we approved one by one. Large seed companies are not listed.
+              If a US farm or seed company sells a variety, we list it. Every seller we find for a variety sits on that
+              variety’s page, so one search shows you who has it.
             </p>
           </li>
           <li className="card p-4">
@@ -171,7 +173,7 @@ export default async function HomePage({ searchParams }: Props) {
           <li className="card p-4">
             <h3 className="font-semibold">No checkout</h3>
             <p className="mt-1 text-sm text-muted">
-              We never sell seed. Every Shop button goes straight to the farm’s own shop.{" "}
+              We don’t sell seed. Every Shop button goes straight to the seller’s own shop.{" "}
               <Link href="/about/data">About the data</Link>
             </p>
           </li>
