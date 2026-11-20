@@ -1135,6 +1135,15 @@ async function main() {
     assert(m, "no <main> element");
     return m[1]!;
   };
+  /** The footer-adjacent slot (FooterStem, data-testid="footer-stem"): from its opening tag to the
+   *  <footer>. The slot sits between </main> and <footer> and renders the thin divider-stem rule
+   *  there in server HTML on every page (its bundle-ending suppression is client-side). */
+  const footerSlot = (h: string) => {
+    const x = noScripts(h);
+    const start = x.lastIndexOf("<div", x.indexOf('data-testid="footer-stem"'));
+    const end = x.indexOf("<footer", start);
+    return start >= 0 && end > start && x.indexOf('data-testid="footer-stem"') >= 0 ? x.slice(start, end) : null;
+  };
   const podImg = (h: string, src: string) => {
     const img = imgWithSrc(h, src);
     assert(img, `no <img src="${src}">`);
@@ -1163,7 +1172,7 @@ async function main() {
     assert(!body.includes("ornaments/"), "ornament in <main>");
     assert(!body.includes('data-testid="pod-divider"'), "pod divider rendered");
   });
-  await check("home: cosmos + sunflower pod dividers; /variety: zinnia pod divider; footer has no motif", async () => {
+  await check("home: cosmos + sunflower pod dividers; /variety: zinnia pod divider; footer element has no ornament, stem rule above it", async () => {
     const home = await html("/");
     for (const b of ["cosmos", "sunflower"]) assert(home.includes(`src="${podBundle(b)}"`), `home has no bundle-${b}`);
     assert((home.match(/data-testid="pod-divider"/g) ?? []).length === 2, "home has other than two pod dividers");
@@ -1172,9 +1181,15 @@ async function main() {
     // Scope to the footer ELEMENT, in script-free HTML: the RSC payload carries a serialized
     // copy of the whole tree (footer included) and streamed chunk order varies, so matching
     // against the raw document can land inside a payload string instead of the element.
+    // The thin stem rule sits in the FooterStem slot on the paper ground ABOVE the paper-deep
+    // <footer> element, never inside it.
     const footer = /<footer[\s\S]*?<\/footer>/.exec(home.replace(/<script[\s\S]*?<\/script>/g, " "))?.[0] ?? "";
     assert(!footer.includes("ornaments/"), "footer carries an ornament (motif or bundle)");
+    assert(!footer.includes('data-testid="footer-stem"'), "stem rule inside the <footer> element");
     assert(footer.length > 0, "footer element not found");
+    const slot = footerSlot(home);
+    assert(slot, "no footer-stem slot before the <footer>");
+    assert(slot.includes("divider-stem"), "footer slot without the divider-stem rule");
   });
   /** The motif-B wrapper (data-testid="motif-b") and its <img>, from the first occurrence in `h`. */
   const motifB = (h: string) => {
@@ -1205,17 +1220,22 @@ async function main() {
     assert(main.indexOf('id="hero-title"') < at && at < main.indexOf('id="crops-title"'), "motif B is not between the hero and Browse by crop");
     assert((main.match(/data-testid="pod-divider"/g) ?? []).length === 2, "home <main> has other than two pod dividers");
   });
-  // The footer-adjacent motif B placement (FooterStem slot) was removed 2026-11-19 at Dustin's
-  // direction (its painted ground did not match the page ground): content runs straight to the
-  // footer, so there is no footer-stem slot and no motif B anywhere outside <main>.
-  await check("/variety/sweet-pea-kings-ransom: content keeps the thin divider-stem rule; no motif B anywhere and no footer-adjacent slot", async () => {
+  // The footer-adjacent motif B placement was removed 2026-11-19 at Dustin's direction (its
+  // painted ground did not match the page ground). On 2026-11-20 he directed the slot's original
+  // thin stem rule restored: the FooterStem slot renders the divider-stem rule above the footer
+  // on every page, and motif B stays out of the slot — it appears nowhere outside <main>.
+  await check("/variety/sweet-pea-kings-ransom: content keeps the thin divider-stem rule; footer slot carries the stem, no motif B anywhere", async () => {
     const h = crawled.get("/variety/sweet-pea-kings-ransom") ?? (await html("/variety/sweet-pea-kings-ransom"));
     const main = mainHtml(h);
     assert(/\bclass="[^"]*\bdivider-stem(?:-mini)?\b/.test(main), "no divider-stem rule in the variety content");
     assert(!main.includes('data-testid="motif-b"'), "motif B inside the variety content");
     assert(!main.includes(MOTIF_B_KEY), "motif B image inside the variety content");
+    const slot = footerSlot(h);
+    assert(slot, "no footer-stem slot before the <footer>");
+    assert(slot.includes("divider-stem"), "footer slot without the divider-stem rule");
+    assert(slot.includes('aria-hidden="true"'), "footer slot is not decorative (aria-hidden)");
+    assert(!slot.includes('data-testid="motif-b"') && !slot.includes(MOTIF_B_KEY), "motif B in the footer slot");
     const doc = noScripts(h);
-    assert(!doc.includes('data-testid="footer-stem"'), "footer-stem slot rendered");
     const outside = doc.replace(/<main\b[^>]*>[\s\S]*<\/main>/, " ");
     assert(outside.length < doc.length, "no <main> element");
     assert(!outside.includes('data-testid="motif-b"') && !outside.includes(MOTIF_B_KEY), "motif B outside <main>");
