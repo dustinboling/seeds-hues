@@ -62,7 +62,7 @@ export const REPORT_TARGET = ["variety", "seller"] as const;
 export const REPORT_STATUS = ["open", "resolved", "dismissed"] as const;
 export const FETCH_KIND = ["web", "human", "seller"] as const;
 export const OBSERVATION_STATUS = ["published", "queued", "rejected"] as const;
-export const REVIEW_ITEM_TYPE = ["listing_match", "new_variety", "seller_candidate", "seller_correction", "removal"] as const;
+export const REVIEW_ITEM_TYPE = ["listing_match", "new_variety", "seller_candidate", "seller_correction", "removal", "duplicate_hold"] as const;
 export const REVIEW_ITEM_STATUS = ["pending", "approved", "rejected", "merged"] as const;
 export const CRAWL_JOB_STATUS = ["queued", "leased", "done", "failed"] as const;
 export const BATCH_STATUS = ["staged", "published", "rolled_back"] as const;
@@ -293,6 +293,13 @@ export const varietyAliases = sqliteTable(
     /** lib/names.ts normalizeName(): lowercase, accent/punctuation-free, crop + pack-size words dropped. */
     nameNormalized: text("name_normalized").notNull().default(""),
     kind: text("kind", { enum: NAME_KIND }).notNull().default("synonym"),
+    // Slice A (migration 0013): provenance, written only by duplicate decisions
+    // (source = 'duplicate_decision'). NULL = legacy/manual. Never selected into any public
+    // payload, snapshot, sitemap or search response (the snapshot allowlist names its columns).
+    source: text("source"),
+    decisionItemId: integer("decision_item_id"),
+    decidedByName: text("decided_by_name"),
+    createdAt: text("created_at"),
   },
   (t) => [
     primaryKey({ columns: [t.varietyId, t.alias] }),
@@ -739,6 +746,15 @@ export const reviewItems = sqliteTable(
     status: text("status", { enum: REVIEW_ITEM_STATUS }).notNull().default("pending"),
     createdAt: text("created_at").notNull().$defaultFn(nowIso),
     resolvedAt: text("resolved_at"),
+    // Slice A (migration 0013): the decider trail. decided_by_user_id has no FK — the trail
+    // outlives the account (the farm_submissions.user_id precedent). NULL = resolved through
+    // the key-based API, which stamps no decider.
+    decidedByUserId: integer("decided_by_user_id"),
+    decidedByName: text("decided_by_name"),
+    verifiedByName: text("verified_by_name"),
+    verifiedAt: text("verified_at"),
+    seenByName: text("seen_by_name"),
+    seenAt: text("seen_at"),
   },
   (t) => [
     index("review_items_status_type_idx").on(t.status, t.type),
@@ -1060,6 +1076,8 @@ export const farmSubmissions = sqliteTable(
     suggestedFields: text("suggested_fields"),
     draftNote: text("draft_note"),
     draftedAt: text("drafted_at"),
+    // Slice A (migration 0013): the C2 decline sheet's optional reason, kept on the record.
+    decisionNote: text("decision_note"),
   },
   (t) => [
     index("farm_submissions_status_idx").on(t.status, t.createdAt),

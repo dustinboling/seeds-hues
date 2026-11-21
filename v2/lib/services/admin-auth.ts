@@ -14,6 +14,7 @@
 import type { Db } from "@/lib/db/client";
 import * as accountsRepo from "@/lib/repositories/accounts";
 import * as repo from "@/lib/repositories/admin-auth";
+import * as farmRepo from "@/lib/repositories/farm-submissions";
 import { USER_ROLES } from "@/lib/db/schema";
 import {
   ADMIN_CODE_MAX_ATTEMPTS,
@@ -25,6 +26,7 @@ import {
   roleLabel,
 } from "@/lib/admin-auth";
 import { hashCode, hashSessionToken, isSessionTokenShape, newSalt, newSessionToken, newVerificationCode, normalizeEmail, sameDigest } from "@/lib/accounts";
+import { decisionSentence, farmDecisionSentence } from "@/lib/admin/review-queues";
 import type { Mailer } from "@/lib/mail";
 import { adminCodeEmail } from "./messages";
 import { ServiceError } from "./ingest";
@@ -69,15 +71,7 @@ export interface AdminAuthDeps {
   onAdminCode?: (userId: number, code: string) => void;
 }
 
-const QUEUE_TYPE_LABELS: Record<string, string> = {
-  listing_match: "listing match",
-  new_variety: "new variety",
-  seller_candidate: "seller candidate",
-  seller_correction: "seller correction",
-  removal: "removal",
-};
 
-const DECISION_VERBS: Record<string, string> = { approved: "Approved", rejected: "Declined", merged: "Merged" };
 
 function oldestOf(a: string | null, b: string | null): string | null {
   const both = [a, b].filter((x): x is string => x !== null).sort();
@@ -217,10 +211,9 @@ export function createAdminAuthService(db: Db, deps: AdminAuthDeps) {
       sellers.oldest = oldestOf(sellers.oldest, farm.oldest);
       const listings = sum("listing_match", "new_variety");
       const reports = sum("seller_correction", "removal");
-      // Duplicate holds have no structured feed yet (the scout feed lands in Slice A), so
-      // the card honestly reads zero until real holds flow in — never an invented number.
+      const duplicates = sum("duplicate_hold");
       const cards: AdminQueueCard[] = [
-        { key: "duplicates", name: "Duplicate varieties", description: "Possible duplicate varieties held for a decision", count: 0, oldest: null, href: "/admin/review" },
+        { key: "duplicates", name: "Duplicate varieties", description: "Possible duplicate varieties held for a decision", count: duplicates.n, oldest: duplicates.oldest, href: "/admin/review" },
         { key: "sellers", name: "Seller candidates", description: "Seller candidates from the hunt and Add Your Farm", count: sellers.n, oldest: sellers.oldest, href: "/admin/review" },
         { key: "listings", name: "Queued listings", description: "Shop listings waiting to join a variety page", count: listings.n, oldest: listings.oldest, href: "/admin/review" },
         { key: "reports", name: "Reports", description: "Visitor reports waiting for a decision", count: reports.n, oldest: reports.oldest, href: "/admin/review" },
@@ -230,12 +223,18 @@ export function createAdminAuthService(db: Db, deps: AdminAuthDeps) {
 
     /** Recent decisions across the queues + the role trail, newest first, in plain words. */
     async recentDecisions(limit = 6): Promise<{ text: string; at: string }[]> {
-      const [decided, roles] = await Promise.all([repo.recentReviewDecisions(db, limit), repo.recentRoleChanges(db, limit)]);
+      const [decided, farms, roles] = await Promise.all([repo.recentReviewDecisions(db, limit), farmRepo.recentFarmDecisions(db, limit), repo.recentRoleChanges(db, limit)]);
       const items = [
-        ...decided.map((r) => ({
-          text: `${DECISION_VERBS[r.status] ?? r.status} ${QUEUE_TYPE_LABELS[r.type] ?? r.type} #${r.id}`,
-          at: r.at ?? "",
-        })),
+        ...decided.map((r) => {
+          let proposal: Record<string, unknown> = {};
+          try {
+            proposal = JSON.parse(r.proposal) as Record<string, unknown>;
+          } catch {
+            proposal = {};
+          }
+          return { text: decisionSentence({ id: r.id, type: r.type, proposal, status: r.status, decidedByName: r.decidedByName }), at: r.at ?? "" };
+        }),
+        ...farms.map((f) => ({ text: farmDecisionSentence({ farmName: f.farmName, status: f.status, reviewedBy: f.reviewedBy }), at: f.at ?? "" })),
         ...roles.map((g) => ({
           text: `${g.actor} changed ${g.email ?? `account #${g.userId}`} from ${roleLabel(g.fromRole)} to ${roleLabel(g.toRole)}`,
           at: g.at,

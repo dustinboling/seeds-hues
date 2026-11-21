@@ -2,7 +2,7 @@
  * Add Your Farm submissions (design §9) + the farm_summary enrichment jobs, which ride the
  * existing crawl_jobs queue (type "farm_summary", target = submission id). PRIVATE data.
  */
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import { crawlJobs, farmSubmissions, sellers, users } from "@/lib/db/schema";
 
@@ -21,13 +21,60 @@ export async function farmSubmissionById(db: Db, id: number): Promise<FarmSubmis
   return r ?? null;
 }
 
-export async function listFarmSubmissions(db: Db, opts: { status?: FarmSubmissionRow["status"]; limit: number }) {
-  return db
+export async function listFarmSubmissions(
+  db: Db,
+  opts: { status?: FarmSubmissionRow["status"]; statuses?: FarmSubmissionRow["status"][]; limit: number; offset?: number; order?: "newest" | "oldest" },
+) {
+  const rows = db
     .select()
     .from(farmSubmissions)
-    .where(opts.status ? eq(farmSubmissions.status, opts.status) : undefined)
-    .orderBy(desc(farmSubmissions.createdAt), desc(farmSubmissions.id))
-    .limit(opts.limit);
+    .where(
+      and(
+        opts.status ? eq(farmSubmissions.status, opts.status) : undefined,
+        opts.statuses ? inArray(farmSubmissions.status, opts.statuses) : undefined,
+      ),
+    )
+    // "newest" is the historical API order; "oldest" is the Slice A queue order.
+    .orderBy(
+      ...(opts.order === "oldest"
+        ? [asc(farmSubmissions.createdAt), asc(farmSubmissions.id)]
+        : [desc(farmSubmissions.createdAt), desc(farmSubmissions.id)]),
+    )
+    .limit(opts.limit)
+    .offset(opts.offset ?? 0);
+  return rows;
+}
+
+export async function countFarmSubmissions(db: Db, opts: { status?: FarmSubmissionRow["status"]; statuses?: FarmSubmissionRow["status"][] } = {}): Promise<number> {
+  const [r] = await db
+    .select({ n: count() })
+    .from(farmSubmissions)
+    .where(and(opts.status ? eq(farmSubmissions.status, opts.status) : undefined, opts.statuses ? inArray(farmSubmissions.status, opts.statuses) : undefined));
+  return r?.n ?? 0;
+}
+
+/** Pending submissions strictly older than (createdAt, id) — the sellers-queue rank. */
+export async function countOlderPendingSubmissions(db: Db, createdAt: string, id: number): Promise<number> {
+  const [r] = await db
+    .select({ n: count() })
+    .from(farmSubmissions)
+    .where(
+      and(
+        eq(farmSubmissions.status, "pending"),
+        sql`(${farmSubmissions.createdAt} < ${createdAt} OR (${farmSubmissions.createdAt} = ${createdAt} AND ${farmSubmissions.id} < ${id}))`,
+      ),
+    );
+  return r?.n ?? 0;
+}
+
+/** Latest decided submissions, newest first (home Recent decisions). */
+export async function recentFarmDecisions(db: Db, limit: number) {
+  return db
+    .select({ id: farmSubmissions.id, farmName: farmSubmissions.farmName, status: farmSubmissions.status, reviewedBy: farmSubmissions.reviewedBy, at: farmSubmissions.reviewedAt })
+    .from(farmSubmissions)
+    .where(inArray(farmSubmissions.status, ["approved", "rejected"]))
+    .orderBy(desc(farmSubmissions.reviewedAt), desc(farmSubmissions.id))
+    .limit(limit);
 }
 
 export async function updateFarmSubmission(db: Db, id: number, set: Partial<NewFarmSubmission>): Promise<void> {

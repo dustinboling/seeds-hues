@@ -50,7 +50,9 @@ export const SNAPSHOT_ALLOWLIST: AllowlistedTable[] = [
     primaryKey: ["id"],
   },
   { name: "variety_tags", table: varietyTags, columns: all(varietyTags), primaryKey: ["variety_id", "tag"] },
-  { name: "variety_aliases", table: varietyAliases, columns: all(varietyAliases), primaryKey: ["variety_id", "alias"] },
+  // Slice A: explicit columns — the provenance columns (source, decision_item_id,
+  // decided_by_name, created_at) never leave D1 in a snapshot.
+  { name: "variety_aliases", table: varietyAliases, columns: ["varietyId", "alias", "nameNormalized", "kind"], primaryKey: ["variety_id", "alias"] },
   {
     name: "sellers",
     table: sellers,

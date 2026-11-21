@@ -166,10 +166,10 @@ export async function pendingFarmStats(db: Db): Promise<{ n: number; oldest: str
   return { n: r?.n ?? 0, oldest: r?.oldest ?? null };
 }
 
-/** Latest decided queue items, newest first (the audit trail has no decider column yet). */
+/** Latest decided queue items, newest first (Slice A: with the proposal + decider for plain-words rows). */
 export async function recentReviewDecisions(db: Db, limit: number) {
   return db
-    .select({ id: reviewItems.id, type: reviewItems.type, status: reviewItems.status, at: reviewItems.resolvedAt })
+    .select({ id: reviewItems.id, type: reviewItems.type, proposal: reviewItems.proposal, status: reviewItems.status, decidedByName: reviewItems.decidedByName, at: reviewItems.resolvedAt })
     .from(reviewItems)
     .where(ne(reviewItems.status, "pending"))
     .orderBy(desc(reviewItems.resolvedAt), desc(reviewItems.id))
