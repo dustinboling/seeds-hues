@@ -225,6 +225,25 @@ export async function deleteUserCascade(db: Db, userId: number): Promise<void> {
   ]);
 }
 
+// ─── admin statistics (Slice D) ──────────────────────────────────────────────
+
+/** New accounts per UTC day in `[start, end]` (`created_at` bucket) — all accounts count. */
+export async function accountsCreatedDaily(db: Db, start: string, end: string): Promise<{ date: string; n: number }[]> {
+  const day = sql<string>`substr(${users.createdAt}, 1, 10)`;
+  return db
+    .select({ date: day, n: count() })
+    .from(users)
+    .where(and(sql`${day} >= ${start}`, sql`${day} <= ${end}`))
+    .groupBy(day)
+    .orderBy(day);
+}
+
+/** Earliest account-creation day (the thin-data rule's input). Null when no account exists. */
+export async function accountsDataSince(db: Db): Promise<string | null> {
+  const [r] = await db.select({ d: sql<string | null>`min(substr(${users.createdAt}, 1, 10))` }).from(users);
+  return r?.d ?? null;
+}
+
 export async function accountTotals(db: Db) {
   const [u] = await db.select({ n: count() }).from(users);
   const [v] = await db.select({ n: count() }).from(users).where(eq(users.emailVerified, true));

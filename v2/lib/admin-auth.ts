@@ -58,6 +58,8 @@ export interface AdminNavItem {
   href: string;
   /** True when the item renders for admins only (absent for reviewers, never disabled). */
   adminOnly: boolean;
+  /** Short label for the phone tab bar (the rail always uses `label`). */
+  shortLabel?: string;
 }
 
 /** Rail order = tab order = decision priority. Reviewers never see Accounts. */
@@ -67,13 +69,14 @@ export const ADMIN_SECTIONS: readonly AdminNavItem[] = [
   { key: "sellers", label: "Sellers", href: "/admin/sellers", adminOnly: false },
   { key: "listings", label: "Listings", href: "/admin/listings", adminOnly: false },
   { key: "varieties", label: "Varieties", href: "/admin/varieties", adminOnly: false },
+  { key: "statistics", label: "Statistics", href: "/admin/statistics", adminOnly: false, shortLabel: "Stats" },
   { key: "accounts", label: "Accounts", href: "/admin/accounts", adminOnly: true },
 ];
 
 /** Phone-only destination holding Listings, Varieties, Accounts, identity and sign-out. */
 export const ADMIN_MORE: AdminNavItem = { key: "more", label: "More", href: "/admin/more", adminOnly: false };
 
-export type AdminSectionKey = "home" | "review" | "sellers" | "listings" | "varieties" | "accounts" | "more";
+export type AdminSectionKey = "home" | "review" | "sellers" | "listings" | "varieties" | "statistics" | "accounts" | "more";
 
 /** Role rendering rule (§11): Act = absent — items outside the role are not returned at all. */
 export function navFor(role: string): AdminNavItem[] {

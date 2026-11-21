@@ -2,12 +2,13 @@
  * Demand-signal tables (canonical §5 "Outbound link tracking"): click_events, search_events,
  * variety_view_counts, daily_stats. No cookies and no IP addresses are ever stored here.
  */
-import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, isNull, lte, sql, type SQLWrapper } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import {
   clickEvents,
   dailyStats,
   listings,
+  plants,
   searchEvents,
   sellers,
   varieties,
@@ -124,4 +125,143 @@ export async function demandStats(db: Db, since: string, limit: number) {
     top_zero_result_searches: zeroResults,
     top_zero_seller_views: zeroSellerViews.map((r) => ({ ...r, views: Number(r.views) })),
   };
+}
+
+// ─── admin statistics (Slice D): period reads over UTC calendar days ────────
+//
+// Every read here buckets by the event tables' own day (`variety_view_counts.date`,
+// `substr(at, 1, 10)` for the streams) so the numbers and the words describe the same
+// days. Variety-scoped reads join admin-visible varieties only (`deleted_at IS NULL`,
+// the F1 discipline): a removed variety never appears in a ranking. Clicks always
+// exclude bots and always read `click_events` directly — never the lagging nightly
+// `daily_stats` rollup.
+
+/** UTC-day bucket for an event-stream instant. */
+const streamDay = (col: SQLWrapper) => sql<string>`substr(${col}, 1, 10)`;
+
+/** Per-variety current/previous-period values for one ranking signal. */
+export interface VarietyPeriodCounts {
+  varietyId: number;
+  slug: string;
+  name: string;
+  crop: string;
+  cur: number;
+  prev: number;
+}
+
+/** Views per admin-visible variety, split at `curStart` (`[prevStart, end]` window). */
+export async function viewCountsByVariety(db: Db, prevStart: string, curStart: string, end: string): Promise<VarietyPeriodCounts[]> {
+  const rows = await db
+    .select({
+      varietyId: varieties.id,
+      slug: varieties.slug,
+      name: varieties.varietyName,
+      crop: plants.commonName,
+      cur: sql<number>`sum(CASE WHEN ${varietyViewCounts.date} >= ${curStart} THEN ${varietyViewCounts.views} ELSE 0 END)`,
+      prev: sql<number>`sum(CASE WHEN ${varietyViewCounts.date} < ${curStart} THEN ${varietyViewCounts.views} ELSE 0 END)`,
+    })
+    .from(varietyViewCounts)
+    .innerJoin(varieties, eq(varieties.id, varietyViewCounts.varietyId))
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .where(and(gte(varietyViewCounts.date, prevStart), lte(varietyViewCounts.date, end), isNull(varieties.deletedAt)))
+    .groupBy(varieties.id);
+  return rows.map((r) => ({ ...r, cur: Number(r.cur), prev: Number(r.prev) }));
+}
+
+/** Non-bot clicks per admin-visible variety, split at `curStart` (`[prevStart, end]` window). */
+export async function clickCountsByVariety(db: Db, prevStart: string, curStart: string, end: string): Promise<VarietyPeriodCounts[]> {
+  const day = streamDay(clickEvents.at);
+  const rows = await db
+    .select({
+      varietyId: varieties.id,
+      slug: varieties.slug,
+      name: varieties.varietyName,
+      crop: plants.commonName,
+      cur: sql<number>`sum(CASE WHEN ${day} >= ${curStart} THEN 1 ELSE 0 END)`,
+      prev: sql<number>`sum(CASE WHEN ${day} < ${curStart} THEN 1 ELSE 0 END)`,
+    })
+    .from(clickEvents)
+    .innerJoin(varieties, eq(varieties.id, clickEvents.varietyId))
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .where(and(sql`${day} >= ${prevStart}`, sql`${day} <= ${end}`, eq(clickEvents.isBot, false), isNull(varieties.deletedAt)))
+    .groupBy(varieties.id);
+  return rows.map((r) => ({ ...r, cur: Number(r.cur), prev: Number(r.prev) }));
+}
+
+/** Non-bot clicks in `[start, end]` (visible varieties): the total and the sold-out share's numerator. */
+export async function clickTotals(db: Db, start: string, end: string): Promise<{ total: number; soldOut: number }> {
+  const day = streamDay(clickEvents.at);
+  const [r] = await db
+    .select({
+      total: count(),
+      soldOut: sql<number | null>`sum(CASE WHEN ${clickEvents.availabilityAtClick} = 'sold_out' THEN 1 ELSE 0 END)`,
+    })
+    .from(clickEvents)
+    .innerJoin(varieties, eq(varieties.id, clickEvents.varietyId))
+    .where(and(sql`${day} >= ${start}`, sql`${day} <= ${end}`, eq(clickEvents.isBot, false), isNull(varieties.deletedAt)));
+  return { total: r?.total ?? 0, soldOut: Number(r?.soldOut ?? 0) };
+}
+
+/** Non-bot clicks per UTC day in `[start, end]` (visible varieties) — the trend series. */
+export async function clicksDaily(db: Db, start: string, end: string): Promise<{ date: string; n: number }[]> {
+  const day = streamDay(clickEvents.at);
+  const rows = await db
+    .select({ date: day, n: count() })
+    .from(clickEvents)
+    .innerJoin(varieties, eq(varieties.id, clickEvents.varietyId))
+    .where(and(sql`${day} >= ${start}`, sql`${day} <= ${end}`, eq(clickEvents.isBot, false), isNull(varieties.deletedAt)))
+    .groupBy(day)
+    .orderBy(day);
+  return rows;
+}
+
+/** Searches per (term, clicked variety) in `[start, end]` — top terms and their modal click derive from this. */
+export async function searchTermClicks(db: Db, start: string, end: string): Promise<{ term: string; clickedVarietyId: number | null; n: number }[]> {
+  const day = streamDay(searchEvents.at);
+  return db
+    .select({ term: searchEvents.queryNormalized, clickedVarietyId: searchEvents.clickedVarietyId, n: count() })
+    .from(searchEvents)
+    .where(and(sql`${day} >= ${start}`, sql`${day} <= ${end}`))
+    .groupBy(searchEvents.queryNormalized, searchEvents.clickedVarietyId);
+}
+
+/** Terms searched with no results in `[start, end]`, most-searched first. */
+export async function searchNoResults(db: Db, start: string, end: string): Promise<{ term: string; n: number }[]> {
+  const day = streamDay(searchEvents.at);
+  return db
+    .select({ term: searchEvents.queryNormalized, n: count() })
+    .from(searchEvents)
+    .where(and(sql`${day} >= ${start}`, sql`${day} <= ${end}`, eq(searchEvents.resultCount, 0)))
+    .groupBy(searchEvents.queryNormalized)
+    .orderBy(desc(count()), searchEvents.queryNormalized);
+}
+
+/** Slugs + names for admin-visible varieties only (a removed variety resolves to nothing — no F2 to land on). */
+export async function visibleVarietySlugs(db: Db, ids: number[]): Promise<Map<number, { slug: string; name: string }>> {
+  const out = new Map<number, { slug: string; name: string }>();
+  const uniq = [...new Set(ids)];
+  if (uniq.length === 0) return out;
+  for (let i = 0; i < uniq.length; i += 90) {
+    const rows = await db
+      .select({ id: varieties.id, slug: varieties.slug, name: varieties.varietyName })
+      .from(varieties)
+      .where(and(inArray(varieties.id, uniq.slice(i, i + 90)), isNull(varieties.deletedAt)));
+    for (const r of rows) out.set(r.id, { slug: r.slug, name: r.name });
+  }
+  return out;
+}
+
+/**
+ * Each signal's `dataSince` (the thin-data rule's input): earliest views date, earliest
+ * non-bot click day (bot rows are not the signal), earliest search day. Null when the
+ * signal has no history at all.
+ */
+export async function signalDataSince(db: Db): Promise<{ views: string | null; clicks: string | null; searches: string | null }> {
+  const [v] = await db.select({ d: sql<string | null>`min(${varietyViewCounts.date})` }).from(varietyViewCounts);
+  const [c] = await db
+    .select({ d: sql<string | null>`min(substr(${clickEvents.at}, 1, 10))` })
+    .from(clickEvents)
+    .where(eq(clickEvents.isBot, false));
+  const [s] = await db.select({ d: sql<string | null>`min(substr(${searchEvents.at}, 1, 10))` }).from(searchEvents);
+  return { views: v?.d ?? null, clicks: c?.d ?? null, searches: s?.d ?? null };
 }

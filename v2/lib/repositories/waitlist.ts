@@ -277,6 +277,64 @@ export async function waitlistDemand(db: Db, limit: number) {
   return rows.map((r) => ({ ...r, sellerCount: counts.get(r.varietyId) ?? 0 }));
 }
 
+// ─── admin statistics (Slice D) ──────────────────────────────────────────────
+
+/** Waitlist signups per UTC day in `[start, end]` (`created_at` bucket) — the trend series. */
+export async function waitlistSignupsDaily(db: Db, start: string, end: string): Promise<{ date: string; n: number }[]> {
+  const day = sql<string>`substr(${waitlistEntries.createdAt}, 1, 10)`;
+  return db
+    .select({ date: day, n: count() })
+    .from(waitlistEntries)
+    .where(and(sql`${day} >= ${start}`, sql`${day} <= ${end}`))
+    .groupBy(day)
+    .orderBy(day);
+}
+
+/** Earliest waitlist-signup day (the thin-data rule's input). Null when no one ever joined. */
+export async function waitlistDataSince(db: Db): Promise<string | null> {
+  const [r] = await db.select({ d: sql<string | null>`min(substr(${waitlistEntries.createdAt}, 1, 10))` }).from(waitlistEntries);
+  return r?.d ?? null;
+}
+
+/**
+ * The `waitlistDemand` ranking over admin-visible varieties only (`deleted_at IS NULL`,
+ * the F1 discipline): same order, same values, but a removed variety never appears in
+ * the admin ranking. `waitlistDemand` itself is untouched — the key API keeps serving
+ * it exactly as before.
+ */
+export async function waitlistDemandVisible(db: Db, limit: number) {
+  const waiters = sql<number>`count(${waitlistEntries.id})`;
+  const rows = await db
+    .select({
+      varietyId: varieties.id,
+      slug: varieties.slug,
+      name: varieties.varietyName,
+      crop: plants.commonName,
+      waiters,
+      verifiedWaiters: sql<number>`sum(CASE WHEN ${users.emailVerified} = 1 THEN 1 ELSE 0 END)`,
+    })
+    .from(waitlistEntries)
+    .innerJoin(users, eq(users.id, waitlistEntries.userId))
+    .innerJoin(varieties, eq(varieties.id, waitlistEntries.varietyId))
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .where(and(isNull(waitlistEntries.notifiedAt), isNull(varieties.deletedAt)))
+    .groupBy(varieties.id)
+    .orderBy(desc(waiters), asc(varieties.varietyName))
+    .limit(limit);
+  const counts = await visibleListingCounts(db, rows.map((r) => r.varietyId));
+  return rows.map((r) => ({ ...r, sellerCount: counts.get(r.varietyId) ?? 0 }));
+}
+
+/** How many admin-visible varieties have active waiters — the ranking's exact total. */
+export async function waitlistDemandCount(db: Db): Promise<number> {
+  const [r] = await db
+    .select({ n: sql<number>`count(DISTINCT ${waitlistEntries.varietyId})` })
+    .from(waitlistEntries)
+    .innerJoin(varieties, eq(varieties.id, waitlistEntries.varietyId))
+    .where(and(isNull(waitlistEntries.notifiedAt), isNull(varieties.deletedAt)));
+  return Number(r?.n ?? 0);
+}
+
 export async function waitlistTotals(db: Db) {
   const [all] = await db.select({ n: count() }).from(waitlistEntries);
   const [active] = await db.select({ n: count() }).from(waitlistEntries).where(isNull(waitlistEntries.notifiedAt));

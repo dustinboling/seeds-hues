@@ -190,7 +190,7 @@ export function createFarmService(db: Db, deps: FarmDeps) {
       return { user_id: user.id, is_farm_owner: false };
     },
 
-    /** /admin/waitlist: demand ranking, totals, outbox status, recent farm submissions. */
+    /** The admin demand view: demand ranking, totals, outbox status, recent farm submissions — served to the admin home, Statistics, and the key API. */
     async demandView(limit = 50) {
       const [ranked, totals, members, outbox, submissions] = await Promise.all([
         wl.waitlistDemand(db, limit),

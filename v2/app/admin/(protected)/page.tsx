@@ -1,8 +1,9 @@
 /**
  * Admin home — the dashboard (spec §7B): what needs a decision (queue cards with real
  * counts + oldest age from the existing queues, and the designed all-clear zero state),
- * the stats snapshot band in its composed no-data form (Slice D wires it), most-wanted
- * varieties, and recent decisions from the audit trail. Identical content for both roles.
+ * the wired stats snapshot band (the four site cards over the fixed 7-day window —
+ * Visitors in its not-connected state, the other three live), most-wanted varieties,
+ * and recent decisions from the audit trail. Identical content for both roles.
  */
 import { requireAdmin } from "@/lib/admin-current-user";
 import { getServices } from "@/lib/services/context";
@@ -17,10 +18,11 @@ export const dynamic = "force-dynamic";
 export default async function AdminHomePage() {
   const viewer = await requireAdmin("/admin");
   const services = await getServices();
-  const [{ cards, totalWaiting }, decisions, demand] = await Promise.all([
+  const [{ cards, totalWaiting }, decisions, demand, snapshot] = await Promise.all([
     services.adminAuth.queueCards(),
     services.adminAuth.recentDecisions(6),
     services.farms.demandView(5),
+    services.adminStatistics.snapshot().catch(() => null),
   ]);
   const wanted = demand.varieties.slice(0, 5);
 
@@ -51,7 +53,7 @@ export default async function AdminHomePage() {
           How the site is doing
         </h2>
         <div className="mt-3">
-          <StatsSnapshot />
+          <StatsSnapshot snapshot={snapshot} />
         </div>
       </section>
 

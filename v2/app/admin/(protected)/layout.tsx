@@ -1,7 +1,8 @@
 /**
  * The guarded admin tree (Slice 0): every page here calls requireAdmin() first (no valid
  * admin session → /admin/sign-in; visitor role → the wrong-role landing). The whole tree
- * is non-indexed. The legacy /admin/waitlist lives outside this group, untouched.
+ * is non-indexed. The legacy /admin/waitlist key-paste surface was retired in Slice D —
+ * no admin page lives outside this group any more.
  */
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
