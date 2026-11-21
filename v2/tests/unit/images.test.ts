@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 824 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 833 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -145,7 +145,11 @@ describe("lib/images-data (generated)", () => {
     // +5 for the composition repaint Batch 7 (the audit-defect crop-plate repaints):
     // bupleurum, dahlia, gomphrena v3 and honeywort, silene v4
     // (2026-11-19, Quinn PASS + fix-pass re-gate PASS).
-    expect(entries).toHaveLength(824);
+    // +9 for the new-variety plates batch 2: Ageratum Tall Blue Planet / Timeless Mix,
+    // Anise Hyssop Alabaster / Anise Hyssop / Golden Jubilee, and Balloon Flower
+    // Astra Blue / Light Pink / Mix / Pink
+    // (2026-11-21, Quinn re-gate PASS WITH NOTES — D1 closed on the v2 repaint).
+    expect(entries).toHaveLength(833);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);

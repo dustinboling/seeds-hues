@@ -3,19 +3,28 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 824 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 833 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
+  "/artwork/ageratum-tall-blue-planet.webp": "artwork/ageratum-tall-blue-planet.png",
+  "/artwork/ageratum-timeless-mix.webp": "artwork/ageratum-timeless-mix.png",
   "/artwork/amaranth-autumn-touch.webp": "artwork/amaranth-autumn-touch.png",
   "/artwork/amaranth-coral-fountain.webp": "artwork/amaranth-coral-fountain.png",
   "/artwork/amaranth-green-tails.webp": "artwork/amaranth-green-tails.png",
   "/artwork/amaranth-hot-biscuits.webp": "artwork/amaranth-hot-biscuits.png",
   "/artwork/amaranth-mira.webp": "artwork/amaranth-mira.png",
   "/artwork/amaranth-opopeo.webp": "artwork/amaranth-opopeo.png",
+  "/artwork/anise-hyssop-alabaster.webp": "artwork/anise-hyssop-alabaster.png",
+  "/artwork/anise-hyssop-anise-hyssop.webp": "artwork/anise-hyssop-anise-hyssop.png",
+  "/artwork/anise-hyssop-golden-jubilee.webp": "artwork/anise-hyssop-golden-jubilee.png",
   "/artwork/annual-babys-breath-covent-garden.webp": "artwork/annual-babys-breath-covent-garden.png",
   "/artwork/apple-of-peru.webp": "artwork/apple-of-peru.png",
   "/artwork/argentine-forget-me-not.webp": "artwork/argentine-forget-me-not.png",
+  "/artwork/balloon-flower-astra-blue.webp": "artwork/balloon-flower-astra-blue.png",
+  "/artwork/balloon-flower-astra-light-pink.webp": "artwork/balloon-flower-astra-light-pink.png",
+  "/artwork/balloon-flower-astra-mix.webp": "artwork/balloon-flower-astra-mix.png",
+  "/artwork/balloon-flower-astra-pink.webp": "artwork/balloon-flower-astra-pink.png",
   "/artwork/basil-aromatto.webp": "artwork/basil-aromatto.png",
   "/artwork/basil-cinnamon.webp": "artwork/basil-cinnamon.png",
   "/artwork/basil-dark-opal.webp": "artwork/basil-dark-opal.png",
