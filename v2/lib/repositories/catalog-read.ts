@@ -149,6 +149,9 @@ function listingStatsSq(db: Db) {
     .select({
       varietyId: listings.varietyId,
       listingCount: count(listings.id).as("listing_count"),
+      // Distinct sellers over the same visible-listing set (Dustin's ruling, 2026-11-21):
+      // every seller-labelled count uses this; listingCount stays for presence/sort/filter.
+      sellerCount: countDistinct(listings.sellerId).as("seller_count"),
       inStockCount: sql<number>`sum(CASE WHEN ${listings.availability} = 'in_stock' THEN 1 ELSE 0 END)`.as("in_stock_count"),
       lastChecked: max(listings.lastCheckedAt).as("last_checked"),
     })
@@ -228,6 +231,7 @@ export interface VarietySummaryRow {
   seriesSlug: string | null;
   seriesName: string | null;
   listingCount: number | null;
+  sellerCount: number | null;
   inStockCount: number | null;
   lastChecked: string | null;
 }
@@ -318,6 +322,7 @@ export async function listVarietySummaryRows(
         seriesSlug: series.slug,
         seriesName: series.name,
         listingCount: ls.listingCount,
+        sellerCount: ls.sellerCount,
         inStockCount: ls.inStockCount,
         lastChecked: ls.lastChecked,
       })

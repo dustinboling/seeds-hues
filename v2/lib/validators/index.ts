@@ -293,6 +293,8 @@ export const VarietySummarySchema = z
     colorFamily: z.string().min(1),
     /** Published listings from approved sellers. */
     listingCount: z.number().int().nonnegative(),
+    /** Distinct sellers behind listingCount — every seller-labelled count uses this. */
+    sellerCount: z.number().int().nonnegative(),
     inStockCount: z.number().int().nonnegative(),
     /** Latest last_checked_at across its listings; null with no listings. */
     lastCheckedAt: dateish.nullable(),

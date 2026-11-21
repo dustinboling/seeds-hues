@@ -18,6 +18,7 @@ import { getServices } from "@/lib/services/context";
 import { mediaOgImage, ogImage, pageMetadata, varietyDescription, varietyTitle } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, varietySellersJsonLd } from "@/lib/seo/jsonld";
 import { formatHeight, shortCommonName, titleCaseTag } from "@/lib/format";
+import { sellerCounts } from "@/lib/seller-counts";
 import { proseCommonName } from "@/lib/services/template";
 import { SEASON_LABELS, SOWING_METHOD_LABELS, type VarietyFacts } from "@/lib/validators";
 import { SMALL_FARM_PARAM } from "@/lib/small-farm";
@@ -89,6 +90,8 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
 
   const common = shortCommonName(v.plant.commonName);
   const label = `${v.varietyName} ${common}`;
+  // Seller-framed summary (Dustin's ruling, 2026-11-21): distinct sellers, never listings.
+  const shops = sellerCounts(v.listings);
   const crumbs = [
     { name: "Home", href: "/" },
     { name: common, href: `/crop/${v.plant.slug}` },
@@ -178,8 +181,8 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
               the header, from below the list (the old lower wording is gone; it appears once). */}
           {v.listings.length > 0 ? (
             <p className="mt-2.5 font-sans text-[13px] font-semibold text-ink-soft">
-              {v.listings.length} {v.listings.length === 1 ? "shop" : "shops"} ·{" "}
-              {v.listings.filter((l) => l.availability === "in_stock").length} in stock
+              {shops.sellers} {shops.sellers === 1 ? "shop" : "shops"} ·{" "}
+              {shops.inStockSellers} in stock
             </p>
           ) : null}
           <p className="mt-[5px] max-w-[34ch] text-[15px] leading-[1.45] text-muted">

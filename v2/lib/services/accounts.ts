@@ -391,13 +391,14 @@ export function createAccountService(db: Db, deps: AccountDeps) {
       const entries = await wl.entriesForUser(db, u.id);
       const ids = entries.map((e) => e.varietyId);
       const counts = await wl.visibleListingCounts(db, ids.length ? ids : [-1]);
+      const sellerCounts = await wl.visibleSellerCounts(db, ids.length ? ids : [-1]);
       const latest = await wl.latestVisibleListings(db, [...counts.keys()]);
       const channels = activeChannels(u);
       const held = heldReasons(u);
       return entries.map((e) => {
         const found = latest.get(e.varietyId);
         const status: AlertStatus = found
-          ? { state: "found", seller: { name: found.sellerName, slug: found.sellerSlug }, listing_id: found.listingId, seller_count: counts.get(e.varietyId) ?? 1, alerted: e.notifiedAt !== null }
+          ? { state: "found", seller: { name: found.sellerName, slug: found.sellerSlug }, listing_id: found.listingId, seller_count: sellerCounts.get(e.varietyId) ?? 1, alerted: e.notifiedAt !== null }
           : channels.length
             ? { state: "waiting", channels }
             : { state: "held", reasons: held };

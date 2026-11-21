@@ -4,7 +4,7 @@
  * Outbox dedupe is the UNIQUE (user_id, variety_id, channel) index: the matcher inserts with
  * ON CONFLICT DO NOTHING, so re-runs and overlapping publishes never queue a second alert.
  */
-import { and, asc, count, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, count, countDistinct, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import { listings, notificationOutbox, plants, sellers, users, varieties, waitlistEntries } from "@/lib/db/schema";
 import { activeVariety, visibleListing } from "./catalog-read";
@@ -26,6 +26,21 @@ export async function varietyBySlug(db: Db, slug: string) {
 export async function visibleListingCounts(db: Db, varietyIds: number[] | null): Promise<Map<number, number>> {
   const rows = await db
     .select({ varietyId: listings.varietyId, n: count() })
+    .from(listings)
+    .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+    .where(and(visibleListing, varietyIds ? inArray(listings.varietyId, varietyIds) : undefined))
+    .groupBy(listings.varietyId);
+  return new Map(rows.map((r) => [r.varietyId, r.n]));
+}
+
+/**
+ * Distinct visible sellers per variety (only varieties with ≥ 1 are returned). Feeds the
+ * account "Found at {seller} and {n} more" line (Dustin's ruling, 2026-11-21): a seller-framed
+ * count, so it counts sellers, never listings.
+ */
+export async function visibleSellerCounts(db: Db, varietyIds: number[] | null): Promise<Map<number, number>> {
+  const rows = await db
+    .select({ varietyId: listings.varietyId, n: countDistinct(listings.sellerId) })
     .from(listings)
     .innerJoin(sellers, eq(sellers.id, listings.sellerId))
     .where(and(visibleListing, varietyIds ? inArray(listings.varietyId, varietyIds) : undefined))
