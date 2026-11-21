@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { BrowseFilters, activeFilterLabels, type BrowseFilterState } from "@/components/ui/BrowseFilters";
 import { CropCardImage } from "@/components/crop/CropCardImage";
@@ -11,6 +12,7 @@ import { plural } from "@/lib/format";
 import { parseMethodParam, parseSeasonParam } from "@/lib/paging";
 import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
 import { proseCommonName } from "@/lib/services/template";
+import { CropsSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +24,19 @@ export const metadata: Metadata = pageMetadata({
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
-export default async function CropsPage({ searchParams }: Props) {
+export default function CropsPage({ searchParams }: Props) {
+  // No segment loading.tsx in app/crop/: it would wrap the /crop/[slug] pages below
+  // in its Suspense boundary too, streaming a 200 shell before their notFound() can
+  // resolve (the soft-404 defect). The index skeleton lives on as the inner Suspense
+  // fallback — this page's single loading announcement.
+  return (
+    <Suspense fallback={<CropsSkeleton />}>
+      <CropsContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function CropsContent({ searchParams }: Props) {
   const sp = await searchParams;
   const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: null, smallFarm: false };
   const active = activeFilterLabels(filters);
