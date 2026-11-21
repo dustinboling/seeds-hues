@@ -43,7 +43,7 @@ function TabItem({ item, active, reviewTotal }: { item: AdminNavItem; active: bo
   const badge = item.key === "review" && reviewTotal > 0;
   return (
     <a href={item.href} aria-current={active ? "page" : undefined} aria-label={badge ? `Review, ${reviewTotal} waiting` : undefined} className={tabClass(active)}>
-      <span>{item.label}</span>
+      <span>{item.shortLabel ?? item.label}</span>
       {badge ? (
         <span aria-hidden="true" className="rounded-full bg-leaf px-2 py-0.5 text-[13px] font-semibold tabular-nums text-white">
           {reviewTotal}
@@ -55,7 +55,7 @@ function TabItem({ item, active, reviewTotal }: { item: AdminNavItem; active: bo
 
 export function AdminShell({ viewer, section, reviewTotal, children }: { viewer: AdminShellViewer; section: AdminSectionKey; reviewTotal: number; children?: ReactNode }) {
   const items = navFor(viewer.role);
-  const tabs = [...items.filter((i) => i.key === "home" || i.key === "review" || i.key === "sellers"), ADMIN_MORE];
+  const tabs = [...items.filter((i) => i.key === "home" || i.key === "review" || i.key === "sellers" || i.key === "statistics"), ADMIN_MORE];
   return (
     <div className="admin-root flex items-start gap-6">
       <nav aria-label="Admin sections" className="hidden w-[216px] shrink-0 flex-col gap-1 rounded-[18px] border border-line bg-paper-deep p-3 min-[744px]:sticky min-[744px]:top-6 min-[744px]:flex min-[744px]:max-h-[calc(100dvh-3rem)] min-[744px]:overflow-y-auto min-[1181px]:w-[232px]">
@@ -84,7 +84,7 @@ export function AdminShell({ viewer, section, reviewTotal, children }: { viewer:
         <div className="mx-auto w-full max-w-[1080px] min-[1181px]:max-w-[1280px]">{children}</div>
       </div>
       <nav aria-label="Admin sections" className="fixed inset-x-0 bottom-0 z-40 border-t border-line-strong bg-paper-deep min-[744px]:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-        <ul className="grid grid-cols-4">
+        <ul className="grid grid-cols-5">
           {tabs.map((item) => (
             <li key={item.key}>
               <TabItem item={item} active={item.key === section} reviewTotal={reviewTotal} />

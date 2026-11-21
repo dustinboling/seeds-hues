@@ -8,7 +8,6 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { CODE_MAX_ATTEMPTS, CODE_TTL_MINUTES, RESEND_PER_HOUR, RESEND_PER_MINUTE, SESSION_COOKIE } from "@/lib/accounts";
-import { ADMIN_COOKIE } from "@/lib/admin-session";
 import {
   ADMIN_CODE_MAX_ATTEMPTS,
   ADMIN_CODE_TTL_MINUTES,
@@ -28,6 +27,7 @@ import {
   timeAgo,
 } from "@/lib/admin-auth";
 import { ADMIN_CODE_MESSAGES } from "@/lib/services/admin-auth";
+import type { SiteCardData } from "@/lib/admin/statistics";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { NoAccess } from "@/components/admin/NoAccess";
@@ -50,7 +50,9 @@ describe("admin session cookie", () => {
     expect(ADMIN_SESSION_DAYS).toBe(7);
     expect(ADMIN_SESSION_COOKIE).toBe("sf_admin_session");
     expect(ADMIN_SESSION_COOKIE).not.toBe(SESSION_COOKIE);
-    expect(ADMIN_SESSION_COOKIE).not.toBe(ADMIN_COOKIE);
+    // Slice D retired lib/admin-session.ts with the legacy key-paste gate — the isolation
+    // property now pins against the literal legacy cookie name.
+    expect(ADMIN_SESSION_COOKIE).not.toBe("sf_admin");
     expect(adminSessionCookie("tok")).toBe("sf_admin_session=tok; Path=/admin; Max-Age=604800; HttpOnly; Secure; SameSite=Lax");
     expect(clearAdminSessionCookie()).toBe("sf_admin_session=; Path=/admin; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
   });
@@ -82,8 +84,8 @@ describe("roles and navigation by role", () => {
   });
 
   it("Accounts is absent from reviewer navigation (Act = absent), present for admin", () => {
-    expect(navFor("reviewer").map((i) => i.label)).toEqual(["Home", "Review", "Sellers", "Listings", "Varieties"]);
-    expect(navFor("admin").map((i) => i.label)).toEqual(["Home", "Review", "Sellers", "Listings", "Varieties", "Accounts"]);
+    expect(navFor("reviewer").map((i) => i.label)).toEqual(["Home", "Review", "Sellers", "Listings", "Varieties", "Statistics"]);
+    expect(navFor("admin").map((i) => i.label)).toEqual(["Home", "Review", "Sellers", "Listings", "Varieties", "Statistics", "Accounts"]);
     expect(navFor("reviewer").some((i) => i.href === "/admin/accounts")).toBe(false);
   });
 });
@@ -126,14 +128,29 @@ describe("dashboard pieces", () => {
     expect(clear).not.toContain("Oldest:");
   });
 
-  it("the stats snapshot renders the composed no-data state (four cards, no invented numbers)", () => {
-    const html = renderToStaticMarkup(createElement(StatsSnapshot));
+  it("the wired snapshot renders live 7-day cards with numbers, deltas and trends (Slice D)", () => {
+    const buckets = ["2026-11-14", "2026-11-15", "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20"].map((d) => ({ key: d, label: d.slice(5), value: 1 }));
+    const cards: SiteCardData[] = [
+      { key: "visitors", label: "Visitors", href: "/admin/statistics", caption: "Last 7 days · Nov 14 – Nov 20, 2026", total: null, delta: null, trend: null, thinLine: null, noData: "Not connected yet — visitor counts come from Cloudflare Web Analytics.", error: false },
+      { key: "accounts", label: "New accounts", href: "/admin/statistics", caption: "Last 7 days · Nov 14 – Nov 20, 2026", total: 5, delta: { kind: "up", text: "▲ 25% up" }, trend: { buckets, summary: "New accounts peaked on Tuesday, Nov 18, with 1." }, thinLine: null, noData: null, error: false },
+      { key: "waitlist", label: "Waitlist signups", href: "/admin/statistics?signal=waitlist", caption: "Last 7 days · Nov 14 – Nov 20, 2026", total: 9, delta: { kind: "up", text: "▲ 12% up" }, trend: { buckets, summary: "Waitlist signups peaked on Tuesday, Nov 18, with 1." }, thinLine: null, noData: null, error: false },
+      { key: "clicks", label: "Clicks to sellers", href: "/admin/statistics?signal=clicks", caption: "Last 7 days · Nov 14 – Nov 20, 2026", total: 42, delta: { kind: "up", text: "▲ 5% up" }, trend: { buckets, summary: "Clicks to sellers peaked on Tuesday, Nov 18, with 1." }, thinLine: null, noData: null, error: false },
+    ];
+    const html = renderToStaticMarkup(createElement(StatsSnapshot, { snapshot: { cards } }));
     for (const label of ["Visitors", "New accounts", "Waitlist signups", "Clicks to sellers"]) expect(html).toContain(label);
-    expect(html).toContain("No visits recorded yet — stats begin with the first full day.");
-    expect(html).toContain("No account stats yet — they begin with the first full day.");
-    expect(html).toContain("No waitlist stats yet — they begin with the first full day.");
-    expect(html).toContain("No click stats yet — they begin with the first full day.");
-    expect(html).not.toContain("tabular-nums");
+    // Live cards carry numbers, deltas and trends; the whole card links to its target.
+    expect(html).toContain(">42<");
+    expect(html).toContain("▲ 12% up");
+    expect(html).toContain("tabular-nums");
+    expect(html).toContain('href="/admin/statistics?signal=clicks"');
+    expect(html).toContain('href="/admin/statistics?signal=waitlist"');
+    expect(html).toContain('href="/admin/statistics"');
+    // Visitors keeps its not-connected state: the line, and no figure anywhere in its card.
+    expect(html).toContain("Not connected yet — visitor counts come from Cloudflare Web Analytics.");
+    const visitorsText = html
+      .slice(html.indexOf("Visitors"), html.indexOf("New accounts"))
+      .replace(/<[^>]*>/g, " ");
+    expect(visitorsText).not.toMatch(/\d/);
   });
 });
 

@@ -145,9 +145,9 @@ export function farmSubmissionAdminEmail(o: { site: string; to: string; id: numb
     subject: `New Add Your Farm submission: ${o.farmName}`,
     html: shell(
       o.site,
-      `<p>A farm was submitted for review (#${o.id}).</p><table role="presentation" cellpadding="4">${rows.map(([k, v]) => `<tr><td style="color:#6a5f4c;">${escapeHtml(k!)}</td><td>${escapeHtml(v!)}</td></tr>`).join("")}</table><p><a href="${o.site}/admin/waitlist" style="color:#1f5c3d;">Open the review queue</a></p>`,
+      `<p>A farm was submitted for review (#${o.id}).</p><table role="presentation" cellpadding="4">${rows.map(([k, v]) => `<tr><td style="color:#6a5f4c;">${escapeHtml(k!)}</td><td>${escapeHtml(v!)}</td></tr>`).join("")}</table><p><a href="${o.site}/admin/review?queue=sellers" style="color:#1f5c3d;">Open the review queue</a></p>`,
       `<p style="margin:0;">Seed Directory admin notice.</p>`,
     ),
-    text: `A farm was submitted for review (#${o.id}).\n\n${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nReview queue: ${o.site}/admin/waitlist`,
+    text: `A farm was submitted for review (#${o.id}).\n\n${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nReview queue: ${o.site}/admin/review?queue=sellers`,
   };
 }

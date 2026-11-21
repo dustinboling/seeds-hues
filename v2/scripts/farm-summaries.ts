@@ -10,7 +10,7 @@
  * keeps only claims whose quote is found verbatim in the fetched text, and stores the DRAFT +
  * evidence + machine-suggested values on the submission (lib/services/farm-summary.ts). Nothing
  * is published. Run it from a laptop/CI cron after new submissions arrive (they also show in
- * /admin/waitlist with draft status "pending" until then).
+ * /admin/review (Seller candidates) with draft status "pending" until then).
  */
 import { createDb } from "@/lib/db/client";
 import { runQueuedFarmSummaries } from "@/lib/services/farm-summary";

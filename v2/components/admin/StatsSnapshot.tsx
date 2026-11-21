@@ -1,22 +1,77 @@
 /**
- * Dashboard stats snapshot band in its composed form (spec §7B). The statistics wiring is
- * Slice D — every card renders the designed no-data state rather than an invented number.
+ * Dashboard stats snapshot band, wired (spec §7 B, Slice D): the four site cards over
+ * the fixed 7-day window — Visitors in its not-connected state (no number, ever), the
+ * other three live with Stat number, delta-or-thin-line and a 7-bar mini trend. The
+ * whole card is the tap target. A failed band degrades to its error card with Retry;
+ * one failed card never blanks the other three.
  */
-const CARDS = [
-  { label: "Visitors", caption: "No visits recorded yet — stats begin with the first full day." },
-  { label: "New accounts", caption: "No account stats yet — they begin with the first full day." },
-  { label: "Waitlist signups", caption: "No waitlist stats yet — they begin with the first full day." },
-  { label: "Clicks to sellers", caption: "No click stats yet — they begin with the first full day." },
-] as const;
+import type { DeltaKind, SiteCardData, StatisticsSnapshot as SnapshotData } from "@/lib/admin/statistics";
+import { TrendBars } from "./TrendBars";
 
-export function StatsSnapshot() {
+function deltaClass(kind: DeltaKind): string {
+  if (kind === "up") return "text-leaf";
+  if (kind === "down") return "text-ink-soft";
+  return "text-muted";
+}
+
+function SnapshotCard({ card }: { card: SiteCardData }) {
+  if (card.error) {
+    return (
+      <div role="alert" className="card flex flex-col gap-1 p-4 min-[744px]:p-5">
+        <p className="font-sans text-base font-semibold">{card.label}</p>
+        <p className="font-sans text-[15px] text-ink">These stats didn&apos;t load.</p>
+        <p className="mt-1 font-sans text-[15px]">
+          <a href="/admin" className="font-semibold text-link underline">
+            Try again
+          </a>
+        </p>
+      </div>
+    );
+  }
+  if (card.noData || card.total === null || !card.trend) {
+    return (
+      <a href={card.href} className="card flex min-h-[44px] flex-col gap-1 p-4 min-[744px]:p-5">
+        <p className="font-sans text-base font-semibold">{card.label}</p>
+        <p className="font-serif text-[17px] leading-[1.6] text-ink-soft">{card.noData}</p>
+      </a>
+    );
+  }
+  const comparison = card.delta ? card.delta.text : (card.thinLine ?? "");
+  const accessible = `${card.label}, ${card.total.toLocaleString("en-US")}${comparison ? `, ${comparison}` : ""}, ${card.trend.summary}`;
+  return (
+    <a href={card.href} aria-label={accessible} className="card flex min-h-[44px] flex-col gap-1 p-4 min-[744px]:p-5">
+      <p className="font-sans text-base font-semibold">{card.label}</p>
+      <p className="font-sans text-[32px] font-semibold leading-[1.1] tabular-nums">{card.total.toLocaleString("en-US")}</p>
+      {card.delta ? (
+        <p className={`font-sans text-sm font-semibold ${deltaClass(card.delta.kind)}`}>{card.delta.text}</p>
+      ) : (
+        <p className="font-sans text-sm text-muted">{card.thinLine}</p>
+      )}
+      <div className="mt-1">
+        <TrendBars label={card.label} buckets={card.trend.buckets} summary={card.trend.summary} size="mini" hideSummary />
+      </div>
+    </a>
+  );
+}
+
+export function StatsSnapshot({ snapshot }: { snapshot: SnapshotData | null }) {
+  if (!snapshot) {
+    return (
+      <div role="alert" className="rounded-[18px] border border-line-strong bg-warn-50 p-4 min-[744px]:p-5">
+        <p className="font-sans text-base font-semibold text-warn">These stats didn&apos;t load.</p>
+        <p className="mt-1 font-sans text-[15px] text-ink">Check your connection and try again.</p>
+        <p className="mt-3">
+          <a href="/admin" className="btn btn-secondary">
+            Try again
+          </a>
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="grid grid-cols-1 gap-4 min-[744px]:grid-cols-2 min-[1024px]:grid-cols-4">
-      {CARDS.map((c) => (
-        <div key={c.label} className="card flex flex-col gap-1 p-4 min-[744px]:p-5">
-          <p className="font-sans text-base font-semibold">{c.label}</p>
-          <p className="font-serif text-[17px] leading-[1.6] text-ink-soft">{c.caption}</p>
-        </div>
+      {snapshot.cards.map((card) => (
+        <SnapshotCard key={card.key} card={card} />
       ))}
     </div>
   );

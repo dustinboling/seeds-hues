@@ -13,6 +13,7 @@ import { createAdminSellerService } from "@/lib/admin/seller-service";
 import { createAdminListingService } from "@/lib/admin/listing-service";
 import { createAdminVarietyService } from "@/lib/admin/variety-service";
 import { createAdminAccountService } from "@/lib/admin/account-service";
+import { createAdminStatisticsService } from "@/lib/admin/statistics";
 import { createFarmService } from "./farms";
 import { createNotificationService } from "./notifications";
 import { createVerificationService, type CodeChannel } from "./verification";
@@ -69,6 +70,7 @@ export function createServices(db: Db, deps: ServiceDeps = {}) {
     adminListings: createAdminListingService(db, { now }),
     adminVarieties: createAdminVarietyService(db, { now }),
     adminAccounts: createAdminAccountService(db, { now }),
+    adminStatistics: createAdminStatisticsService(db, { now }),
     farms: createFarmService(db, { turnstile, mailer, siteUrl, adminNotifyEmail: deps.adminNotifyEmail ?? null, now }),
     notifications: createNotificationService(db, { mailer, sms, siteUrl, unsubscribeKey: deps.unsubscribeKey ?? null, now }),
     /** Idempotency-Key replay store for ingest/admin POSTs. */
