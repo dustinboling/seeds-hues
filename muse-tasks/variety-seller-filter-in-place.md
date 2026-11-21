@@ -1,11 +1,12 @@
 # Task: Make the variety page's seller filter update in place
 
-## RETRY — read this first (run 44848006035 failed the verify gate)
+## RETRY 3 — read this first (two runs have failed the verify gate)
 
-The previous run implemented the brief but failed `npm run verify` on
-exactly ONE lint error, so no branch was pushed and you are starting from
-main's current code:
+Two previous runs implemented this brief and each failed `npm run verify`
+on exactly ONE defect, so no branch was pushed either time and you are
+starting from main's current code. Do not repeat either failure:
 
+**Run 1 (44848006035) — hooks lint error:**
 - File: `v2/components/variety/SellerFilterSection.tsx`, line 83
 - Rule: `react-hooks/set-state-in-effect` — "Calling setState synchronously
   within an effect can trigger cascading renders"
@@ -13,6 +14,20 @@ main's current code:
   `window.location.search`, parsed the small-farm flag, and called
   `setSmallFarmOnly(fromUrl)` synchronously in the effect body (with a
   `setHydrated(true)` beside it).
+
+**Run 2 (44852117927) — syntax error:**
+- File: `v2/app/variety/[slug]/variety-view.tsx`, line 237, column 33
+- ESLint: "Parsing error: ')' expected" — the edit that extracted the
+  sellers section left the file syntactically malformed, and the run ended
+  without catching it. (Run 2's SellerFilterSection passed the hooks rule
+  clean — the pattern in the section below works; keep it.)
+
+**Verify-before-finish is now a hard requirement, not advice:** after each
+file you edit, run the targeted check for that file (`npx eslint <file>`
+and/or `npx tsc --noEmit` from `v2/`). Before you end your turn, run the
+FULL `npm run verify` in `v2/`; if it is red, fix the defect and re-run
+until it is green. Never end the turn with a red verify — a run that ends
+red is discarded whole, exactly like runs 1 and 2.
 
 **Required pattern this time — no setState in a mount effect at all:**
 
