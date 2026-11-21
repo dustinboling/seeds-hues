@@ -5,6 +5,7 @@
 import { z } from "zod";
 import {
   ApproveBodySchema,
+  DuplicateHoldBodySchema,
   JobBodySchema,
   MergeBodySchema,
   ReviewListQuerySchema,
@@ -129,6 +130,20 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       },
     }),
   ),
+  {
+    // The scout-holds feed (Slice A §6): submit a POSSIBLE-DUPLICATE hold. Idempotent on
+    // (normalized held name + candidate variety id): a pending re-submit returns the
+    // existing item (200, created: false) instead of a second row.
+    method: "POST",
+    pattern: "review/duplicate-holds",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, body }) => {
+      const r = await services.admin.createDuplicateHold(parseBody(DuplicateHoldBodySchema, body));
+      return { status: r.created ? 201 : 200, data: r };
+    },
+  },
   ...SellerAction.options.map(
     (action): RouteSpec => ({
       method: "POST",

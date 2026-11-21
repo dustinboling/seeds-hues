@@ -13,6 +13,7 @@ import {
   plants,
   reviewItems,
   sellers,
+  series,
   varieties,
   varietyAliases,
   REVIEW_ITEM_STATUS,
@@ -26,6 +27,12 @@ import { CATALOG_SEQ_KEY, currentSeq, nextSeq } from "./seq";
 
 export type ReviewType = (typeof REVIEW_ITEM_TYPE)[number];
 export type ReviewStatus = (typeof REVIEW_ITEM_STATUS)[number];
+
+/** A UI-path decision maker, stamped onto the resolved row (Slice A decider trail). */
+export interface Decider {
+  userId: number;
+  name: string;
+}
 
 // ─── review_items ───────────────────────────────────────────────────────────
 
@@ -47,13 +54,30 @@ export async function insertReviewItem(
   return r!.id;
 }
 
-export async function listReviewItems(db: Db, f: { type?: ReviewType; status?: ReviewStatus; limit: number }) {
+export async function listReviewItems(
+  db: Db,
+  f: { type?: ReviewType; types?: ReviewType[]; status?: ReviewStatus; statuses?: ReviewStatus[]; limit: number; offset?: number; order?: "group" | "queue" },
+) {
   const rows = await db
     .select()
     .from(reviewItems)
-    .where(and(f.type ? eq(reviewItems.type, f.type) : undefined, f.status ? eq(reviewItems.status, f.status) : undefined))
-    .orderBy(asc(reviewItems.groupKey), asc(reviewItems.createdAt), asc(reviewItems.id))
-    .limit(f.limit);
+    .where(
+      and(
+        f.type ? eq(reviewItems.type, f.type) : undefined,
+        f.types ? inArray(reviewItems.type, f.types) : undefined,
+        f.status ? eq(reviewItems.status, f.status) : undefined,
+        f.statuses ? inArray(reviewItems.status, f.statuses) : undefined,
+      ),
+    )
+    // "group" is the historical API order; "queue" is oldest-first (the queue is a fairness
+    // device — Slice A lists).
+    .orderBy(
+      ...(f.order === "queue"
+        ? [asc(reviewItems.createdAt), asc(reviewItems.id)]
+        : [asc(reviewItems.groupKey), asc(reviewItems.createdAt), asc(reviewItems.id)]),
+    )
+    .limit(f.limit)
+    .offset(f.offset ?? 0);
   return rows.map((r) => ({ ...r, proposal: JSON.parse(r.proposal) as unknown }));
 }
 
@@ -62,8 +86,85 @@ export async function reviewItemById(db: Db, id: number) {
   return r ? { ...r, proposal: JSON.parse(r.proposal) as Record<string, unknown> } : null;
 }
 
-export async function resolveReviewItem(db: Db, id: number, status: Exclude<ReviewStatus, "pending">, at: string): Promise<void> {
-  await db.update(reviewItems).set({ status, resolvedAt: at }).where(eq(reviewItems.id, id));
+export async function resolveReviewItem(
+  db: Db,
+  id: number,
+  status: Exclude<ReviewStatus, "pending">,
+  at: string,
+  extra: { decider?: Decider; reason?: string } = {},
+): Promise<void> {
+  await db
+    .update(reviewItems)
+    .set({
+      status,
+      resolvedAt: at,
+      ...(extra.decider ? { decidedByUserId: extra.decider.userId, decidedByName: extra.decider.name } : {}),
+      ...(extra.reason !== undefined ? { reason: extra.reason } : {}),
+    })
+    .where(eq(reviewItems.id, id));
+}
+
+/** A reviewer-confirmed report: stamped verified, still pending (an admin acts next). */
+export async function stampReviewVerified(db: Db, id: number, name: string, at: string): Promise<void> {
+  await db.update(reviewItems).set({ verifiedByName: name, verifiedAt: at }).where(eq(reviewItems.id, id));
+}
+
+/** A skipped hold: recorded as seen, never as decided — the item stays pending. */
+export async function stampReviewSeen(db: Db, id: number, name: string, at: string): Promise<void> {
+  await db.update(reviewItems).set({ seenByName: name, seenAt: at }).where(eq(reviewItems.id, id));
+}
+
+export async function countReviewItems(db: Db, f: { types?: ReviewType[]; statuses?: ReviewStatus[] }): Promise<number> {
+  const [r] = await db
+    .select({ n: count() })
+    .from(reviewItems)
+    .where(and(f.types ? inArray(reviewItems.type, f.types) : undefined, f.statuses ? inArray(reviewItems.status, f.statuses) : undefined));
+  return r?.n ?? 0;
+}
+
+/** Waiting items in these types strictly older than (createdAt, id) — the "3 of 8" rank. */
+export async function countOlderWaiting(db: Db, types: ReviewType[], createdAt: string, id: number): Promise<number> {
+  const [r] = await db
+    .select({ n: count() })
+    .from(reviewItems)
+    .where(
+      and(
+        inArray(reviewItems.type, types),
+        eq(reviewItems.status, "pending"),
+        sql`(${reviewItems.createdAt} < ${createdAt} OR (${reviewItems.createdAt} = ${createdAt} AND ${reviewItems.id} < ${id}))`,
+      ),
+    );
+  return r?.n ?? 0;
+}
+
+/** Decision history for a queue: newest first. */
+export async function listDecidedReviewItems(db: Db, f: { types: ReviewType[]; limit: number; offset?: number }) {
+  const rows = await db
+    .select()
+    .from(reviewItems)
+    .where(and(inArray(reviewItems.type, f.types), ne(reviewItems.status, "pending")))
+    .orderBy(desc(reviewItems.resolvedAt), desc(reviewItems.id))
+    .limit(f.limit)
+    .offset(f.offset ?? 0);
+  return rows.map((r) => ({ ...r, proposal: JSON.parse(r.proposal) as unknown }));
+}
+
+/**
+ * The pending hold for this (normalized held name, candidate variety) pair, if any — the
+ * feed is idempotent on it: re-submitting a pending hold returns the existing item.
+ */
+export async function findPendingDuplicateHold(db: Db, groupKey: string, candidateVarietyId: number) {
+  const rows = await db
+    .select()
+    .from(reviewItems)
+    .where(and(eq(reviewItems.type, "duplicate_hold"), eq(reviewItems.status, "pending"), eq(reviewItems.groupKey, groupKey)))
+    .orderBy(asc(reviewItems.id));
+  for (const r of rows) {
+    const p = JSON.parse(r.proposal) as Record<string, unknown>;
+    const candidate = p.candidate as Record<string, unknown> | undefined;
+    if (candidate && Number(candidate.variety_id) === candidateVarietyId) return { ...r, proposal: p };
+  }
+  return null;
 }
 
 export async function reviewQueueStats(db: Db) {
@@ -306,16 +407,61 @@ export async function createVariety(db: Db, v: { plantSlug: string; name: string
   return r ?? null;
 }
 
-/** Save a seller's wording as a seller_alias so the next crawl matches it exactly. */
-export async function addAlias(db: Db, varietyId: number, alias: string, kind: "synonym" | "seller_alias", cropCommonName: string | null) {
-  await atomic(db, [
+export interface AliasProvenance {
+  source: string;
+  decisionItemId: number;
+  decidedByName: string;
+  createdAt: string;
+}
+
+/**
+ * Save a seller's wording as a seller_alias so the next crawl matches it exactly. Only
+ * duplicate decisions pass provenance (source = 'duplicate_decision'); everything else
+ * leaves it NULL (= legacy/manual). When the alias already exists on the variety it is
+ * never duplicated (the PK forbids it) — provenance is filled in only where absent, so a
+ * recorded decision trail is never overwritten.
+ */
+export async function addAlias(
+  db: Db,
+  varietyId: number,
+  alias: string,
+  kind: "synonym" | "seller_alias",
+  cropCommonName: string | null,
+  provenance?: AliasProvenance,
+) {
+  const ops: AtomicOp[] = [
     ...nextSeq(db),
     db
       .insert(varietyAliases)
-      .values({ varietyId, alias, nameNormalized: normalizeName(alias, cropCommonName), kind })
+      .values({
+        varietyId,
+        alias,
+        nameNormalized: normalizeName(alias, cropCommonName),
+        kind,
+        ...(provenance ? { source: provenance.source, decisionItemId: provenance.decisionItemId, decidedByName: provenance.decidedByName, createdAt: provenance.createdAt } : {}),
+      })
       .onConflictDoNothing() as unknown as AtomicOp,
-    db.update(varieties).set({ updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
-  ]);
+  ];
+  if (provenance) {
+    ops.push(
+      db
+        .update(varietyAliases)
+        .set({ source: provenance.source, decisionItemId: provenance.decisionItemId, decidedByName: provenance.decidedByName, createdAt: provenance.createdAt })
+        .where(and(eq(varietyAliases.varietyId, varietyId), eq(varietyAliases.alias, alias), isNull(varietyAliases.source))) as unknown as AtomicOp,
+    );
+  }
+  ops.push(db.update(varieties).set({ updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp);
+  await atomic(db, ops);
+}
+
+/** One alias row with its provenance (the duplicate-decision audit + Slice C's F2). */
+export async function aliasRow(db: Db, varietyId: number, alias: string) {
+  const [r] = await db
+    .select()
+    .from(varietyAliases)
+    .where(and(eq(varietyAliases.varietyId, varietyId), eq(varietyAliases.alias, alias)))
+    .limit(1);
+  return r ?? null;
 }
 
 /**
@@ -354,6 +500,179 @@ export async function mergeVarieties(db: Db, loserId: number, winnerId: number, 
   await atomic(db, ops);
   await recomputeIndexable(db, [winnerId]);
   return { loserSlug: loser.slug, winnerSlug: winner.slug };
+}
+
+// ─── Slice A detail hydration (the queue workspaces read through these) ───────
+
+export interface VarietyDetail {
+  id: number;
+  slug: string;
+  name: string;
+  status: string;
+  plantSlug: string;
+  commonName: string;
+  latinName: string | null;
+  seriesName: string | null;
+  /** Distinct sellers with a visible listing. */
+  sellerCount: number;
+  /** Alternate names (every kind except primary), A–Z. */
+  aliases: string[];
+  /** Listing evidence, oldest first (capped — the count above stays exact). */
+  listings: { sellerName: string; sellerSlug: string; titleRaw: string | null; productUrl: string | null }[];
+}
+
+/** A variety with its crop, series, alternate names and listing evidence (any status). */
+export async function varietyDetailById(db: Db, id: number): Promise<VarietyDetail | null> {
+  const [v] = await db
+    .select({
+      id: varieties.id,
+      slug: varieties.slug,
+      name: varieties.varietyName,
+      status: varieties.status,
+      plantSlug: plants.slug,
+      commonName: plants.commonName,
+      latinName: plants.latinName,
+      seriesName: series.name,
+    })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .leftJoin(series, eq(series.id, varieties.seriesId))
+    .where(eq(varieties.id, id))
+    .limit(1);
+  if (!v) return null;
+  const live = and(eq(listings.varietyId, id), inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt));
+  const [aliases, sellerRows, listingRows] = await Promise.all([
+    db
+      .select({ alias: varietyAliases.alias })
+      .from(varietyAliases)
+      .where(and(eq(varietyAliases.varietyId, id), ne(varietyAliases.kind, "primary")))
+      .orderBy(asc(varietyAliases.alias)),
+    db.selectDistinct({ sellerId: listings.sellerId }).from(listings).where(live),
+    db
+      .select({ sellerName: sellers.name, sellerSlug: sellers.slug, titleRaw: listings.titleRaw, productUrl: listings.productUrl })
+      .from(listings)
+      .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+      .where(live)
+      .orderBy(asc(listings.id))
+      .limit(25),
+  ]);
+  return {
+    ...v,
+    sellerCount: sellerRows.length,
+    aliases: aliases.map((a) => a.alias),
+    listings: listingRows,
+  };
+}
+
+/** varietyDetailById by slug (report targets are slugs). */
+export async function varietyDetailBySlug(db: Db, slug: string): Promise<VarietyDetail | null> {
+  const [v] = await db.select({ id: varieties.id }).from(varieties).where(eq(varieties.slug, slug)).limit(1);
+  return v ? varietyDetailById(db, v.id) : null;
+}
+
+/**
+ * Follow a merged-away variety to its surviving target (the C4 stale-candidate path):
+ * the active variety at the end of the chain, or null when the chain ends nowhere live.
+ */
+export async function resolveVarietyTarget(db: Db, id: number): Promise<{ id: number; slug: string } | null> {
+  let current = id;
+  for (let hops = 0; hops < 10; hops++) {
+    const [v] = await db
+      .select({ id: varieties.id, slug: varieties.slug, status: varieties.status, mergedIntoId: varieties.mergedIntoId })
+      .from(varieties)
+      .where(eq(varieties.id, current))
+      .limit(1);
+    if (!v) return null;
+    if (v.status === "active") return { id: v.id, slug: v.slug };
+    if (v.status !== "merged" || !v.mergedIntoId) return null;
+    current = v.mergedIntoId;
+  }
+  return null;
+}
+
+export interface SellerRecord {
+  id: number;
+  slug: string;
+  name: string;
+  homepage: string | null;
+  domain: string | null;
+  location: string | null;
+  region: string | null;
+  country: string;
+  shipsTo: string;
+  description: string | null;
+  orderingNotes: string | null;
+  status: string;
+  eligibility: string;
+  isSmallFarm: boolean;
+  liveListingCount: number;
+}
+
+/** A seller's record as the report views show it, plus its live listing count. */
+export async function sellerRecordByRef(db: Db, ref: string | number): Promise<SellerRecord | null> {
+  const where = typeof ref === "number" || /^\d+$/.test(String(ref)) ? eq(sellers.id, Number(ref)) : eq(sellers.slug, String(ref));
+  const [s] = await db
+    .select({
+      id: sellers.id,
+      slug: sellers.slug,
+      name: sellers.name,
+      homepage: sellers.homepage,
+      domain: sellers.domain,
+      location: sellers.location,
+      region: sellers.region,
+      country: sellers.country,
+      shipsTo: sellers.shipsTo,
+      description: sellers.description,
+      orderingNotes: sellers.orderingNotes,
+      status: sellers.status,
+      eligibility: sellers.eligibility,
+      isSmallFarm: sellers.isSmallFarm,
+    })
+    .from(sellers)
+    .where(where)
+    .limit(1);
+  if (!s) return null;
+  return { ...s, liveListingCount: await liveListingCountForSeller(db, s.id) };
+}
+
+export async function liveListingCountForSeller(db: Db, sellerId: number): Promise<number> {
+  const [r] = await db
+    .select({ n: count() })
+    .from(listings)
+    .where(and(eq(listings.sellerId, sellerId), inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt)));
+  return r?.n ?? 0;
+}
+
+export interface ListingSummary {
+  id: number;
+  titleRaw: string | null;
+  productUrl: string | null;
+  status: string;
+  varietySlug: string;
+  varietyName: string;
+  sellerSlug: string;
+  sellerName: string;
+}
+
+/** One listing with its variety + seller (the retire-from-report routing). */
+export async function listingSummaryById(db: Db, id: number): Promise<ListingSummary | null> {
+  const [l] = await db
+    .select({
+      id: listings.id,
+      titleRaw: listings.titleRaw,
+      productUrl: listings.productUrl,
+      status: listings.status,
+      varietySlug: varieties.slug,
+      varietyName: varieties.varietyName,
+      sellerSlug: sellers.slug,
+      sellerName: sellers.name,
+    })
+    .from(listings)
+    .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+    .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+    .where(eq(listings.id, id))
+    .limit(1);
+  return l ?? null;
 }
 
 // ─── health (invariants) ────────────────────────────────────────────────────

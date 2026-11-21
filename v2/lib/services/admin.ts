@@ -5,11 +5,13 @@
 import { z } from "zod";
 import type { Db } from "@/lib/db/client";
 import * as admin from "@/lib/repositories/admin";
+import type { Decider } from "@/lib/repositories/admin";
 import * as ingest from "@/lib/repositories/ingest";
+import * as farmRepo from "@/lib/repositories/farm-submissions";
 import { demandStats, rollupDay } from "@/lib/repositories/events";
 import { resolveReport } from "@/lib/repositories/reports";
-import { REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE } from "@/lib/db/schema";
-import { hostOf, hostOnDomain } from "@/lib/names";
+import { AVAILABILITY, REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE } from "@/lib/db/schema";
+import { hostOf, hostOnDomain, normalizeName } from "@/lib/names";
 import { notifyWaitlists, ServiceError } from "./ingest";
 
 export class AdminError extends ServiceError {}
@@ -52,6 +54,39 @@ export const ListingRemoveBodySchema = z.strictObject({ reason: z.string().max(5
 
 export const JobBodySchema = z.strictObject({ type: z.string().min(1).max(50), target: z.string().min(1).max(2000) });
 
+const isoDate = z.string().min(1).max(40).refine((s) => !Number.isNaN(Date.parse(s)), "must be an ISO date");
+
+/**
+ * The scout-holds feed payload (Slice A §6): a POSSIBLE-DUPLICATE hold as one pending
+ * `duplicate_hold` queue item. `crop` is the held name's plant slug; `candidate.variety_id`
+ * is the existing variety it may duplicate.
+ */
+export const DuplicateHoldBodySchema = z.strictObject({
+  held_name: z.string().trim().min(1).max(200),
+  crop: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(80),
+  seller_id: z.number().int().positive(),
+  seller_slug: z.string().max(160).optional(),
+  listing: z.strictObject({
+    productUrl: z.string().url().max(2000),
+    titleRaw: z.string().max(500).nullable().optional(),
+    availability: z.enum(AVAILABILITY).optional(),
+    checkedAt: isoDate,
+  }),
+  candidate: z.strictObject({
+    variety_id: z.number().int().positive(),
+    name: z.string().trim().min(1).max(200),
+    slug: z.string().max(160).optional(),
+  }),
+  evidence_quote: z.string().trim().min(1).max(2000),
+  hold_reason: z.string().trim().min(1).max(2000),
+  source: z.string().trim().min(1).max(40).default("scout"),
+});
+
+export type DuplicateHoldBody = z.infer<typeof DuplicateHoldBodySchema>;
+
+/** Provenance marker written only by duplicate decisions (RA-1; Slice C's F2 keys off it). */
+export const DUPLICATE_DECISION_SOURCE = "duplicate_decision";
+
 type ListingProposal = {
   seller_id: number;
   variety_id: number | null;
@@ -71,7 +106,7 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
   const now = opts.now ?? (() => new Date());
   const iso = () => now().toISOString();
 
-  async function publishProposal(p: ListingProposal, varietyId: number, aliasKind: "seller_alias" | "synonym") {
+  async function publishProposal(p: ListingProposal, varietyId: number, aliasKind: "seller_alias" | "synonym", provenance?: admin.AliasProvenance) {
     const seller = await ingest.sellerByRef(db, p.seller_id);
     if (!seller || seller.eligibility !== "approved") throw new AdminError(409, "seller_not_approved", "the listing's seller is not approved");
     if (await ingest.isBlockedDomain(db, [hostOf(p.listing.productUrl) ?? "", seller.domain ?? ""])) throw new AdminError(409, "blocked_domain", "domain is blocked");
@@ -81,9 +116,78 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
     // Publish trigger (Phase 3): an approved listing may be a waited-for variety's first.
     await notifyWaitlists(db, [varietyId], now());
     if (p.extracted_name && p.extracted_name !== "unknown" && p.extracted_name !== variety.name) {
-      await admin.addAlias(db, varietyId, p.extracted_name, aliasKind, variety.commonName);
+      await admin.addAlias(db, varietyId, p.extracted_name, aliasKind, variety.commonName, provenance);
     }
     return { listing_id: r.listingId, variety_slug: variety.slug, seller_slug: seller.slug };
+  }
+
+  /** A stored duplicate_hold proposal, validated (a malformed hold fails loudly, never half-applies). */
+  function holdProposal(p: Record<string, unknown>) {
+    const listing = asRecord(p.listing);
+    const candidate = asRecord(p.candidate);
+    const heldName = typeof p.held_name === "string" ? p.held_name.trim() : "";
+    const crop = typeof p.crop === "string" ? p.crop : "";
+    const sellerId = typeof p.seller_id === "number" ? p.seller_id : 0;
+    const candidateId = typeof candidate.variety_id === "number" ? candidate.variety_id : 0;
+    const productUrl = typeof listing.productUrl === "string" ? listing.productUrl : "";
+    const checkedAt = typeof listing.checkedAt === "string" && !Number.isNaN(Date.parse(listing.checkedAt)) ? listing.checkedAt : "";
+    if (!heldName || !crop || !Number.isInteger(sellerId) || sellerId <= 0 || !Number.isInteger(candidateId) || candidateId <= 0 || !productUrl || !checkedAt) {
+      throw new AdminError(422, "malformed_hold", "this hold's proposal is missing its held name, crop, seller, listing or candidate");
+    }
+    return {
+      heldName,
+      crop,
+      sellerId,
+      candidateId,
+      candidateName: typeof candidate.name === "string" && candidate.name.trim() ? candidate.name.trim() : `variety #${candidateId}`,
+      listing: {
+        sellerId,
+        productUrl,
+        variantKey: "",
+        externalProductId: null as string | null,
+        titleRaw: typeof listing.titleRaw === "string" ? listing.titleRaw : null,
+        availability: (typeof listing.availability === "string" ? listing.availability : "unknown") as ListingProposal["listing"]["availability"],
+        sourceUrl: productUrl,
+        checkedAt,
+      },
+    };
+  }
+
+  async function decideDuplicateHold(
+    item: { id: number; proposal: Record<string, unknown> },
+    outcome: "duplicate" | "not_duplicate",
+    decider?: Decider,
+  ): Promise<AdminResult<Record<string, unknown>>> {
+    const h = holdProposal(item.proposal);
+    const at = iso();
+    if (outcome === "duplicate") {
+      const candidate = await ingest.varietyForMatch(db, h.candidateId);
+      // Merged/renamed/retired meanwhile: the UI reloads the pane with the fresh state.
+      if (!candidate || candidate.status !== "active") throw new AdminError(409, "variety_changed", "the existing variety changed while this hold was waiting");
+      const published = await publishProposal(
+        { seller_id: h.sellerId, variety_id: h.candidateId, crop: h.crop, extracted_name: h.heldName, listing: h.listing },
+        h.candidateId,
+        "synonym",
+        decider ? { source: DUPLICATE_DECISION_SOURCE, decisionItemId: item.id, decidedByName: decider.name, createdAt: at } : undefined,
+      );
+      await admin.resolveReviewItem(db, item.id, "merged", at, decider ? { decider } : {});
+      return {
+        data: { id: item.id, type: "duplicate_hold", status: "merged", held_name: h.heldName, existing: candidate.name, ...published },
+        revalidate: [`/variety/${candidate.slug}`, `/seller/${published.seller_slug}`],
+      };
+    }
+    const v = await admin.createVariety(db, { plantSlug: h.crop, name: h.heldName, at });
+    if (!v) throw new AdminError(422, "unknown_crop", `crop ${h.crop} not found`);
+    const published = await publishProposal(
+      { seller_id: h.sellerId, variety_id: v.id, crop: h.crop, extracted_name: h.heldName, listing: h.listing },
+      v.id,
+      "seller_alias",
+    );
+    await admin.resolveReviewItem(db, item.id, "approved", at, decider ? { decider } : {});
+    return {
+      data: { id: item.id, type: "duplicate_hold", status: "approved", held_name: h.heldName, variety_id: v.id, ...published },
+      revalidate: [`/variety/${v.slug}`, `/crop/${h.crop}`, "/sitemap.xml"],
+    };
   }
 
   async function removal(sellerRef: string | number, reason: string) {
@@ -124,8 +228,11 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
 
     listReview: (q: z.infer<typeof ReviewListQuerySchema>, limit: number) => admin.listReviewItems(db, { ...q, limit }),
 
-    async approve(id: number, body: z.infer<typeof ApproveBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+    async approve(id: number, body: z.infer<typeof ApproveBodySchema>, opts: { decider?: Decider } = {}): Promise<AdminResult<Record<string, unknown>>> {
       const item = await itemOr404(id);
+      // Approving a hold means "not a duplicate": the held name becomes its own variety
+      // (mirroring new_variety, where approve = create). The key-based path passes no decider.
+      if (item.type === "duplicate_hold") return decideDuplicateHold(item, "not_duplicate", opts.decider);
       const p = item.proposal;
       let data: Record<string, unknown> = {};
       let revalidate: string[] = [];
@@ -179,19 +286,21 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
           revalidate = r.revalidate;
           break;
         }
+        // duplicate_hold returns through decideDuplicateHold() above; the narrowed type keeps
+        // it out of this switch.
       }
-      await admin.resolveReviewItem(db, id, "approved", iso());
+      await admin.resolveReviewItem(db, id, "approved", iso(), opts.decider ? { decider: opts.decider } : {});
       return { data: { id, type: item.type, status: "approved", ...data }, revalidate };
     },
 
-    async reject(id: number): Promise<AdminResult<Record<string, unknown>>> {
+    async reject(id: number, opts: { decider?: Decider; reason?: string } = {}): Promise<AdminResult<Record<string, unknown>>> {
       const item = await itemOr404(id);
-      await admin.resolveReviewItem(db, id, "rejected", iso());
+      await admin.resolveReviewItem(db, id, "rejected", iso(), { ...(opts.decider ? { decider: opts.decider } : {}), ...(opts.reason ? { reason: opts.reason } : {}) });
       await closeReport(item.proposal, "dismissed");
       return { data: { id, type: item.type, status: "rejected" }, revalidate: [] };
     },
 
-    async merge(id: number, body: z.infer<typeof MergeBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+    async merge(id: number, body: z.infer<typeof MergeBodySchema>, opts: { decider?: Decider } = {}): Promise<AdminResult<Record<string, unknown>>> {
       const item = await itemOr404(id);
       if (item.type !== "listing_match" && item.type !== "new_variety") throw new AdminError(422, "not_mergeable", "merge applies to listing_match / new_variety items");
       const winner = await ingest.varietyForMatch(db, body.into_id);
@@ -211,8 +320,94 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
         }
       }
       const published = await publishProposal(lp, winner.id, "synonym");
-      await admin.resolveReviewItem(db, id, "merged", iso());
+      await admin.resolveReviewItem(db, id, "merged", iso(), opts.decider ? { decider: opts.decider } : {});
       return { data: { id, status: "merged", merged, ...published }, revalidate: [...revalidate, `/seller/${published.seller_slug}`] };
+    },
+
+    /**
+     * The scout-holds feed (Slice A §6): validate the hold, then insert it — idempotent on
+     * (normalized held name + candidate variety id): re-submitting a pending hold returns the
+     * existing item instead of a second row.
+     */
+    async createDuplicateHold(body: DuplicateHoldBody): Promise<{ id: number; type: string; status: string; created: boolean }> {
+      const candidate = await ingest.varietyForMatch(db, body.candidate.variety_id);
+      if (!candidate || candidate.status !== "active") throw new AdminError(422, "unknown_candidate", `candidate variety ${body.candidate.variety_id} is not an active variety`);
+      const seller = await ingest.sellerByRef(db, body.seller_id);
+      if (!seller) throw new AdminError(422, "unknown_seller", `seller ${body.seller_id} not found`);
+      const plant = await admin.plantBySlug(db, body.crop);
+      const groupKey = normalizeName(body.held_name, plant?.commonName ?? null);
+      const existing = await admin.findPendingDuplicateHold(db, groupKey, candidate.id);
+      if (existing) return { id: existing.id, type: "duplicate_hold", status: "pending", created: false };
+      const id = await admin.insertReviewItem(db, { type: "duplicate_hold", groupKey, proposal: body, reason: "scout:possible_duplicate", confidence: null, at: iso() });
+      return { id, type: "duplicate_hold", status: "pending", created: true };
+    },
+
+    /** A UI duplicate decision (both outcomes; both roles — the role check lives in the review service). */
+    async decideDuplicate(id: number, outcome: "duplicate" | "not_duplicate", opts: { decider?: Decider } = {}): Promise<AdminResult<Record<string, unknown>>> {
+      const item = await itemOr404(id);
+      if (item.type !== "duplicate_hold") throw new AdminError(422, "not_a_hold", `review item ${id} is not a duplicate hold`);
+      return decideDuplicateHold(item, outcome, opts.decider);
+    },
+
+    /** Reviewer confirm on a report: stamped verified, still pending (an admin acts next). */
+    async confirmReport(id: number, name: string): Promise<AdminResult<Record<string, unknown>>> {
+      const item = await itemOr404(id);
+      if (item.type !== "seller_correction" && item.type !== "removal") throw new AdminError(422, "not_a_report", `review item ${id} is not a report`);
+      await admin.stampReviewVerified(db, id, name, iso());
+      return { data: { id, type: item.type, status: "pending", verified_by: name }, revalidate: [] };
+    },
+
+    /** Skip a hold for now: recorded as seen, never as decided — the item stays pending. */
+    async skipHold(id: number, name: string): Promise<AdminResult<Record<string, unknown>>> {
+      const item = await itemOr404(id);
+      if (item.type !== "duplicate_hold") throw new AdminError(422, "not_a_hold", `review item ${id} is not a duplicate hold`);
+      await admin.stampReviewSeen(db, id, name, iso());
+      return { data: { id, type: item.type, status: "pending", seen_by: name }, revalidate: [] };
+    },
+
+    /**
+     * Approve an Add Your Farm submission (Slice A C2): create the candidate seller from the
+     * submission (the system proposes the slug), link it, and mark the submission approved
+     * with the decider. A candidate is not publicly listed — no public paths change. Never
+     * touches the farm-owner flag (Slice C's G2 owns that).
+     */
+    async approveFarmCandidate(id: number, decider: Decider): Promise<AdminResult<Record<string, unknown>>> {
+      const sub = await farmRepo.farmSubmissionById(db, id);
+      if (!sub) throw new AdminError(404, "not_found", `farm submission ${id} not found`);
+      if (sub.status !== "pending") throw new AdminError(409, "already_resolved", `farm submission ${id} is ${sub.status}`);
+      const domain = hostOf(sub.website);
+      if (!domain) throw new AdminError(422, "bad_website", "the submission's website is not a usable web address");
+      if (await ingest.isBlockedDomain(db, [domain])) throw new AdminError(409, "blocked_domain", `${domain} is blocked`);
+      if (await ingest.sellerByDomain(db, domain)) throw new AdminError(409, "seller_exists", `${domain} already exists`);
+      const at = iso();
+      const s = await admin.createCandidateSeller(db, { name: sub.farmName, homepage: sub.website, domain, at });
+      await farmRepo.updateFarmSubmission(db, id, { status: "approved", reviewedAt: at, reviewedBy: decider.name, sellerId: s.id });
+      return { data: { id, type: "farm_submission", status: "approved", seller_id: s.id, seller_slug: s.slug, farm_name: sub.farmName }, revalidate: [] };
+    },
+
+    /** Decline an Add Your Farm submission: the optional reason is kept in decision_note. */
+    async rejectFarmSubmission(id: number, opts: { decider: Decider; reason?: string }): Promise<AdminResult<Record<string, unknown>>> {
+      const sub = await farmRepo.farmSubmissionById(db, id);
+      if (!sub) throw new AdminError(404, "not_found", `farm submission ${id} not found`);
+      if (sub.status !== "pending") throw new AdminError(409, "already_resolved", `farm submission ${id} is ${sub.status}`);
+      await farmRepo.updateFarmSubmission(db, id, { status: "rejected", reviewedAt: iso(), reviewedBy: opts.decider.name, ...(opts.reason ? { decisionNote: opts.reason } : {}) });
+      return { data: { id, type: "farm_submission", status: "rejected", farm_name: sub.farmName }, revalidate: [] };
+    },
+
+    /**
+     * Retire a listing routed from a report (Slice A C5, admin only — the role check lives in
+     * the review service): the shipped listing-retire effect, then the report resolves with
+     * the decider (its remedy applied).
+     */
+    async retireListingFromReport(id: number, listingId: number, reason: string | null, decider: Decider): Promise<AdminResult<Record<string, unknown>>> {
+      const item = await itemOr404(id);
+      if (item.type !== "seller_correction" && item.type !== "removal") throw new AdminError(422, "not_a_report", `review item ${id} is not a report`);
+      const r = await removeListing(listingId, { reason: reason ?? undefined });
+      const at = iso();
+      await admin.resolveReviewItem(db, id, "approved", at, { decider });
+      await closeReport(item.proposal, "resolved");
+      const removed = r.data as { already_removed: boolean };
+      return { data: { id, type: item.type, status: "approved", listing_id: listingId, listing_status: "removed", already_removed: removed.already_removed }, revalidate: r.revalidate };
     },
 
     async sellerAction(ref: string, action: "approve" | "reject" | "remove", body: z.infer<typeof SellerActionBodySchema>) {
