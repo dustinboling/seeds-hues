@@ -102,16 +102,35 @@ export function CropCardSkeleton() {
   );
 }
 
-/** ListingRow stand-in (Quiet Ledger cards, 2026-11-20): a stack of separate cards, 12 px apart. */
-export function ListingSheetSkeleton({ rows, className }: { rows: number; className?: string }) {
+/**
+ * ListingRow stand-in (Quiet Ledger cards, 2026-11-20): a stack of separate cards, 12 px apart.
+ * The opt-in `artwork` variant promises the seller-context card instead: the artwork rail block
+ * beside the text bars, footers full-width below, and the seller list's lg 2-column grid. The
+ * seller loading shell opts in; the variety shell keeps the default (no artwork, no grid).
+ */
+export function ListingSheetSkeleton({ rows, className, artwork = false }: { rows: number; className?: string; artwork?: boolean }) {
+  const bars = (
+    <>
+      <Bar className="h-6 w-44 max-w-[55%]" />
+      <Bar className="mt-1 h-4 w-32" />
+      <Bar className="mt-2 h-3 w-40" />
+    </>
+  );
   return (
-    <ul className={`flex flex-col gap-3 ${className ?? ""}`}>
+    <ul className={`flex flex-col gap-3${artwork ? " lg:grid lg:grid-cols-2" : ""} ${className ?? ""}`}>
       {Array.from({ length: rows }, (_, i) => (
-        <li key={i}>
-          <div className="rounded-[18px] border border-[#e9dfc2] bg-surface px-4 pb-3 pt-[18px] shadow-[0_6px_20px_rgba(151,134,95,0.14)]">
-            <Bar className="h-6 w-44 max-w-[55%]" />
-            <Bar className="mt-1 h-4 w-32" />
-            <Bar className="mt-2 h-3 w-40" />
+        <li key={i} className={artwork ? "h-full" : undefined}>
+          <div
+            className={`rounded-[18px] border border-[#e9dfc2] bg-surface px-4 pb-3 pt-[18px] shadow-[0_6px_20px_rgba(151,134,95,0.14)]${artwork ? " h-full" : ""}`}
+          >
+            {artwork ? (
+              <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 sm:gap-4">
+                <Bar className="aspect-[1/2] w-18 rounded-lg sm:w-24" />
+                <div className="min-w-0">{bars}</div>
+              </div>
+            ) : (
+              bars
+            )}
             <div className="mt-4 flex items-center justify-between gap-3 border-t border-[rgba(151,134,95,0.45)] pt-2">
               <Bar className="h-4 w-24" />
               <Bar className="h-11 w-32 shrink-0 rounded-full" />

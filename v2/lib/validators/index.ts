@@ -182,8 +182,39 @@ export const SellerRefSchema = z
   })
   .meta({ id: "SellerRef" });
 
+/**
+ * Own-work illustration (media table), shared by varieties and crops. `url` is media.r2_key as
+ * stored: for artwork served from the app's public assets that is the public path, e.g.
+ * /artwork/<file>.webp (variety) or /artwork/crops/<plant-slug>.webp (crop). Pages render it
+ * through lib/images (R2 original + on-the-fly transformation at images.seeds.hues.flowers).
+ * `thumbUrl` is DEPRECATED and no longer populated (since the 2026-11-18 image migration card
+ * sizes are transformations of `url`); it stays optional so the API contract is backward-compatible.
+ */
+export const MediaSchema = z
+  .object({
+    url: z.string().min(1),
+    licence: z.string().min(1),
+    credit: z.string().min(1),
+    /** Deprecated: no longer populated (2026-11-18); kept optional for backward compatibility. */
+    thumbUrl: z
+      .string()
+      .min(1)
+      .optional()
+      .meta({ deprecated: true, description: "Deprecated; no longer populated. Card sizes are transformations of `url`." }),
+  })
+  .meta({ id: "Media" });
+
 export const VarietyRefSchema = z
-  .object({ slug, varietyName: z.string().min(1), plant: PlantRefSchema, colorSwatch: hex.nullable() })
+  .object({
+    slug,
+    varietyName: z.string().min(1),
+    plant: PlantRefSchema,
+    colorSwatch: hex.nullable(),
+    /** The variety's own plates, media-id order; [] when none, never omitted. */
+    media: z.array(MediaSchema),
+    /** Its plant's (crop's) plates, media-id order; [] when none, never omitted. */
+    cropMedia: z.array(MediaSchema),
+  })
   .meta({ id: "VarietyRef" });
 
 /** The ONE public listing shape — variety pages, seller pages, listings endpoints, /recent, /sync. */
@@ -285,28 +316,6 @@ export const VarietyFactsSchema = z
     days_to_bloom: range,
   })
   .meta({ id: "VarietyFacts", description: 'Unknown is explicit: "unknown" or null, never omitted.' });
-
-/**
- * Own-work illustration (media table), shared by varieties and crops. `url` is media.r2_key as
- * stored: for artwork served from the app's public assets that is the public path, e.g.
- * /artwork/<file>.webp (variety) or /artwork/crops/<plant-slug>.webp (crop). Pages render it
- * through lib/images (R2 original + on-the-fly transformation at images.seeds.hues.flowers).
- * `thumbUrl` is DEPRECATED and no longer populated (since the 2026-11-18 image migration card
- * sizes are transformations of `url`); it stays optional so the API contract is backward-compatible.
- */
-export const MediaSchema = z
-  .object({
-    url: z.string().min(1),
-    licence: z.string().min(1),
-    credit: z.string().min(1),
-    /** Deprecated: no longer populated (2026-11-18); kept optional for backward compatibility. */
-    thumbUrl: z
-      .string()
-      .min(1)
-      .optional()
-      .meta({ deprecated: true, description: "Deprecated; no longer populated. Card sizes are transformations of `url`." }),
-  })
-  .meta({ id: "Media" });
 
 /**
  * A variety in a list (/varieties, crop/series/category details): the summary plus its media,
