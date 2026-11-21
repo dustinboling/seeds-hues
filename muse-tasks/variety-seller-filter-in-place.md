@@ -1,5 +1,35 @@
 # Task: Make the variety page's seller filter update in place
 
+## RETRY — read this first (run 44848006035 failed the verify gate)
+
+The previous run implemented the brief but failed `npm run verify` on
+exactly ONE lint error, so no branch was pushed and you are starting from
+main's current code:
+
+- File: `v2/components/variety/SellerFilterSection.tsx`, line 83
+- Rule: `react-hooks/set-state-in-effect` — "Calling setState synchronously
+  within an effect can trigger cascading renders"
+- The offending code was a mount effect that read
+  `window.location.search`, parsed the small-farm flag, and called
+  `setSmallFarmOnly(fromUrl)` synchronously in the effect body (with a
+  `setHydrated(true)` beside it).
+
+**Required pattern this time — no setState in a mount effect at all:**
+
+- Initialize the filter state from the server-provided initial value only.
+  First paint is already server-correct for BOTH URLs (the plain route and
+  the middleware-rewritten small-farms variant), so no mount reconciliation
+  is needed.
+- Reconcile URL → state ONLY inside the `popstate` event callback.
+  Calling setState inside an event/subscription callback is permitted by
+  the rule; calling it in the effect body is what failed.
+- If you need a "hydrated / interactive" flag, do not set it from an
+  effect: use a ref flipped inside the first event handler, or
+  `useSyncExternalStore` for the mounted check.
+- Everything else in the brief below stands unchanged, including Nadia's
+  acceptance criteria. Before finishing, run `npm run verify` in `v2/`
+  yourself and confirm it is fully green, lint included.
+
 You are working in the `seeds-hues` repository (the Seed Directory,
 seeds.hues.flowers). This prompt is self-contained — do not assume any
 other context.
