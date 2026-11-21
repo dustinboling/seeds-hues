@@ -195,7 +195,7 @@ function groupPackets(rows: PacketRow[]): Map<number, PacketSize[]> {
 }
 
 /** The ONE public listing serializer (pages, API, /recent, /sync all go through it). */
-export function mapListing(l: PublicListingRow, packets: PacketSize[]): PublicListing {
+export function mapListing(l: PublicListingRow, packets: PacketSize[], media: Media[] = [], cropMedia: Media[] = []): PublicListing {
   return parse(
     PublicListingSchema,
     {
@@ -205,6 +205,8 @@ export function mapListing(l: PublicListingRow, packets: PacketSize[]): PublicLi
         varietyName: l.varietyName,
         plant: plantRefOf(l),
         colorSwatch: l.colorSwatch,
+        media,
+        cropMedia,
       },
       seller: {
         slug: l.sellerSlug,
@@ -375,7 +377,18 @@ export function createCatalogService(db: Db) {
   async function listings(q: ListingQuery): Promise<PublicListing[]> {
     const rows = await repo.publicListingRows(db, q);
     const packets = groupPackets(await repo.packetRows(db, rows.map((l) => l.id)));
-    return rows.map((l) => mapListing(l, packets.get(l.id) ?? []));
+    // Seller-listing artwork: the varieties' own plates + their crops' plates, two batched
+    // queries (chunked at 50 ids, like packets) — no N+1. Absent from the map = [] when none.
+    const mediaByVariety = await repo.listMediaForVarieties(db, rows.map((l) => l.varietyId));
+    const mediaByPlant = await repo.listMediaForPlants(db, rows.map((l) => l.plantId));
+    return rows.map((l) =>
+      mapListing(
+        l,
+        packets.get(l.id) ?? [],
+        (mediaByVariety.get(l.varietyId) ?? []).map(toMedia),
+        (mediaByPlant.get(l.plantId) ?? []).map(toMedia),
+      ),
+    );
   }
 
   async function cropListItem(

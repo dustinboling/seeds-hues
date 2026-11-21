@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AVAILABILITY_LABEL } from "./Availability";
+import { ListingArtwork } from "./ListingArtwork";
 import { PacketList } from "./PacketList";
 import { SmallFarmBadge } from "@/components/seller/SmallFarmBadge";
 import { formatCheckedDate } from "@/lib/format";
@@ -21,6 +22,11 @@ import type { Availability, PublicListing } from "@/lib/validators";
  *
  * `context` decides which side of the listing is the heading (variety page → seller;
  * seller page → variety) and gets the same calmed card treatment.
+ *
+ * In seller context the card gains the artwork rail (ListingArtwork: the variety's plate, else
+ * the crop's plate, else the pod motif, else the divider stem) in a top-aligned grid beside the
+ * text column; the stem rule and footer span the full width below. Variety context renders no
+ * artwork and no grid wrapper — byte-for-byte the card it always was.
  *
  * SMALL-FARM BADGE: the shared SmallFarmBadge component (components/seller), rendered
  * inline after the seller name on the name row in variety context only — the placement
@@ -46,16 +52,11 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
   const tone = STATUS_TONE[l.availability];
   // The badge names the seller, so it sits on the name row only where the seller is the heading.
   const showBadge = context === "variety" && l.seller.isSmallFarm;
-  return (
-    <article
-      className={`rounded-[18px] border px-4 pb-3 pt-[18px] ${
-        soldOut
-          ? "listing-card-soldout border-line bg-paper shadow-[0_2px_8px_rgba(151,134,95,0.08)]"
-          : "border-[#e9dfc2] bg-surface shadow-[0_6px_20px_rgba(151,134,95,0.14)]"
-      }`}
-      aria-labelledby={`listing-${l.id}`}
-      data-availability={l.availability}
-    >
+  // The text column, shared by both contexts: heading row → subline → status → packets/notes.
+  // In variety context it renders flat, exactly as it always has; in seller context it sits
+  // beside the artwork rail inside the grid below.
+  const body = (
+    <>
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
         <h3
           id={`listing-${l.id}`}
@@ -93,6 +94,32 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
           {l.notes ? <p className="text-sm text-muted">{l.notes}</p> : null}
         </div>
       ) : null}
+    </>
+  );
+  return (
+    <article
+      className={`rounded-[18px] border px-4 pb-3 pt-[18px]${context === "seller" ? " h-full" : ""} ${
+        soldOut
+          ? "listing-card-soldout border-line bg-paper shadow-[0_2px_8px_rgba(151,134,95,0.08)]"
+          : "border-[#e9dfc2] bg-surface shadow-[0_6px_20px_rgba(151,134,95,0.14)]"
+      }`}
+      aria-labelledby={`listing-${l.id}`}
+      data-availability={l.availability}
+    >
+      {context === "seller" ? (
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 sm:gap-4">
+          <ListingArtwork
+            media={l.variety.media}
+            cropMedia={l.variety.cropMedia}
+            varietyName={l.variety.varietyName}
+            commonName={l.variety.plant.commonName}
+            plantSlug={l.variety.plant.slug}
+          />
+          <div className="min-w-0">{body}</div>
+        </div>
+      ) : (
+        body
+      )}
       <div aria-hidden="true" className="listing-stem-rule">
         <span />
       </div>

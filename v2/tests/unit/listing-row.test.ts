@@ -45,6 +45,8 @@ const listing = (over: Partial<PublicListing> = {}): PublicListing => ({
       sowing_method_source_label: null,
     },
     colorSwatch: null,
+    media: [],
+    cropMedia: [],
   },
   seller: { slug: "songbird-seed-co", name: "Songbird Seed Co.", location: "Skagit Valley, WA", region: "WA", country: "US", isSmallFarm: false },
   availability: "in_stock",

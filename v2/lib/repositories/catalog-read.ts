@@ -539,6 +539,8 @@ const listingSelect = {
   sellerName: sellers.name,
   sellerIsSmallFarm: sellers.isSmallFarm,
   varietyId: varieties.id,
+  /** Internal row field only (crop-media lookup in listings()); never in the public schema. */
+  plantId: plants.id,
   sellerLocation: sellers.location,
   sellerRegion: sellers.region,
   sellerCountry: sellers.country,

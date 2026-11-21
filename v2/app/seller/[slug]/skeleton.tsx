@@ -48,7 +48,7 @@ export function SellerSkeleton() {
       {/* ImportedRatingPanel: conditional, omitted — see the block table above. */}
       <Bar className="mt-8 h-8 w-64 max-w-full" />
       <Bar className="mt-1 h-5 w-32" />
-      <ListingSheetSkeleton rows={4} className="mt-3" />
+      <ListingSheetSkeleton rows={4} className="mt-3" artwork />
       <PaginationSkeleton />
       {/* "Is this your farm? Claim, correct or remove…" — the article's last block. */}
       <Bar className="mt-8 h-4 w-80 max-w-full" />

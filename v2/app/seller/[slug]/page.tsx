@@ -189,9 +189,9 @@ function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
               No listings for this seller yet. <Link href="/variety">Browse all varieties</Link>.
             </p>
           ) : (
-            <ul className="mt-3 flex flex-col gap-3">
+            <ul className="mt-3 flex flex-col gap-3 lg:grid lg:grid-cols-2">
               {shown.map((l) => (
-                <li key={l.id}>
+                <li key={l.id} className="h-full">
                   <ListingRow listing={l} context="seller" />
                 </li>
               ))}

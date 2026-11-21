@@ -937,3 +937,66 @@ describe("Zod output validation fails loudly", () => {
     await raw("UPDATE varieties SET color_swatch = '#E8A0BF' WHERE slug = 'stock-katz-mix'").run();
   });
 });
+
+describe("listing artwork data (seller-listing photos, 2026-11-20)", () => {
+  it("every listing's variety ref carries media + cropMedia ([] when none, never omitted)", async () => {
+    const s = svc();
+    const seller = (await s.getSeller("songbird-seed-co"))!;
+    expect(seller.listings.length).toBeGreaterThan(0);
+    for (const l of seller.listings) {
+      expect(l.variety.media).toEqual([]);
+      expect(l.variety.cropMedia).toEqual([]);
+    }
+    const v = (await s.getVariety("sweet-pea-kings-ransom"))!;
+    expect(v.listings.length).toBeGreaterThan(0);
+    for (const l of v.listings) {
+      expect(l.variety.media).toEqual([]);
+      expect(l.variety.cropMedia).toEqual([]);
+    }
+  });
+
+  it("listings() populates the variety's plates and its crop's plates, media-id order", async () => {
+    // King's Ransom (a Songbird sweet pea) gets two own plates; its crop gets one plate, which
+    // a second Songbird sweet pea without own plates then inherits as cropMedia only.
+    const stamp = "2026-11-20T00:00:00.000Z";
+    try {
+      await raw(
+        `INSERT INTO media (variety_id, r2_key, licence, credit, created_at)
+         SELECT id, '/artwork/test-kings-ransom-a.webp', 'Own work', 'Illustration by Hues Floral Park', '${stamp}'
+         FROM varieties WHERE slug = 'sweet-pea-kings-ransom'`,
+      ).run();
+      await raw(
+        `INSERT INTO media (variety_id, r2_key, licence, credit, created_at)
+         SELECT id, '/artwork/test-kings-ransom-b.webp', 'Own work', 'Illustration by Hues Floral Park', '${stamp}'
+         FROM varieties WHERE slug = 'sweet-pea-kings-ransom'`,
+      ).run();
+      await raw(
+        `INSERT INTO media (plant_id, r2_key, licence, credit, created_at)
+         SELECT id, '/artwork/crops/test-sweet-pea.webp', 'Own work', 'Illustration by Hues Floral Park', '${stamp}'
+         FROM plants WHERE slug = 'sweet-pea'`,
+      ).run();
+
+      const seller = (await svc().getSeller("songbird-seed-co"))!;
+      const kr = seller.listings.find((l) => l.variety.slug === "sweet-pea-kings-ransom")!;
+      expect(kr.variety.media.map((m) => m.url)).toEqual(["/artwork/test-kings-ransom-a.webp", "/artwork/test-kings-ransom-b.webp"]);
+      expect(kr.variety.cropMedia.map((m) => m.url)).toEqual(["/artwork/crops/test-sweet-pea.webp"]);
+      const other = seller.listings.find((l) => l.variety.slug !== "sweet-pea-kings-ransom" && l.variety.plant.slug === "sweet-pea")!;
+      expect(other.variety.media).toEqual([]);
+      expect(other.variety.cropMedia.map((m) => m.url)).toEqual(["/artwork/crops/test-sweet-pea.webp"]);
+      // A listing of another crop sees neither array.
+      const zinnia = seller.listings.find((l) => l.variety.plant.slug !== "sweet-pea");
+      if (zinnia) {
+        expect(zinnia.variety.media).toEqual([]);
+        expect(zinnia.variety.cropMedia).toEqual([]);
+      }
+      // The variety surface shares the one funnel, so it carries the same arrays.
+      const v = (await svc().getVariety("sweet-pea-kings-ransom"))!;
+      const vl = v.listings.find((l) => l.seller.slug === "songbird-seed-co")!;
+      expect(vl.variety.media.map((m) => m.url)).toEqual(["/artwork/test-kings-ransom-a.webp", "/artwork/test-kings-ransom-b.webp"]);
+      expect(vl.variety.cropMedia.map((m) => m.url)).toEqual(["/artwork/crops/test-sweet-pea.webp"]);
+    } finally {
+      await raw("DELETE FROM media WHERE r2_key LIKE '/artwork/test-%' OR r2_key LIKE '/artwork/crops/test-%'").run();
+    }
+    expect((await svc().getSeller("songbird-seed-co"))!.listings.every((l) => l.variety.media.length === 0 && l.variety.cropMedia.length === 0)).toBe(true);
+  });
+});

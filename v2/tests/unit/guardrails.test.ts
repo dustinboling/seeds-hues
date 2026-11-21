@@ -196,6 +196,9 @@ describe("policy guardrails", () => {
       // State-plates delta (2026-11-19): the state-flower plate on seller + state pages, from the
       // stored /artwork/states/{slug}.webp paths in lib/data/state-plates.ts, at width 640.
       "components/seller/StatePlate.tsx": [/src=\{imageUrl\(plate\.path, \{ width: 640 \}\)\}/],
+      // Seller-listing rail (2026-11-20): the resolved plate (the variety's own, else its
+      // crop's) or the crop's decorative pod motif — stored own-work paths via lib/images.
+      "components/variety/ListingArtwork.tsx": [/src=\{imageUrl\(plate\.url, \{ width: 480 \}\)\}/, /src=\{imageUrl\(motif, \{ width: 480 \}\)\}/],
     };
     const allowed = Object.keys(IMG_FILES);
     expect(offenders(ui, /<img\b/, allowed)).toEqual([]);
