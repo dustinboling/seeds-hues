@@ -303,7 +303,7 @@ export function EditSellerForm({
         </div>
       ) : null}
       {EDIT_GROUPS.map((g) => (
-        <fieldset key={g.title} disabled={busy} className="flex flex-col gap-3">
+        <fieldset key={g.title} className="flex flex-col gap-3">
           <legend className="mb-1 font-sans text-sm font-bold uppercase tracking-[0.09em] text-muted">{g.title}</legend>
           {g.title === "Identity" ? (
             <p>
@@ -437,7 +437,7 @@ export function ClassifyForm({ sellerName, isSmallFarm, isCandidate, ctx }: { se
           </p>
         </div>
       ) : null}
-      <fieldset disabled={busy} className="flex flex-col gap-3">
+      <fieldset className="flex flex-col gap-3">
         <legend className="mb-1 font-sans text-base font-semibold">Is {sellerName} a small farm, or a larger operation?</legend>
         {card("true", "Small farm", "Shows the Small farm badge on their page and listings, and includes them in the Small farms filter.")}
         {card("false", "Not a small farm", "No badge is shown. They're listed like any other seller.")}
@@ -447,7 +447,7 @@ export function ClassifyForm({ sellerName, isSmallFarm, isCandidate, ctx }: { se
         <label htmlFor="classify-note" className="mb-1 block font-sans text-sm font-semibold">
           Why <span className="font-normal text-muted">(optional — kept with the internal notes)</span>
         </label>
-        <textarea id="classify-note" name="note" rows={3} maxLength={2000} autoComplete="off" disabled={busy} className="field min-h-[44px] w-full" />
+        <textarea id="classify-note" name="note" rows={3} maxLength={2000} autoComplete="off" className="field min-h-[44px] w-full" />
       </p>
       {isCandidate ? <p className="font-sans text-[15px] text-ink-soft">Saving the classification lists {sellerName} publicly — their details are finished.</p> : null}
       <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 min-[744px]:-mx-6 min-[744px]:px-6">
@@ -520,7 +520,7 @@ export function NoteComposerForm({ ctx }: { ctx: SellerCtx }) {
         <label htmlFor="note-body" className="mb-1 block font-sans text-sm font-semibold">
           Note
         </label>
-        <textarea id="note-body" name="body" rows={5} maxLength={2000} autoComplete="off" disabled={busy} aria-invalid={error ? true : undefined} className="field min-h-[88px] w-full" />
+        <textarea id="note-body" name="body" rows={5} maxLength={2000} autoComplete="off" aria-invalid={error ? true : undefined} className="field min-h-[88px] w-full" />
       </p>
       <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 min-[744px]:-mx-6 min-[744px]:px-6">
         <button type="submit" className="btn btn-primary" disabled={busy}>

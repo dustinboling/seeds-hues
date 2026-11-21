@@ -136,7 +136,7 @@ export function RoleForm({ accountName, currentRole, ctx }: { accountName: strin
         </>
       ) : (
         <>
-          <fieldset disabled={busy} className="flex flex-col gap-3" onChange={(e) => setChosen((e.target as unknown as HTMLInputElement).value as AccountRoleValue)}>
+          <fieldset className="flex flex-col gap-3" onChange={(e) => setChosen((e.target as unknown as HTMLInputElement).value as AccountRoleValue)}>
             <legend className="mb-1 font-sans text-base font-semibold">Change {accountName}&apos;s role</legend>
             {ROLE_CARDS.map((c) => (
               <label key={c.value} className="block cursor-pointer rounded-[12px] border border-line-strong bg-surface p-4 has-[:checked]:border-leaf has-[:checked]:bg-leaf-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-focus">
@@ -260,7 +260,6 @@ export function FarmOwnerForm({ accountName, sellers, ctx }: { accountName: stri
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoComplete="off"
-              disabled={busy}
               placeholder="Seller name"
               className="field min-h-[44px] w-full"
             />
