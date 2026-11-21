@@ -58,10 +58,10 @@
   // Phase 3: drain the waiting-list notification outbox every 15 minutes (lib/jobs/scheduled.ts;
   // same logic as POST /api/v1/internal/notifications/drain).
   "triggers": { "crons": ["*/15 * * * *"] },
-  // Phase 3 email (Cloudflare Email Service — Email Sending). NOT bound yet: add this once
-  // seeds.hues.flowers is onboarded as a sending domain (Dashboard → Email Service → Email
-  // Sending → Onboard Domain). Until then sendEmail() reports "mail_not_configured".
-  //   "send_email": [{ "name": "EMAIL" }],
+  // Phase 3 email (Cloudflare Email Service — Email Sending). seeds.hues.flowers was
+  // onboarded as a sending domain 2026-11-21 via the API (POST /zones/{zone}/email/sending/
+  // subdomains; Cloudflare-managed MX/SPF/DKIM/DMARC records, DNS status "ready").
+  "send_email": [{ "name": "EMAIL" }],
   // Phase 3 secrets (never in this file): TURNSTILE_SECRET_KEY, UNSUBSCRIBE_SIGNING_KEY,
   // TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN — `wrangler secret put <NAME>`. Public vars to add
   // when they exist: TURNSTILE_SITE_KEY (the real widget's site key), SMS_PROVIDER ("twilio"),
