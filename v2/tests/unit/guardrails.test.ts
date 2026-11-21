@@ -130,10 +130,45 @@ describe("policy guardrails", () => {
     expect(stripComments(read("lib/catalog/small-farm-classification.ts"))).toMatch(/"geoseed"/);
   });
 
+  // R4 (Slice 0): the structured-data prohibition guards PUBLIC pages — only
+  // lib/seo/jsonld.ts may name those tokens. The admin tree is authenticated and
+  // non-indexed, so its UI copy (e.g. the admin section literally called "Review") is out
+  // of the R4 scan's scope. Every other guardrail keeps scanning the full runtime tree
+  // including the admin files; this file itself holds the token literals and stays out of
+  // the scan set, as before.
+  const R4_TOKENS = /AggregateRating|AggregateOffer|FAQPage|priceValidUntil|"Review"|"Product"|"Offer"/;
+  const R4_ALLOW = ["lib/seo/jsonld.ts"];
+
+  /** The admin tree: app/admin/…, lib/admin/…, and top-level lib/admin-*.ts(x). R4 only. */
+  function isAdminTree(f: string): boolean {
+    if (f.startsWith("app/admin/") || f.startsWith("lib/admin/")) return true;
+    return /^lib\/admin-[^/]*\.tsx?$/.test(f);
+  }
+
   it("no Product / Offer / AggregateRating / FAQPage / Review / priceValidUntil outside the prohibition list (R4)", () => {
-    expect(
-      offenders(RUNTIME, /AggregateRating|AggregateOffer|FAQPage|priceValidUntil|"Review"|"Product"|"Offer"/, ["lib/seo/jsonld.ts"]),
-    ).toEqual([]);
+    expect(offenders(RUNTIME.filter((f) => !isAdminTree(f)), R4_TOKENS, R4_ALLOW)).toEqual([]);
+  });
+
+  it("R4 excludes the admin tree — and the exclusion is what saves the slice's admin files", () => {
+    // The slice's real admin files that name the tokens (the section literally called Review).
+    const adminFiles = ["app/admin/(protected)/review/page.tsx", "lib/admin-auth.ts"];
+    for (const f of adminFiles) expect(isAdminTree(f)).toBe(true);
+    // WITH the exclusion: no offenders. WITHOUT it: both files trip — the scanner is not vacuous.
+    expect(offenders(adminFiles.filter((f) => !isAdminTree(f)), R4_TOKENS, R4_ALLOW)).toEqual([]);
+    expect(offenders(adminFiles, R4_TOKENS, R4_ALLOW).sort()).toEqual([...adminFiles].sort());
+  });
+
+  it("R4 still trips on public paths, including admin near-misses", () => {
+    for (const f of ["app/admin/(protected)/review/page.tsx", "app/admin/sign-in/page.tsx", "lib/admin-auth.ts", "lib/admin/session.ts"]) {
+      expect(isAdminTree(f)).toBe(true);
+    }
+    // Near-misses are NOT admin-tree: lib/admin.ts has no dash suffix, and
+    // app/administrator/… is not app/admin/.
+    for (const f of ["app/variety/[slug]/page.tsx", "components/variety/ListingRow.tsx", "lib/seo/jsonld.ts", "lib/admin.ts", "app/administrator/page.tsx"]) {
+      expect(isAdminTree(f)).toBe(false);
+    }
+    // A token-bearing public file still trips when it is not allow-listed.
+    expect(offenders(["lib/seo/jsonld.ts"], R4_TOKENS, [])).toEqual(["lib/seo/jsonld.ts"]);
   });
 
   // Media delta (2026-11-16): the rule is no seller photos and no hotlinked images. The only raster

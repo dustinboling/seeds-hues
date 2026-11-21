@@ -114,6 +114,24 @@ ${FARM_FOOTER}`,
 export const codeSms = (code: string, minutes: number) =>
   `Seed Directory: your alert-number code is ${code}. It expires in ${minutes} minutes. Msg & data rates may apply. Reply STOP to end, HELP for help.`;
 
+/**
+ * Admin sign-in code (Slice 0): the admin flow's only code email. Unlike the account
+ * verification code, this one IS part of signing in — the copy says so, and pointedly
+ * does not repeat the account code's "never need a code to sign in" line.
+ */
+export function adminCodeEmail(o: { site: string; to: string; code: string; minutes: number }): OutgoingEmail {
+  const html = `<p>Your Seed Directory admin sign-in code is:</p>
+<p style="font-size:32px;font-weight:700;letter-spacing:6px;color:#1e4634;margin:12px 0;font-family:'Courier New',monospace;">${o.code}</p>
+<p>Type it on the admin sign-in page. It works once and expires in ${o.minutes} minutes.</p>
+<p style="font-size:14px;color:#4a4438;">If you didn’t ask for this code, you can ignore this email — your account is unchanged.</p>`;
+  return {
+    to: o.to,
+    subject: "Your admin sign-in code",
+    html: shell(o.site, html, `<p style="margin:0;">${FARM_FOOTER}</p>`),
+    text: `Your Seed Directory admin sign-in code is ${o.code}\n\nType it on the admin sign-in page. It works once and expires in ${o.minutes} minutes.\n\nIf you didn't ask for this code, you can ignore this email — your account is unchanged.\n\n${FARM_FOOTER}`,
+  };
+}
+
 export function farmSubmissionAdminEmail(o: { site: string; to: string; id: number; farmName: string; city: string; state: string; website: string; contactName: string; contactEmail: string; declared: boolean }): OutgoingEmail {
   const rows = [
     ["Farm", o.farmName],

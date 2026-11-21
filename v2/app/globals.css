@@ -24,6 +24,7 @@
   --color-petal-50: #f7e8ec; /* petal on it 6.8:1 */
   --color-warn: #8a5e08; /* ochre — 5.1:1 on paper */
   --color-warn-50: #f7edd3; /* ochre-tint — warn on it 4.9:1 */
+  --color-danger: #8F1D12; /* admin-only destructive verb (Slice 0, spec 3.1: white on it 8.93:1) */
   --color-sage: #7d9b76; /* decorative foliage only — never text */
   --color-focus: #7a3e10; /* warm umber — 7.4:1 on paper, 8.2:1 on surface */
 
@@ -294,6 +295,16 @@
     background: var(--color-leaf-50);
     color: var(--color-leaf);
   }
+  /* Destructive verb inside admin confirms (spec 10.1): danger fill + verb label, always paired. */
+  .btn-danger {
+    background: var(--color-danger);
+    color: #fff;
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.35);
+  }
+  .btn-danger:hover {
+    color: #fff;
+    filter: brightness(0.92);
+  }
   .eyebrow {
     font-family: var(--font-sans);
     font-size: 0.75rem;
@@ -467,5 +478,15 @@
     .filter-strip-btn {
       display: flex;
     }
+  }
+  /*
+   * Admin Slice 0: the admin section is its own shell — the public header, footer and
+   * phone tab bar are absent there (spec A1: a flow, not a page). Scoped by :has() on the
+   * admin root marker, so public pages render exactly as before.
+   */
+  body:has(.admin-root) > header,
+  body:has(.admin-root) > footer,
+  body:has(.admin-root) > nav {
+    display: none;
   }
 }
