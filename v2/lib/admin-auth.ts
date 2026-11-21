@@ -124,6 +124,26 @@ export function formatAdminDate(iso: string | null | undefined, fallback = ""): 
   return `${MONTHS[d.month - 1]} ${d.day}, ${d.year}`;
 }
 
+/**
+ * "Nov 20, 2026 · 2:14 PM" — the note timestamp (spec D5). Read off the stored ISO in UTC
+ * (server-computed, deterministic across renders); falls back to the date alone when the
+ * time part is missing, and to `fallback` when nothing parses.
+ */
+export function formatAdminDateTime(iso: string | null | undefined, fallback = ""): string {
+  if (!iso) return fallback;
+  const d = ymd(iso);
+  if (!d) return fallback;
+  const date = `${MONTHS[d.month - 1]} ${d.day}, ${d.year}`;
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(iso);
+  if (!m) return date;
+  const hour = Number(m[4]);
+  const minute = m[5]!;
+  if (hour > 23 || Number(minute) > 59) return date;
+  const half = hour < 12 ? "AM" : "PM";
+  const twelve = hour % 12 === 0 ? 12 : hour % 12;
+  return `${date} · ${twelve}:${minute} ${half}`;
+}
+
 /** Whole calendar days from the ISO day to `now`'s local day (negative → 0). */
 function daysSince(iso: string, now: Date): number | null {
   const d = ymd(iso);

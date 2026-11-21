@@ -9,6 +9,7 @@ import { createSyncService } from "./sync";
 import { createAccountService } from "./accounts";
 import { createAdminAuthService } from "./admin-auth";
 import { createAdminReviewService } from "@/lib/admin/review-service";
+import { createAdminSellerService } from "@/lib/admin/seller-service";
 import { createFarmService } from "./farms";
 import { createNotificationService } from "./notifications";
 import { createVerificationService, type CodeChannel } from "./verification";
@@ -61,6 +62,7 @@ export function createServices(db: Db, deps: ServiceDeps = {}) {
     accounts: createAccountService(db, { turnstile, verification, unsubscribeKey: deps.unsubscribeKey ?? null, now }),
     adminAuth: createAdminAuthService(db, { mailer, siteUrl, now, onAdminCode: deps.onAdminCode }),
     adminReview: createAdminReviewService(db, { now }),
+    adminSellers: createAdminSellerService(db, { now }),
     farms: createFarmService(db, { turnstile, mailer, siteUrl, adminNotifyEmail: deps.adminNotifyEmail ?? null, now }),
     notifications: createNotificationService(db, { mailer, sms, siteUrl, unsubscribeKey: deps.unsubscribeKey ?? null, now }),
     /** Idempotency-Key replay store for ingest/admin POSTs. */
