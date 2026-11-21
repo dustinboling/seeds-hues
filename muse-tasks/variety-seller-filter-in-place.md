@@ -117,6 +117,45 @@ After the page has loaded and hydrated, tapping **All sellers** or
   navigation. An in-place toggle performs no navigation and must not
   scroll at all — do not let a clamp fire for this control.
 
+## UX acceptance criteria (Nadia, UX/UI — these govern where they are stricter)
+
+- The selected state must update immediately on tap (target: list
+  follows within 400 ms; the data is already on the page, so no fetch
+  should be perceptible). Rapid repeated taps settle on the last
+  selected option.
+- Once hydrated, the two options are one mutually exclusive filter
+  control labelled “Filter sellers”, exposed with toggle semantics —
+  `aria-pressed` on toggle buttons (or a consistently applied radio
+  pattern). Do **not** keep `aria-current` after hydration: this is no
+  longer navigation. The selected state is never carried by colour
+  alone, each option stays focusable and operable while selected, and
+  targets are at least 44 px high. The no-JS server-rendered fallback
+  remains ordinary links to the same URLs (see above) — solve the
+  semantics upgrade without dead controls or a hydration mismatch.
+- History discipline: each deliberate selection creates exactly one
+  history entry; hydration and re-renders create none; tapping the
+  already-active option is a no-op (no entry, no change). Back and
+  Forward restore the matching selected option, count, and list in
+  place.
+- The count line is a persistent live region — update its text, never
+  remount it — and it changes exactly once per selection, in step with
+  the visible rows. It announces no loading or intermediate states.
+- The “N shops · M in stock” summary above the filter describes the
+  variety's **full** listing set and must not change when the filter
+  toggles.
+- No programmatic scrolling on toggle. If the filtered list is much
+  shorter and the page is already scrolled to its very bottom, the
+  browser's natural clamp is acceptable; nothing may scroll the
+  visitor to the count, the list, or the top.
+- The empty state (filtered set is empty) appears in the results
+  region only, with the existing approved wording and a “0 of N”
+  count; the way back (“All sellers” / “Show all sellers”) also works
+  in place, and if the activated empty-state action unmounts, focus
+  lands on the “All sellers” option.
+- No page-transition animation is required. Any brief list fade must
+  honour `prefers-reduced-motion`, and the filter row must not shift
+  layout at 320 px width or 200% text resize.
+
 ## Done means
 
 1. `npm run verify` passes in full in `v2/`.
