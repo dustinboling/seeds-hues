@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
+import { Suspense, cache } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Pagination } from "@/components/ui/Pagination";
 import { RatingDisplay } from "@/components/ui/RatingDisplay";
@@ -21,6 +21,8 @@ import { PAGE_SIZE } from "@/lib/config";
 import { stateByCode } from "@/lib/data/states";
 import { statePlateFor } from "@/lib/data/state-plates";
 import { SMALL_FARM_LEGEND } from "@/lib/small-farm";
+import type { SellerDetail } from "@/lib/validators";
+import { SellerSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +51,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 }
 
 export default async function SellerPage({ params, searchParams }: Props) {
+  // Soft-404 fix: every notFound() below resolves BEFORE anything streams (this segment has
+  // no loading.tsx), so unknown slugs answer a true 404. The skeleton lives on as the inner
+  // Suspense fallback — the page's single loading announcement.
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
   const s = await load(slug);
@@ -57,6 +62,15 @@ export default async function SellerPage({ params, searchParams }: Props) {
   const total = s.listings.length;
   if (total > 0) assertPageInRange(page, total);
   else if (page > 1) notFound();
+  return (
+    <Suspense fallback={<SellerSkeleton />}>
+      <SellerContent s={s} page={page} />
+    </Suspense>
+  );
+}
+
+function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
+  const total = s.listings.length;
   const pages = totalPages(total);
   const shown = s.listings.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const crumbs = [

@@ -1,6 +1,12 @@
 import { Bar, BreadcrumbSkeleton, ListingSheetSkeleton, LoadingShell, PaginationSkeleton } from "@/components/ui/Skeleton";
 
-export default function Loading() {
+/**
+ * Seller page loading fallback (soft-404 fix): the former segment loading.tsx, demoted to the
+ * inner Suspense fallback inside SellerPage. Same tree, same geometry — the page's existence
+ * check now resolves before anything streams, so unknown slugs 404 instead of streaming this
+ * shell with a 200. This is the page's single loading announcement; add no nested LoadingShells.
+ */
+export function SellerSkeleton() {
   return (
     <LoadingShell label="Loading seller…">
       <BreadcrumbSkeleton />

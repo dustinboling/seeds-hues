@@ -1,6 +1,12 @@
 import { Bar, BreadcrumbSkeleton, HeroArtSkeleton, LoadingShell, PaginationSkeleton, VarietyGridSkeleton } from "@/components/ui/Skeleton";
 
-export default function Loading() {
+/**
+ * Crop page loading fallback (soft-404 fix): the former segment loading.tsx, demoted to the
+ * inner Suspense fallback inside CropPage. Same tree, same geometry — the page's existence
+ * check now resolves before anything streams, so unknown slugs 404 instead of streaming this
+ * shell with a 200. This is the page's single loading announcement; add no nested LoadingShells.
+ */
+export function CropSkeleton() {
   return (
     <LoadingShell label="Loading crop…">
       <BreadcrumbSkeleton />

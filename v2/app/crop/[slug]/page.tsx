@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
+import { Suspense, cache } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Pagination } from "@/components/ui/Pagination";
 import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
@@ -22,6 +22,8 @@ import { SEASON_LABELS, SOWING_METHOD_LABELS } from "@/lib/validators";
 import { growerGuideTabs, lifeCycleFact } from "@/lib/grower-guide";
 import { podArtForPlant } from "@/lib/data/pod-ornaments";
 import { imageUrl } from "@/lib/images";
+import type { CropDetail } from "@/lib/validators";
+import { CropSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -90,14 +92,27 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 }
 
 export default async function CropPage({ params, searchParams }: Props) {
+  // Soft-404 fix: every notFound() below (bad filters, unknown slug, page past the end)
+  // resolves BEFORE anything streams (this segment has no loading.tsx), so unknown slugs
+  // answer a true 404. The skeleton lives on as the inner Suspense fallback — the page's
+  // single loading announcement.
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
   const f = readFilters(sp);
   const r = await load(slug, page, f.color, f.series, f.hasSellers);
   if (!r) notFound();
-  const { crop: c, total, colorFamilies } = r;
+  const { total } = r;
   if (total > 0) assertPageInRange(page, total);
   else if (page > 1) notFound();
+  return (
+    <Suspense fallback={<CropSkeleton />}>
+      <CropContent r={r} page={page} f={f} />
+    </Suspense>
+  );
+}
+
+function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; colorFamilies: string[] }; page: number; f: CropFilters }) {
+  const { crop: c, total, colorFamilies } = r;
   const pages = totalPages(total);
   const common = shortCommonName(c.commonName);
   const lifeCycle = lifeCycleFact(c.life_cycle, c.hardiness);
