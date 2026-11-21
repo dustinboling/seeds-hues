@@ -49,11 +49,33 @@ export function smallFarmVariantPath(varietySlug: string): string {
 }
 
 /**
+ * Public href of a variety page's seller-filter state (ux §4.2): the all-sellers view is the
+ * bare route; the narrowed view keeps the site's one filter vocabulary (`?small_farm=true`).
+ * Shared by the server-rendered chips AND the hydrated in-place toggle's History API update,
+ * so the two can never disagree on the shareable URL.
+ */
+export function varietyFilterHref(varietySlug: string, smallFarmOnly: boolean): string {
+  return smallFarmOnly ? `/variety/${varietySlug}?${SMALL_FARM_PARAM}=true` : `/variety/${varietySlug}`;
+}
+
+/**
  * Forgiving page-level parse (ux §3.2): exactly "true" is on; anything else — absent, "false",
  * garbage, a repeated param — is off. The JSON API keeps its strict boolParam() instead.
  */
 export function parseSmallFarmParam(raw: string | string[] | undefined): boolean {
   return raw === "true";
+}
+
+/**
+ * Client-side mirror of the middleware's forgiving parse (ux §3.2): reads the filter state back
+ * from a live `location.search` string (a leading "?" is tolerated). Exactly one
+ * `small_farm=true` is on; anything else — absent, "false", garbage, repeated — is off. The
+ * hydrated toggle's popstate handler re-syncs through this, so Back/Forward apply the same rule
+ * as first load.
+ */
+export function smallFarmOnlyFromSearch(search: string): boolean {
+  const values = new URLSearchParams(search).getAll(SMALL_FARM_PARAM);
+  return parseSmallFarmParam(values.length === 1 ? values[0] : values);
 }
 
 /**
