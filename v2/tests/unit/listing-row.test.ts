@@ -236,37 +236,47 @@ describe("ListingRow — Quiet Ledger card", () => {
 
 describe("variety page — Quiet Ledger header block (source)", () => {
   // Since the badge build, the variety page's markup lives in variety-view.tsx (page.tsx is
-  // the thin ISR route wrapper) — the header block is pinned where it actually renders.
+  // the thin ISR route wrapper) — the header block is pinned where it actually renders. The
+  // in-place filter build moved the sellers section's interactive part (chips + count + legend
+  // + list) into the SellerFilterSection client component, pinned via `sellers` below.
   const page = readFileSync(join(process.cwd(), "app/variety/[slug]/variety-view.tsx"), "utf8");
+  const sellers = readFileSync(join(process.cwd(), "components/variety/SellerFilterSection.tsx"), "utf8");
 
   it("shows the summary line and the honesty line once, directly under the header", () => {
     const honesty = "Stock is as last seen when we checked each shop — it may have changed since. Prices are shown at the";
     expect(page.split(honesty)).toHaveLength(2); // exactly one occurrence
     expect(page).toContain("in stock");
     expect(page.indexOf(honesty)).toBeGreaterThan(page.indexOf('id="buy-title"'));
-    expect(page.indexOf(honesty)).toBeLessThan(page.indexOf("<ListingRow"));
+    expect(page.indexOf(honesty)).toBeLessThan(page.indexOf("<SellerFilterSection"));
+    expect(sellers).toContain("<ListingRow");
     // The old lower honesty wording is gone (relocated, not duplicated).
     expect(page).not.toContain("Stock is shown as last seen on the date checked");
   });
 
   it("stacks the cards with a 12 px gap and sorts in-stock above sold-out in the view", () => {
-    expect(page).toContain("flex flex-col gap-3");
+    expect(sellers).toContain("flex flex-col gap-3");
     expect(page).not.toContain("divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card");
-    expect(page).toContain("sortedListings");
-    expect(page).toContain('a === "in_stock" ? 0 : a === "sold_out" ? 2 : 1');
+    expect(sellers).not.toContain("divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card");
+    expect(sellers).toContain("sortedListings");
+    expect(sellers).toContain('a === "in_stock" ? 0 : a === "sold_out" ? 2 : 1');
   });
 
   it("keeps the badge build's filter wiring: count-line live region, chips and legend", () => {
-    expect(page).toContain('id="variety-listing-count"');
-    expect(page).toContain("sf.countLine");
-    expect(page).toContain("SellerFilterChips");
-    expect(page).toContain("SmallFarmLegend");
-    expect(page).toContain("sellerFilterView(v.listings, smallFarmOnly)");
+    expect(sellers).toContain('id="variety-listing-count"');
+    expect(sellers).toContain("sf.countLine");
+    expect(sellers).toContain("SellerFilterChips");
+    expect(sellers).toContain("SmallFarmLegend");
+    expect(sellers).toContain("sellerFilterView(listings, smallFarmOnly)");
+    // The server view feeds the section the full listing set and its initial filter state.
+    expect(page).toContain("<SellerFilterSection");
+    expect(page).toContain("listings={v.listings}");
+    expect(page).toContain("initialSmallFarmOnly={smallFarmOnly}");
   });
 });
 
 describe("variety page — sellers beside the painting layout (source)", () => {
   const page = readFileSync(join(process.cwd(), "app/variety/[slug]/variety-view.tsx"), "utf8");
+  const sellers = readFileSync(join(process.cwd(), "components/variety/SellerFilterSection.tsx"), "utf8");
   const GRID = "md:grid md:grid-cols-[380px_minmax(0,1fr)] md:items-start md:gap-8";
 
   it("reads header → About → painting → Where to buy → facts → sowing → report link → siblings", () => {
@@ -347,9 +357,13 @@ describe("variety page — sellers beside the painting layout (source)", () => {
     // Zero sellers renders in the right column, where the listings would have gone.
     expect(between).toContain("No sellers yet");
     expect(between).toContain("WaitlistBlock");
-    // The listing machinery stays inside the moved section, untouched.
-    for (const marker of ["SellerFilterChips", "variety-listing-count", "SmallFarmLegend", "<ListingRow", "ResultsScrollClamp"]) {
-      expect(between, marker).toContain(marker);
+    // The listing machinery stays inside the moved section: the sellers section mounts
+    // there with the scroll clamp beside it, and the chips/count/legend/rows live in the
+    // section file.
+    expect(between).toContain("SellerFilterSection");
+    expect(between).toContain("ResultsScrollClamp");
+    for (const marker of ["SellerFilterChips", "variety-listing-count", "SmallFarmLegend", "<ListingRow"]) {
+      expect(sellers, marker).toContain(marker);
     }
   });
 });

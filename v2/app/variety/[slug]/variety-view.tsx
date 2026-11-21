@@ -5,7 +5,7 @@ import { cache, type ReactNode } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Swatch } from "@/components/ui/Swatch";
 import { RatingDisplay } from "@/components/ui/RatingDisplay";
-import { ListingRow } from "@/components/variety/ListingRow";
+import { SellerFilterSection } from "@/components/variety/SellerFilterSection";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
 import { ViewBeacon } from "@/components/variety/ViewBeacon";
 import { ProtectionBadge, showsProtection } from "@/components/variety/ProtectionBadge";
@@ -13,7 +13,6 @@ import { VarietyHeroImage } from "@/components/variety/VarietyHeroImage";
 import { WaitlistBlock } from "@/components/variety/WaitlistBlock";
 import { ThemeArt } from "@/components/ui/ThemeArt";
 import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
-import { SmallFarmLegend } from "@/components/seller/SmallFarmBadge";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { mediaOgImage, ogImage, pageMetadata, varietyDescription, varietyTitle } from "@/lib/seo/metadata";
@@ -21,7 +20,7 @@ import { breadcrumbJsonLd, varietySellersJsonLd } from "@/lib/seo/jsonld";
 import { formatHeight, shortCommonName, titleCaseTag } from "@/lib/format";
 import { proseCommonName } from "@/lib/services/template";
 import { SEASON_LABELS, SOWING_METHOD_LABELS, type VarietyFacts } from "@/lib/validators";
-import { SMALL_FARM_CHIP_LABEL, SMALL_FARM_PARAM, sellerFilterView, smallFarmEmptyVariety } from "@/lib/small-farm";
+import { SMALL_FARM_PARAM } from "@/lib/small-farm";
 
 /**
  * The variety detail page, shared by its two ISR routes (Open Directory, ux-spec §4):
@@ -75,25 +74,6 @@ export async function varietyMetadata(slug: string, smallFarmOnly: boolean): Pro
   });
 }
 
-/**
- * Seller filter chips (ux-spec §4.1): links, URL state, `aria-current` on the active chip and NO
- * `aria-pressed`; `scroll={false}` keeps the shopper's place.
- */
-function SellerFilterChips({ slug, smallFarmOnly }: { slug: string; smallFarmOnly: boolean }) {
-  const chip = (label: string, href: string, active: boolean) => (
-    <Link href={href} scroll={false} className={`chip tap ${active ? "font-semibold" : ""}`} aria-current={active ? "true" : undefined} data-filter="smallFarm">
-      {label}
-    </Link>
-  );
-  return (
-    <nav aria-label="Filter sellers" className="mt-3 flex flex-wrap items-center gap-2" data-testid="variety-seller-filter">
-      <span className="text-sm font-semibold">Sellers:</span>
-      {chip("All sellers", `/variety/${slug}`, !smallFarmOnly)}
-      {chip(SMALL_FARM_CHIP_LABEL, `/variety/${slug}?${SMALL_FARM_PARAM}=true`, smallFarmOnly)}
-    </nav>
-  );
-}
-
 export async function VarietyView({ slug, smallFarmOnly }: { slug: string; smallFarmOnly: boolean }) {
   const v = await load(slug);
   if (!v) {
@@ -108,14 +88,6 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
   ).items.filter((s) => s.slug !== v.slug).slice(0, 6);
 
   const common = shortCommonName(v.plant.commonName);
-  const sf = sellerFilterView(v.listings, smallFarmOnly);
-  // Quiet Ledger sorting (2026-11-20): in-stock listings above sold-out in the card stack.
-  // Applied to the filter's shown set as a stable view-layer sort — sellerFilterView narrows
-  // first and never re-sorts; this then orders in stock, everything else in its existing
-  // order, then sold out, without disturbing order within groups.
-  const availabilityRank = (a: (typeof v.listings)[number]["availability"]) =>
-    a === "in_stock" ? 0 : a === "sold_out" ? 2 : 1;
-  const sortedListings = [...sf.shown].sort((a, b) => availabilityRank(a.availability) - availabilityRank(b.availability));
   const label = `${v.varietyName} ${common}`;
   const crumbs = [
     { name: "Home", href: "/" },
@@ -227,32 +199,18 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
             </>
           ) : (
             <>
-              {sf.showControl ? <SellerFilterChips slug={v.slug} smallFarmOnly={smallFarmOnly} /> : null}
-              {/* Always present when N > 0, so the live region never depends on state (ux-spec §4.4). */}
-              <p id="variety-listing-count" className="mt-2 text-muted" aria-live="polite" aria-atomic="true">
-                {sf.countLine}
-              </p>
-              {sf.showLegend ? <SmallFarmLegend className="mt-1" /> : null}
-              <div id="variety-listings">
-                {sortedListings.length > 0 ? (
-                  <ul className="mt-3 flex flex-col gap-3">
-                    {sortedListings.map((l) => (
-                      <li key={l.id}>
-                        <ListingRow listing={l} context="variety" />
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  // B = 0 reached by a hand-shared ?small_farm=true link (ux-spec §4.3).
-                  <p className="mt-3 text-muted" data-testid="variety-small-farm-empty">
-                    {smallFarmEmptyVariety(v.varietyName)}{" "}
-                    <Link href={`/variety/${v.slug}`} scroll={false}>
-                      Show all sellers
-                    </Link>
-                    .
-                  </p>
-                )}
-              </div>
+              {/* Chips + count + legend + list live in the sellers section: after hydration
+                  the filter toggles in place (History API, no router navigation). First paint
+                  stays server-rendered from initialSmallFarmOnly, identical to the old markup
+                  on both variants. */}
+              <SellerFilterSection
+                slug={v.slug}
+                varietyName={v.varietyName}
+                listings={v.listings}
+                initialSmallFarmOnly={smallFarmOnly}
+              />
+              {/* The clamp's navKey is frozen at its server value — this server component never
+                  re-renders for a client-side toggle — so the in-place filter cannot fire it. */}
               <ResultsScrollClamp targetId="variety-listing-count" regionId="variety-listings" navKey={smallFarmOnly ? "small_farm" : "all"} />
             </>
           )}

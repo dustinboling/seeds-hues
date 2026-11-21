@@ -197,15 +197,41 @@
       background-color 160ms ease-out,
       border-color 160ms ease-out;
   }
-  a.chip:hover {
+  a.chip:hover,
+  button.chip:hover {
     border-color: var(--color-leaf-600);
     background: var(--color-leaf-50);
     color: var(--color-ink);
   }
   .chip[aria-current="page"],
-  .chip[aria-current="true"] {
+  .chip[aria-current="true"],
+  .chip[aria-pressed="true"] {
     border-color: var(--color-leaf);
     background: var(--color-leaf-50);
+    color: var(--color-leaf);
+  }
+  /* Hydrated toggle chips are <button>s: same pointer cursor as the pre-hydration links. */
+  button.chip {
+    cursor: pointer;
+  }
+  /*
+   * Text-action button: the hydrated twin of a plain body link (the variety filtered-empty
+   * "Show all sellers"). Same link colour/hover and surrounding text font — buttons otherwise
+   * take the sans tool font from the base layer — with the pointer cursor of the link it
+   * replaces, so the hydration swap changes semantics without changing looks.
+   */
+  .link-button {
+    display: inline;
+    font: inherit;
+    color: var(--color-link);
+    text-decoration: inherit;
+    text-underline-offset: 0.15em;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .link-button:hover {
     color: var(--color-leaf);
   }
   .tap {
