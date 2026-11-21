@@ -3,7 +3,7 @@
  * creation + merge, and the health invariants. Catalog writes bump catalog_seq in the same
  * atomic() batch.
  */
-import { and, asc, count, desc, eq, inArray, isNull, min, ne, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, isNull, min, ne, not, sql } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import {
   blockedDomains,
@@ -12,6 +12,7 @@ import {
   listings,
   plants,
   reviewItems,
+  sellerNotes,
   sellers,
   series,
   varieties,
@@ -20,6 +21,7 @@ import {
   REVIEW_ITEM_TYPE,
   VISIBLE_LISTING_STATUS,
 } from "@/lib/db/schema";
+import { SELLER_UPDATE_FIELDS, type BadgeFilter, type ListingStateFilter, type SellerSort, type SellerUpdateField } from "@/lib/admin/sellers";
 import { normalizeName, slugify } from "@/lib/names";
 import { atomic, type AtomicOp } from "./atomic";
 import { ensureIngestSource, recomputeIndexable } from "./ingest";
@@ -673,6 +675,260 @@ export async function listingSummaryById(db: Db, id: number): Promise<ListingSum
     .where(eq(listings.id, id))
     .limit(1);
   return l ?? null;
+}
+
+// ─── Slice B: the Sellers section (D1 list, D2 detail, D3 update, notes) ──────
+
+export interface AdminSellerListFilters {
+  /** Name substring, case-insensitive. */
+  q: string | null;
+  badge: BadgeFilter;
+  state: ListingStateFilter;
+  sort: SellerSort;
+}
+
+export interface AdminSellerListRow {
+  id: number;
+  slug: string;
+  name: string;
+  type: string;
+  location: string | null;
+  status: string;
+  eligibility: string;
+  listingPolicy: string;
+  deletedAt: string | null;
+  isSmallFarm: boolean;
+  updatedAt: string;
+  liveListings: number;
+}
+
+/** The public-listing predicate in SQL (mirrors isPubliclyListed in lib/admin/sellers.ts). */
+function publiclyListedSql() {
+  return and(eq(sellers.eligibility, "approved"), eq(sellers.status, "active"), ne(sellers.listingPolicy, "removed"), isNull(sellers.deletedAt));
+}
+
+function escapeLike(q: string): string {
+  return q.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
+/**
+ * The team's working list (D1): every seller incl. candidates, filtered and sorted. ~84 rows —
+ * the full filtered list comes back, no windowing; `total` is the exact filtered count.
+ */
+export async function listSellersAdmin(db: Db, f: AdminSellerListFilters): Promise<{ rows: AdminSellerListRow[]; total: number }> {
+  const liveCounts = db
+    .select({ sellerId: listings.sellerId, n: count().as("n") })
+    .from(listings)
+    .where(and(inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt)))
+    .groupBy(listings.sellerId)
+    .as("live_counts");
+  const rows = await db
+    .select({
+      id: sellers.id,
+      slug: sellers.slug,
+      name: sellers.name,
+      type: sellers.type,
+      location: sellers.location,
+      status: sellers.status,
+      eligibility: sellers.eligibility,
+      listingPolicy: sellers.listingPolicy,
+      deletedAt: sellers.deletedAt,
+      isSmallFarm: sellers.isSmallFarm,
+      updatedAt: sellers.updatedAt,
+      liveListings: sql<number>`coalesce(${liveCounts.n}, 0)`,
+    })
+    .from(sellers)
+    .leftJoin(liveCounts, eq(sellers.id, liveCounts.sellerId))
+    .where(
+      and(
+        // Case-insensitive substring (SQLite LIKE is ASCII-folding; lower() both sides makes
+        // it explicit; LIKE has no default escape, so the ESCAPE clause makes \% \_ literal).
+        f.q ? sql`lower(${sellers.name}) LIKE ${`%${escapeLike(f.q.toLowerCase())}%`} ESCAPE '\\'` : undefined,
+        f.badge === "all" ? undefined : eq(sellers.isSmallFarm, f.badge === "small"),
+        f.state === "all" ? undefined : f.state === "active" ? publiclyListedSql() : not(publiclyListedSql()!),
+      ),
+    )
+    .orderBy(
+      ...(f.sort === "listings"
+        ? [desc(sql`coalesce(${liveCounts.n}, 0)`), asc(sql`lower(${sellers.name})`), asc(sellers.id)]
+        : f.sort === "updated"
+          ? [desc(sellers.updatedAt), asc(sellers.id)]
+          : [asc(sql`lower(${sellers.name})`), asc(sellers.id)]),
+    );
+  return { rows, total: rows.length };
+}
+
+export interface AdminSellerListing {
+  id: number;
+  titleRaw: string | null;
+  productUrl: string | null;
+  status: string;
+  varietyName: string;
+  varietySlug: string;
+}
+
+export interface SellerNote {
+  id: number;
+  authorUserId: number;
+  authorName: string;
+  authorRole: string;
+  body: string;
+  createdAt: string;
+}
+
+/** Notes newest-first (the D5 panel order). Served only through admin-authorized handlers. */
+export async function listSellerNotes(db: Db, sellerId: number): Promise<SellerNote[]> {
+  return db
+    .select({ id: sellerNotes.id, authorUserId: sellerNotes.authorUserId, authorName: sellerNotes.authorName, authorRole: sellerNotes.authorRole, body: sellerNotes.body, createdAt: sellerNotes.createdAt })
+    .from(sellerNotes)
+    .where(eq(sellerNotes.sellerId, sellerId))
+    .orderBy(desc(sellerNotes.createdAt), desc(sellerNotes.id));
+}
+
+/** One note, authored by the decider (name + role snapshotted at posting time). */
+export async function addSellerNote(db: Db, n: { sellerId: number; authorUserId: number; authorName: string; authorRole: string; body: string; at: string }): Promise<number> {
+  const [r] = await db
+    .insert(sellerNotes)
+    .values({ sellerId: n.sellerId, authorUserId: n.authorUserId, authorName: n.authorName, authorRole: n.authorRole, body: n.body, createdAt: n.at })
+    .returning({ id: sellerNotes.id });
+  return r!.id;
+}
+
+export interface AdminSellerDetail {
+  id: number;
+  slug: string;
+  name: string;
+  type: string;
+  platform: string | null;
+  homepage: string | null;
+  contactEmail: string | null;
+  location: string | null;
+  region: string | null;
+  country: string;
+  shipsTo: string;
+  description: string | null;
+  orderingNotes: string | null;
+  status: string;
+  eligibility: string;
+  listingPolicy: string;
+  deletedAt: string | null;
+  isSmallFarm: boolean;
+  updatedAt: string;
+  liveListingCount: number;
+  /** The seller's first listings (the read-only D2 block). */
+  listings: AdminSellerListing[];
+  notes: SellerNote[];
+}
+
+/** The full admin record (incl. contactEmail — admin-side only) + listings + notes. */
+export async function sellerDetailBySlug(db: Db, slug: string): Promise<AdminSellerDetail | null> {
+  const [s] = await db
+    .select({
+      id: sellers.id,
+      slug: sellers.slug,
+      name: sellers.name,
+      type: sellers.type,
+      platform: sellers.platform,
+      homepage: sellers.homepage,
+      contactEmail: sellers.contactEmail,
+      location: sellers.location,
+      region: sellers.region,
+      country: sellers.country,
+      shipsTo: sellers.shipsTo,
+      description: sellers.description,
+      orderingNotes: sellers.orderingNotes,
+      status: sellers.status,
+      eligibility: sellers.eligibility,
+      listingPolicy: sellers.listingPolicy,
+      deletedAt: sellers.deletedAt,
+      isSmallFarm: sellers.isSmallFarm,
+      updatedAt: sellers.updatedAt,
+    })
+    .from(sellers)
+    .where(eq(sellers.slug, slug))
+    .limit(1);
+  if (!s) return null;
+  const [liveListingCount, firstListings, notes] = await Promise.all([
+    liveListingCountForSeller(db, s.id),
+    db
+      .select({ id: listings.id, titleRaw: listings.titleRaw, productUrl: listings.productUrl, status: listings.status, varietyName: varieties.varietyName, varietySlug: varieties.slug })
+      .from(listings)
+      .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+      .where(and(eq(listings.sellerId, s.id), isNull(listings.deletedAt)))
+      .orderBy(asc(listings.id))
+      .limit(5),
+    listSellerNotes(db, s.id),
+  ]);
+  return { ...s, liveListingCount, listings: firstListings, notes };
+}
+
+export type SellerUpdate = Partial<Record<SellerUpdateField, string | string[] | null>>;
+
+/**
+ * The general admin seller update (Hue resolution 1): the full D3 field set — CORRECTABLE
+ * plus type, platform, country, contactEmail. Same conventions as applySellerCorrection
+ * (seq bump, updatedAt, the changed-field list back); the structured-correction path keeps
+ * its narrower set. type/platform arrive validated against the schema enums; platform null
+ * clears it (the D3 "none" option). Never touches eligibility — a D3 save alone never
+ * publishes (resolution 4).
+ */
+export async function updateSellerFields(db: Db, sellerId: number, fields: SellerUpdate, at: string): Promise<string[]> {
+  const [cur] = await db
+    .select({
+      name: sellers.name,
+      type: sellers.type,
+      platform: sellers.platform,
+      homepage: sellers.homepage,
+      contactEmail: sellers.contactEmail,
+      location: sellers.location,
+      region: sellers.region,
+      country: sellers.country,
+      shipsTo: sellers.shipsTo,
+      description: sellers.description,
+      orderingNotes: sellers.orderingNotes,
+    })
+    .from(sellers)
+    .where(eq(sellers.id, sellerId))
+    .limit(1);
+  if (!cur) return [];
+  const set: Record<string, unknown> = {};
+  for (const k of SELLER_UPDATE_FIELDS) {
+    if (!(k in fields)) continue;
+    const v = fields[k];
+    // The changed list is diffed against the stored row (an unchanged save writes nothing
+    // and reports "No changes to save."), so the D2 status line stays honest on every path.
+    const next = k === "shipsTo" ? JSON.stringify(Array.isArray(v) && v.length ? v : ["unknown"]) : k === "platform" ? (typeof v === "string" && v ? v : null) : v;
+    if (cur[k] === next) continue;
+    set[k] = next;
+  }
+  const changed = Object.keys(set);
+  if (changed.length === 0) return [];
+  await atomic(db, [...nextSeq(db), db.update(sellers).set({ ...set, updatedAt: at, updatedSeq: currentSeq() }).where(eq(sellers.id, sellerId)) as unknown as AtomicOp]);
+  return changed;
+}
+
+/** Visible listings' variety slugs — the ISR pages a seller write must revalidate. */
+export async function sellerVisibleVarietySlugs(db: Db, sellerId: number): Promise<string[]> {
+  const rows = await db
+    .selectDistinct({ slug: varieties.slug })
+    .from(listings)
+    .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+    .where(and(eq(listings.sellerId, sellerId), inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt)));
+  return rows.map((r) => r.slug).sort();
+}
+
+/**
+ * Deactivate (→ inactive) / reactivate (→ active). Nothing is deleted; the public layer keys
+ * visibility off status through visibleSeller, so an inactive seller has no public page, is
+ * absent from the directory and search, and its listings leave the public variety pages —
+ * while the admin record stays fully visible (resolution 2).
+ */
+export async function setSellerStatus(db: Db, sellerId: number, status: "active" | "inactive", at: string): Promise<{ varietySlugs: string[] }> {
+  await atomic(db, [
+    ...nextSeq(db),
+    db.update(sellers).set({ status, updatedAt: at, updatedSeq: currentSeq() }).where(eq(sellers.id, sellerId)) as unknown as AtomicOp,
+  ]);
+  return { varietySlugs: await sellerVisibleVarietySlugs(db, sellerId) };
 }
 
 // ─── health (invariants) ────────────────────────────────────────────────────

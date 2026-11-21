@@ -921,6 +921,28 @@ export const roleAudit = sqliteTable(
   (t) => [index("role_audit_user_idx").on(t.userId)],
 );
 
+/**
+ * Seller internal notes (Slice B, migration 0014): the team's private memory about a seller.
+ * PRIVATE — never in the snapshot allowlist, the sync payloads or the public API. Append-only
+ * in v1 (no edit/delete UI). author_user_id has no FK and the name + role snapshot beside it
+ * (the Slice A decider-trail precedent): the trail outlives the account.
+ */
+export const sellerNotes = sqliteTable(
+  "seller_notes",
+  {
+    id: integer("id").primaryKey(),
+    sellerId: integer("seller_id")
+      .notNull()
+      .references(() => sellers.id),
+    authorUserId: integer("author_user_id").notNull(),
+    authorName: text("author_name").notNull(),
+    authorRole: text("author_role").notNull(),
+    body: text("body").notNull(),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [index("seller_notes_seller_created_idx").on(t.sellerId, t.createdAt)],
+);
+
 /** Failed sign-in attempts (rate limiting): keys are SHA-256 hashes — no IP or phone in clear. */
 export const authAttempts = sqliteTable(
   "auth_attempts",
@@ -1102,6 +1124,7 @@ export const PRIVATE_ACCOUNT_TABLES = [
   "admin_sessions",
   "admin_signin_codes",
   "role_audit",
+  "seller_notes",
 ] as const;
 
 // ─── Future stubs (empty in Phase 1; no app code path reads or writes them) ──

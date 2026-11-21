@@ -10,7 +10,7 @@ import * as ingest from "@/lib/repositories/ingest";
 import * as farmRepo from "@/lib/repositories/farm-submissions";
 import { demandStats, rollupDay } from "@/lib/repositories/events";
 import { resolveReport } from "@/lib/repositories/reports";
-import { AVAILABILITY, REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE } from "@/lib/db/schema";
+import { AVAILABILITY, REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE, SELLER_PLATFORMS, SELLER_TYPES } from "@/lib/db/schema";
 import { hostOf, hostOnDomain, normalizeName } from "@/lib/names";
 import { notifyWaitlists, ServiceError } from "./ingest";
 
@@ -49,6 +49,35 @@ export const SellerActionBodySchema = z.strictObject({ reason: z.string().max(50
 
 /** POST /admin/sellers/{ref}/small-farm — the Small farm badge judgment (Open Directory). */
 export const SellerBadgeBodySchema = z.strictObject({ is_small_farm: z.boolean() });
+
+/**
+ * Slice B (D3): the general admin seller update (Hue resolution 1) — CORRECTABLE plus
+ * type, platform, country, contactEmail. type/platform validate against the schema enums.
+ * Nullable fields take null to clear (the UI normalizes empty inputs to null first).
+ */
+export const SellerUpdateBodySchema = z
+  .strictObject({
+    name: z.string().trim().min(1, "enter a name").max(200).optional(),
+    type: z.enum(SELLER_TYPES).optional(),
+    platform: z.enum(SELLER_PLATFORMS).nullable().optional(),
+    homepage: z.string().trim().url("enter a full web address, starting with https://").max(2000).nullable().optional(),
+    contactEmail: z.email("enter a valid email address").max(320).nullable().optional(),
+    location: z.string().trim().max(200).nullable().optional(),
+    region: z.string().trim().max(10).nullable().optional(),
+    country: z.string().trim().min(1).max(80).optional(),
+    shipsTo: z.array(z.string().trim().min(1).max(10)).max(60).optional(),
+    description: z.string().max(2000).nullable().optional(),
+    orderingNotes: z.string().max(2000).nullable().optional(),
+  });
+
+/** Slice B (D4): the classification save — the badge judgment plus the optional Why note. */
+export const SellerClassifyBodySchema = z.strictObject({ is_small_farm: z.boolean(), note: z.string().trim().max(2000).optional() });
+
+/** Slice B (D2 danger zone): deactivate → inactive, reactivate → active. */
+export const SellerStatusBodySchema = z.strictObject({ status: z.enum(["active", "inactive"]) });
+
+/** Slice B (D5): the note composer — both roles. */
+export const SellerNoteBodySchema = z.strictObject({ body: z.string().trim().min(1, "write the note first").max(2000) });
 
 export const ListingRemoveBodySchema = z.strictObject({ reason: z.string().max(500).optional() }).default({});
 
@@ -437,6 +466,67 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
         // sellerAction's set, plus every variety page that lists this seller: those ISR pages show
         // the badge on its rows and decide the Small-farms chip pair from it (each variety path is
         // expanded to its small-farms view by withVariantPaths).
+        revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
+      };
+    },
+
+    /**
+     * Slice B (D3): the general admin seller update (resolution 1). Changes exactly the
+     * submitted fields and returns the changed-field list the D2 status line renders. Never
+     * touches eligibility — a D3 save alone never publishes (resolution 4).
+     */
+    async sellerUpdate(ref: string, body: z.infer<typeof SellerUpdateBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+      const seller = await ingest.sellerByRef(db, ref);
+      if (!seller) throw new AdminError(404, "seller_not_found", `seller ${ref} not found`);
+      if (seller.eligibility === "removed_by_request") throw new AdminError(409, "seller_removed", `${seller.slug} was removed at its request`);
+      const changed = await admin.updateSellerFields(db, seller.id, body, iso());
+      const varietySlugs = await admin.sellerVisibleVarietySlugs(db, seller.id);
+      return {
+        data: { seller: seller.slug, id: seller.id, changed },
+        revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
+      };
+    },
+
+    /**
+     * Slice B (D4): the classification save through the badge write — plus, on a candidate
+     * seller, eligibility → approved via the existing setSellerEligibility, because
+     * classification is the last of the two named completion steps (resolution 4). The
+     * optional Why note files into seller_notes authored by the decider.
+     */
+    async sellerClassify(
+      ref: string,
+      body: z.infer<typeof SellerClassifyBodySchema>,
+      opts: { decider?: Decider & { role: string } } = {},
+    ): Promise<AdminResult<Record<string, unknown>>> {
+      const seller = await ingest.sellerByRef(db, ref);
+      if (!seller) throw new AdminError(404, "seller_not_found", `seller ${ref} not found`);
+      if (seller.eligibility === "removed_by_request") throw new AdminError(409, "seller_removed", `${seller.slug} was removed at its request`);
+      const at = iso();
+      const { varietySlugs } = await admin.setSellerSmallFarm(db, seller.id, body.is_small_farm, at);
+      const published = seller.eligibility === "candidate";
+      if (published) await admin.setSellerEligibility(db, seller.id, "approved", at);
+      let noteId: number | null = null;
+      if (body.note && opts.decider) {
+        noteId = await admin.addSellerNote(db, { sellerId: seller.id, authorUserId: opts.decider.userId, authorName: opts.decider.name, authorRole: opts.decider.role, body: body.note, at });
+      }
+      return {
+        data: { seller: seller.slug, id: seller.id, is_small_farm: body.is_small_farm, published, ...(noteId !== null ? { note_id: noteId } : {}) },
+        revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
+      };
+    },
+
+    /**
+     * Slice B (D2 danger zone): deactivate (status → inactive) / reactivate (→ active).
+     * Nothing is deleted; the public layer hides an inactive seller through visibleSeller
+     * (resolution 2).
+     */
+    async sellerSetStatus(ref: string, body: z.infer<typeof SellerStatusBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+      const seller = await ingest.sellerByRef(db, ref);
+      if (!seller) throw new AdminError(404, "seller_not_found", `seller ${ref} not found`);
+      if (seller.eligibility === "removed_by_request") throw new AdminError(409, "seller_removed", `${seller.slug} was removed at its request`);
+      const { varietySlugs } = await admin.setSellerStatus(db, seller.id, body.status, iso());
+      return {
+        data: { seller: seller.slug, id: seller.id, status: body.status },
         revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
       };
     },
