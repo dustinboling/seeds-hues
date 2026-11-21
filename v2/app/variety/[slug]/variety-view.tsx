@@ -181,6 +181,20 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
           </div>
         </header>
 
+        <section aria-labelledby="about-title" className="mt-6 max-w-3xl">
+          <h2 id="about-title" className="text-xl font-semibold">
+            About {label}
+          </h2>
+          <p className="mt-2">{v.description ?? v.templateDescription}</p>
+          {v.description ? (
+            <p className="mt-2 text-sm text-muted">
+              <span className="font-semibold">Directory summary: </span>
+              {v.templateDescription}
+            </p>
+          ) : null}
+        </section>
+
+        <div className={v.media[0] ? "md:grid md:grid-cols-[380px_minmax(0,1fr)] md:items-start md:gap-8" : undefined}>
         {v.media[0] ? <VarietyHeroImage media={v.media[0]} label={label} /> : null}
 
         <section aria-labelledby="buy-title" className="mt-6">
@@ -243,6 +257,7 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
             </>
           )}
         </section>
+        </div>
 
         <section aria-labelledby="facts-title" className="mt-8">
           <h2 id="facts-title" className="text-xl font-semibold">
@@ -291,19 +306,6 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
             <div className="mt-3">
               <ProtectionBadge protection={v.protection} note={v.protectionNote} />
             </div>
-          ) : null}
-        </section>
-
-        <section aria-labelledby="about-title" className="mt-6 max-w-3xl">
-          <h2 id="about-title" className="text-xl font-semibold">
-            About {label}
-          </h2>
-          <p className="mt-2">{v.description ?? v.templateDescription}</p>
-          {v.description ? (
-            <p className="mt-2 text-sm text-muted">
-              <span className="font-semibold">Directory summary: </span>
-              {v.templateDescription}
-            </p>
           ) : null}
         </section>
 
