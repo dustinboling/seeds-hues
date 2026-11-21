@@ -163,6 +163,7 @@ export function SellerFilterSection({
   useEffect(() => {
     const onPopState = (): void => {
       setSmallFarmOnly(smallFarmOnlyFromSearch(window.location.search));
+      setFilterTouched(true);
     };
     window.addEventListener("popstate", onPopState);
     return () => {
@@ -225,7 +226,7 @@ export function SellerFilterSection({
       {sf.showLegend ? <SmallFarmLegend className="mt-1" /> : null}
       <div id="variety-listings">
         {sortedListings.length > 0 ? (
-          <ul className="mt-3 flex flex-col gap-3">
+          <ul key={smallFarmOnly ? "small-farms" : "all"} className={`mt-3 flex flex-col gap-3${filterTouched ? " listing-swap" : ""}`}>
             {sortedListings.map((l) => (
               <li key={l.id}>
                 <ListingRow listing={l} context="variety" />
@@ -234,7 +235,7 @@ export function SellerFilterSection({
           </ul>
         ) : (
           // B = 0 reached by a hand-shared ?small_farm=true link (ux-spec §4.3).
-          <p className="mt-3 text-muted" data-testid="variety-small-farm-empty">
+          <p key={smallFarmOnly ? "small-farms" : "all"} className={`mt-3 text-muted${filterTouched ? " listing-swap" : ""}`} data-testid="variety-small-farm-empty">
             {smallFarmEmptyVariety(varietyName)}{" "}
             {hydrated ? (
               <button type="button" className="link-button" onClick={showAllInPlace}>

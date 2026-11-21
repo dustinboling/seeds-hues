@@ -178,12 +178,13 @@ describe("SellerFilterSection toggle wiring (source)", () => {
   it("reconciles URL → state only in the popstate callback (no setState in any effect body)", () => {
     expect(section).not.toContain("setHydrated");
     expect(section).toContain("useSyncExternalStore");
-    // Exactly three setState call sites: the toggle handler's pair and the popstate callback.
+    // Exactly four setState call sites: the toggle handler's pair and the popstate
+    // callback's pair (the re-sync re-arms filterTouched so Back/Forward cascades too).
     expect(section.match(/setSmallFarmOnly\(/g) ?? []).toHaveLength(2);
     expect(section).toContain("setSmallFarmOnly(next)");
     expect(section).toContain("setSmallFarmOnly(smallFarmOnlyFromSearch(window.location.search))");
-    expect(section.match(/setFilterTouched\(/g) ?? []).toHaveLength(1);
-    expect(section).toContain("setFilterTouched(true)");
+    expect(section.match(/setFilterTouched\(/g) ?? []).toHaveLength(2);
+    expect(section.match(/setFilterTouched\(true\)/g) ?? []).toHaveLength(2);
     // Neither effect body calls setState itself (the popstate callback is nested, so it runs
     // on browser Back/Forward — not during the effect — which the hooks rule permits).
     const bodies = [...section.matchAll(/useEffect\(\(\) => \{([\s\S]*?)\n  \}, \[/g)].map((m) => m[1]!);
@@ -243,5 +244,82 @@ describe("variety server view integration (source)", () => {
     expect(variant).toContain("smallFarmOnly");
     const plain = readFileSync(join(process.cwd(), "app/variety/[slug]/page.tsx"), "utf8");
     expect(plain).toContain("smallFarmOnly={false}");
+  });
+});
+
+describe("Filter-update motion (Mina spec 2026-11-20 — cascade fires only on filter change)", () => {
+  it("first paint carries no listing-swap class in either filter state", () => {
+    expect(html(mixed, false)).not.toContain("listing-swap");
+    expect(html(mixed, true)).not.toContain("listing-swap");
+  });
+
+  it("first paint carries no listing-swap class in the B = 0 and all-badged edge states", () => {
+    const unbadged = [listing(1, false, "in_stock"), listing(2, false, "in_stock")];
+    expect(html(unbadged, false)).not.toContain("listing-swap");
+    expect(html(unbadged, true)).not.toContain("listing-swap");
+    const badged = [listing(1, true, "in_stock"), listing(2, true, "sold_out")];
+    expect(html(badged, false)).not.toContain("listing-swap");
+    expect(html(badged, true)).not.toContain("listing-swap");
+  });
+
+  it("keys the swapping elements by filter state and gates the class on filterTouched (source)", () => {
+    const section = readFileSync(join(process.cwd(), "components/variety/SellerFilterSection.tsx"), "utf8");
+    // Both the <ul> and the filtered-empty <p> remount on every filter-state change, so
+    // retained rows cascade too; the class arrives only once the visitor has touched the filter.
+    expect(section.match(/key=\{smallFarmOnly \? "small-farms" : "all"\}/g) ?? []).toHaveLength(2);
+    expect(section).toContain('className={`mt-3 flex flex-col gap-3${filterTouched ? " listing-swap" : ""}`}');
+    expect(section).toContain('className={`mt-3 text-muted${filterTouched ? " listing-swap" : ""}`}');
+    // #variety-listings itself never remounts and gains no class; the component names only
+    // the class, never the keyframes (the trigger mechanism, nothing more).
+    expect(section).toContain('<div id="variety-listings">');
+    expect(section).not.toContain("listing-item-in");
+  });
+
+  it("re-arms the cascade on Back/Forward from the same popstate callback (source)", () => {
+    const section = readFileSync(join(process.cwd(), "components/variety/SellerFilterSection.tsx"), "utf8");
+    const popstate = section.match(/const onPopState[\s\S]*?\n    \};/)?.[0] ?? "";
+    expect(popstate).not.toBe("");
+    expect(popstate).toContain("setSmallFarmOnly(smallFarmOnlyFromSearch(window.location.search))");
+    expect(popstate).toContain("setFilterTouched(true);");
+  });
+
+  it("defines the motion tokens beside the card tokens with the spec's exact values", () => {
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).toContain("--duration-filter-item: 220ms;");
+    expect(css).toContain("--ease-filter-settle: cubic-bezier(0.22, 1, 0.36, 1);");
+    expect(css.match(/--duration-filter-item:/g) ?? []).toHaveLength(1);
+    expect(css.match(/--ease-filter-settle:/g) ?? []).toHaveLength(1);
+    expect(css.indexOf("--shadow-card")).toBeLessThan(css.indexOf("--duration-filter-item"));
+  });
+
+  it("defines the listing-item-in keyframes and the capped stagger with the spec's exact values", () => {
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).toMatch(
+      /@keyframes listing-item-in \{\s*from \{\s*opacity: 0;\s*transform: translateY\(6px\);\s*\}\s*to \{\s*opacity: 1;\s*transform: translateY\(0\);\s*\}\s*\}/,
+    );
+    // Motion code stays together: the cascade follows the skeleton block in the components layer.
+    expect(css.indexOf("@keyframes skeleton-reveal")).toBeLessThan(css.indexOf("@keyframes listing-item-in"));
+    expect(css).toContain(".listing-swap > li {");
+    expect(css).toContain("animation: listing-item-in var(--duration-filter-item) var(--ease-filter-settle) both;");
+    expect(css).toContain(".listing-swap > li:nth-child(2) { animation-delay: 30ms; }");
+    expect(css).toContain(".listing-swap > li:nth-child(3) { animation-delay: 60ms; }");
+    expect(css).toContain(".listing-swap > li:nth-child(4) { animation-delay: 90ms; }");
+    expect(css).toContain(".listing-swap > li:nth-child(5) { animation-delay: 120ms; }");
+    expect(css).toContain(".listing-swap > li:nth-child(n + 6) { animation-delay: 120ms; }");
+    expect(css).toContain("p.listing-swap {");
+  });
+
+  it("removes the animation entirely under prefers-reduced-motion (animation: none)", () => {
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).toMatch(
+      /@media \(prefers-reduced-motion: reduce\) \{\s*\.listing-swap > li,\s*p\.listing-swap \{\s*animation: none;\s*\}\s*\}/,
+    );
+  });
+
+  it("animates opacity/transform only — no layout property anywhere in the treatment", () => {
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    const block = css.slice(css.indexOf("@keyframes listing-item-in"), css.indexOf(".sr-only-focusable"));
+    expect(block).not.toBe("");
+    for (const prop of ["height", "margin", "padding", "gap", "scale(", "top:"]) expect(block, prop).not.toContain(prop);
   });
 });
