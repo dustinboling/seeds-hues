@@ -14,7 +14,7 @@ function StatusLine({ s }: { s: AlertItem["status"] }) {
   if (s.state === "found") {
     return (
       <span className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex rounded-full border border-leaf/40 bg-leaf-50 px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-leaf">Found</span>
+        <span className="inline-flex rounded-full border border-leaf/60 bg-leaf-50 px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-leaf">Found</span>
         <span>
           Found at <Link href={`/seller/${s.seller.slug}`}>{s.seller.name}</Link>
           {s.seller_count > 1 ? ` and ${s.seller_count - 1} more` : ""} —{" "}
@@ -29,14 +29,14 @@ function StatusLine({ s }: { s: AlertItem["status"] }) {
   if (s.state === "waiting") {
     return (
       <span className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex rounded-full border border-leaf-600/40 bg-surface px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-leaf-600">Waiting · active</span>
+        <span className="inline-flex rounded-full border border-leaf-600/70 bg-surface px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-leaf-600">Waiting · active</span>
         <span className="text-sm text-muted">We’ll send {s.channels.map((c) => CHANNEL_LABEL[c]).join(" + ")} the moment a seller lists it.</span>
       </span>
     );
   }
   return (
     <span className="flex flex-wrap items-center gap-2">
-      <span className="inline-flex rounded-full border border-warn/40 bg-warn-50 px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-warn">Held</span>
+      <span className="inline-flex rounded-full border border-warn/75 bg-warn-50 px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-warn">Held</span>
       <span className="text-sm text-muted">Alerts are off until you: {s.reasons.join(" ")}.</span>
     </span>
   );

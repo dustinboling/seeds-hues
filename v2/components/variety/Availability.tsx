@@ -8,15 +8,19 @@ export const AVAILABILITY_LABEL: Record<Availability, string> = {
   unknown: "Unknown",
 };
 
-// Theme badges (THEME-ART-DIRECTION.md §5): text colour on its tint, 1 px border of the text
-// colour at 40 %. In stock = leaf-deep on sage-tint · Sold out = petal on petal-tint ·
-// Unknown = ochre on ochre-tint. Preorder and shop closed keep distinct, quieter tones.
+// Theme badges (THEME-ART-DIRECTION.md §5): text color on its tint, 1 px border of the text
+// color at Ada's prescribed per-tone alpha (2026-11-19) — each border clears the WCAG 1.4.11
+// 3:1 floor against its own badge ground: leaf/60 on sage-tint (3.13:1), petal/65 on
+// petal-tint (3.27:1), leaf-600/70 on surface (3.23:1), muted/70 on surface (3.18:1),
+// warn/75 on ochre-tint (3.08:1). In stock = leaf-deep on sage-tint · Sold out = petal on
+// petal-tint · Unknown = ochre on ochre-tint. Preorder and shop closed keep distinct,
+// quieter tones.
 const TONE: Record<Availability, string> = {
-  in_stock: "border-leaf/40 bg-leaf-50 text-leaf",
-  sold_out: "border-petal/40 bg-petal-50 text-petal",
-  preorder: "border-leaf-600/40 bg-surface text-leaf-600",
-  shop_closed: "border-muted/40 bg-surface text-muted",
-  unknown: "border-warn/40 bg-warn-50 text-warn",
+  in_stock: "border-leaf/60 bg-leaf-50 text-leaf",
+  sold_out: "border-petal/65 bg-petal-50 text-petal",
+  preorder: "border-leaf-600/70 bg-surface text-leaf-600",
+  shop_closed: "border-muted/70 bg-surface text-muted",
+  unknown: "border-warn/75 bg-warn-50 text-warn",
 };
 
 /** Stock state as last seen — always paired with its "Last checked" date by the caller. */
