@@ -121,6 +121,12 @@ export async function waitlistCountForUser(db: Db, userId: number): Promise<numb
   return r?.n ?? 0;
 }
 
+/** Waitlist memberships on a variety (Slice C, F2) — every row, alerted or not. */
+export async function waitlistCountForVariety(db: Db, varietyId: number): Promise<number> {
+  const [r] = await db.select({ n: count() }).from(waitlistEntries).where(eq(waitlistEntries.varietyId, varietyId));
+  return r?.n ?? 0;
+}
+
 /** Variety ids a user waits on and has not yet been alerted for. */
 export async function pendingVarietyIdsForUser(db: Db, userId: number): Promise<number[]> {
   const rows = await db

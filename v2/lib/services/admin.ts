@@ -230,13 +230,48 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
     };
   }
 
-  async function removeListing(id: number, body: z.infer<typeof ListingRemoveBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
-    const r = await admin.removeListing(db, id, body.reason ?? null, iso());
+  async function removeListing(id: number, body: z.infer<typeof ListingRemoveBodySchema>, opts: { actor?: string | null } = {}): Promise<AdminResult<Record<string, unknown>>> {
+    const r = await admin.removeListing(db, id, body.reason ?? null, iso(), opts.actor ?? null);
     if (!r) throw new AdminError(404, "listing_not_found", `listing ${id} not found`);
     return {
       data: { listing_id: id, status: "removed", already_removed: r.alreadyRemoved },
       // The variety page lists it and the seller page counts it; the variety stays indexable, so no sitemap change.
       revalidate: [`/variety/${r.varietySlug}`, `/seller/${r.sellerSlug}`],
+    };
+  }
+
+  /**
+   * Restore a retired listing (Slice C, E2 — driven by the admin session only). Unknown
+   * id → 404; a non-removed listing is a no-op naming why (`not_removed`), with nothing
+   * written. Success flips to 'published' with a 'restored' event carrying the actor.
+   */
+  async function restoreListing(id: number, opts: { actor?: string | null } = {}): Promise<AdminResult<Record<string, unknown>>> {
+    const r = await admin.restoreListing(db, id, iso(), opts.actor ?? null);
+    if (!r) throw new AdminError(404, "listing_not_found", `listing ${id} not found`);
+    if (!r.restored) return { data: { listing_id: id, restored: false, why: r.why }, revalidate: [] };
+    return {
+      data: { listing_id: id, status: "published", restored: true },
+      revalidate: [`/variety/${r.varietySlug}`, `/seller/${r.sellerSlug}`],
+    };
+  }
+
+  /**
+   * Remove a variety (Slice C — driven by the F2 danger zone AND the key-based admin API
+   * as POST /api/v1/admin/varieties/:id/remove, one effect). Unknown id → 404; a second
+   * remove reports already_removed with nothing written; live listings present → 409
+   * naming the count. Success removes the public page, so the variety, crop, directory
+   * and sitemap paths revalidate.
+   */
+  async function removeVariety(id: number): Promise<AdminResult<Record<string, unknown>>> {
+    const r = await admin.removeVariety(db, id, iso());
+    if (!r) throw new AdminError(404, "variety_not_found", `variety ${id} not found`);
+    if (r.outcome === "blocked") {
+      const n = r.liveListings;
+      throw new AdminError(409, "variety_has_listings", `this variety still has ${n} live ${n === 1 ? "listing" : "listings"} — retire ${n === 1 ? "it" : "them"} before removing the variety`);
+    }
+    return {
+      data: { variety_id: id, slug: r.slug, already_removed: r.outcome === "already_removed" },
+      revalidate: [`/variety/${r.slug}`, `/crop/${r.plantSlug}`, "/variety", "/sitemap.xml"],
     };
   }
 
@@ -254,6 +289,8 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
 
   return {
     removeListing,
+    restoreListing,
+    removeVariety,
 
     listReview: (q: z.infer<typeof ReviewListQuerySchema>, limit: number) => admin.listReviewItems(db, { ...q, limit }),
 
@@ -431,7 +468,7 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
     async retireListingFromReport(id: number, listingId: number, reason: string | null, decider: Decider): Promise<AdminResult<Record<string, unknown>>> {
       const item = await itemOr404(id);
       if (item.type !== "seller_correction" && item.type !== "removal") throw new AdminError(422, "not_a_report", `review item ${id} is not a report`);
-      const r = await removeListing(listingId, { reason: reason ?? undefined });
+      const r = await removeListing(listingId, { reason: reason ?? undefined }, { actor: decider.name });
       const at = iso();
       await admin.resolveReviewItem(db, id, "approved", at, { decider });
       await closeReport(item.proposal, "resolved");

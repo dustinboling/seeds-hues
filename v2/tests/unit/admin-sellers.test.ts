@@ -195,9 +195,13 @@ describe("status wording", () => {
   });
 
   it("note timestamps read friendly with time, never ISO", () => {
-    expect(formatAdminDateTime("2026-11-20T14:14:00.000Z")).toBe("Nov 20, 2026 · 2:14 PM");
-    expect(formatAdminDateTime("2026-11-20T00:05:00.000Z")).toBe("Nov 20, 2026 · 12:05 AM");
-    expect(formatAdminDateTime("2026-11-20T12:00:00.000Z")).toBe("Nov 20, 2026 · 12:00 PM");
+    // Pacific rendering (Slice C resolution 14): the farm's wall clock, not UTC.
+    expect(formatAdminDateTime("2026-11-20T22:14:00.000Z")).toBe("Nov 20, 2026 · 2:14 PM");
+    expect(formatAdminDateTime("2026-11-20T14:14:00.000Z")).toBe("Nov 20, 2026 · 6:14 AM");
+    expect(formatAdminDateTime("2026-11-20T00:05:00.000Z")).toBe("Nov 19, 2026 · 4:05 PM");
+    expect(formatAdminDateTime("2026-11-20T12:00:00.000Z")).toBe("Nov 20, 2026 · 4:00 AM");
+    // After 4 PM Pacific, the date stays on the same calendar day (the UTC bug showed tomorrow).
+    expect(formatAdminDateTime("2026-11-21T01:30:00.000Z")).toBe("Nov 20, 2026 · 5:30 PM");
     expect(formatAdminDateTime("2026-11-20")).toBe("Nov 20, 2026");
     expect(formatAdminDateTime(null)).toBe("");
     expect(formatAdminDateTime("bogus")).toBe("");
@@ -301,8 +305,9 @@ describe("D5 notes panel", () => {
     expect(html).toContain("border-line-strong");
     expect(html).toContain("Add note");
     expect(html.indexOf("Second note.")).toBeLessThan(html.indexOf("First note."));
-    expect(html).toContain("Ann Admin · Admin · Nov 20, 2026 · 2:14 PM");
-    expect(html).toContain("Rae Reviewer · Reviewer · Nov 19, 2026 · 9:00 AM");
+    // Pacific rendering (Slice C resolution 14).
+    expect(html).toContain("Ann Admin · Admin · Nov 20, 2026 · 6:14 AM");
+    expect(html).toContain("Rae Reviewer · Reviewer · Nov 19, 2026 · 1:00 AM");
   });
 
   it("states the empty state in words", () => {

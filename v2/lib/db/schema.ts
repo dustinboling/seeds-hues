@@ -56,7 +56,7 @@ export const ELIGIBILITY = ["candidate", "approved", "rejected", "removed_by_req
 export const CRAWL_POLICY = ["feed", "html", "manual_only", "opted_out"] as const;
 export const CLAIM_STATUS = ["unclaimed", "claimed"] as const;
 export const NAME_KIND = ["primary", "synonym", "trade_name", "misspelling", "seller_alias"] as const;
-export const LISTING_EVENT = ["first_seen", "restocked", "sold_out", "gone"] as const;
+export const LISTING_EVENT = ["first_seen", "restocked", "sold_out", "gone", "restored"] as const;
 export const REPORT_TYPE = ["correct", "claim", "remove"] as const;
 export const REPORT_TARGET = ["variety", "seller"] as const;
 export const REPORT_STATUS = ["open", "resolved", "dismissed"] as const;
@@ -568,6 +568,8 @@ export const listingEvents = sqliteTable(
     at: text("at").notNull(),
     /** Why a 'gone' event happened (admin removals); NULL = none given / not applicable. */
     reason: text("reason"),
+    /** Who recorded the event (admin display name); NULL = the key-based API or the importer. */
+    actor: text("actor"),
   },
   (t) => [
     index("listing_events_listing_idx").on(t.listingId),

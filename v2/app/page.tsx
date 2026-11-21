@@ -25,7 +25,9 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-const EVENT_LABEL = { first_seen: "Newly listed", restocked: "Restocked", sold_out: "Sold out", gone: "Gone" } as const;
+// Exhaustive over LISTING_EVENT (only first_seen/restocked reach this feed —
+// recentEventRows filters to those two; the rest never render here).
+const EVENT_LABEL = { first_seen: "Newly listed", restocked: "Restocked", sold_out: "Sold out", gone: "Gone", restored: "Restored" } as const;
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 

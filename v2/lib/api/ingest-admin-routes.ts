@@ -186,6 +186,18 @@ export const ADMIN_ROUTES: RouteSpec[] = [
     },
   },
   {
+    // Slice C: soft variety removal (no cascade), one effect with the F2 danger zone.
+    method: "POST",
+    pattern: "varieties/:id/remove",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params }) => {
+      const r = await services.admin.removeVariety(intParam(params.id, "variety"));
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
     method: "GET",
     pattern: "stats/demand",
     scope: "admin",

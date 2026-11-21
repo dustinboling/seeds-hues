@@ -197,7 +197,8 @@ describe("friendly admin dates", () => {
   const now = new Date(2026, 10, 21, 12, 0, 0);
 
   it("formats calendar dates, never ISO", () => {
-    expect(formatAdminDate("2026-11-20T03:14:00.000Z")).toBe("Nov 20, 2026");
+    // Pacific rendering (Slice C): 3:14 AM UTC is still Nov 19 on the farm.
+    expect(formatAdminDate("2026-11-20T03:14:00.000Z")).toBe("Nov 19, 2026");
     expect(formatAdminDate("2026-11-21T12:00:00")).toBe("Nov 21, 2026");
     expect(formatAdminDate(null)).toBe("");
     expect(formatAdminDate("garbage")).toBe("");

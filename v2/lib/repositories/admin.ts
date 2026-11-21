@@ -3,18 +3,20 @@
  * creation + merge, and the health invariants. Catalog writes bump catalog_seq in the same
  * atomic() batch.
  */
-import { and, asc, count, desc, eq, inArray, isNull, min, ne, not, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, isNull, min, ne, not, or, sql } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import {
   blockedDomains,
   catalogMeta,
   listingEvents,
+  listingPacketSizes,
   listings,
   plants,
   reviewItems,
   sellerNotes,
   sellers,
   series,
+  users,
   varieties,
   varietyAliases,
   REVIEW_ITEM_STATUS,
@@ -22,9 +24,13 @@ import {
   VISIBLE_LISTING_STATUS,
 } from "@/lib/db/schema";
 import { SELLER_UPDATE_FIELDS, type BadgeFilter, type ListingStateFilter, type SellerSort, type SellerUpdateField } from "@/lib/admin/sellers";
+import type { ListingChip } from "@/lib/admin/listings";
 import { normalizeName, slugify } from "@/lib/names";
 import { atomic, type AtomicOp } from "./atomic";
+import { roleAuditFor } from "./admin-auth";
+import { farmOwnerAuditFor } from "./accounts";
 import { ensureIngestSource, recomputeIndexable } from "./ingest";
+import { waitlistCountForUser, waitlistCountForVariety } from "./waitlist";
 import { CATALOG_SEQ_KEY, currentSeq, nextSeq } from "./seq";
 
 export type ReviewType = (typeof REVIEW_ITEM_TYPE)[number];
@@ -300,10 +306,10 @@ export async function removeSeller(db: Db, sellerId: number, reason: string, at:
 /**
  * Remove one listing (admin). Unknown id → null. Already removed → `alreadyRemoved: true` with
  * nothing written (no second 'gone' event, no seq bump). Otherwise the status flip and the 'gone'
- * event (carrying `reason`, null when none was given) land atomically, then the variety's
- * indexable flag is recomputed.
+ * event (carrying `reason`, null when none was given, and `actor`, null for the key-based API)
+ * land atomically, then the variety's indexable flag is recomputed.
  */
-export async function removeListing(db: Db, listingId: number, reason: string | null, at: string) {
+export async function removeListing(db: Db, listingId: number, reason: string | null, at: string, actor: string | null = null) {
   const [l] = await db
     .select({
       status: listings.status,
@@ -331,10 +337,10 @@ export async function removeListing(db: Db, listingId: number, reason: string | 
       .insert(catalogMeta)
       .select(sql`SELECT ${CATALOG_SEQ_KEY}, 1 WHERE ${stillLive}`)
       .onConflictDoUpdate({ target: catalogMeta.key, set: { value: sql`${catalogMeta.value} + 1` } }) as unknown as AtomicOp,
-    // Columns in table order: id (NULL → rowid), listing_id, event, at, reason.
+    // Columns in table order: id (NULL → rowid), listing_id, event, at, reason, actor.
     db
       .insert(listingEvents)
-      .select(sql`SELECT NULL, ${listingId}, 'gone', ${at}, ${reason} WHERE ${stillLive}`) as unknown as AtomicOp,
+      .select(sql`SELECT NULL, ${listingId}, 'gone', ${at}, ${reason}, ${actor} WHERE ${stillLive}`) as unknown as AtomicOp,
     db
       .update(listings)
       .set({ status: "removed", updatedAt: at, updatedSeq: currentSeq() })
@@ -345,6 +351,55 @@ export async function removeListing(db: Db, listingId: number, reason: string | 
   if (!won) return { alreadyRemoved: true, ...slugs };
   await recomputeIndexable(db, [l.varietyId]);
   return { alreadyRemoved: false, ...slugs };
+}
+
+export type RestoreListingResult = { restored: true; varietySlug: string; sellerSlug: string } | { restored: false; why: "not_removed"; varietySlug: string; sellerSlug: string };
+
+/**
+ * Restore a retired listing (Slice C, E2). Unknown id → null. Only a `status = 'removed'`
+ * listing can be restored — anything else is a no-op naming why (`not_removed`), with
+ * nothing written. Otherwise the flip to 'published' and the 'restored' event (carrying
+ * `actor`, null for the key-based API) land atomically, exactly removeListing's
+ * single-winner shape: a concurrent double restore has one winner and one 'restored' event.
+ */
+export async function restoreListing(db: Db, listingId: number, at: string, actor: string | null = null): Promise<RestoreListingResult | null> {
+  const [l] = await db
+    .select({
+      status: listings.status,
+      varietyId: listings.varietyId,
+      varietySlug: varieties.slug,
+      sellerSlug: sellers.slug,
+    })
+    .from(listings)
+    .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+    .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+    .where(eq(listings.id, listingId))
+    .limit(1);
+  if (!l) return null;
+  const slugs = { varietySlug: l.varietySlug, sellerSlug: l.sellerSlug };
+  if (l.status !== "removed") return { restored: false, why: "not_removed", ...slugs };
+  // Single winner, removeListing's shape: the guarded flip is LAST, so a loser's three
+  // statements all match nothing (no bump, no event, no row change).
+  const stillRemoved = sql`EXISTS (SELECT 1 FROM listings WHERE id = ${listingId} AND status = 'removed')`;
+  const results = await atomic(db, [
+    db
+      .insert(catalogMeta)
+      .select(sql`SELECT ${CATALOG_SEQ_KEY}, 1 WHERE ${stillRemoved}`)
+      .onConflictDoUpdate({ target: catalogMeta.key, set: { value: sql`${catalogMeta.value} + 1` } }) as unknown as AtomicOp,
+    // Columns in table order: id (NULL → rowid), listing_id, event, at, reason, actor.
+    db
+      .insert(listingEvents)
+      .select(sql`SELECT NULL, ${listingId}, 'restored', ${at}, NULL, ${actor} WHERE ${stillRemoved}`) as unknown as AtomicOp,
+    db
+      .update(listings)
+      .set({ status: "published", updatedAt: at, updatedSeq: currentSeq() })
+      .where(and(eq(listings.id, listingId), eq(listings.status, "removed")))
+      .returning({ id: listings.id }) as unknown as AtomicOp,
+  ]);
+  const won = (results[2] as { id: number }[]).length === 1;
+  if (!won) return { restored: false, why: "not_removed", ...slugs };
+  await recomputeIndexable(db, [l.varietyId]);
+  return { restored: true, ...slugs };
 }
 
 const CORRECTABLE = ["name", "location", "region", "homepage", "description", "orderingNotes", "shipsTo"] as const;
@@ -929,6 +984,566 @@ export async function setSellerStatus(db: Db, sellerId: number, status: "active"
     db.update(sellers).set({ status, updatedAt: at, updatedSeq: currentSeq() }).where(eq(sellers.id, sellerId)) as unknown as AtomicOp,
   ]);
   return { varietySlugs: await sellerVisibleVarietySlugs(db, sellerId) };
+}
+
+// ─── Slice C: listings (E1/E2), varieties + crops (F1–F3), accounts (G1/G2) ────
+
+/** One definition of a live listing (Hue resolution 3): visible status, not deleted. */
+export async function liveListingCountForVariety(db: Db, varietyId: number): Promise<number> {
+  const [r] = await db
+    .select({ n: count() })
+    .from(listings)
+    .where(and(eq(listings.varietyId, varietyId), inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt)));
+  return r?.n ?? 0;
+}
+
+export type RemoveVarietyResult =
+  | { outcome: "removed"; id: number; slug: string; plantSlug: string }
+  | { outcome: "already_removed"; id: number; slug: string; plantSlug: string }
+  | { outcome: "blocked"; id: number; slug: string; plantSlug: string; liveListings: number };
+
+/**
+ * Remove a variety (Slice C, the F2 danger zone + the key API). Soft removal, no cascade
+ * (Hue resolution 1): sets `deleted_at` (+ `updated_at`, `updated_seq`) in one
+ * single-winner guarded write, removeListing's shape. `status` is NOT changed. Nothing
+ * else is touched — the variety's listings (any status), aliases, variety tags and
+ * waitlist rows all stay in the record. Unknown id → null; a second remove reports
+ * `already_removed` and writes nothing; live listings present → `blocked` naming the
+ * count, with nothing written. The server re-checks liveness inside the batch (the guard
+ * is authoritative, not the UI's number), so a concurrent retire-then-remove race resolves
+ * honestly: the batch sees one pre-state and batches never interleave.
+ */
+export async function removeVariety(db: Db, varietyId: number, at: string): Promise<RemoveVarietyResult | null> {
+  const [v] = await db
+    .select({ id: varieties.id, slug: varieties.slug, deletedAt: varieties.deletedAt, plantSlug: plants.slug })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .where(eq(varieties.id, varietyId))
+    .limit(1);
+  if (!v) return null;
+  const base = { id: v.id, slug: v.slug, plantSlug: v.plantSlug };
+  if (v.deletedAt !== null) return { outcome: "already_removed", ...base };
+  // Cheap refusal first (no write either way); the guarded batch below re-checks.
+  const live = await liveListingCountForVariety(db, varietyId);
+  if (live > 0) return { outcome: "blocked", liveListings: live, ...base };
+  // The status literals are the schema's VISIBLE_LISTING_STATUS ('active', 'published').
+  const removable = sql`EXISTS (SELECT 1 FROM varieties v WHERE v.id = ${varietyId} AND v.deleted_at IS NULL AND NOT EXISTS (SELECT 1 FROM listings l WHERE l.variety_id = ${varietyId} AND l.status IN ('active', 'published') AND l.deleted_at IS NULL))`;
+  const results = await atomic(db, [
+    db
+      .insert(catalogMeta)
+      .select(sql`SELECT ${CATALOG_SEQ_KEY}, 1 WHERE ${removable}`)
+      .onConflictDoUpdate({ target: catalogMeta.key, set: { value: sql`${catalogMeta.value} + 1` } }) as unknown as AtomicOp,
+    db
+      .update(varieties)
+      .set({ deletedAt: at, updatedAt: at, updatedSeq: currentSeq() })
+      .where(
+        and(
+          eq(varieties.id, varietyId),
+          isNull(varieties.deletedAt),
+          sql`NOT EXISTS (SELECT 1 FROM listings l WHERE l.variety_id = ${varietyId} AND l.status IN ('active', 'published') AND l.deleted_at IS NULL)`,
+        ),
+      )
+      .returning({ id: varieties.id }) as unknown as AtomicOp,
+  ]);
+  const won = (results[1] as { id: number }[]).length === 1;
+  if (!won) {
+    // Lost the race: either a concurrent remove won, or a listing went live meanwhile.
+    const [again] = await db.select({ deletedAt: varieties.deletedAt }).from(varieties).where(eq(varieties.id, varietyId)).limit(1);
+    if (again?.deletedAt) return { outcome: "already_removed", ...base };
+    return { outcome: "blocked", liveListings: await liveListingCountForVariety(db, varietyId), ...base };
+  }
+  await recomputeIndexable(db, [varietyId]);
+  return { outcome: "removed", ...base };
+}
+
+// ─── E1/E2: the team's listing list + detail ─────────────────────────────────
+
+export interface AdminListingFilters {
+  /** Product title, variety name, or seller name substring, case-insensitive. */
+  q: string | null;
+  chip: ListingChip;
+  sellerSlug: string | null;
+  varietySlug: string | null;
+  limit: number;
+  offset: number;
+}
+
+export interface AdminListingRow {
+  id: number;
+  titleRaw: string | null;
+  status: string;
+  availability: string | null;
+  lastCheckedAt: string | null;
+  deletedAt: string | null;
+  varietyId: number;
+  varietySlug: string;
+  varietyName: string;
+  sellerSlug: string;
+  sellerName: string;
+  sellerEligibility: string;
+  sellerStatus: string;
+  sellerListingPolicy: string;
+  sellerDeletedAt: string | null;
+}
+
+/** The public-visibility predicate in SQL (mirrors isListingPubliclyVisible). */
+function listingVisibleSql() {
+  return and(
+    inArray(listings.status, [...VISIBLE_LISTING_STATUS]),
+    isNull(listings.deletedAt),
+    eq(sellers.eligibility, "approved"),
+    eq(sellers.status, "active"),
+    ne(sellers.listingPolicy, "removed"),
+    isNull(sellers.deletedAt),
+  );
+}
+
+/**
+ * The team's working list (E1): every listing incl. retired ones (a retired listing stays
+ * findable under the Retired filter forever), filtered, windowed, with the exact total.
+ * Chip filters (resolution 5): Active = visible AND availability ≠ sold_out; Sold out =
+ * visible AND availability = sold_out; Retired = status = 'removed'.
+ */
+export async function listListingsAdmin(db: Db, f: AdminListingFilters): Promise<{ rows: AdminListingRow[]; total: number }> {
+  const like = f.q ? `%${escapeLike(f.q.toLowerCase())}%` : null;
+  const where = and(
+    like ? or(sql`lower(${listings.titleRaw}) LIKE ${like} ESCAPE '\\'`, sql`lower(${varieties.varietyName}) LIKE ${like} ESCAPE '\\'`, sql`lower(${sellers.name}) LIKE ${like} ESCAPE '\\'`) : undefined,
+    f.sellerSlug ? eq(sellers.slug, f.sellerSlug) : undefined,
+    f.varietySlug ? eq(varieties.slug, f.varietySlug) : undefined,
+    f.chip === "retired" ? eq(listings.status, "removed") : undefined,
+    f.chip === "active" ? and(listingVisibleSql(), ne(listings.availability, "sold_out")) : undefined,
+    f.chip === "sold_out" ? and(listingVisibleSql(), eq(listings.availability, "sold_out")) : undefined,
+  );
+  const base = () =>
+    db
+      .select({
+        id: listings.id,
+        titleRaw: listings.titleRaw,
+        status: listings.status,
+        availability: listings.availability,
+        lastCheckedAt: listings.lastCheckedAt,
+        deletedAt: listings.deletedAt,
+        varietyId: listings.varietyId,
+        varietySlug: varieties.slug,
+        varietyName: varieties.varietyName,
+        sellerSlug: sellers.slug,
+        sellerName: sellers.name,
+        sellerEligibility: sellers.eligibility,
+        sellerStatus: sellers.status,
+        sellerListingPolicy: sellers.listingPolicy,
+        sellerDeletedAt: sellers.deletedAt,
+      })
+      .from(listings)
+      .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+      .innerJoin(sellers, eq(sellers.id, listings.sellerId));
+  const [rows, totalRow] = await Promise.all([
+    base().where(where).orderBy(asc(listings.id)).limit(f.limit).offset(f.offset),
+    db.select({ n: count() }).from(listings).innerJoin(varieties, eq(varieties.id, listings.varietyId)).innerJoin(sellers, eq(sellers.id, listings.sellerId)).where(where),
+  ]);
+  return { rows, total: totalRow[0]?.n ?? 0 };
+}
+
+export interface AdminListingPacket {
+  label: string;
+  seedCount: number | null;
+}
+
+export interface AdminListingEvent {
+  event: string;
+  at: string;
+  reason: string | null;
+  actor: string | null;
+}
+
+export interface AdminListingDetail extends AdminListingRow {
+  productUrl: string | null;
+  /** Packet sizes as captured — labels and seed counts, never prices (resolution 7). */
+  packets: AdminListingPacket[];
+  /** The event trail, oldest first (resolution 4). */
+  history: AdminListingEvent[];
+}
+
+/** One listing with its packet sizes (no price columns selected, ever) + event trail. */
+export async function listingDetailById(db: Db, id: number): Promise<AdminListingDetail | null> {
+  const [l] = await db
+    .select({
+      id: listings.id,
+      titleRaw: listings.titleRaw,
+      productUrl: listings.productUrl,
+      status: listings.status,
+      availability: listings.availability,
+      lastCheckedAt: listings.lastCheckedAt,
+      deletedAt: listings.deletedAt,
+      varietyId: listings.varietyId,
+      varietySlug: varieties.slug,
+      varietyName: varieties.varietyName,
+      sellerSlug: sellers.slug,
+      sellerName: sellers.name,
+      sellerEligibility: sellers.eligibility,
+      sellerStatus: sellers.status,
+      sellerListingPolicy: sellers.listingPolicy,
+      sellerDeletedAt: sellers.deletedAt,
+    })
+    .from(listings)
+    .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+    .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+    .where(eq(listings.id, id))
+    .limit(1);
+  if (!l) return null;
+  const [packets, history] = await Promise.all([
+    db
+      .select({ label: listingPacketSizes.label, seedCount: listingPacketSizes.seedCount })
+      .from(listingPacketSizes)
+      .where(eq(listingPacketSizes.listingId, id))
+      .orderBy(asc(listingPacketSizes.sortOrder), asc(listingPacketSizes.id)),
+    db
+      .select({ event: listingEvents.event, at: listingEvents.at, reason: listingEvents.reason, actor: listingEvents.actor })
+      .from(listingEvents)
+      .where(eq(listingEvents.listingId, id))
+      .orderBy(asc(listingEvents.at), asc(listingEvents.id)),
+  ]);
+  return { ...l, packets, history };
+}
+
+/** Deep-link chip labels (resolution 6): the seller/variety name for a filter slug. */
+export async function sellerChipBySlug(db: Db, slug: string): Promise<{ slug: string; name: string } | null> {
+  const [s] = await db.select({ slug: sellers.slug, name: sellers.name }).from(sellers).where(eq(sellers.slug, slug)).limit(1);
+  return s ?? null;
+}
+
+export async function varietyChipBySlug(db: Db, slug: string): Promise<{ id: number; slug: string; name: string } | null> {
+  const [v] = await db.select({ id: varieties.id, slug: varieties.slug, name: varieties.varietyName }).from(varieties).where(eq(varieties.slug, slug)).limit(1);
+  return v ?? null;
+}
+
+// ─── F1/F2: the team's variety list + detail ─────────────────────────────────
+
+export interface AdminVarietyFilters {
+  /** Variety name or alias substring, case-insensitive. */
+  q: string | null;
+  /** Crop (plant) slug, single-select. */
+  crop: string | null;
+  limit: number;
+  offset: number;
+}
+
+export interface AdminVarietyRow {
+  id: number;
+  slug: string;
+  name: string;
+  status: string;
+  plantSlug: string;
+  commonName: string;
+  /** Distinct sellers with ≥1 live listing (resolution 9). */
+  liveSellers: number;
+  /** Alias count (every kind except primary). */
+  aliasCount: number;
+  /** Set when the variety matched only through this alias (spec F1). */
+  matchedAlias: string | null;
+}
+
+/**
+ * The team's working list (F1): non-removed varieties (a removed variety leaves the admin
+ * lists, resolution 1), filtered, windowed, with the exact total. Name matches and
+ * alias-only matches merge into one A–Z list; only the window's full rows + counts are
+ * fetched (the id/name pre-pass is tiny tuples).
+ */
+export async function listVarietiesAdmin(db: Db, f: AdminVarietyFilters): Promise<{ rows: AdminVarietyRow[]; total: number }> {
+  const like = f.q ? `%${escapeLike(f.q.toLowerCase())}%` : null;
+  const cropWhere = f.crop ? eq(plants.slug, f.crop) : undefined;
+  // Name matches (or every variety when unfiltered), A–Z.
+  const nameRows = await db
+    .select({ id: varieties.id, name: varieties.varietyName })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .where(and(isNull(varieties.deletedAt), cropWhere, like ? sql`lower(${varieties.varietyName}) LIKE ${like} ESCAPE '\\'` : undefined))
+    .orderBy(asc(sql`lower(${varieties.varietyName})`), asc(varieties.id));
+  const nameIds = new Set(nameRows.map((r) => r.id));
+  // Alias-only matches: the first (A–Z) matching alias labels the row.
+  let aliasRows: { varietyId: number; name: string; matchedAlias: string }[] = [];
+  if (like) {
+    const hits = await db
+      .select({ varietyId: varietyAliases.varietyId, matchedAlias: sql<string>`min(${varietyAliases.alias})` })
+      .from(varietyAliases)
+      .innerJoin(varieties, eq(varieties.id, varietyAliases.varietyId))
+      .innerJoin(plants, eq(plants.id, varieties.plantId))
+      .where(and(isNull(varieties.deletedAt), cropWhere, ne(varietyAliases.kind, "primary"), sql`lower(${varietyAliases.alias}) LIKE ${like} ESCAPE '\\'`))
+      .groupBy(varietyAliases.varietyId);
+    const fresh = hits.filter((h) => !nameIds.has(h.varietyId));
+    if (fresh.length > 0) {
+      // Bound-parameter discipline (V20): D1 caps a statement at 100 bound parameters.
+      const names: { id: number; name: string }[] = [];
+      for (let i = 0; i < fresh.length; i += 50) {
+        const chunk = fresh.slice(i, i + 50);
+        names.push(...(await db.select({ id: varieties.id, name: varieties.varietyName }).from(varieties).where(inArray(varieties.id, chunk.map((h) => h.varietyId)))));
+      }
+      const byId = new Map(names.map((n) => [n.id, n.name]));
+      aliasRows = fresh.map((h) => ({ varietyId: h.varietyId, name: byId.get(h.varietyId) ?? "", matchedAlias: h.matchedAlias }));
+    }
+  }
+  const merged = [...nameRows.map((r) => ({ id: r.id, name: r.name, matchedAlias: null as string | null })), ...aliasRows.map((r) => ({ id: r.varietyId, name: r.name, matchedAlias: r.matchedAlias }))].sort(
+    (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()) || a.id - b.id,
+  );
+  const total = merged.length;
+  const window = merged.slice(f.offset, f.offset + f.limit);
+  if (window.length === 0) return { rows: [], total };
+  const ids = window.map((r) => r.id);
+  const full: { id: number; slug: string; name: string; status: string; plantSlug: string; commonName: string }[] = [];
+  const liveSellers: { varietyId: number; n: number }[] = [];
+  const aliasCounts: { varietyId: number; n: number }[] = [];
+  for (let i = 0; i < ids.length; i += 50) {
+    const chunk = ids.slice(i, i + 50);
+    const [f, s, a] = await Promise.all([
+      db
+        .select({ id: varieties.id, slug: varieties.slug, name: varieties.varietyName, status: varieties.status, plantSlug: plants.slug, commonName: plants.commonName })
+        .from(varieties)
+        .innerJoin(plants, eq(plants.id, varieties.plantId))
+        .where(inArray(varieties.id, chunk)),
+      db
+        .select({ varietyId: listings.varietyId, n: sql<number>`count(distinct ${listings.sellerId})` })
+        .from(listings)
+        .where(and(inArray(listings.varietyId, chunk), inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt)))
+        .groupBy(listings.varietyId),
+      db
+        .select({ varietyId: varietyAliases.varietyId, n: count() })
+        .from(varietyAliases)
+        .where(and(inArray(varietyAliases.varietyId, chunk), ne(varietyAliases.kind, "primary")))
+        .groupBy(varietyAliases.varietyId),
+    ]);
+    full.push(...f);
+    liveSellers.push(...s.map((r) => ({ varietyId: r.varietyId, n: Number(r.n) })));
+    aliasCounts.push(...a);
+  }
+  const fullById = new Map(full.map((r) => [r.id, r]));
+  const sellersById = new Map(liveSellers.map((r) => [r.varietyId, r.n]));
+  const aliasesById = new Map(aliasCounts.map((r) => [r.varietyId, r.n]));
+  return {
+    rows: window.map((r) => ({ ...fullById.get(r.id)!, liveSellers: sellersById.get(r.id) ?? 0, aliasCount: aliasesById.get(r.id) ?? 0, matchedAlias: r.matchedAlias })),
+    total,
+  };
+}
+
+export interface VarietyAliasDetail {
+  alias: string;
+  kind: string;
+  source: string | null;
+  decisionItemId: number | null;
+  decidedByName: string | null;
+  createdAt: string | null;
+}
+
+/** A variety's other names (every kind except primary), A–Z, with provenance (F2). */
+export async function aliasesForVariety(db: Db, varietyId: number): Promise<VarietyAliasDetail[]> {
+  return db
+    .select({ alias: varietyAliases.alias, kind: varietyAliases.kind, source: varietyAliases.source, decisionItemId: varietyAliases.decisionItemId, decidedByName: varietyAliases.decidedByName, createdAt: varietyAliases.createdAt })
+    .from(varietyAliases)
+    .where(and(eq(varietyAliases.varietyId, varietyId), ne(varietyAliases.kind, "primary")))
+    .orderBy(asc(varietyAliases.alias));
+}
+
+/**
+ * Delete one alias row + bump the variety's seq (the catalog's seq conventions, like
+ * addAlias). RA-1 is enforced by the caller (the service refuses decision aliases before
+ * reaching here). True when a row went.
+ */
+export async function removeAlias(db: Db, varietyId: number, alias: string): Promise<boolean> {
+  const results = await atomic(db, [
+    ...nextSeq(db),
+    db.delete(varietyAliases).where(and(eq(varietyAliases.varietyId, varietyId), eq(varietyAliases.alias, alias))).returning({ alias: varietyAliases.alias }) as unknown as AtomicOp,
+    db.update(varieties).set({ updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
+  ]);
+  return (results[1] as { alias: string }[]).length === 1;
+}
+
+export interface AdminVarietyListingState {
+  status: string;
+  availability: string | null;
+  deletedAt: string | null;
+  sellerEligibility: string;
+  sellerStatus: string;
+  sellerListingPolicy: string;
+  sellerDeletedAt: string | null;
+}
+
+export interface AdminVarietyDetail {
+  id: number;
+  slug: string;
+  name: string;
+  status: string;
+  plantSlug: string;
+  commonName: string;
+  latinName: string | null;
+  seriesName: string | null;
+  /** The variety's listings for the resolution-5 status-word breakdown (any status). */
+  listingStates: AdminVarietyListingState[];
+  aliases: VarietyAliasDetail[];
+  waitlistCount: number;
+}
+
+/**
+ * One admin variety view (F2): public facts plus the machinery underneath. Removed
+ * varieties (deleted_at set) return null — they left the admin lists (resolution 1).
+ */
+export async function varietyDetailBySlugAdmin(db: Db, slug: string): Promise<AdminVarietyDetail | null> {
+  const [v] = await db
+    .select({
+      id: varieties.id,
+      slug: varieties.slug,
+      name: varieties.varietyName,
+      status: varieties.status,
+      plantSlug: plants.slug,
+      commonName: plants.commonName,
+      latinName: plants.latinName,
+      seriesName: series.name,
+    })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .leftJoin(series, eq(series.id, varieties.seriesId))
+    .where(and(eq(varieties.slug, slug), isNull(varieties.deletedAt)))
+    .limit(1);
+  if (!v) return null;
+  const [listingStates, aliases, waitlistCount] = await Promise.all([
+    db
+      .select({
+        status: listings.status,
+        availability: listings.availability,
+        deletedAt: listings.deletedAt,
+        sellerEligibility: sellers.eligibility,
+        sellerStatus: sellers.status,
+        sellerListingPolicy: sellers.listingPolicy,
+        sellerDeletedAt: sellers.deletedAt,
+      })
+      .from(listings)
+      .innerJoin(sellers, eq(sellers.id, listings.sellerId))
+      .where(eq(listings.varietyId, v.id))
+      .orderBy(asc(listings.id)),
+    aliasesForVariety(db, v.id),
+    waitlistCountForVariety(db, v.id),
+  ]);
+  return { ...v, listingStates, aliases, waitlistCount };
+}
+
+/** A variety ref for writes: a numeric id or a slug (removed varieties resolve too — the effect itself reports already_removed). */
+export async function varietyRefBySlugOrId(db: Db, ref: string): Promise<{ id: number; slug: string; name: string } | null> {
+  const byId = /^\d{1,12}$/.test(ref.trim());
+  const [v] = await db
+    .select({ id: varieties.id, slug: varieties.slug, name: varieties.varietyName })
+    .from(varieties)
+    .where(byId ? eq(varieties.id, Number(ref.trim())) : eq(varieties.slug, ref.trim()))
+    .limit(1);
+  return v ?? null;
+}
+
+// ─── F3: crops (orientation only — browse, never edit) ───────────────────────
+
+export interface AdminCropRow {
+  slug: string;
+  commonName: string;
+  /** Active, non-removed varieties of the crop. */
+  varietyCount: number;
+  /** Distinct sellers with ≥1 live listing across the crop's non-removed varieties. */
+  sellerCount: number;
+}
+
+export async function listCropsAdmin(db: Db): Promise<AdminCropRow[]> {
+  const crops = await db
+    .select({ id: plants.id, slug: plants.slug, commonName: plants.commonName })
+    .from(plants)
+    .where(isNull(plants.deletedAt))
+    .orderBy(asc(sql`lower(${plants.commonName})`), asc(plants.id));
+  if (crops.length === 0) return [];
+  // No id filter: every crop's counts are needed, and the full id list would overflow
+  // D1's 100-bound-parameter cap (V20) — the aggregates scan, the map below narrows.
+  const [varietyCounts, sellerCounts] = await Promise.all([
+    db
+      .select({ plantId: varieties.plantId, n: count() })
+      .from(varieties)
+      .where(and(eq(varieties.status, "active"), isNull(varieties.deletedAt)))
+      .groupBy(varieties.plantId),
+    db
+      .select({ plantId: varieties.plantId, n: sql<number>`count(distinct ${listings.sellerId})` })
+      .from(listings)
+      .innerJoin(varieties, eq(varieties.id, listings.varietyId))
+      .where(and(isNull(varieties.deletedAt), inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt)))
+      .groupBy(varieties.plantId),
+  ]);
+  const varietiesByPlant = new Map(varietyCounts.map((r) => [r.plantId, r.n]));
+  const sellersByPlant = new Map(sellerCounts.map((r) => [r.plantId, Number(r.n)]));
+  return crops.map((c) => ({ slug: c.slug, commonName: c.commonName, varietyCount: varietiesByPlant.get(c.id) ?? 0, sellerCount: sellersByPlant.get(c.id) ?? 0 }));
+}
+
+// ─── G1/G2: accounts (Admin only — reviewers never receive this data) ───────
+
+export interface AdminAccountFilters {
+  /** Name, displayName, or email substring, case-insensitive. */
+  q: string | null;
+  limit: number;
+  offset: number;
+}
+
+export interface AdminAccountRow {
+  id: number;
+  name: string;
+  displayName: string | null;
+  email: string;
+  createdAt: string;
+  role: string;
+  status: string;
+  isFarmOwner: boolean;
+}
+
+/** The team's account list (G1): windowed, with the exact total. No browsing, order, or message data — there is none to show. */
+export async function listAccountsAdmin(db: Db, f: AdminAccountFilters): Promise<{ rows: AdminAccountRow[]; total: number }> {
+  const like = f.q ? `%${escapeLike(f.q.toLowerCase())}%` : null;
+  // Shown name = displayName, else name, else the email (empty strings fall through).
+  const shown = sql`lower(COALESCE(NULLIF(${users.displayName}, ''), NULLIF(${users.name}, ''), ${users.email}))`;
+  const where = like ? or(sql`lower(${users.name}) LIKE ${like} ESCAPE '\\'`, sql`lower(${users.displayName}) LIKE ${like} ESCAPE '\\'`, sql`lower(${users.email}) LIKE ${like} ESCAPE '\\'`) : undefined;
+  const [rows, totalRow] = await Promise.all([
+    db
+      .select({ id: users.id, name: users.name, displayName: users.displayName, email: users.email, createdAt: users.createdAt, role: users.role, status: users.status, isFarmOwner: users.isFarmOwner })
+      .from(users)
+      .where(where)
+      .orderBy(asc(shown), asc(users.id))
+      .limit(f.limit)
+      .offset(f.offset),
+    db.select({ n: count() }).from(users).where(where),
+  ]);
+  return { rows, total: totalRow[0]?.n ?? 0 };
+}
+
+export interface AdminAccountDetail {
+  id: number;
+  name: string;
+  displayName: string | null;
+  email: string;
+  phone: string;
+  createdAt: string;
+  role: string;
+  status: string;
+  isFarmOwner: boolean;
+  sellerId: number | null;
+  /** The bound farm, when one is set (null when the id points nowhere). */
+  farmSeller: { id: number; slug: string; name: string } | null;
+  waitlistCount: number;
+  roleAudit: { id: number; actor: string; fromRole: string; toRole: string; createdAt: string }[];
+  farmOwnerAudit: { id: number; actor: string; action: string; sellerId: number | null; createdAt: string }[];
+}
+
+/** One account with its waitlist count, role trail and farm-owner trail (G2). */
+export async function accountDetailById(db: Db, id: number): Promise<AdminAccountDetail | null> {
+  const [u] = await db
+    .select({ id: users.id, name: users.name, displayName: users.displayName, email: users.email, phone: users.phone, createdAt: users.createdAt, role: users.role, status: users.status, isFarmOwner: users.isFarmOwner, sellerId: users.sellerId })
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+  if (!u) return null;
+  const [waitlistCount, roleAudit, farmOwnerAudit, farmSellerRows] = await Promise.all([
+    waitlistCountForUser(db, id),
+    roleAuditFor(db, id),
+    farmOwnerAuditFor(db, id),
+    u.sellerId ? db.select({ id: sellers.id, slug: sellers.slug, name: sellers.name }).from(sellers).where(eq(sellers.id, u.sellerId)).limit(1) : Promise.resolve([]),
+  ]);
+  return { ...u, farmSeller: farmSellerRows[0] ?? null, waitlistCount, roleAudit, farmOwnerAudit };
 }
 
 // ─── health (invariants) ────────────────────────────────────────────────────
