@@ -7,6 +7,7 @@ import { createIngestService } from "./ingest";
 import { createReportService } from "./reports";
 import { createSyncService } from "./sync";
 import { createAccountService } from "./accounts";
+import { createAdminAuthService } from "./admin-auth";
 import { createFarmService } from "./farms";
 import { createNotificationService } from "./notifications";
 import { createVerificationService, type CodeChannel } from "./verification";
@@ -37,6 +38,8 @@ export interface ServiceDeps {
   now?: () => Date;
   /** Test hook: plaintext verification codes at issue time. */
   onCode?: (channel: CodeChannel, userId: number, code: string) => void;
+  /** Test hook: plaintext admin sign-in codes at issue time. */
+  onAdminCode?: (userId: number, code: string) => void;
 }
 
 export function createServices(db: Db, deps: ServiceDeps = {}) {
@@ -55,6 +58,7 @@ export function createServices(db: Db, deps: ServiceDeps = {}) {
     ingest: createIngestService(db, { snapshots: deps.snapshots ?? null }),
     reports: createReportService(db, { turnstileSecret: deps.turnstileSecret ?? null, fetchFn: deps.turnstileFetch }),
     accounts: createAccountService(db, { turnstile, verification, unsubscribeKey: deps.unsubscribeKey ?? null, now }),
+    adminAuth: createAdminAuthService(db, { mailer, siteUrl, now, onAdminCode: deps.onAdminCode }),
     farms: createFarmService(db, { turnstile, mailer, siteUrl, adminNotifyEmail: deps.adminNotifyEmail ?? null, now }),
     notifications: createNotificationService(db, { mailer, sms, siteUrl, unsubscribeKey: deps.unsubscribeKey ?? null, now }),
     /** Idempotency-Key replay store for ingest/admin POSTs. */

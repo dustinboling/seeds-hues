@@ -70,6 +70,9 @@ export const MATCH_STATUS = ["pending", "approved", "rejected"] as const;
 export const REVIEW_STATUS = ["pending", "approved", "rejected"] as const;
 // Phase 3 (migration 0008): accounts, waiting lists, Add Your Farm.
 export const USER_STATUS = ["active", "banned"] as const;
+// Slice 0 (migration 0012): admin section roles. 'visitor' is every account's default;
+// reviewer/admin are granted by an admin (the Accounts UI lands in Slice C).
+export const USER_ROLES = ["visitor", "reviewer", "admin"] as const;
 export const AUTH_ATTEMPT_SCOPES = ["ip", "pair"] as const;
 export const FARM_OWNER_ACTIONS = ["granted", "revoked"] as const;
 export const NOTIFY_CHANNELS = ["email", "sms"] as const;
@@ -818,11 +821,14 @@ export const users = sqliteTable(
     smsOptIn: integer("sms_opt_in", { mode: "boolean" }).notNull().default(false),
     smsOptInAt: text("sms_opt_in_at"),
     updatedAt: text("updated_at"),
+    /** Admin section role (migration 0012). Server-resolved only; never trusted from the client. */
+    role: text("role", { enum: USER_ROLES }).notNull().default("visitor"),
   },
   (t) => [
     index("users_phone_idx").on(t.phone),
     index("users_alert_phone_idx").on(t.alertPhone),
     check("users_status_chk", inList("status", USER_STATUS)),
+    check("users_role_chk", inList("role", USER_ROLES)),
   ],
 );
 
@@ -840,6 +846,63 @@ export const sessions = sqliteTable(
     lastSeenAt: text("last_seen_at"),
   },
   (t) => [index("sessions_user_idx").on(t.userId)],
+);
+
+// ─── Admin section (Slice 0, migration 0012) ────────────────────────────────
+// PRIVATE tables, like the account tables above: served only through the admin session.
+
+/** Admin sessions: the elevated layer, separate from the visitor `sessions` table. */
+export const adminSessions = sqliteTable(
+  "admin_sessions",
+  {
+    id: integer("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    /** SHA-256 hex of the raw cookie token; the token itself is never stored. */
+    tokenHash: text("token_hash").notNull().unique(),
+    createdAt: text("created_at").notNull(),
+    expiresAt: text("expires_at").notNull(),
+    lastSeenAt: text("last_seen_at"),
+  },
+  (t) => [index("admin_sessions_user_idx").on(t.userId)],
+);
+
+/** Admin sign-in codes (email channel only). Same rules as the account codes. */
+export const adminSigninCodes = sqliteTable(
+  "admin_signin_codes",
+  {
+    id: integer("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    /** The address the code was sent to. */
+    email: text("email").notNull(),
+    /** SHA-256 hex of `${salt}:${code}`. */
+    codeHash: text("code_hash").notNull(),
+    salt: text("salt").notNull(),
+    expiresAt: text("expires_at").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    consumedAt: text("consumed_at"),
+    invalidatedAt: text("invalidated_at"),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [index("admin_signin_codes_user_idx").on(t.userId, t.createdAt)],
+);
+
+/** Append-only record of every account role change. user_id has no FK: the trail outlives the account. */
+export const roleAudit = sqliteTable(
+  "role_audit",
+  {
+    id: integer("id").primaryKey(),
+    userId: integer("user_id").notNull(),
+    /** Who made the change (name or label). */
+    actor: text("actor").notNull(),
+    fromRole: text("from_role").notNull(),
+    toRole: text("to_role").notNull(),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [index("role_audit_user_idx").on(t.userId)],
 );
 
 /** Failed sign-in attempts (rate limiting): keys are SHA-256 hashes — no IP or phone in clear. */
@@ -1007,7 +1070,7 @@ export const farmSubmissions = sqliteTable(
   ],
 );
 
-/** Private tables (accounts, alerts, farm submissions). Asserted absent from snapshot + sync output. */
+/** Private tables (accounts, alerts, farm submissions, admin section). Asserted absent from snapshot + sync output. */
 export const PRIVATE_ACCOUNT_TABLES = [
   "users",
   "sessions",
@@ -1018,6 +1081,9 @@ export const PRIVATE_ACCOUNT_TABLES = [
   "waitlist_entries",
   "notification_outbox",
   "farm_submissions",
+  "admin_sessions",
+  "admin_signin_codes",
+  "role_audit",
 ] as const;
 
 // ─── Future stubs (empty in Phase 1; no app code path reads or writes them) ──
