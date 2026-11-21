@@ -20,8 +20,28 @@
 #
 # The run is bounded two ways: the job timeout (60 minutes) and the
 # `max_model_steps` input passed to `muse exec`. A headless run cannot
-# answer approval prompts, so the run uses `--approval-mode never`;
-# the Muse sandbox still contains the run.
+# answer approval prompts, so the run uses `--approval-mode never`.
+#
+# The Muse bubblewrap sandbox is DISABLED for this run
+# (`--disable-sandbox`), deliberately. GitHub-hosted `ubuntu-latest`
+# runners are Ubuntu 24.04, which sets
+# `kernel.apparmor_restrict_unprivileged_userns=1` by default; under that
+# restriction the user namespace bubblewrap creates gets no capabilities,
+# so it cannot bring up the sandbox's loopback interface and every
+# sandboxed command dies before starting with
+# `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`.
+# Muse fails closed in that state, so with the sandbox on, the
+# builder could not execute a single shell command (diagnosed
+# 2026-11-20 from run 44876409542's run log: 1 bash attempt, 0 successful
+# executions — six admin Slice 0 runs each failed the verify gate on one
+# fresh error because the builder wrote code blind and the gate was the
+# first real check). Meta's docs sanction `--disable-sandbox` for runs
+# inside an already-isolated environment; a GitHub-hosted runner is
+# exactly that — an ephemeral, single-use VM holding only this repo and
+# the run's environment, discarded when the job ends. Isolation is
+# provided by the runner itself; the approval layer is unaffected
+# (`--approval-mode never` stands), repo permissions are unchanged, and
+# no additional secrets are exposed.
 
 name: Muse
 
@@ -84,6 +104,7 @@ jobs:
           muse exec \
             --prompt-file "${{ inputs.task_file }}" \
             --approval-mode never \
+            --disable-sandbox \
             --max-model-steps ${{ inputs.max_model_steps }} \
             --json | tee muse-run.jsonl
 
