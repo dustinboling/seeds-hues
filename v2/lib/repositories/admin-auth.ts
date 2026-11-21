@@ -31,6 +31,12 @@ export async function roleAuditFor(db: Db, userId: number) {
   return db.select().from(roleAudit).where(eq(roleAudit.userId, userId)).orderBy(desc(roleAudit.id));
 }
 
+/** Admin headcount — the last-admin guard (Slice C, G2) refuses to demote at 1. */
+export async function countAdmins(db: Db): Promise<number> {
+  const [r] = await db.select({ n: count() }).from(users).where(eq(users.role, "admin"));
+  return r?.n ?? 0;
+}
+
 /** Latest role changes across accounts, with the account's current email (null when gone). */
 export async function recentRoleChanges(db: Db, limit: number) {
   return db

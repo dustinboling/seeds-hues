@@ -116,32 +116,69 @@ function ymd(iso: string): { year: number; month: number; day: number } | null {
   return { year, month, day };
 }
 
-/** "Nov 20, 2026". Null for a missing or unparseable value. */
+/**
+ * Admin date-times render in the farm's timezone (America/Los_Angeles), via
+ * Intl.DateTimeFormat with an explicit timeZone — deterministic across server and
+ * client, unlike the local zone. Parsing is manual (never Date.parse on a zone-less
+ * string, which the platform reads in its own local zone): an explicit offset wins,
+ * and a bare timestamp is read as UTC, the stored convention.
+ */
+const PT_DATE = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", year: "numeric" });
+const PT_TIME = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit", hour12: true });
+
+/** Epoch ms for a full timestamp. Null unless the value carries usable time parts. */
+function instantMs(iso: string): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/.exec(iso);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  const hour = Number(m[4]);
+  const minute = Number(m[5]);
+  const second = Number(m[6] ?? "0");
+  if (month < 1 || month > 12 || day < 1 || day > 31 || hour > 23 || minute > 59 || second > 59) return null;
+  let ms = Date.UTC(year, month - 1, day, hour, minute, second);
+  const off = m[7];
+  if (off && off !== "Z") {
+    const sign = off[0] === "+" ? 1 : -1;
+    const digits = off.slice(1).replace(":", "");
+    const oh = Number(digits.slice(0, 2));
+    const om = Number(digits.slice(2, 4));
+    if (oh > 23 || om > 59) return null;
+    ms -= sign * (oh * 3_600_000 + om * 60_000);
+  }
+  return ms;
+}
+
+/**
+ * "Nov 20, 2026" — a full timestamp renders its Pacific calendar day (an afternoon
+ * action stays on its own day); a bare date renders as written (it is not an instant).
+ * Falls back for a missing or unparseable value.
+ */
 export function formatAdminDate(iso: string | null | undefined, fallback = ""): string {
   if (!iso) return fallback;
+  const ms = instantMs(iso);
+  if (ms !== null) return PT_DATE.format(new Date(ms));
   const d = ymd(iso);
   if (!d) return fallback;
   return `${MONTHS[d.month - 1]} ${d.day}, ${d.year}`;
 }
 
 /**
- * "Nov 20, 2026 · 2:14 PM" — the note timestamp (spec D5). Read off the stored ISO in UTC
- * (server-computed, deterministic across renders); falls back to the date alone when the
- * time part is missing, and to `fallback` when nothing parses.
+ * "Nov 20, 2026 · 2:14 PM" — the admin timestamp (spec D5). Rendered in Pacific from
+ * the stored instant; falls back to the date alone when the time part is missing, and
+ * to `fallback` when nothing parses.
  */
 export function formatAdminDateTime(iso: string | null | undefined, fallback = ""): string {
   if (!iso) return fallback;
-  const d = ymd(iso);
-  if (!d) return fallback;
-  const date = `${MONTHS[d.month - 1]} ${d.day}, ${d.year}`;
-  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(iso);
-  if (!m) return date;
-  const hour = Number(m[4]);
-  const minute = m[5]!;
-  if (hour > 23 || Number(minute) > 59) return date;
-  const half = hour < 12 ? "AM" : "PM";
-  const twelve = hour % 12 === 0 ? 12 : hour % 12;
-  return `${date} · ${twelve}:${minute} ${half}`;
+  const ms = instantMs(iso);
+  if (ms === null) {
+    const d = ymd(iso);
+    if (!d) return fallback;
+    return `${MONTHS[d.month - 1]} ${d.day}, ${d.year}`;
+  }
+  const at = new Date(ms);
+  return `${PT_DATE.format(at)} · ${PT_TIME.format(at)}`;
 }
 
 /** Whole calendar days from the ISO day to `now`'s local day (negative → 0). */
