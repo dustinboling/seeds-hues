@@ -31,6 +31,9 @@
 
   --radius-card: 18px;
   --shadow-card: 0 1px 2px rgb(90 70 20 / 0.08), 0 1px 1px rgb(90 70 20 / 0.05);
+
+  --duration-filter-item: 220ms;
+  --ease-filter-settle: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /*
@@ -409,6 +412,40 @@
   @keyframes skeleton-reveal {
     to {
       opacity: 1;
+    }
+  }
+  /*
+   * Filter-update cascade (Mina spec 2026-11-20): on an in-place seller-filter change the
+   * incoming rows fade/rise in with a capped 30 ms stagger — feedback that the list changed,
+   * drawn over the final layout (opacity/transform only, never height). The class is applied
+   * by SellerFilterSection only after a visitor-initiated filter change, never on first load.
+   * Total: 120 ms max delay + 220 ms duration = 340 ms.
+   */
+  @keyframes listing-item-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .listing-swap > li {
+    animation: listing-item-in var(--duration-filter-item) var(--ease-filter-settle) both;
+  }
+  .listing-swap > li:nth-child(2) { animation-delay: 30ms; }
+  .listing-swap > li:nth-child(3) { animation-delay: 60ms; }
+  .listing-swap > li:nth-child(4) { animation-delay: 90ms; }
+  .listing-swap > li:nth-child(5) { animation-delay: 120ms; }
+  .listing-swap > li:nth-child(n + 6) { animation-delay: 120ms; }
+  p.listing-swap {
+    animation: listing-item-in var(--duration-filter-item) var(--ease-filter-settle) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .listing-swap > li,
+    p.listing-swap {
+      animation: none;
     }
   }
   .sr-only-focusable:not(:focus) {
