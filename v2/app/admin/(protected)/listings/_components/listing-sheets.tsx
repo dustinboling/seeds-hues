@@ -97,7 +97,7 @@ export function RetireForm({ listingId, varietyName, ctx, onClose, cancelRef }: 
         <label htmlFor="retire-reason" className="mb-1 block font-sans text-sm font-semibold">
           Reason
         </label>
-        <select id="retire-reason" name="reason" defaultValue="" required disabled={busy} className="field min-h-[44px] w-full">
+        <select id="retire-reason" name="reason" defaultValue="" required className="field min-h-[44px] w-full">
           <option value="" disabled>
             Choose a reason
           </option>
@@ -112,7 +112,7 @@ export function RetireForm({ listingId, varietyName, ctx, onClose, cancelRef }: 
         <label htmlFor="retire-note" className="mb-1 block font-sans text-sm font-semibold">
           Note <span className="font-normal text-muted">(optional)</span>
         </label>
-        <input id="retire-note" name="note" type="text" maxLength={500} autoComplete="off" disabled={busy} className="field min-h-[44px] w-full" />
+        <input id="retire-note" name="note" type="text" maxLength={500} autoComplete="off" className="field min-h-[44px] w-full" />
       </p>
       <div className="flex flex-col gap-2 min-[744px]:flex-row">
         <button ref={cancelRef ?? fallbackCancelRef} type="button" className="btn btn-secondary" disabled={busy} onClick={onClose}>

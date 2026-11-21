@@ -122,7 +122,6 @@ export function AddAliasForm({ ctx }: { ctx: VarietyCtx }) {
           type="text"
           maxLength={200}
           autoComplete="off"
-          disabled={busy}
           aria-invalid={nameError ? true : undefined}
           aria-describedby={nameError ? "alias-name-error" : undefined}
           className="field min-h-[44px] w-full"
