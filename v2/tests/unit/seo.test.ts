@@ -41,6 +41,7 @@ function variety(listings: PublicListing[]): VarietyDetail {
     colorSwatch: null,
     colorFamily: "unknown",
     listingCount: listings.length,
+    sellerCount: new Set(listings.map((l) => l.seller.slug)).size,
     inStockCount: listings.length,
     lastCheckedAt: listings[0]?.lastCheckedAt ?? null,
     indexable: true, // owner ruling 2026-11-16: every active variety is indexable
@@ -128,11 +129,11 @@ describe("answer sentence + titles (canonical §5 GEO/SEO) — data only, no pri
 
 describe("template descriptions", () => {
   it("are deterministic and use only sourced facts", () => {
-    const a = templateDescription({ varietyName: "Katz Mix", commonName: "Stock", latinName: "Matthiola incana", listingCount: 0 });
+    const a = templateDescription({ varietyName: "Katz Mix", commonName: "Stock", latinName: "Matthiola incana", sellerCount: 0 });
     expect(a).toBe("Katz Mix is a Stock variety (Matthiola incana). No seller in this directory lists it yet.");
-    const b = templateDescription({ varietyName: "Juliet", commonName: "Iceland Poppy", latinName: "Papaver nudicaule", listingCount: 2 });
+    const b = templateDescription({ varietyName: "Juliet", commonName: "Iceland Poppy", latinName: "Papaver nudicaule", sellerCount: 2 });
     expect(b).toBe("Juliet is an Iceland Poppy variety (Papaver nudicaule). It is listed by 2 seed sellers in this directory.");
-    expect(templateDescription({ varietyName: "X", commonName: "Cornflower / Bachelor's Buttons", latinName: "Centaurea cyanus", listingCount: 1 })).toContain(
+    expect(templateDescription({ varietyName: "X", commonName: "Cornflower / Bachelor's Buttons", latinName: "Centaurea cyanus", sellerCount: 1 })).toContain(
       "a Cornflower (Bachelor's Buttons) variety",
     );
   });

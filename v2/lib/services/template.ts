@@ -1,14 +1,15 @@
 /**
  * Deterministic template descriptions (FINAL §1.3 "Descriptions"). Built ONLY from sourced
  * structured facts: variety name, plant common + Latin name, breeder (when sourced — no breeder
- * field exists in the Phase 1 data, so it is never mentioned) and the live listing count.
- * No LLM text, no invented traits.
+ * field exists in the Phase 1 data, so it is never mentioned) and the live distinct-seller
+ * count. No LLM text, no invented traits.
  */
 export interface TemplateFacts {
   varietyName: string;
   commonName: string;
   latinName: string | null;
-  listingCount: number;
+  /** Distinct sellers — never a listing count (Dustin's ruling, 2026-11-21). */
+  sellerCount: number;
   breeder?: string | null;
 }
 
@@ -27,17 +28,17 @@ export function templateDescription(f: TemplateFacts): string {
   const parts = [`${f.varietyName} is ${article(common)} ${common} variety${f.latinName ? ` (${f.latinName})` : ""}.`];
   if (f.breeder) parts.push(`It was bred by ${f.breeder}.`);
   parts.push(
-    f.listingCount === 0
+    f.sellerCount === 0
       ? "No seller in this directory lists it yet."
-      : f.listingCount === 1
+      : f.sellerCount === 1
         ? "It is listed by 1 seed seller in this directory."
-        : `It is listed by ${f.listingCount} seed sellers in this directory.`,
+        : `It is listed by ${f.sellerCount} seed sellers in this directory.`,
   );
   return parts.join(" ");
 }
 
 /** Factual meta-description fragment (S1): "Available from N supplier(s)". */
-export function availabilityPhrase(listingCount: number): string {
-  if (listingCount === 0) return "No sellers listed yet";
-  return `Available from ${listingCount} supplier${listingCount === 1 ? "" : "s"}`;
+export function availabilityPhrase(sellerCount: number): string {
+  if (sellerCount === 0) return "No sellers listed yet";
+  return `Available from ${sellerCount} supplier${sellerCount === 1 ? "" : "s"}`;
 }

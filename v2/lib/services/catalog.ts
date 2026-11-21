@@ -73,6 +73,7 @@ import {
 } from "@/lib/validators";
 import { CatalogGrowerGuideInput } from "@/lib/catalog/input";
 import { proseCommonName, templateDescription } from "./template";
+import { sellerCounts } from "@/lib/seller-counts";
 
 export interface Paged<T> {
   items: T[];
@@ -266,6 +267,7 @@ function summaryFrom(r: repo.VarietySummaryRow): VarietySummary {
       colorSwatch: r.colorSwatch,
       colorFamily: r.colorFamily,
       listingCount: r.listingCount ?? 0,
+      sellerCount: r.sellerCount ?? 0,
       inStockCount: r.inStockCount ?? 0,
       lastCheckedAt: r.lastChecked,
       indexable: r.indexable,
@@ -453,7 +455,7 @@ export function createCatalogService(db: Db) {
           varietyName: row.varietyName,
           commonName: row.commonName,
           latinName: row.latinName,
-          listingCount: ls.length,
+          sellerCount: sellerCounts(ls).sellers,
         }),
         answer: answerSentence(row.varietyName, ls),
         sowingNotes: row.sowingNotes,
@@ -656,7 +658,7 @@ export function createCatalogService(db: Db) {
         type: "variety",
         slug: v.slug,
         title: v.varietyName,
-        subtitle: `${proseCommonName(v.plant.commonName)} · ${v.listingCount === 0 ? "no seller listing yet" : `${v.listingCount} seller${v.listingCount === 1 ? "" : "s"}`}`,
+        subtitle: `${proseCommonName(v.plant.commonName)} · ${v.sellerCount === 0 ? "no seller listing yet" : `${v.sellerCount} seller${v.sellerCount === 1 ? "" : "s"}`}`,
         href: `/variety/${v.slug}`,
         matchedAlias: m.matchedAlias,
       }));

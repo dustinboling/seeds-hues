@@ -28,7 +28,7 @@ export function VarietyCard({ v }: { v: VarietyListItem }) {
       <span className="flex h-[6.25rem] flex-col items-center justify-center gap-0.5">
         <span className="line-clamp-2 font-display text-lg font-semibold leading-snug text-ink">{v.varietyName}</span>
         <span className="text-sm text-muted">{crop}</span>
-        <span className="text-sm text-muted">{v.listingCount === 0 ? "No sellers yet" : plural(v.listingCount, "seller")}</span>
+        <span className="text-sm text-muted">{v.sellerCount === 0 ? "No sellers yet" : plural(v.sellerCount, "seller")}</span>
       </span>
     </Link>
   );
