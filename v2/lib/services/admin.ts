@@ -50,6 +50,36 @@ export const SellerActionBodySchema = z.strictObject({ reason: z.string().max(50
 /** POST /admin/sellers/{ref}/small-farm — the Small farm badge judgment (Open Directory). */
 export const SellerBadgeBodySchema = z.strictObject({ is_small_farm: z.boolean() });
 
+/** POST /api/v1/admin/sellers/{ref}/description — a string sets, null clears. */
+export const SellerDescriptionBodySchema = z.strictObject({ description: z.string().max(2000).nullable() });
+
+const PRICE_PATTERNS = [
+  /\$\s*\d/,
+  /\bUSD\s*\$?\s*\d/i,
+  /\b\d+(?:\.\d+)?\s*USD\b/i,
+  /\b\d+(?:\.\d+)?\s*(?:dollars?|bucks?)\b/i,
+  /\bpriced?\b(?:\s+(?:at|of|is|was|are))?\s*[:–—\-(]?\s*\$?\s*\d/i,
+];
+
+const INTERNAL_MARKER_PATTERNS = [
+  /(?:^|[\r\n])\s*(?:anchor|badge|feed|note):/i,
+  /hue\s+review/i,
+  /coordinator\s+to\s+verify/i,
+  /verified\s+\d{4}-\d{2}-\d{2}/i,
+];
+
+/**
+ * The seller-description publication guard (audit 2026-11-21 C1 + C2): prices are
+ * captured but NEVER shown, and working notes never publish as About copy. Pure —
+ * returns the matched violation class names (empty = clean).
+ */
+export function descriptionViolations(text: string): string[] {
+  const out: string[] = [];
+  if (PRICE_PATTERNS.some((re) => re.test(text))) out.push("price");
+  if (INTERNAL_MARKER_PATTERNS.some((re) => re.test(text))) out.push("internal_marker");
+  return out;
+}
+
 /**
  * Slice B (D3): the general admin seller update (Hue resolution 1) — CORRECTABLE plus
  * type, platform, country, contactEmail. type/platform validate against the schema enums.
@@ -516,6 +546,10 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
       const seller = await ingest.sellerByRef(db, ref);
       if (!seller) throw new AdminError(404, "seller_not_found", `seller ${ref} not found`);
       if (seller.eligibility === "removed_by_request") throw new AdminError(409, "seller_removed", `${seller.slug} was removed at its request`);
+      if (typeof body.description === "string") {
+        const violations = descriptionViolations(body.description);
+        if (violations.length > 0) throw new AdminError(422, "description_rejected", `description rejected: ${violations.join(", ")}`);
+      }
       const changed = await admin.updateSellerFields(db, seller.id, body, iso());
       const varietySlugs = await admin.sellerVisibleVarietySlugs(db, seller.id);
       return {
