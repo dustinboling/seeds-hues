@@ -12,6 +12,8 @@ import {
   SellerActionBodySchema,
   SellerBadgeBodySchema,
   SellerDescriptionBodySchema,
+  SellerLocationBodySchema,
+  regionForLocation,
   ListingRemoveBodySchema,
   VarietyColorBodySchema,
 } from "@/lib/services/admin";
@@ -189,6 +191,25 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "seller not found");
       const b = parseBody(SellerDescriptionBodySchema, body);
       const r = await services.admin.sellerUpdate(ref, { description: b.description });
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // The seller location/contact sweep (2026-11-22): location plus its derived
+    // region through the same sellerUpdate funnel as the admin UI, so the changed
+    // list and revalidation match a UI edit exactly. No derivable state → location
+    // alone (a region is never invented).
+    method: "POST",
+    pattern: "sellers/:id/location",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "seller not found");
+      const b = parseBody(SellerLocationBodySchema, body);
+      const region = regionForLocation(b.location);
+      const r = await services.admin.sellerUpdate(ref, region ? { location: b.location, region } : { location: b.location });
       return { data: r.data, revalidate: r.revalidate };
     },
   },
