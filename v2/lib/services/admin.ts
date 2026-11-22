@@ -296,9 +296,10 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
 
     async approve(id: number, body: z.infer<typeof ApproveBodySchema>, opts: { decider?: Decider } = {}): Promise<AdminResult<Record<string, unknown>>> {
       const item = await itemOr404(id);
-      // Approving a hold means "not a duplicate": the held name becomes its own variety
-      // (mirroring new_variety, where approve = create). The key-based path passes no decider.
-      if (item.type === "duplicate_hold") return decideDuplicateHold(item, "not_duplicate", opts.decider);
+      // Dustin ruling 2026-11-21: a duplicate hold is decided ONLY through decideDuplicate
+      // (the admin UI) — never through this generic path, where approve would silently mean
+      // "not a duplicate" and create the variety.
+      if (item.type === "duplicate_hold") throw new AdminError(422, "duplicate_hold_ui_only", `review item ${id} is a duplicate hold, decided in the admin UI only`);
       const p = item.proposal;
       let data: Record<string, unknown> = {};
       let revalidate: string[] = [];
@@ -352,8 +353,8 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
           revalidate = r.revalidate;
           break;
         }
-        // duplicate_hold returns through decideDuplicateHold() above; the narrowed type keeps
-        // it out of this switch.
+        // duplicate_hold is refused above (decideDuplicate in the admin UI is its only
+        // decision path); the narrowed type keeps it out of this switch.
       }
       await admin.resolveReviewItem(db, id, "approved", iso(), opts.decider ? { decider: opts.decider } : {});
       return { data: { id, type: item.type, status: "approved", ...data }, revalidate };
@@ -361,6 +362,8 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
 
     async reject(id: number, opts: { decider?: Decider; reason?: string } = {}): Promise<AdminResult<Record<string, unknown>>> {
       const item = await itemOr404(id);
+      // Dustin ruling 2026-11-21: same refusal as approve — decideDuplicate only.
+      if (item.type === "duplicate_hold") throw new AdminError(422, "duplicate_hold_ui_only", `review item ${id} is a duplicate hold, decided in the admin UI only`);
       await admin.resolveReviewItem(db, id, "rejected", iso(), { ...(opts.decider ? { decider: opts.decider } : {}), ...(opts.reason ? { reason: opts.reason } : {}) });
       await closeReport(item.proposal, "dismissed");
       return { data: { id, type: item.type, status: "rejected" }, revalidate: [] };

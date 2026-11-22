@@ -295,14 +295,37 @@ describe("duplicate decisions", () => {
     expect(item).toMatchObject({ status: "approved", decidedByName: "Rae Reviewer" });
   });
 
-  it("the key-based path approves a hold into a new variety with no decider", async () => {
+  it("the key-based path refuses to approve a hold: still pending, no variety, no alias, no listing", async () => {
     advance(1000);
-    const { id } = await s.admin.createDuplicateHold(holdBody({ held_name: "Keypath Bloom", crop: "zinnia", listing: { productUrl: `https://${songbirdDomain}/p/keypath-bloom`, checkedAt: iso() } }));
-    const r = await s.admin.approve(id, {});
-    expect(r.data).toMatchObject({ status: "approved", held_name: "Keypath Bloom" });
-    const item = await reviewRepo.reviewItemById(t.db, id);
-    expect(item?.decidedByUserId).toBeNull();
-    expect(item?.decidedByName).toBeNull();
+    const held = "Keypath Refused";
+    const productUrl = `https://${songbirdDomain}/p/keypath-refused`;
+    const { id } = await s.admin.createDuplicateHold(holdBody({ held_name: held, crop: "zinnia", listing: { productUrl, checkedAt: iso() } }));
+    await expect(s.admin.approve(id, {})).rejects.toMatchObject({ status: 422, code: "duplicate_hold_ui_only", message: expect.stringContaining("admin UI") });
+    // Nothing decided, nothing created: the item is pending exactly as submitted.
+    expect(await reviewRepo.reviewItemById(t.db, id)).toMatchObject({ type: "duplicate_hold", status: "pending", decidedByUserId: null, decidedByName: null, resolvedAt: null });
+    expect(await s.catalog.getVariety("zinnia-keypath-refused")).toBeNull();
+    expect(await reviewRepo.aliasRow(t.db, chantillyId, held)).toBeNull();
+    expect(await raw("SELECT id FROM listings WHERE product_url = ?", productUrl).first()).toBeNull();
+  });
+
+  it("the key-based path refuses to reject a hold: still pending", async () => {
+    advance(1000);
+    const { id } = await s.admin.createDuplicateHold(holdBody({ held_name: "Keypath Reject Refused", listing: { productUrl: `https://${songbirdDomain}/p/keypath-reject-refused`, checkedAt: iso() } }));
+    await expect(s.admin.reject(id)).rejects.toMatchObject({ status: 422, code: "duplicate_hold_ui_only", message: expect.stringContaining("admin UI") });
+    expect(await reviewRepo.reviewItemById(t.db, id)).toMatchObject({ type: "duplicate_hold", status: "pending", decidedByUserId: null, decidedByName: null, resolvedAt: null });
+  });
+
+  it("other queue types still approve AND reject through the key API (the refusal is type-scoped)", async () => {
+    advance(1000);
+    // new_variety approve still creates the variety — the effect approve-on-hold no longer has.
+    const nv = await reviewRepo.insertReviewItem(t.db, { type: "new_variety", groupKey: "keypath-scope-new", proposal: listingProposal(null, "zinnia", "Keypath Scoped", "keypath-scope-new"), reason: "no_match", confidence: 0.2, at: iso() });
+    const created = await s.admin.approve(nv, {});
+    expect(created.data).toMatchObject({ status: "approved", variety_slug: "zinnia-keypath-scoped" });
+    expect((await s.catalog.getVariety("zinnia-keypath-scoped"))!.varietyName).toBe("Keypath Scoped");
+    // …and a queued listing still rejects.
+    const lm = await reviewRepo.insertReviewItem(t.db, { type: "listing_match", groupKey: "keypath-scope-reject", proposal: listingProposal(sunsetId, "zinnia", "Dearest Sunset", "keypath-scope-reject"), reason: "model_match", confidence: 0.4, at: iso() });
+    await s.admin.reject(lm);
+    expect((await reviewRepo.reviewItemById(t.db, lm))?.status).toBe("rejected");
   });
 
   it("a merged-away candidate refuses the duplicate outcome; the detail follows the chain", async () => {
