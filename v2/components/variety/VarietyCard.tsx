@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { VarietyCardImage } from "@/components/variety/VarietyCardImage";
 import { plural, shortCommonName } from "@/lib/format";
+import { ZERO_SELLER_SHORT } from "@/lib/zero-seller";
 import type { VarietyListItem } from "@/lib/validators";
 
 /**
@@ -28,7 +29,7 @@ export function VarietyCard({ v }: { v: VarietyListItem }) {
       <span className="flex h-[6.25rem] flex-col items-center justify-center gap-0.5">
         <span className="line-clamp-2 font-display text-lg font-semibold leading-snug text-ink">{v.varietyName}</span>
         <span className="text-sm text-muted">{crop}</span>
-        <span className="text-sm text-muted">{v.sellerCount === 0 ? "No sellers yet" : plural(v.sellerCount, "seller")}</span>
+        <span className="text-sm text-muted">{v.sellerCount === 0 ? ZERO_SELLER_SHORT : plural(v.sellerCount, "seller")}</span>
       </span>
     </Link>
   );

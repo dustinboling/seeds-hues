@@ -15,8 +15,7 @@ import { ImageResponse } from "next/og";
 import frauncesOg from "@/app/fonts/fraunces-og.ttf" with { type: "bytes" };
 // @ts-expect-error -- as above; this is the exact file next/og loads as its default font.
 import geistRegular from "next/dist/compiled/@vercel/og/Geist-Regular.ttf" with { type: "bytes" };
-import { getServices } from "@/lib/services/context";
-import { buildOgCard } from "@/lib/og-card";
+import { ogCardFor } from "@/lib/seo/og-card";
 
 export const dynamic = "force-dynamic";
 
@@ -37,8 +36,7 @@ const FONTS = [
 
 export async function GET(_req: Request, ctx: { params: Promise<{ kind: string; slug: string }> }) {
   const { kind, slug } = await ctx.params;
-  const { catalog } = await getServices();
-  const card = await buildOgCard(kind, slug, catalog);
+  const card = await ogCardFor(kind, slug);
   if (!card) return new Response("Not found", { status: 404 });
   const titleSize = card.title.length > 28 ? 72 : 92;
   return new ImageResponse(

@@ -90,7 +90,7 @@ describe("template description seller sentence", () => {
 
   it("keeps the 0 / 1 sentence shapes", () => {
     expect(templateDescription({ varietyName: "X", commonName: "Stock", latinName: null, sellerCount: 0 })).toContain(
-      "No seller in this directory lists it yet.",
+      "No seller found selling X yet.",
     );
     expect(templateDescription({ varietyName: "X", commonName: "Stock", latinName: null, sellerCount: 1 })).toContain(
       "It is listed by 1 seed seller in this directory.",

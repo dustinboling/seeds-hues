@@ -357,7 +357,8 @@ describe("variety page — sellers beside the painting layout (source)", () => {
     expect(between).toContain('aria-labelledby="buy-title"');
     expect(between.match(/<section/g)).toHaveLength(1);
     // Zero sellers renders in the right column, where the listings would have gone.
-    expect(between).toContain("No sellers yet");
+    expect(between).toContain("zeroSellerSentence(v.varietyName)");
+    expect(between).not.toContain("currently unavailable");
     expect(between).toContain("WaitlistBlock");
     // The listing machinery stays inside the moved section: the sellers section mounts
     // there with the scroll clamp beside it, and the chips/count/legend/rows live in the

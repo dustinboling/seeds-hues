@@ -27,7 +27,9 @@ import { insertSearchEvent } from "@/lib/repositories/events";
 import { MIN_QUERY_CHARS, normaliseQuery, searchVarieties, type VarietyMatch } from "@/lib/repositories/fts";
 import { catalogSeq } from "@/lib/repositories/seq";
 import { SITE_URL } from "@/lib/config";
+import { formatFriendlyDate } from "@/lib/format";
 import { foldText } from "@/lib/names";
+import { zeroSellerSentence } from "@/lib/zero-seller";
 import { stateByCode } from "@/lib/data/states";
 import {
   CatalogVersionSchema,
@@ -237,15 +239,16 @@ export function mapListing(l: PublicListingRow, packets: PacketSize[], media: Me
   );
 }
 
-/** "As of 2026-11-15, 3 sellers list King's Ransom: A, B and C." — data only (canonical §5 GEO). */
+/** "As of Nov 15, 2026, 3 sellers list King's Ransom: A, B and C." — data only (canonical §5 GEO). */
 export function answerSentence(varietyName: string, listings: PublicListing[]): string {
-  if (listings.length === 0) return `No seller found selling ${varietyName} yet.`;
+  if (listings.length === 0) return zeroSellerSentence(varietyName);
   const names = [...new Set(listings.map((l) => l.seller.name))];
-  const date = listings
+  const raw = listings
     .map((l) => l.lastCheckedAt?.slice(0, 10))
     .filter((d): d is string => Boolean(d))
     .sort()
     .at(-1);
+  const date = raw ? formatFriendlyDate(raw) : null;
   const list = names.length === 1 ? names[0]! : `${names.slice(0, -1).join(", ")} and ${names.at(-1)!}`;
   const n = names.length;
   const lead = date ? `As of ${date}, ` : "";

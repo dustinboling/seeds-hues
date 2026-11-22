@@ -15,8 +15,9 @@ import { mediaOgImage, ogImage, pageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { assertPageInRange, pageTitleSuffix, pageWindow, parsePage, totalPages } from "@/lib/paging";
 import { legacySlug } from "@/lib/legacy";
-import { plural, shortCommonName, titleCaseTag } from "@/lib/format";
+import { formatFriendlyDate, plural, shortCommonName, titleCaseTag } from "@/lib/format";
 import { proseCommonName } from "@/lib/services/template";
+import { zeroSellerSentence } from "@/lib/zero-seller";
 import { PAGE_SIZE } from "@/lib/config";
 import { SEASON_LABELS, SOWING_METHOD_LABELS } from "@/lib/validators";
 import { growerGuideTabs, lifeCycleFact } from "@/lib/grower-guide";
@@ -81,9 +82,10 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   if (!r) return { title: "Crop not found", robots: { index: false, follow: true } };
   const c = r.crop;
   const common = shortCommonName(c.commonName);
+  const lastUpdatedFriendly = formatFriendlyDate(c.lastUpdated);
   return pageMetadata({
     title: `${common} Seeds${c.latinName ? ` (${c.latinName})` : ""} — ${plural(c.varietyCount, "Variety", "Varieties")}, ${c.varietiesWithSellers} With Sellers${pageTitleSuffix(page)}`,
-    description: `${plural(c.varietyCount, "variety", "varieties")} of ${proseCommonName(c.commonName)}${c.latinName ? ` (${c.latinName})` : ""} cataloged; ${c.varietiesWithSellers} sold by sellers in the directory.${c.lastUpdated ? ` Last updated ${c.lastUpdated}.` : ""}`,
+    description: `${plural(c.varietyCount, "variety", "varieties")} of ${proseCommonName(c.commonName)}${c.latinName ? ` (${c.latinName})` : ""} cataloged; ${c.varietiesWithSellers} sold by sellers in the directory.${lastUpdatedFriendly ? ` Last updated ${lastUpdatedFriendly}.` : ""}`,
     // Filtered views are crawlable but not indexed; the canonical is the unfiltered crop page.
     path: filtered(f) ? `/crop/${c.slug}` : href(c.slug, f, page),
     noindex: filtered(f),
@@ -115,6 +117,7 @@ function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; col
   const { crop: c, total, colorFamilies } = r;
   const pages = totalPages(total);
   const common = shortCommonName(c.commonName);
+  const lastUpdatedFriendly = formatFriendlyDate(c.lastUpdated);
   const lifeCycle = lifeCycleFact(c.life_cycle, c.hardiness);
   const pod = podArtForPlant(c.slug);
   const navKey = [page, f.color, f.series, f.hasSellers].join("|");
@@ -150,7 +153,7 @@ function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; col
           ) : null}
           <p className="mt-2 font-medium" data-testid="coverage">
             {plural(c.varietyCount, "variety", "varieties")} cataloged · {c.varietiesWithSellers} with sellers
-            {c.lastUpdated ? ` · last updated ${c.lastUpdated}` : ""}
+            {lastUpdatedFriendly ? ` · last updated ${lastUpdatedFriendly}` : ""}
           </p>
           {c.season_class ? (
             <p className="mt-1 text-sm text-muted" data-testid="crop-season">
@@ -229,7 +232,7 @@ function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; col
           <VarietyGrid items={c.varieties} />
         ) : f.hasSellers === true && c.varietiesWithSellers === 0 ? (
           <p className="text-muted">
-            No sellers yet for this crop — join a waiting list on any variety page and we will let you know when a seller lists one.{" "}
+            {zeroSellerSentence(proseCommonName(c.commonName))} Join a waiting list on any variety page and we will let you know when a seller lists one.{" "}
             <Link href={`/crop/${c.slug}`}>Clear filters</Link>.
           </p>
         ) : (

@@ -11,7 +11,7 @@ import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { siteOrganizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/lib/config";
-import { plural, shortCommonName } from "@/lib/format";
+import { formatFriendlyDate, plural, shortCommonName } from "@/lib/format";
 import { parseMethodParam, parseSeasonParam } from "@/lib/paging";
 import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
 
@@ -50,6 +50,7 @@ export default async function HomePage({ searchParams }: Props) {
   ]);
   const withSellers = coverage.reduce((n, c) => n + c.varieties_with_sellers, 0);
   const lastUpdated = coverage.map((c) => c.last_updated).filter((d): d is string => Boolean(d)).sort().at(-1) ?? null;
+  const lastUpdatedFriendly = formatFriendlyDate(lastUpdated);
 
   return (
     <>
@@ -76,7 +77,7 @@ export default async function HomePage({ searchParams }: Props) {
           <p className="mt-4 font-display text-sm text-muted" data-testid="coverage-line">
             {plural(counts.varieties, "variety", "varieties")} cataloged across {plural(counts.plants, "crop")} ·{" "}
             {withSellers} with a seller · {plural(counts.sellers, "seller")} · {plural(counts.listings, "listing")}
-            {lastUpdated ? ` · updated ${lastUpdated}` : ""}
+            {lastUpdatedFriendly ? ` · updated ${lastUpdatedFriendly}` : ""}
           </p>
         </div>
       </section>
@@ -140,7 +141,7 @@ export default async function HomePage({ searchParams }: Props) {
                   </Link>{" "}
                   <span className="text-muted">
                     at <Link href={`/seller/${r.listing.seller.slug}`}>{r.listing.seller.name}</Link> · {EVENT_LABEL[r.event]}{" "}
-                    {r.at.slice(0, 10)}
+                    {formatFriendlyDate(r.at)}
                   </span>
                 </span>
                 <AvailabilityBadge value={r.listing.availability} />
