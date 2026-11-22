@@ -14,13 +14,19 @@ import { SMALL_FARM_BADGE_LABEL, SMALL_FARM_LEGEND } from "@/lib/small-farm";
  *   placeholder state anywhere.
  */
 const BASE =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-leaf/60 bg-leaf-50 font-sans font-semibold tracking-[0.01em] text-leaf";
+  "badge badge-small-farm shrink-0 whitespace-nowrap font-semibold tracking-[0.01em]";
 
 const SIZE = {
   /** Listing rows, seller cards, legends: 20 px chip / 12 px text / 13 px mark. */
-  standard: { chip: "gap-[5px] py-[2px] pl-[7px] pr-2 text-xs leading-[14px]", mark: "size-[13px]" },
+  standard: {
+    chip: "gap-(--badge-small-farm-standard-gap) py-(--badge-small-farm-standard-padding-block) pl-(--badge-small-farm-standard-padding-inline-start) pr-2 text-xs leading-(--badge-small-farm-standard-line-height)",
+    mark: "size-(--badge-small-farm-standard-mark-size)",
+  },
   /** Seller page header: 28 px chip / 13 px text / 16 px mark. */
-  large: { chip: "gap-1.5 py-1 pl-2 pr-2.5 text-[13px] leading-[18px]", mark: "size-4" },
+  large: {
+    chip: "gap-1.5 py-1 pl-2 pr-2.5 text-(length:--badge-small-farm-large-font-size) leading-(--badge-small-farm-large-line-height)",
+    mark: "size-4",
+  },
 } as const;
 
 export type SmallFarmBadgeSize = keyof typeof SIZE;

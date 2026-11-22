@@ -136,8 +136,11 @@ describe("ListingRow — Quiet Ledger card", () => {
     const h = html(listing({ lastCheckedAt: isoDaysAgo(0) }));
     expect(h).toContain("Checked today");
     expect(h).toContain("In stock");
-    expect(h).toContain("bg-leaf-600");
-    expect(h).toContain("text-leaf-600");
+    // R-2 (Tranche 2.2): the in-stock dot and word darkened leaf-600 to leaf. The
+    // closing quotes exclude the old leaf-600 classes; no leaf-600 remains on the card.
+    expect(h).toContain('align-[1px] bg-leaf"');
+    expect(h).toContain('font-semibold text-leaf">In stock');
+    expect(h).not.toContain("leaf-600");
     expect(h).not.toMatch(/\d{4}-\d{2}-\d{2}/);
     expect(h).not.toContain("Last checked");
     expect(h).not.toContain("uppercase");
@@ -204,11 +207,12 @@ describe("ListingRow — Quiet Ledger card", () => {
     it("renders the real SmallFarmBadge inline after the seller name when seller.isSmallFarm is true", () => {
       const h = html(badgedListing());
       // The shared component's own rendering: its data attribute (standard size), its
-      // label, and its distinguishing classes (leaf/60 border, sage tint, tracked text).
+      // label, and its distinguishing classes (family base plus tone, tracked text).
+      // The tone values (leaf/60 border, sage tint) moved into the .badge-small-farm
+      // rule in Tranche 2.2 and are pinned there by the badge contract suite.
       expect(h).toContain('data-small-farm-badge="standard"');
       expect(h).toContain("Small farm");
-      expect(h).toContain("border-leaf/60");
-      expect(h).toContain("bg-leaf-50");
+      expect(h).toContain("badge badge-small-farm");
       expect(h).toContain("tracking-[0.01em]");
       expect(h).not.toContain('data-testid="small-farm-badge"');
       expect(h.indexOf("Songbird Seed Co.")).toBeLessThan(h.indexOf("data-small-farm-badge"));

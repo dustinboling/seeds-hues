@@ -254,7 +254,8 @@ describe("2.1-B — arbitrary-value lint", () => {
     { pattern: /^min-h-\[(?!44px\])/, reason: "Non-target component height (widget reserve, textarea, chip override, skeleton)" },
     { pattern: /^aspect-\[/, reason: "Plate proportion, specified in the art direction" },
     { pattern: /^(align-\[1px\]|size-\[3px\])$/, reason: "Single-component optical value with no second consumer" },
-    { pattern: /^(gap-\[5px\]|py-\[2px\]|pl-\[7px\]|size-\[13px\])$/, reason: "SmallFarmBadge internals, tokenized as component tokens by item 2.2 (§3.3)" },
+    // (The SmallFarmBadge exemption lived here until item 2.2 tokenized those four
+    // literals as component tokens; the exemption is gone with the literals.)
     { pattern: /^border-b-\[3px\]$/, reason: "GuideTabs active-tab indicator; fits no §2.1.5 row, left literal by the value-preserving rule" },
     {
       pattern: /^(\[-webkit-overflow-scrolling:touch\]|\[scrollbar-width:none\]|\[&::-webkit-scrollbar\]|has-\[:(checked|focus-visible)\])$/,

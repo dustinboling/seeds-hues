@@ -1,3 +1,4 @@
+import { ProtectionIcon } from "@/components/layout/icons";
 import type { VarietyDetail } from "@/lib/validators";
 
 const LABELS: Record<string, string> = {
@@ -9,14 +10,22 @@ const LABELS: Record<string, string> = {
 /**
  * FINAL §1.3 "Protection field": render ONLY when protection is a positive, sourced claim.
  * `unknown` / `none_stated` render nothing — the site never claims a variety is "not protected".
+ *
+ * Dressed in the catalog's paper-and-ink register (Tranche 2.2, SPEC §3.5): the
+ * .badge-notice block (paper-deep ground, full-strength ink-soft border, control
+ * radius) with the seal icon before the label. Non-interactive: no link, button
+ * or tooltip. The label text carries the meaning alone; the icon is aria-hidden.
  */
 export function ProtectionBadge({ protection, note }: { protection: VarietyDetail["protection"]; note: string | null }) {
   const label = LABELS[protection];
   if (!label || !note) return null;
   return (
-    <p className="inline-flex flex-col rounded-inner border border-petal bg-petal-50 px-3 py-2 text-sm">
-      <span className="font-semibold text-petal">{label}</span>
-      <span className="text-muted">{note}</span>
+    <p className="badge-notice px-3 py-2 text-sm">
+      <span className="flex items-center gap-1.5 font-semibold text-ink">
+        <ProtectionIcon className="size-4" />
+        {label}
+      </span>
+      <span className="text-ink-soft">{note}</span>
     </p>
   );
 }

@@ -35,9 +35,9 @@ import type { Availability, PublicListing } from "@/lib/validators";
  * There is no negative or placeholder state.
  */
 
-/** Dot + word tones for the status line: in stock = leaf-600, sold out = petal. */
+/** Dot + word tones for the status line: in stock = leaf (R-2), sold out = petal. */
 const STATUS_TONE: Record<Availability, { dot: string; word: string }> = {
-  in_stock: { dot: "bg-leaf-600", word: "text-leaf-600" },
+  in_stock: { dot: "bg-leaf", word: "text-leaf" },
   sold_out: { dot: "bg-petal", word: "text-petal" },
   preorder: { dot: "bg-leaf-600", word: "text-leaf-600" },
   shop_closed: { dot: "bg-muted", word: "text-muted" },
