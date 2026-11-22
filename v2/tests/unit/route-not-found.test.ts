@@ -29,20 +29,24 @@ const fake = vi.hoisted(() => ({
   crop: null as unknown,
   states: [] as unknown[],
 }));
-vi.mock("@/lib/services/context", () => ({
-  getServices: async () => ({
-    catalog: {
-      getSeller: async () => fake.seller,
-      getCrop: async () => fake.crop,
-      listSellerStates: async () => fake.states,
-    },
-  }),
-}));
+const store = vi.hoisted(() => ({ services: null as unknown }));
+vi.mock("@/lib/services/context", () => ({ getServices: async () => store.services }));
+
+import { fakeServices } from "../helpers/services-context";
+import { fakeSellerDetail } from "../helpers/seller-detail";
 
 // Imported after the mock is registered (vi.mock is hoisted above these too).
 const { default: SellerPage, generateMetadata: sellerMetadata } = await import("@/app/seller/[slug]/page");
 const { default: CropPage, generateMetadata: cropMetadata } = await import("@/app/crop/[slug]/page");
 const { default: StatePage } = await import("@/app/state/[slug]/page");
+
+store.services = fakeServices({
+  catalog: {
+    getSeller: async () => fake.seller,
+    getCrop: async () => fake.crop,
+    listSellerStates: async () => fake.states,
+  },
+});
 
 beforeEach(() => {
   fake.seller = null;
@@ -50,28 +54,11 @@ beforeEach(() => {
   fake.states = [];
 });
 
-const SELLER: SellerDetail = {
+const SELLER: SellerDetail = fakeSellerDetail({
   slug: "hollyhock-test-farm",
   name: "Hollyhock Test Farm",
-  type: "specialty",
-  location: "Junction City, OR",
-  region: "OR",
-  country: "US",
   homepage: "https://hollyhock-test-farm.example/",
-  ratingCount: 0,
-  ratingAverage: null,
-  rating: { state: "not_yet_rated", average: null, review_count: 0 },
-  importedRating: null,
-  isSmallFarm: false,
-  description: "A test farm.",
-  orderingNotes: null,
-  varietyCount: 0,
-  updatedAt: "2026-11-20T00:00:00.000Z",
-  claimStatus: "unclaimed",
-  shipsTo: ["US"],
-  isSiteOwner: false,
-  listings: [],
-};
+});
 
 const CROP: CropDetail = {
   slug: "test-crop",

@@ -14,6 +14,7 @@ import { organizationJsonLd } from "@/lib/seo/jsonld";
 import { stateDescription, stateTitle } from "@/lib/seo/metadata";
 import { parseCatalog } from "@/lib/catalog/importer";
 import { loadCatalogJson } from "../helpers/d1";
+import { fakeSellerDetail } from "../helpers/seller-detail";
 
 const SELLER_STATES = ["CA", "CO", "CT", "GA", "IA", "ME", "MN", "MT", "NV", "NY", "OR", "UT", "VA", "VT", "WA", "WI"];
 
@@ -158,28 +159,17 @@ describe("importedRating validation", () => {
   });
 
   it("never blends into our rating or the Organization JSON-LD", () => {
-    const seller: SellerDetail = {
+    const seller: SellerDetail = fakeSellerDetail({
       slug: "johnnys-selected-seeds",
       name: "Johnny's Selected Seeds",
       type: "retail",
       location: "Winslow, ME",
       region: "ME",
-      country: "US",
       homepage: "https://www.johnnyseeds.com/",
-      ratingCount: 0,
-      ratingAverage: null,
-      rating: { state: "not_yet_rated", average: null, review_count: 0 },
       importedRating: { ...ok, source: "Google" },
-      isSmallFarm: false,
       description: null,
-      orderingNotes: null,
-      varietyCount: 0,
       updatedAt: "2026-11-17T00:00:00.000Z",
-      claimStatus: "unclaimed",
-      shipsTo: ["US"],
-      isSiteOwner: false,
-      listings: [],
-    };
+    });
     expect(SellerDetailSchema.safeParse(seller).success).toBe(true);
     const ld = JSON.stringify(organizationJsonLd(seller));
     expect(ld).not.toMatch(/rating|review|4\.7|313/i);

@@ -18,19 +18,23 @@ const fake = vi.hoisted(() => ({
   states: [] as unknown[],
   list: { items: [] as unknown[], total: 0 },
 }));
-vi.mock("@/lib/services/context", () => ({
-  getServices: async () => ({
-    catalog: {
-      getSeller: async () => fake.seller,
-      listSellerStates: async () => fake.states,
-      listSellers: async () => fake.list,
-    },
-  }),
-}));
+const store = vi.hoisted(() => ({ services: null as unknown }));
+vi.mock("@/lib/services/context", () => ({ getServices: async () => store.services }));
+
+import { fakeServices } from "../helpers/services-context";
+import { fakeSellerDetail } from "../helpers/seller-detail";
 
 // Imported after the mock is registered (vi.mock is hoisted above these too).
 const { default: SellerPage } = await import("@/app/seller/[slug]/page");
 const { default: StatePage } = await import("@/app/state/[slug]/page");
+
+store.services = fakeServices({
+  catalog: {
+    getSeller: async () => fake.seller,
+    listSellerStates: async () => fake.states,
+    listSellers: async () => fake.list,
+  },
+});
 
 /** Ada §A.2, copied verbatim: the bench's source of truth for the 16 strings. */
 const ADA_A2: Record<string, string> = {
@@ -87,28 +91,12 @@ function expectPlate(fig: string, code: string, slug: string, loading: "eager" |
   expect(fig).not.toMatch(/srcset/i);
 }
 
-const SELLER: SellerDetail = {
+const SELLER: SellerDetail = fakeSellerDetail({
   slug: "willamette-test-farm",
   name: "Willamette Test Farm",
-  type: "specialty",
-  location: "Junction City, OR",
-  region: "OR",
-  country: "US",
   homepage: "https://willamette-test-farm.example/",
-  ratingCount: 0,
-  ratingAverage: null,
-  rating: { state: "not_yet_rated", average: null, review_count: 0 },
-  importedRating: null,
-  isSmallFarm: false,
-  description: "A test farm.",
-  orderingNotes: null,
-  varietyCount: 0,
   updatedAt: "2026-11-19T00:00:00.000Z",
-  claimStatus: "unclaimed",
-  shipsTo: ["US"],
-  isSiteOwner: false,
-  listings: [],
-};
+});
 
 async function renderSeller(seller: SellerDetail): Promise<string> {
   fake.seller = seller;

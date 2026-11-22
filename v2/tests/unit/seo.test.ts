@@ -13,7 +13,8 @@ import { varietyDescription, varietyTitle } from "@/lib/seo/metadata";
 import { answerSentence } from "@/lib/services/catalog";
 import { templateDescription } from "@/lib/services/template";
 import { ZERO_SELLER_TITLE, zeroSellerSentence } from "@/lib/zero-seller";
-import type { PublicListing, SellerDetail, VarietyDetail } from "@/lib/validators";
+import type { PublicListing, VarietyDetail } from "@/lib/validators";
+import { fakeSellerDetail } from "../helpers/seller-detail";
 
 const listing = (id: number, sellerSlug: string, sellerName: string, checked: string): PublicListing => ({
   id,
@@ -81,7 +82,7 @@ describe("JSON-LD per the canonical §5 table (R4)", () => {
   it("home: WebSite + Organization; seller: Organization at the singular URL", () => {
     expect(websiteJsonLd()["@type"]).toBe("WebSite");
     expect(siteOrganizationJsonLd()["@type"]).toBe("Organization");
-    const s = { slug: "floret", name: "Floret", homepage: "https://www.floretflowers.com", description: null, location: "Skagit Valley, WA" } as SellerDetail;
+    const s = fakeSellerDetail({ slug: "floret", name: "Floret", homepage: "https://www.floretflowers.com", description: null, location: "Skagit Valley, WA" });
     expect(organizationJsonLd(s)).toMatchObject({ "@type": "Organization", mainEntityOfPage: "https://seeds.hues.flowers/seller/floret" });
     expect(breadcrumbJsonLd([{ name: "Home", href: "/" }])).toMatchObject({ "@type": "BreadcrumbList" });
   });
