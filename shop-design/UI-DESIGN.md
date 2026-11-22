@@ -442,7 +442,7 @@ Every line of words this design needs, enumerated. **This design finalizes no wo
 
 | ID | Slot | Where | Obligation (the contract the words must meet) | Status |
 |---|---|---|---|---|
-| CS-01 | Website button label | Contact block, primary button | Names the seller and shows the host (visible destination before the click, Nadia §3.5.1); **carries the OQ-2 collision**: must be distinguishable in words from the cards' "Visit shop →" pills — the button goes to the seller's *website*, the pills to *product pages*. Nadia's recommendation on record: website language (e.g. "Visit their website — {host}"). Destination, component, and behavior do not change with the wording | **New ruling needed (OQ-2)** — rules with CS-02/CS-03 as one set |
+| CS-01 | Website button label | Contact block, primary button | shows the host (visible destination before the click, Nadia §3.5.1); label as ruled in COPY §1 | **New ruling needed (OQ-2)** — rules with CS-02/CS-03 as one set |
 | CS-02 | Phone row label | Contact block, phone row | Names the channel as the seller's customer service (the concept is fixed; the words are Wren's); composes with the visible number as one link whose purpose is determinable from the row (Nadia §3.5.2) | New |
 | CS-03 | Email row label | Contact block, email row | Same obligation as CS-02, for the address; same wording family as CS-02 (the two labels must read as a set) | New |
 | CS-04 | Phone/email absence lines | Contact block | **No words.** No absence line, summary line, or "contact unavailable" copy is designed or permitted at any coverage level (Nadia §3.5.3, argued there) | **Closed** |
@@ -460,7 +460,7 @@ Every line of words this design needs, enumerated. **This design finalizes no wo
 | CS-16 | Count line — searched form | Above results | "{N} matches for “{q}”, best match first." (Nadia §7.3; curly quotes; the filtered-scope fact rides the applied row, not this line) | Pattern fixed by Nadia |
 | CS-17 | Count line — filtered forms | Above results | The narrowed total replaces N in CS-14/CS-15's forms; no separate "filtered" wording is designed (the applied row carries that fact) | Pattern fixed by Nadia |
 | CS-18 | Chip count unit (screen reader) | Inside filter chips | The unit word is "listings" — "{count} listings" announced per option (Nadia §5.3); the visible numeral carries no unit | Fixed by Nadia |
-| CS-19 | Filtered-empty primary line | Results region (§10.2) | Names the situation and the shop — "No listings at {name} match those filters." is Nadia §9.2's voice; Wren confirms | Pattern fixed by Nadia |
+| CS-19 | Filtered-empty primary line | Results region (§10.2) | Names the situation and the shop — "No listings in {name}'s shop match those filters." is Nadia §9.2's voice; Wren confirms | Pattern fixed by Nadia |
 | CS-20 | Searched-empty primary line | Results region (§10.3) | Names the query and the shop — "No matches for “{q}” in {name}'s shop." (Nadia §6.5) | Pattern fixed by Nadia |
 | CS-21 | Searched-empty combined-scope line | Results region, only when filters are active | States the filters' part — "…with the current filters applied." (Nadia §6.5) | Pattern fixed by Nadia |
 | CS-22 | Did-you-mean line | Results region, only when a candidate qualifies | Offers the one in-shop candidate as a link — "Did you mean {name}?" pattern (Tranche 3 §5.3.4's bounded rule, scoped in-shop by Nadia §6.5) | Pattern fixed by Nadia |
