@@ -74,9 +74,9 @@ export function AccountList({ rows, total, params, selected }: { rows: AccountLi
                     <span className="mt-0.5 block text-sm tabular-nums text-muted">Joined {formatAdminDate(r.createdAt)}</span>
                     {r.role === "admin" || r.role === "reviewer" || r.isFarmOwner ? (
                       <span className="mt-1.5 flex flex-wrap gap-1.5">
-                        {r.role === "admin" ? <span className="chip inline-flex min-h-[32px] items-center px-2.5 py-1 text-[13px]">Admin</span> : null}
-                        {r.role === "reviewer" ? <span className="chip inline-flex min-h-[32px] items-center px-2.5 py-1 text-[13px]">Reviewer</span> : null}
-                        {r.isFarmOwner ? <span className="chip inline-flex min-h-[32px] items-center px-2.5 py-1 text-[13px]">Farm owner</span> : null}
+                        {r.role === "admin" ? <span className="chip-tag">Admin</span> : null}
+                        {r.role === "reviewer" ? <span className="chip-tag">Reviewer</span> : null}
+                        {r.isFarmOwner ? <span className="chip-tag">Farm owner</span> : null}
                       </span>
                     ) : null}
                   </a>

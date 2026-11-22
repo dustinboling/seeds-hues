@@ -113,7 +113,7 @@ export function ListingDetail({ detail: l, role, ctx, backHref, genericStatus }:
           </a>
         </p>
         <p className="font-sans text-[15px] tabular-nums">
-          <span className="chip inline-flex min-h-target items-center">{statusWordForListing(l)}</span>
+          <span className="chip-tag">{statusWordForListing(l)}</span>
         </p>
       </header>
 

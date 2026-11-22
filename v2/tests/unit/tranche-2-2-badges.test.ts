@@ -16,8 +16,10 @@
  *   petal left in the component, and the render gate unchanged (2.2-E).
  * - R-2: the listing In stock dot and word darken leaf-600 to leaf; every other
  *   listing state is unchanged.
- * - Scope guards: RoleChip and AdminShell are untouched (their migration is
- *   item 2.3), and no chip split exists yet.
+ * - Scope guards: AdminShell is untouched (its review-count pill is not in the
+ *   family); RoleChip migrated to chip-tag under item 2.3 with its tone
+ *   intact, and the chip split exists (asserted in full by
+ *   tranche-2-3-chips.test.ts).
  *
  * Every set asserted about a source file is derived from that file at test
  * time: tone values from tokens.json, the Availability TONE map and the
@@ -465,9 +467,10 @@ describe("2.2 — Listing status line (R-2; STATUS_TONE derived from source)", (
 });
 
 describe("2.2 — scope guards (item 2.2 surfaces only)", () => {
-  it("RoleChip is untouched: still a chip, no badge class (its migration is 2.3)", () => {
+  it("RoleChip migrated to chip-tag with its tone intact (item 2.3 landed)", () => {
     const role = readSource("components/admin/RoleChip.tsx");
-    expect(role).toContain('"chip');
+    expect(role).toContain("chip-tag bg-leaf-50 font-semibold text-leaf");
+    expect(role).toContain('"chip-tag"');
     expect(role).not.toContain("badge-");
   });
 
@@ -475,10 +478,10 @@ describe("2.2 — scope guards (item 2.2 surfaces only)", () => {
     expect(readSource("components/admin/AdminShell.tsx")).not.toContain("badge-");
   });
 
-  it("no chip split exists yet: bare .chip stands, filter/tag classes do not", () => {
-    expect(css).toContain(".chip {");
-    for (const future of ["chip-filter", "chip-tag", "chip-removable"]) {
-      expect(css, future).not.toContain(future);
+  it("chip split exists: filter/tag classes stand, bare .chip is retired (item 2.3 landed)", () => {
+    for (const present of ["chip-filter", "chip-tag", "chip-removable"]) {
+      expect(css, present).toContain(present);
     }
+    expect(css.replace(/\/\*[\s\S]*?\*\//g, " "), "bare .chip selector").not.toMatch(/\.chip(?![-\w])/);
   });
 });

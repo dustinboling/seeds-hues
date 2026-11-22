@@ -27,10 +27,6 @@ export interface CropOption {
   commonName: string;
 }
 
-function chipClass(active: boolean): string {
-  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
-}
-
 function sellersLine(n: number): string {
   return n === 1 ? "1 seller" : `${n} sellers`;
 }
@@ -62,7 +58,7 @@ export function VarietyList({ rows, total, params, selected, crops }: { rows: Va
         <legend className="eyebrow mb-1">Crop</legend>
         <FilterStrip legend="Filter by crop">
           <li className="flex-none">
-            <a href={varietyHref({ ...base, crop: null })} aria-current={!crop ? "true" : undefined} className={chipClass(!crop)}>
+            <a href={varietyHref({ ...base, crop: null })} aria-current={!crop ? "true" : undefined} className="chip-filter">
               All
             </a>
           </li>
@@ -70,7 +66,7 @@ export function VarietyList({ rows, total, params, selected, crops }: { rows: Va
             const active = crop === c.slug;
             return (
               <li key={c.slug} className="flex-none">
-                <a href={varietyHref({ ...base, crop: c.slug })} aria-current={active ? "true" : undefined} className={chipClass(active)}>
+                <a href={varietyHref({ ...base, crop: c.slug })} aria-current={active ? "true" : undefined} className="chip-filter">
                   {c.commonName}
                 </a>
               </li>

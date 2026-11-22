@@ -231,10 +231,21 @@
       display: none;
     }
   }
-  .chip {
+  /*
+   * Chip split (Tranche 2.3, SPEC tranche-2 §4): the retired bare class is gone —
+   * every chip is .chip-filter (interactive, <a> or <button> only) or .chip-tag
+   * (inert, <span> only). Shared DNA (why they still read as relatives): full
+   * radius, 1px line-strong border, surface ground, ink text, sans 14px / 1.5.
+   * The radius.full token value is carried directly (there is deliberately no
+   * --radius-full variable, as tokens.json records). Values below are the
+   * component.chip.filter.* / component.chip.tag.* tokens in
+   * design-tokens/tokens.json.
+   */
+  .chip-filter {
     display: inline-flex;
     align-items: center;
-    min-height: 2rem;
+    min-height: var(--size-target);
+    min-width: var(--size-target);
     padding: 0.125rem 0.75rem;
     border-radius: 999px;
     border: 1px solid var(--color-line-strong);
@@ -248,22 +259,51 @@
       background-color 160ms ease-out,
       border-color 160ms ease-out;
   }
-  a.chip:hover,
-  button.chip:hover {
+  a.chip-filter:hover,
+  button.chip-filter:hover {
     border-color: var(--color-leaf-600);
     background: var(--color-leaf-50);
     color: var(--color-ink);
   }
-  .chip[aria-current="page"],
-  .chip[aria-current="true"],
-  .chip[aria-pressed="true"] {
+  .chip-filter[aria-current="true"],
+  .chip-filter[aria-pressed="true"] {
     border-color: var(--color-leaf);
     background: var(--color-leaf-50);
     color: var(--color-leaf);
+    font-weight: 600;
   }
   /* Hydrated toggle chips are <button>s: same pointer cursor as the pre-hydration links. */
-  button.chip {
+  button.chip-filter {
     cursor: pointer;
+  }
+  /*
+   * Inert tag: today's retired bare height (2rem), identical padding — height is
+   * the distinguisher. Deliberately no :hover, no selected state, no focus rule,
+   * no transition: a tag must look finished, never tappable.
+   */
+  .chip-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.125rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+    cursor: default;
+  }
+  /*
+   * Removable-chip modifier (SPEC §4.4): the applied-filter remover dress. Same
+   * geometry and states as .chip-filter, plus the drawn 14px × glyph after the
+   * label (ChipRemoveIcon, sized by the caller), spaced 6px from the label. The
+   * whole chip remains one hit target; the glyph is never a separate button.
+   */
+  .chip-removable svg {
+    margin-left: 6px;
   }
   /*
    * Badge family (Tranche 2.2, SPEC tranche-2 §3): one base construction, tone

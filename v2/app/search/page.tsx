@@ -79,17 +79,17 @@ export default async function SearchPage({ searchParams }: Props) {
           </p>
           <ul className="mt-4 flex flex-wrap gap-2">
             <li>
-              <Link href="/crop" className="chip tap">
+              <Link href="/crop" className="chip-filter">
                 Browse by crop
               </Link>
             </li>
             <li>
-              <Link href="/variety" className="chip tap">
+              <Link href="/variety" className="chip-filter">
                 Browse all varieties
               </Link>
             </li>
             <li>
-              <Link href="/seller" className="chip tap">
+              <Link href="/seller" className="chip-filter">
                 Browse sellers
               </Link>
             </li>

@@ -11,10 +11,6 @@ import { reviewHref } from "./urls";
 export type ListedRow = QueueRow & { age: string };
 export type ListedDecidedRow = DecidedRow & { time: string };
 
-function segmentLink(active: boolean): string {
-  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
-}
-
 export function QueueList({
   queue,
   show,
@@ -40,10 +36,10 @@ export function QueueList({
   return (
     <div className="flex flex-col gap-3">
       <div role="group" aria-label="List segment" className="flex flex-wrap gap-2">
-        <a href={reviewHref({ queue, show })} aria-current={!decided ? "true" : undefined} className={segmentLink(!decided)}>
+        <a href={reviewHref({ queue, show })} aria-current={!decided ? "true" : undefined} className="chip-filter">
           Waiting&nbsp;<span className="tabular-nums text-muted">({total})</span>
         </a>
-        <a href={reviewHref({ queue, show, decided: true })} aria-current={decided ? "true" : undefined} className={segmentLink(decided)}>
+        <a href={reviewHref({ queue, show, decided: true })} aria-current={decided ? "true" : undefined} className="chip-filter">
           Decided&nbsp;<span className="tabular-nums text-muted">({decidedTotal})</span>
         </a>
       </div>

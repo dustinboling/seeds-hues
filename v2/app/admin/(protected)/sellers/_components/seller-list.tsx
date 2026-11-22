@@ -26,16 +26,12 @@ export interface SellerListParams {
   sort: SellerSort;
 }
 
-function chipClass(active: boolean): string {
-  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
-}
-
 const SORT_LABELS: Record<SellerSort, string> = { name: "Name A–Z", listings: "Most listings", updated: "Recently updated" };
 
 export function SellerList({ rows, total, params, selected }: { rows: SellerListRow[]; total: number; params: SellerListParams; selected: string | null }) {
   const { q, badge, state, sort } = params;
   const chip = (label: string, href: string, active: boolean) => (
-    <a href={href} aria-current={active ? "true" : undefined} className={chipClass(active)}>
+    <a href={href} aria-current={active ? "true" : undefined} className="chip-filter">
       {label}
     </a>
   );
