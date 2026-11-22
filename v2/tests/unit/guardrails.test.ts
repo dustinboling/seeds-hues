@@ -6,7 +6,6 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { POD_ART_BY_PLANT } from "@/lib/data/pod-ornaments";
-import { MOTIF_B_PATH } from "@/components/ui/MotifDivider";
 import { STATE_SCENES } from "@/lib/data/state-scenes";
 import { STATE_PLATES } from "@/lib/data/state-plates";
 import { STATE_SHAPES } from "@/lib/data/state-paths";
@@ -225,9 +224,8 @@ describe("policy guardrails", () => {
       // stored /ornaments/ paths (lib/data/pod-ornaments.ts). The footer has no motif.
       "components/ui/PodDivider.tsx": [/src=\{imageUrl\(bundle, \{ width: 1600 \}\)\}/],
       "app/crop/[slug]/page.tsx": [/src=\{imageUrl\(pod\.motif, \{ width: 480 \}\)\}/],
-      // Divider motif B (2026-11-19): the centred ornament for major breaks (home hero break and
-      // the waitlist success moment), from the stored path /ornaments/motif-divider-b.webp.
-      "components/ui/MotifDivider.tsx": [/src=\{imageUrl\(MOTIF_B_PATH, \{ width: 1200 \}\)\}/],
+      // Divider motif B had an entry here until its 2026-11-21 retirement removed the
+      // component outright; an <img> outside this table fails the scan below, as it should.
       // State-plates delta (2026-11-19): the state-flower plate on seller + state pages, from the
       // stored /artwork/states/{slug}.webp paths in lib/data/state-plates.ts, at width 640.
       "components/seller/StatePlate.tsx": [/src=\{imageUrl\(plate\.path, \{ width: 640 \}\)\}/],
@@ -252,7 +250,6 @@ describe("policy guardrails", () => {
       "components/variety/VarietyCardImage.tsx": /imageSrcSet\(m\.url, \[480, 768\]\)/,
       "components/variety/VarietyHeroImage.tsx": /imageSrcSet\(media\.url, \[768, 1120\]\)/,
       "components/ui/ThemeArt.tsx": /srcSet=\{imageUrl\(art\.wide, \{ width: 1600 \}\)\}/,
-      "components/ui/MotifDivider.tsx": /srcSet=\{imageSrcSet\(MOTIF_B_PATH, MOTIF_B_WIDTHS\)\}/,
     };
     for (const [file, re] of Object.entries(SRCSET_FILES)) expect(stripComments(read(file)), file).toMatch(re);
     expect(offenders(ui, /\bsrcSet=/, Object.keys(SRCSET_FILES))).toEqual([]);
@@ -280,9 +277,13 @@ describe("policy guardrails", () => {
       expect(p).toMatch(/^\/ornaments\/(?:motif|bundle)-[a-z0-9-]+\.webp$/);
       expect(Object.hasOwn(IMAGE_KEYS, p), p).toBe(true);
     }
-    // Divider motif B is a stored /ornaments/ path the image CDN holds.
-    expect(MOTIF_B_PATH).toBe("/ornaments/motif-divider-b.webp");
-    expect(IMAGE_KEYS[MOTIF_B_PATH]).toBe("ornaments/motif-divider-b.webp");
+    // Divider motif B (retired 2026-11-21): its manifest entry stays until the separate
+    // asset-retirement operation, but nothing renders it any more — no runtime file may name
+    // the component or the stored path. (The manifest file itself is the one allow-listed hit.)
+    expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
+    expect(offenders(RUNTIME, /MotifDivider|MOTIF_B|motif-divider-b/, ["lib/images-data.ts"])).toEqual([]);
+    // The scanner is not vacuous: it still sees the retained manifest entry.
+    expect(offenders(["lib/images-data.ts"], /motif-divider-b/, [])).toHaveLength(1);
     // Every state scene and every state-flower outline painting the pages can render is held too.
     for (const slug of Object.keys(STATE_SCENES)) {
       expect(Object.hasOwn(IMAGE_KEYS, `/theme/state-scenes/${slug}.webp`), slug).toBe(true);

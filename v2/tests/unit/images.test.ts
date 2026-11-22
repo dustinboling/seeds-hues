@@ -149,6 +149,8 @@ describe("lib/images-data (generated)", () => {
     // Anise Hyssop Alabaster / Anise Hyssop / Golden Jubilee, and Balloon Flower
     // Astra Blue / Light Pink / Mix / Pink
     // (2026-11-21, Quinn re-gate PASS WITH NOTES — D1 closed on the v2 repaint).
+    // Motif B was retired 2026-11-21, but its manifest entry stays until the separate
+    // asset-retirement operation, so the count is unchanged.
     expect(entries).toHaveLength(833);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {

@@ -230,7 +230,8 @@ const placeholderFrame = (card: string) => /<div\b[^>]*data-testid="variety-card
 /** Stored pod paths render as transformations of their .png masters: motifs 480 wide, bundles 1600. */
 const POD_MOTIF_ZINNIA = cdn(480, "ornaments/motif-zinnia.png");
 const podBundle = (key: string) => cdn(1600, `ornaments/bundle-${key}.png`);
-/** Divider motif B (2026-11-19): R2 key of the 2400×518 master and its rendered 1200-wide transformation. */
+/** Divider motif B (retired 2026-11-21): the R2 key stays until the separate asset-retirement
+ *  operation, so it is kept here for the no-motif negative assertions and the asset probe below. */
 const MOTIF_B_KEY = "ornaments/motif-divider-b.webp";
 const MOTIF_B_SRC = cdn(1200, MOTIF_B_KEY);
 const metaContent = (h: string, prop: string) => new RegExp(`<meta property="${prop}" content="([^"]*)"`).exec(h)?.[1] ?? null;
@@ -1191,39 +1192,26 @@ async function main() {
     assert(slot, "no footer-stem slot before the <footer>");
     assert(slot.includes("divider-stem"), "footer slot without the divider-stem rule");
   });
-  /** The motif-B wrapper (data-testid="motif-b") and its <img>, from the first occurrence in `h`. */
-  const motifB = (h: string) => {
-    const i = h.indexOf('data-testid="motif-b"');
-    if (i < 0) return null;
-    const wrapper = h.slice(h.lastIndexOf("<div", i), h.indexOf(">", i) + 1);
-    const img = /<img\b[^>]*>/.exec(h.slice(i))?.[0] ?? null;
-    return { wrapper, img };
-  };
-  const assertMotifB = (h: string, where: string, sizes: string) => {
-    const m = motifB(h);
-    assert(m, `${where}: no data-testid="motif-b"`);
-    assert(attr(m.wrapper, "aria-hidden") === "true", `${where}: motif wrapper is not aria-hidden`);
-    assert(m.img, `${where}: motif has no <img>`);
-    assert(attr(m.img, "src") === MOTIF_B_SRC, `${where}: src ${attr(m.img, "src")}`);
-    const ss = attr(m.img, "srcset") ?? attr(m.img, "srcSet");
-    assert(ss === [600, 900, 1200].map((w) => `${cdn(w, MOTIF_B_KEY)} ${w}w`).join(", "), `${where}: srcset ${ss}`);
-    assert(attr(m.img, "sizes") === sizes, `${where}: sizes ${attr(m.img, "sizes")}`);
-    assert(attr(m.img, "alt") === "", `${where}: motif alt is not empty`);
-    assert(attr(m.img, "width") === "2400" && attr(m.img, "height") === "518", `${where}: width/height ${attr(m.img, "width")}×${attr(m.img, "height")}`);
-    assert(attr(m.img, "loading") === "lazy", `${where}: loading ${attr(m.img, "loading")}`);
-  };
-  await check(`home: divider motif B (<img src="${MOTIF_B_SRC}">) once in the page content, between the hero and Browse by crop`, async () => {
-    const main = mainHtml(await html("/"));
-    assert((main.match(/data-testid="motif-b"/g) ?? []).length === 1, "home <main> has other than one motif B");
-    assertMotifB(main, "home <main>", "min(480px, 92vw)");
-    const at = main.indexOf('data-testid="motif-b"');
-    assert(main.indexOf('id="hero-title"') < at && at < main.indexOf('id="crops-title"'), "motif B is not between the hero and Browse by crop");
+  // Divider motif B was retired 2026-11-21 at Dustin's direction: the home hero break now
+  // uses the site's standard thin-stem divider rule, and the motif appears nowhere at all.
+  await check("home: thin-stem divider once in the page content, between the hero and Browse by crop; no motif B", async () => {
+    const h = await html("/");
+    const main = mainHtml(h);
+    assert(!main.includes('data-testid="motif-b"'), "motif B in home <main>");
+    assert(!main.includes(MOTIF_B_KEY), "motif B image in home <main>");
+    const stem = '<div aria-hidden="true" class="divider-stem mb-8 mt-10"></div>';
+    const at = main.indexOf(stem);
+    assert(at >= 0, "no thin-stem divider in home <main>");
+    assert(main.indexOf(stem, at + 1) < 0, "more than one thin-stem divider in home <main>");
+    assert(main.indexOf('id="hero-title"') < at && at < main.indexOf('id="crops-title"'), "stem divider is not between the hero and Browse by crop");
     assert((main.match(/data-testid="pod-divider"/g) ?? []).length === 2, "home <main> has other than two pod dividers");
+    const outside = noScripts(h).replace(/<main\b[^>]*>[\s\S]*<\/main>/, " ");
+    assert(!outside.includes('data-testid="motif-b"') && !outside.includes(MOTIF_B_KEY), "motif B outside home <main>");
   });
   // The footer-adjacent motif B placement was removed 2026-11-19 at Dustin's direction (its
   // painted ground did not match the page ground). On 2026-11-20 he directed the slot's original
   // thin stem rule restored: the FooterStem slot renders the divider-stem rule above the footer
-  // on every page, and motif B stays out of the slot — it appears nowhere outside <main>.
+  // on every page. On 2026-11-21 he retired the motif entirely: it appears nowhere at all.
   await check("/variety/sweet-pea-kings-ransom: content keeps the thin divider-stem rule; footer slot carries the stem, no motif B anywhere", async () => {
     const h = crawled.get("/variety/sweet-pea-kings-ransom") ?? (await html("/variety/sweet-pea-kings-ransom"));
     const main = mainHtml(h);
