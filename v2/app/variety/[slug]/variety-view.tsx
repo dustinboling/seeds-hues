@@ -15,6 +15,7 @@ import { ThemeArt } from "@/components/ui/ThemeArt";
 import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
+import { resolveColorChip } from "@/lib/color-chip";
 import { mediaOgImage, ogImage, pageMetadata, varietyDescription, varietyTitle } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, varietySellersJsonLd } from "@/lib/seo/jsonld";
 import { formatHeight, shortCommonName, titleCaseTag } from "@/lib/format";
@@ -90,6 +91,8 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
 
   const common = shortCommonName(v.plant.commonName);
   const label = `${v.varietyName} ${common}`;
+  // One resolved chip for the whole page: the header and the facts row can never disagree.
+  const chip = resolveColorChip({ colorFamily: v.colorFamily, colorSwatch: v.colorSwatch });
   // Seller-framed summary (Dustin's ruling, 2026-11-21): distinct sellers, never listings.
   const shops = sellerCounts(v.listings);
   const crumbs = [
@@ -136,7 +139,7 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
       <Breadcrumbs items={crumbs} />
       <article aria-labelledby="variety-title">
         <header className="flex items-start gap-4">
-          <Swatch hex={v.colorSwatch} size="lg" label={v.varietyName} />
+          <Swatch chip={chip} size="lg" label={v.varietyName} />
           <div className="min-w-0">
             <p className="eyebrow">
               {proseCommonName(v.plant.commonName)}
@@ -237,12 +240,12 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
                 <RatingDisplay ratingCount={v.rating.review_count} />
               </dd>
             </div>
-            {v.colorSwatch ? (
+            {chip.kind !== "none" ? (
               <div>
                 <dt className="text-sm text-muted">Swatch</dt>
                 <dd className="flex items-center gap-2">
-                  <Swatch hex={v.colorSwatch} size="sm" label={v.varietyName} />
-                  <span className="font-mono text-sm">{v.colorSwatch}</span>
+                  <Swatch chip={chip} size="sm" label={v.varietyName} />
+                  {chip.kind === "hex" ? <span className="font-mono text-sm">{chip.hex}</span> : null}
                 </dd>
               </div>
             ) : null}

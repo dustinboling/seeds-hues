@@ -1,5 +1,5 @@
 /**
- * Generated Open Graph cards (S3): 1200×630 PNG via next/og ImageResponse — typography + colour
+ * Generated Open Graph cards (S3): 1200×630 PNG via next/og ImageResponse — typography + color
  * swatch + site mark only, no photos, no external fetches (fonts bundled into the Worker).
  * Theme (THEME-ART-DIRECTION.md §4): plate-paper ground, ink title, leaf-deep accent rule and the
  * stem-and-leaves divider drawn as inline SVG shapes. The title is set in a static Fraunces instance
@@ -16,7 +16,7 @@ import frauncesOg from "@/app/fonts/fraunces-og.ttf" with { type: "bytes" };
 // @ts-expect-error -- as above; this is the exact file next/og loads as its default font.
 import geistRegular from "next/dist/compiled/@vercel/og/Geist-Regular.ttf" with { type: "bytes" };
 import { getServices } from "@/lib/services/context";
-import { shortCommonName } from "@/lib/format";
+import { buildOgCard } from "@/lib/og-card";
 
 export const dynamic = "force-dynamic";
 
@@ -35,60 +35,10 @@ const FONTS = [
   { name: "Fraunces", data: toArrayBuffer(frauncesOg as Uint8Array), weight: 700 as const, style: "normal" as const },
 ];
 
-type Card = { eyebrow: string; title: string; subtitle: string; swatch: string | null; footer: string };
-
-async function cardFor(kind: string, slug: string): Promise<Card | null> {
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return null;
-  if (kind === "site") {
-    return {
-      eyebrow: "Flower seed directory",
-      title: "Find where to buy any flower seed",
-      subtitle: "Hard-to-find flower seed · stock as last seen · direct links",
-      swatch: "#8E2A52",
-      footer: "seeds.hues.flowers",
-    };
-  }
-  const { catalog } = await getServices();
-  if (kind === "variety") {
-    const v = await catalog.getVariety(slug);
-    if (!v) return null;
-    const n = new Set(v.listings.map((l) => l.seller.slug)).size;
-    return {
-      eyebrow: v.plant.latinName ? `${shortCommonName(v.plant.commonName)} · ${v.plant.latinName}` : shortCommonName(v.plant.commonName),
-      title: v.varietyName,
-      subtitle: n === 0 ? "No seller found selling this yet" : `${n} seller${n === 1 ? "" : "s"} list it`,
-      swatch: v.colorSwatch,
-      footer: "seeds.hues.flowers",
-    };
-  }
-  if (kind === "seller") {
-    const s = await catalog.getSeller(slug);
-    if (!s) return null;
-    return {
-      eyebrow: s.location ?? "Flower seed seller",
-      title: s.name,
-      subtitle: `${s.varietyCount} flower seed ${s.varietyCount === 1 ? "variety" : "varieties"} listed`,
-      swatch: null,
-      footer: "seeds.hues.flowers",
-    };
-  }
-  if (kind === "crop") {
-    const r = await catalog.getCrop(slug, { page: { offset: 0, limit: 1 } });
-    if (!r) return null;
-    return {
-      eyebrow: r.crop.latinName ?? shortCommonName(r.crop.commonName),
-      title: `${shortCommonName(r.crop.commonName)} seeds`,
-      subtitle: `${r.crop.varietyCount} ${r.crop.varietyCount === 1 ? "variety" : "varieties"} · ${r.crop.varietiesWithSellers} with sellers`,
-      swatch: null,
-      footer: "seeds.hues.flowers",
-    };
-  }
-  return null;
-}
-
 export async function GET(_req: Request, ctx: { params: Promise<{ kind: string; slug: string }> }) {
   const { kind, slug } = await ctx.params;
-  const card = await cardFor(kind, slug);
+  const { catalog } = await getServices();
+  const card = await buildOgCard(kind, slug, catalog);
   if (!card) return new Response("Not found", { status: 404 });
   const titleSize = card.title.length > 28 ? 72 : 92;
   return new ImageResponse(

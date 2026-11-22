@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FilterStrip } from "@/components/ui/FilterStrip";
 import { SmallFarmLegend } from "@/components/seller/SmallFarmBadge";
+import { MIX_GRADIENT } from "@/lib/color-chip";
 import { SMALL_FARM_CHIP_LABEL, SMALL_FARM_FILTER_LABEL, SMALL_FARM_PARAM } from "@/lib/small-farm";
 import {
   COLOR_FAMILIES,
@@ -91,12 +92,8 @@ function chipHref(
   return qs ? `${basePath}?${qs}` : basePath;
 }
 
-/** Mixed: a conic gradient through the family swatches (there is no single hex for it). */
-const MIX_GRADIENT = `conic-gradient(${(["pink", "orange", "yellow", "green", "blue", "purple", "pink"] as const)
-  .map((f) => COLOR_FAMILY_SWATCHES[f])
-  .join(", ")})`;
-
 function SwatchDot({ family }: { family: ColorFamily }) {
+  // Mixed draws the shared conic gradient (there is no single hex for it).
   const hex = COLOR_FAMILY_SWATCHES[family];
   return (
     <span
@@ -148,7 +145,7 @@ const OPTIONS: Record<BrowseFilterGroup, { legend: string; options: Option[] }> 
  * Browse filters: one fieldset per group — Season, Sowing method and, on variety lists, Life
  * cycle (on /variety), Hue and Sellers (on /variety; followed by the Small farm badge legend). Chips are plain server-rendered links; groups combine: every chip
  * keeps the other groups' active values. The active chip carries aria-current="true", so the state
- * is announced, not only shown by colour; hue chips pair the swatch dot with a text label.
+ * is announced, not only shown by color; hue chips pair the swatch dot with a text label.
  * Every group is a single-line, horizontally scrollable strip (FilterStrip, a small client
  * component) — no wrapping anywhere. Rows swipe sideways on narrow screens, with left/right edge
  * fades showing which side has more chips; on fine-pointer (mouse/trackpad) devices, chevron

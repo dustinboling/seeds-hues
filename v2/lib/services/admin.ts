@@ -12,6 +12,7 @@ import { demandStats, rollupDay } from "@/lib/repositories/events";
 import { resolveReport } from "@/lib/repositories/reports";
 import { AVAILABILITY, REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE, SELLER_PLATFORMS, SELLER_TYPES } from "@/lib/db/schema";
 import { hostOf, hostOnDomain, normalizeName } from "@/lib/names";
+import { COLOR_FAMILIES } from "@/lib/validators";
 import { notifyWaitlists, ServiceError } from "./ingest";
 
 export class AdminError extends ServiceError {}
@@ -52,6 +53,18 @@ export const SellerBadgeBodySchema = z.strictObject({ is_small_farm: z.boolean()
 
 /** POST /api/v1/admin/sellers/{ref}/description — a string sets, null clears. */
 export const SellerDescriptionBodySchema = z.strictObject({ description: z.string().max(2000).nullable() });
+
+/**
+ * POST /api/v1/admin/varieties/:id/color — the variety Hue filing (Tranche 1.8). Each key
+ * is independent: an absent key leaves that field untouched; color_swatch null clears it.
+ * "unknown" files the family back to unfiled. At least one key is required.
+ */
+export const VarietyColorBodySchema = z
+  .strictObject({
+    color_family: z.enum([...COLOR_FAMILIES, "unknown"] as const).optional(),
+    color_swatch: z.string().regex(/^#[0-9A-Fa-f]{6}$/).nullable().optional(),
+  })
+  .refine((b) => b.color_family !== undefined || b.color_swatch !== undefined, { message: "set color_family and/or color_swatch" });
 
 const PRICE_PATTERNS = [
   /\$\s*\d/,
@@ -323,10 +336,31 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
     if (typeof reportId === "number") await resolveReport(db, reportId, status, iso());
   }
 
+  /**
+   * The variety color write (Tranche 1.8): the ONE funnel for color_family / color_swatch
+   * updates, so any future caller (admin UI included) gets identical validation, the
+   * changed-field list, the catalog sequence bump, and the revalidation set. Each key is
+   * independent (an absent key leaves that field untouched); a hex is stored
+   * uppercase-normalized like the importer's writes.
+   */
+  async function varietyColorUpdate(ref: string, body: z.infer<typeof VarietyColorBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+    const variety = await ingest.varietyForMatch(db, /^\d+$/.test(ref) ? Number(ref) : ref);
+    if (!variety) throw new AdminError(404, "variety_not_found", `variety ${ref} not found`);
+    const patch: admin.VarietyColorPatch = {};
+    if (body.color_family !== undefined) patch.colorFamily = body.color_family;
+    if (body.color_swatch !== undefined) patch.colorSwatch = body.color_swatch === null ? null : body.color_swatch.toUpperCase();
+    const changed = await admin.updateVarietyColor(db, variety.id, patch, iso());
+    return {
+      data: { variety: variety.slug, id: variety.id, changed },
+      revalidate: [`/variety/${variety.slug}`, `/crop/${variety.plantSlug}`, "/variety"],
+    };
+  }
+
   return {
     removeListing,
     restoreListing,
     removeVariety,
+    varietyColorUpdate,
 
     listReview: (q: z.infer<typeof ReviewListQuerySchema>, limit: number) => admin.listReviewItems(db, { ...q, limit }),
 

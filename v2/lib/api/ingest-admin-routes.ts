@@ -13,6 +13,7 @@ import {
   SellerBadgeBodySchema,
   SellerDescriptionBodySchema,
   ListingRemoveBodySchema,
+  VarietyColorBodySchema,
 } from "@/lib/services/admin";
 import { LeaseBodySchema, ObservationsBodySchema, SellerCandidateBodySchema, SourceBodySchema } from "@/lib/services/ingest";
 import { ApproveFarmSchema, FarmOwnerSchema } from "@/lib/services/farms";
@@ -211,6 +212,21 @@ export const ADMIN_ROUTES: RouteSpec[] = [
     idempotent: true,
     handler: async ({ services, params }) => {
       const r = await services.admin.removeVariety(intParam(params.id, "variety"));
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // The variety Hue filing (Tranche 1.8): color_family and/or color_swatch through the
+    // shared varietyColorUpdate funnel, beside the variety remove route.
+    method: "POST",
+    pattern: "varieties/:id/color",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "variety not found");
+      const r = await services.admin.varietyColorUpdate(ref, parseBody(VarietyColorBodySchema, body));
       return { data: r.data, revalidate: r.revalidate };
     },
   },
