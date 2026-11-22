@@ -1423,6 +1423,33 @@ export async function varietyDetailBySlugAdmin(db: Db, slug: string): Promise<Ad
   return { ...v, listingStates, aliases, waitlistCount };
 }
 
+export type VarietyColorPatch = { colorFamily?: string; colorSwatch?: string | null };
+
+/**
+ * The admin-key variety color write (Tranche 1.8): sets exactly the submitted fields —
+ * colorFamily and/or colorSwatch (null clears the swatch) — and reports the changed-field
+ * list back. Same conventions as updateSellerFields (seq bump, updatedAt, the changed
+ * list); an unchanged save writes nothing. The caller normalizes the hex to uppercase.
+ */
+export async function updateVarietyColor(db: Db, varietyId: number, patch: VarietyColorPatch, at: string): Promise<("color_family" | "color_swatch")[]> {
+  const [cur] = await db
+    .select({ colorFamily: varieties.colorFamily, colorSwatch: varieties.colorSwatch })
+    .from(varieties)
+    .where(eq(varieties.id, varietyId))
+    .limit(1);
+  if (!cur) return [];
+  const set: Record<string, unknown> = {};
+  if (patch.colorFamily !== undefined && patch.colorFamily !== cur.colorFamily) set.colorFamily = patch.colorFamily;
+  if (patch.colorSwatch !== undefined && patch.colorSwatch !== cur.colorSwatch) set.colorSwatch = patch.colorSwatch;
+  const changed = Object.keys(set).map((k) => (k === "colorFamily" ? "color_family" : "color_swatch") as "color_family" | "color_swatch");
+  if (changed.length === 0) return [];
+  await atomic(db, [
+    ...nextSeq(db),
+    db.update(varieties).set({ ...set, updatedAt: at, updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
+  ]);
+  return changed;
+}
+
 /** A variety ref for writes: a numeric id or a slug (removed varieties resolve too — the effect itself reports already_removed). */
 export async function varietyRefBySlugOrId(db: Db, ref: string): Promise<{ id: number; slug: string; name: string } | null> {
   const byId = /^\d{1,12}$/.test(ref.trim());
