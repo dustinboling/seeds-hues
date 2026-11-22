@@ -19,26 +19,26 @@ export type StatSignal = "views" | "clicks" | "waitlist" | "searches";
 
 export const RANGE_DAYS: Record<StatRange, number> = { "7d": 7, "30d": 30, "12w": 84 };
 export const RANGE_LABELS: Record<StatRange, string> = { "7d": "7 days", "30d": "30 days", "12w": "12 weeks" };
-export const RANGE_LAST_LABELS: Record<StatRange, string> = { "7d": "Last 7 days", "30d": "Last 30 days", "12w": "Last 12 weeks" };
+const RANGE_LAST_LABELS: Record<StatRange, string> = { "7d": "Last 7 days", "30d": "Last 30 days", "12w": "Last 12 weeks" };
 export const SIGNAL_LABELS: Record<StatSignal, string> = { views: "Views", clicks: "Clicks to sellers", waitlist: "Waitlist", searches: "Searches" };
 
 /** Top 10 by default; `?show=25` widens the ranking in place. Anything else is 10. */
 export const SHOW_DEFAULT = 10;
 export const SHOW_WIDE = 25;
 
-export function parseStatRange(v: string | null | undefined): StatRange {
+function parseStatRange(v: string | null | undefined): StatRange {
   return v === "30d" || v === "12w" ? v : "7d";
 }
 
-export function parseStatSignal(v: string | null | undefined): StatSignal {
+function parseStatSignal(v: string | null | undefined): StatSignal {
   return v === "clicks" || v === "waitlist" || v === "searches" ? v : "views";
 }
 
-export function parseStatShow(v: string | null | undefined): number {
+function parseStatShow(v: string | null | undefined): number {
   return v === "25" ? SHOW_WIDE : SHOW_DEFAULT;
 }
 
-export interface StatisticsParams {
+interface StatisticsParams {
   range: StatRange;
   signal: StatSignal;
   show: number;
@@ -68,24 +68,19 @@ export function statisticsHref(p: StatisticsLinkParams): string {
 
 const DAY_MS = 86_400_000;
 
-export function addDaysUtc(day: string, n: number): string {
+function addDaysUtc(day: string, n: number): string {
   return new Date(Date.parse(`${day}T00:00:00Z`) + n * DAY_MS).toISOString().slice(0, 10);
 }
 
-export function diffDaysUtc(from: string, to: string): number {
+function diffDaysUtc(from: string, to: string): number {
   return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY_MS);
-}
-
-/** Today as a UTC calendar day ("2026-11-20"). */
-export function utcToday(d: Date): string {
-  return d.toISOString().slice(0, 10);
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
 
 /** "Nov 18" — a UTC day in words, no year (falls back to the input when unparseable). */
-export function shortDay(day: string): string {
+function shortDay(day: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
   if (!m) return day;
   const month = Number(m[2]);
@@ -95,14 +90,14 @@ export function shortDay(day: string): string {
 }
 
 /** "Tuesday" — the UTC day's weekday ("" when unparseable). */
-export function weekdayOf(day: string): string {
+function weekdayOf(day: string): string {
   const t = Date.parse(`${day}T00:00:00Z`);
   if (Number.isNaN(t)) return "";
   return WEEKDAYS[new Date(t).getUTCDay()]!;
 }
 
 /** "Nov 14 – Nov 20, 2026" (both ends full when the range spans New Year). */
-export function rangeWords(start: string, end: string): string {
+function rangeWords(start: string, end: string): string {
   if (start.slice(0, 4) !== end.slice(0, 4)) return `${formatAdminDate(start, start)} – ${formatAdminDate(end, end)}`;
   return `${shortDay(start)} – ${formatAdminDate(end, end)}`;
 }
@@ -136,7 +131,7 @@ export function statPeriod(today: string, range: StatRange): StatPeriod {
 
 export type DeltaKind = "up" | "down" | "new" | "no-change";
 
-export interface StatDelta {
+interface StatDelta {
   kind: DeltaKind;
   /** "▲ 12% up" / "▼ 5% down" / "New" / "No change" — arrow + number + word, never color alone. */
   text: string;
@@ -159,7 +154,7 @@ export function statDelta(cur: number, prev: number): StatDelta {
 
 export type MovementKind = "up" | "down" | "same" | "new";
 
-export interface RankMovement {
+interface RankMovement {
   kind: MovementKind;
   /** "▲ 2" / "▼ 1" / "—" / "New". */
   text: string;
@@ -175,7 +170,7 @@ export function statMovement(curRank: number, prevRank: number | null): RankMove
 
 // ─── Thin data (the honesty rule) ────────────────────────────────────────────
 
-export interface ThinState {
+interface ThinState {
   /** True when the previous period starts before `dataSince` — deltas and movement are suppressed. */
   thin: boolean;
   /** Days from `dataSince` through today, inclusive (null when the signal has no history). */
@@ -273,9 +268,9 @@ export const NO_CLICKS_LINE = "No clicks recorded in this period.";
 export const NO_WAITERS_LINE = "No one is waiting on a variety yet.";
 
 /** A signal with no history at all renders its card's composed no-data line instead of a chart. */
-export const NO_ACCOUNTS_YET = "No accounts created yet.";
-export const NO_SIGNUPS_YET = "No waitlist signups yet.";
-export const NO_CLICKS_YET = "No clicks to sellers yet.";
+const NO_ACCOUNTS_YET = "No accounts created yet.";
+const NO_SIGNUPS_YET = "No waitlist signups yet.";
+const NO_CLICKS_YET = "No clicks to sellers yet.";
 
 /** Demand the directory can't yet serve, named: "{p}% of clicks were on sold-out listings". */
 export function soldOutLine(total: number, soldOut: number): string | null {
@@ -285,9 +280,9 @@ export function soldOutLine(total: number, soldOut: number): string | null {
 
 // ─── Page data (fully computed — components render, never interpret) ────────
 
-export type SiteCardKey = "visitors" | "accounts" | "waitlist" | "clicks";
+type SiteCardKey = "visitors" | "accounts" | "waitlist" | "clicks";
 
-export interface TrendChartData {
+interface TrendChartData {
   buckets: TrendBucket[];
   summary: string;
 }
@@ -376,7 +371,7 @@ export interface SearchesPopularity {
 
 export type PopularityData = ViewsClicksPopularity | WaitlistPopularity | SearchesPopularity;
 
-export interface StatisticsOverview {
+interface StatisticsOverview {
   period: StatPeriod;
   /** Visitors, New accounts, Waitlist signups, Clicks to sellers — in that order. */
   cards: SiteCardData[];
@@ -634,5 +629,3 @@ export function createAdminStatisticsService(db: Db, deps: { now?: () => Date } 
     },
   };
 }
-
-export type AdminStatisticsService = ReturnType<typeof createAdminStatisticsService>;

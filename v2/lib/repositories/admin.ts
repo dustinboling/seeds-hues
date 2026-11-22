@@ -34,7 +34,7 @@ import { waitlistCountForUser, waitlistCountForVariety } from "./waitlist";
 import { CATALOG_SEQ_KEY, currentSeq, nextSeq } from "./seq";
 
 export type ReviewType = (typeof REVIEW_ITEM_TYPE)[number];
-export type ReviewStatus = (typeof REVIEW_ITEM_STATUS)[number];
+type ReviewStatus = (typeof REVIEW_ITEM_STATUS)[number];
 
 /** A UI-path decision maker, stamped onto the resolved row (Slice A decider trail). */
 export interface Decider {
@@ -353,7 +353,7 @@ export async function removeListing(db: Db, listingId: number, reason: string | 
   return { alreadyRemoved: false, ...slugs };
 }
 
-export type RestoreListingResult = { restored: true; varietySlug: string; sellerSlug: string } | { restored: false; why: "not_removed"; varietySlug: string; sellerSlug: string };
+type RestoreListingResult = { restored: true; varietySlug: string; sellerSlug: string } | { restored: false; why: "not_removed"; varietySlug: string; sellerSlug: string };
 
 /**
  * Restore a retired listing (Slice C, E2). Unknown id → null. Only a `status = 'removed'`
@@ -647,7 +647,7 @@ export async function resolveVarietyTarget(db: Db, id: number): Promise<{ id: nu
   return null;
 }
 
-export interface SellerRecord {
+interface SellerRecord {
   id: number;
   slug: string;
   name: string;
@@ -692,7 +692,7 @@ export async function sellerRecordByRef(db: Db, ref: string | number): Promise<S
   return { ...s, liveListingCount: await liveListingCountForSeller(db, s.id) };
 }
 
-export async function liveListingCountForSeller(db: Db, sellerId: number): Promise<number> {
+async function liveListingCountForSeller(db: Db, sellerId: number): Promise<number> {
   const [r] = await db
     .select({ n: count() })
     .from(listings)
@@ -700,7 +700,7 @@ export async function liveListingCountForSeller(db: Db, sellerId: number): Promi
   return r?.n ?? 0;
 }
 
-export interface ListingSummary {
+interface ListingSummary {
   id: number;
   titleRaw: string | null;
   productUrl: string | null;
@@ -734,7 +734,7 @@ export async function listingSummaryById(db: Db, id: number): Promise<ListingSum
 
 // ─── Slice B: the Sellers section (D1 list, D2 detail, D3 update, notes) ──────
 
-export interface AdminSellerListFilters {
+interface AdminSellerListFilters {
   /** Name substring, case-insensitive. */
   q: string | null;
   badge: BadgeFilter;
@@ -813,7 +813,7 @@ export async function listSellersAdmin(db: Db, f: AdminSellerListFilters): Promi
   return { rows, total: rows.length };
 }
 
-export interface AdminSellerListing {
+interface AdminSellerListing {
   id: number;
   titleRaw: string | null;
   productUrl: string | null;
@@ -917,7 +917,7 @@ export async function sellerDetailBySlug(db: Db, slug: string): Promise<AdminSel
   return { ...s, liveListingCount, listings: firstListings, notes };
 }
 
-export type SellerUpdate = Partial<Record<SellerUpdateField, string | string[] | null>>;
+type SellerUpdate = Partial<Record<SellerUpdateField, string | string[] | null>>;
 
 /**
  * The general admin seller update (Hue resolution 1): the full D3 field set — CORRECTABLE
@@ -997,7 +997,7 @@ export async function liveListingCountForVariety(db: Db, varietyId: number): Pro
   return r?.n ?? 0;
 }
 
-export type RemoveVarietyResult =
+type RemoveVarietyResult =
   | { outcome: "removed"; id: number; slug: string; plantSlug: string }
   | { outcome: "already_removed"; id: number; slug: string; plantSlug: string }
   | { outcome: "blocked"; id: number; slug: string; plantSlug: string; liveListings: number };
@@ -1058,7 +1058,7 @@ export async function removeVariety(db: Db, varietyId: number, at: string): Prom
 
 // ─── E1/E2: the team's listing list + detail ─────────────────────────────────
 
-export interface AdminListingFilters {
+interface AdminListingFilters {
   /** Product title, variety name, or seller name substring, case-insensitive. */
   q: string | null;
   chip: ListingChip;
@@ -1143,12 +1143,12 @@ export async function listListingsAdmin(db: Db, f: AdminListingFilters): Promise
   return { rows, total: totalRow[0]?.n ?? 0 };
 }
 
-export interface AdminListingPacket {
+interface AdminListingPacket {
   label: string;
   seedCount: number | null;
 }
 
-export interface AdminListingEvent {
+interface AdminListingEvent {
   event: string;
   at: string;
   reason: string | null;
@@ -1218,7 +1218,7 @@ export async function varietyChipBySlug(db: Db, slug: string): Promise<{ id: num
 
 // ─── F1/F2: the team's variety list + detail ─────────────────────────────────
 
-export interface AdminVarietyFilters {
+interface AdminVarietyFilters {
   /** Variety name or alias substring, case-insensitive. */
   q: string | null;
   /** Crop (plant) slug, single-select. */
@@ -1323,7 +1323,7 @@ export async function listVarietiesAdmin(db: Db, f: AdminVarietyFilters): Promis
   };
 }
 
-export interface VarietyAliasDetail {
+interface VarietyAliasDetail {
   alias: string;
   kind: string;
   source: string | null;
@@ -1333,7 +1333,7 @@ export interface VarietyAliasDetail {
 }
 
 /** A variety's other names (every kind except primary), A–Z, with provenance (F2). */
-export async function aliasesForVariety(db: Db, varietyId: number): Promise<VarietyAliasDetail[]> {
+async function aliasesForVariety(db: Db, varietyId: number): Promise<VarietyAliasDetail[]> {
   return db
     .select({ alias: varietyAliases.alias, kind: varietyAliases.kind, source: varietyAliases.source, decisionItemId: varietyAliases.decisionItemId, decidedByName: varietyAliases.decidedByName, createdAt: varietyAliases.createdAt })
     .from(varietyAliases)
@@ -1355,7 +1355,7 @@ export async function removeAlias(db: Db, varietyId: number, alias: string): Pro
   return (results[1] as { alias: string }[]).length === 1;
 }
 
-export interface AdminVarietyListingState {
+interface AdminVarietyListingState {
   status: string;
   availability: string | null;
   deletedAt: string | null;
@@ -1501,7 +1501,7 @@ export async function listCropsAdmin(db: Db): Promise<AdminCropRow[]> {
 
 // ─── G1/G2: accounts (Admin only — reviewers never receive this data) ───────
 
-export interface AdminAccountFilters {
+interface AdminAccountFilters {
   /** Name, displayName, or email substring, case-insensitive. */
   q: string | null;
   limit: number;

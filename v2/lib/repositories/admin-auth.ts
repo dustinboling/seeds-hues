@@ -9,7 +9,6 @@ import type { Db } from "@/lib/db/client";
 import { adminSessions, adminSigninCodes, farmSubmissions, reviewItems, roleAudit, users, USER_ROLES } from "@/lib/db/schema";
 import { atomic, type AtomicOp } from "./atomic";
 
-export type AdminSessionRow = typeof adminSessions.$inferSelect;
 export type RoleValue = (typeof USER_ROLES)[number];
 
 // ─── roles + audit ────────────────────────────────────────────────────────────
@@ -90,7 +89,7 @@ export async function deleteAdminSessionByHash(db: Db, tokenHash: string): Promi
 
 // ─── admin sign-in codes (one live code per user) ─────────────────────────────
 
-export interface AdminCodeRow {
+interface AdminCodeRow {
   id: number;
   userId: number;
   email: string;
@@ -140,10 +139,6 @@ export async function bumpAdminCodeAttempts(db: Db, id: number): Promise<number>
 
 export async function consumeAdminCode(db: Db, id: number, at: string): Promise<void> {
   await db.update(adminSigninCodes).set({ consumedAt: at }).where(eq(adminSigninCodes.id, id));
-}
-
-export async function invalidateAdminCodes(db: Db, userId: number, at: string): Promise<void> {
-  await db.update(adminSigninCodes).set({ invalidatedAt: at }).where(and(eq(adminSigninCodes.userId, userId), isNull(adminSigninCodes.consumedAt), isNull(adminSigninCodes.invalidatedAt)));
 }
 
 export async function adminCodesIssuedSince(db: Db, userId: number, sinceIso: string): Promise<number> {

@@ -2,7 +2,7 @@
 import type { AdminReviewService } from "@/lib/admin/review-service";
 import type { QueueKey } from "@/lib/admin/review-queues";
 
-export type AnyDetail = NonNullable<Awaited<ReturnType<AdminReviewService["detail"]>>>;
+type AnyDetail = NonNullable<Awaited<ReturnType<AdminReviewService["detail"]>>>;
 export type HuntDetail = Extract<AnyDetail, { type: "seller_candidate" }>;
 export type FarmDetail = Extract<AnyDetail, { type: "farm_submission" }>;
 export type ListingDetail = Extract<AnyDetail, { type: "listing_match" } | { type: "new_variety" }>;
@@ -22,10 +22,6 @@ export function isHoldDetail(d: AnyDetail): d is HoldDetail {
 export function isReportDetail(d: AnyDetail): d is ReportDetail {
   return d.type === "seller_correction" || d.type === "removal";
 }
-export function isListingDetail(d: AnyDetail): d is ListingDetail {
-  return d.type === "listing_match" || d.type === "new_variety";
-}
-
 export interface DetailShell {
   role: string;
   queue: QueueKey;

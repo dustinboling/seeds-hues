@@ -39,9 +39,6 @@ export function formatPhone(d: string): string {
   return /^\d{10}$/.test(d) ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : d;
 }
 
-/** Last two digits only, for messages that confirm a number ("ending in 23"). */
-export const phoneTail = (d: string) => d.slice(-2);
-
 function b64url(bytes: Uint8Array): string {
   return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
@@ -101,7 +98,7 @@ export const attemptKey = (kind: "ip" | "pair", value: string) => sha256Hex(`att
 
 // ─── Signed unsubscribe tokens (no sign-in needed) ──────────────────────────
 
-export type UnsubscribeScope = { kind: "variety"; userId: number; varietyId: number } | { kind: "all"; userId: number };
+type UnsubscribeScope = { kind: "variety"; userId: number; varietyId: number } | { kind: "all"; userId: number };
 
 async function hmac(key: string, data: string): Promise<Uint8Array> {
   const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);

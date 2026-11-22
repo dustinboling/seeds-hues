@@ -81,16 +81,6 @@ export async function queuedCount(db: Db, channel: "email" | "sms"): Promise<num
   return r?.n ?? 0;
 }
 
-export async function isListingVisible(db: Db, listingId: number): Promise<boolean> {
-  const [r] = await db
-    .select({ id: listings.id })
-    .from(listings)
-    .innerJoin(sellers, eq(sellers.id, listings.sellerId))
-    .where(and(eq(listings.id, listingId), visibleListing))
-    .limit(1);
-  return Boolean(r);
-}
-
 // ─── entries ────────────────────────────────────────────────────────────────
 
 /** true when a new entry was created (UNIQUE (user, variety) makes a second join a no-op). */
@@ -252,10 +242,6 @@ export async function setOutboxStatus(
 /** Remove queued rows (e.g. the variety has no visible listing any more) so a later publish re-queues them. */
 export async function deleteOutboxRows(db: Db, ids: number[]): Promise<void> {
   for (let i = 0; i < ids.length; i += 90) await db.delete(notificationOutbox).where(inArray(notificationOutbox.id, ids.slice(i, i + 90)));
-}
-
-export async function outboxForUser(db: Db, userId: number) {
-  return db.select().from(notificationOutbox).where(eq(notificationOutbox.userId, userId)).orderBy(asc(notificationOutbox.id));
 }
 
 /** Suppress a user's queued rows on one channel (STOP, opt-out). */
