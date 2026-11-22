@@ -8,7 +8,7 @@ export default function AdminStatisticsLoading() {
         <div className="skeleton skeleton-delayed h-11 w-24" />
         <div className="skeleton skeleton-delayed h-11 w-28" />
       </div>
-      <div className="grid grid-cols-1 gap-4 min-[744px]:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 admin:grid-cols-2">
         <div className="skeleton skeleton-delayed h-64 w-full" />
         <div className="skeleton skeleton-delayed h-64 w-full" />
         <div className="skeleton skeleton-delayed h-64 w-full" />

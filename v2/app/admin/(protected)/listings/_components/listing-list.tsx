@@ -39,7 +39,7 @@ export interface ListingDeepLinks {
 }
 
 function chipClass(active: boolean): string {
-  return `chip tap flex min-h-[44px] items-center ${active ? "font-semibold" : ""}`;
+  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
 }
 
 const CHIPS: { key: ListingChip; label: string }[] = [
@@ -63,7 +63,7 @@ export function ListingList({ rows, total, params, selected, deepLinks }: { rows
           Search listings
         </label>
         <div className="flex gap-2">
-          <input id="listing-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Product title, variety, or seller" className="field min-h-[44px] w-full" />
+          <input id="listing-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Product title, variety, or seller" className="field min-h-target w-full" />
           <button type="submit" className="btn btn-secondary shrink-0">
             Search
           </button>
@@ -81,12 +81,12 @@ export function ListingList({ rows, total, params, selected, deepLinks }: { rows
       {seller || variety ? (
         <div className="flex flex-wrap gap-2" aria-label="Deep-link filters">
           {seller ? (
-            <a href={listingHref({ ...base, seller: null })} className="chip tap flex min-h-[44px] items-center" aria-label={`Remove the seller filter, Seller: ${deepLinks.seller?.name ?? seller}`}>
+            <a href={listingHref({ ...base, seller: null })} className="chip tap flex min-h-target items-center" aria-label={`Remove the seller filter, Seller: ${deepLinks.seller?.name ?? seller}`}>
               Seller: {deepLinks.seller?.name ?? seller} <span aria-hidden="true" className="ml-1 font-semibold">×</span>
             </a>
           ) : null}
           {variety ? (
-            <a href={listingHref({ ...base, variety: null })} className="chip tap flex min-h-[44px] items-center" aria-label={`Remove the variety filter, Variety: ${deepLinks.variety?.name ?? variety}`}>
+            <a href={listingHref({ ...base, variety: null })} className="chip tap flex min-h-target items-center" aria-label={`Remove the variety filter, Variety: ${deepLinks.variety?.name ?? variety}`}>
               Variety: {deepLinks.variety?.name ?? variety} <span aria-hidden="true" className="ml-1 font-semibold">×</span>
             </a>
           ) : null}
@@ -121,7 +121,7 @@ export function ListingList({ rows, total, params, selected, deepLinks }: { rows
                   <a
                     href={`${listingHref({ listing: r.id, q, chip, seller, variety, show })}#detail`}
                     aria-current={current ? "true" : undefined}
-                    className={`block rounded-[12px] border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
+                    className={`block rounded-control border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
                   >
                     <span className="block text-base font-semibold">{r.titleRaw || r.varietyName}</span>
                     <span className="mt-0.5 block text-sm text-ink-soft">

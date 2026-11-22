@@ -27,7 +27,7 @@ export interface SellerListParams {
 }
 
 function chipClass(active: boolean): string {
-  return `chip tap flex min-h-[44px] items-center ${active ? "font-semibold" : ""}`;
+  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
 }
 
 const SORT_LABELS: Record<SellerSort, string> = { name: "Name A–Z", listings: "Most listings", updated: "Recently updated" };
@@ -50,7 +50,7 @@ export function SellerList({ rows, total, params, selected }: { rows: SellerList
           Search sellers
         </label>
         <div className="flex gap-2">
-          <input id="seller-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Seller name" className="field min-h-[44px] w-full" />
+          <input id="seller-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Seller name" className="field min-h-target w-full" />
           <button type="submit" className="btn btn-secondary shrink-0">
             Search
           </button>
@@ -74,13 +74,13 @@ export function SellerList({ rows, total, params, selected }: { rows: SellerList
         </p>
         <details className="relative">
           <summary className="btn btn-secondary cursor-pointer">Sort: {SORT_LABELS[sort]}</summary>
-          <ul className="absolute right-0 z-30 mt-1 flex min-w-[12rem] flex-col rounded-[12px] border border-line-strong bg-surface p-1 shadow-xl">
+          <ul className="absolute right-0 z-30 mt-1 flex min-w-[12rem] flex-col rounded-control border border-line-strong bg-surface p-1 shadow-sheet">
             {(Object.keys(SORT_LABELS) as SellerSort[]).map((key) => (
               <li key={key}>
                 <a
                   href={sellerHref({ seller: selected, q, badge, state, sort: key })}
                   aria-current={key === sort ? "true" : undefined}
-                  className={`block rounded-[8px] px-3 py-2.5 font-sans text-[15px] ${key === sort ? "bg-leaf-50 font-semibold" : "hover:bg-paper-deep"}`}
+                  className={`block rounded-inner px-3 py-2.5 font-sans text-[15px] ${key === sort ? "bg-leaf-50 font-semibold" : "hover:bg-paper-deep"}`}
                 >
                   {SORT_LABELS[key]}
                 </a>
@@ -112,7 +112,7 @@ export function SellerList({ rows, total, params, selected }: { rows: SellerList
                 <a
                   href={`${sellerHref({ seller: r.slug, q, badge, state, sort })}#detail`}
                   aria-current={current ? "true" : undefined}
-                  className={`block rounded-[12px] border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
+                  className={`block rounded-control border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
                 >
                   <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-base font-semibold">
                     {r.name}

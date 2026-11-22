@@ -6,7 +6,7 @@
 export function NoAccess({ variant, name, email }: { variant: "no-role" | "reviewer-accounts"; name?: string; email?: string }) {
   return (
     <div className="admin-root mx-auto w-full max-w-[420px] pt-8">
-      <div className="card flex flex-col gap-3 p-5 min-[744px]:p-6">
+      <div className="card flex flex-col gap-3 p-5 admin:p-6">
         <p className="text-center font-sans text-sm font-semibold text-muted">Seed Directory</p>
         <div aria-hidden="true" className="divider-stem" />
         {variant === "reviewer-accounts" ? (

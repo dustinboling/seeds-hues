@@ -118,7 +118,7 @@ export default async function SearchPage({ searchParams }: Props) {
             groups.map((g) => (
               <div key={g.key} className="mt-6">
                 <h3 className="eyebrow">{g.label}</h3>
-                <ul className="mt-2 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+                <ul className="mt-2 divide-y divide-line overflow-hidden rounded-control border border-line bg-surface">
                   {g.items.map((x) => (
                     <li key={`${x.type}-${x.slug}`}>
                       <Link href={x.href} className="tap flex flex-col px-4 py-3 no-underline hover:bg-leaf-50">

@@ -27,14 +27,54 @@
   --color-danger: #8F1D12; /* admin-only destructive verb (Slice 0, spec 3.1: white on it 8.93:1) */
   --color-sage: #7d9b76; /* decorative foliage only — never text */
   --color-focus: #7a3e10; /* warm umber — 7.4:1 on paper, 8.2:1 on surface */
+  --color-listing: #E9DFC2; /* Quiet Ledger card hairline (promoted; never snapped to line) */
+  --color-visit: #DFE9D6; /* Visit shop pill fill (promoted; never snapped to leaf-50) */
+  --color-stem-rule: rgb(151 134 95 / 0.45); /* listing stem rule — frozen retired line-strong RGB, do not re-derive */
 
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   --radius-card: 18px;
+  --radius-search: 14px;
+  --radius-control: 12px;
+  --radius-field: 10px;
+  --radius-inner: 8px;
+  --radius-bar: 4px;
+  --radius-marker: 3px;
+  --radius-packet-inner: 13px;
   --shadow-card: 0 1px 2px rgb(90 70 20 / 0.08), 0 1px 1px rgb(90 70 20 / 0.05);
+  --shadow-listing-raised: 0 6px 20px rgb(151 134 95 / 0.14);
+  --shadow-listing-flat: 0 2px 8px rgb(151 134 95 / 0.08);
+  --shadow-visit-pill: inset 0 -1px 0 rgb(46 107 79 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.5);
+  --shadow-sheet: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-menu: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-strip-button: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-button-inset: inset 0 -1px 0 rgb(0 0 0 / 0.35);
+  --shadow-card-image: 0 2px 0 var(--color-leaf-50);
+
+  --spacing-listing-top: 18px;
+  --spacing-visit-inline: 18px;
+  --spacing-listing-subline: 3px;
+  --spacing-listing-status: 9px;
+  --spacing-caption-offset: 5px;
+  --size-target: 44px;
+  --border-visit: 1.5px;
+  --breakpoint-admin: 744px;
+  --breakpoint-admin-wide: 1181px;
 
   --duration-filter-item: 220ms;
   --ease-filter-settle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * House target utilities over --size-target. Tailwind generates no min-h/min-w
+ * utility from the size namespace, so these exist as project utilities with the
+ * exact token value (tokens.json size.target).
+ */
+@utility min-h-target {
+  min-height: var(--size-target);
+}
+@utility min-w-target {
+  min-width: var(--size-target);
 }
 
 /*
@@ -116,7 +156,7 @@
   :focus-visible {
     outline: 3px solid var(--color-focus);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: var(--radius-bar);
   }
   /* WCAG 2.2 SC 2.4.11: focused items are never hidden behind the fixed tab bar. */
   html {
@@ -162,7 +202,7 @@
   }
   /* Hairline sage-tint band under a card image. */
   .card-image {
-    box-shadow: 0 2px 0 var(--color-leaf-50);
+    box-shadow: var(--shadow-card-image);
   }
   /* Homepage crop cards as vintage seed packets (branding delta): a keyline frame printed
      inside the card's edge, like the border rule on a paper seed packet. Decorative only —
@@ -175,7 +215,7 @@
     position: absolute;
     inset: 5px;
     border: 1px solid var(--color-line-strong);
-    border-radius: 13px;
+    border-radius: var(--radius-packet-inner);
     opacity: 0.5;
     pointer-events: none;
   }
@@ -249,7 +289,7 @@
     gap: 0.5rem;
     min-height: 44px;
     padding: 0.5rem 1rem;
-    border-radius: 12px;
+    border-radius: var(--radius-control);
     font-family: var(--font-sans);
     font-size: 1rem;
     line-height: 1.5;
@@ -263,7 +303,7 @@
     background: var(--color-leaf);
     color: #fff;
     /* Letterpress edge: a 1 px darker bottom line. */
-    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.35);
+    box-shadow: var(--shadow-button-inset);
   }
   .btn-primary:hover {
     background: var(--color-leaf-600);
@@ -277,7 +317,7 @@
   .field {
     min-height: 44px;
     width: 100%;
-    border-radius: 10px;
+    border-radius: var(--radius-field);
     border: 1px solid var(--color-line-strong);
     background: var(--color-surface);
     padding: 0.5rem 0.75rem;
@@ -299,7 +339,7 @@
   .btn-danger {
     background: var(--color-danger);
     color: #fff;
-    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.35);
+    box-shadow: var(--shadow-button-inset);
   }
   .btn-danger:hover {
     color: #fff;
@@ -359,7 +399,7 @@
    */
   .listing-stem-rule {
     position: relative;
-    border-top: 1px solid rgb(151 134 95 / 0.45);
+    border-top: 1px solid var(--color-stem-rule);
     margin: 16px 0 4px;
   }
   .listing-stem-rule > span {
@@ -398,7 +438,7 @@
   .skeleton {
     background: var(--color-paper-deep);
     animation: skeleton 1.6s ease-in-out infinite;
-    border-radius: 8px;
+    border-radius: var(--radius-inner);
   }
   @keyframes skeleton {
     0%,

@@ -85,7 +85,7 @@ export function SheetReasonButton({
                 <input id={`reason-${sheetTitle}`} name="reason" type="text" maxLength={500} autoComplete="off" className="field w-full" />
               </p>
             )}
-            <div className="flex flex-col gap-2 min-[744px]:flex-row">
+            <div className="flex flex-col gap-2 admin:flex-row">
               <button ref={danger ? cancelRef : undefined} type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>
                 Cancel
               </button>
@@ -108,7 +108,7 @@ export function DuplicateChoice({ held, existing, baseFields }: { held: string; 
   const [choice, setChoice] = useState<"duplicate" | "not_duplicate" | null>(null);
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2 min-[744px]:flex-row">
+      <div className="flex flex-col gap-2 admin:flex-row">
         <button type="button" className="btn btn-secondary" aria-expanded={choice === "duplicate"} onClick={() => setChoice(choice === "duplicate" ? null : "duplicate")}>
           It&apos;s a duplicate
         </button>
@@ -117,12 +117,12 @@ export function DuplicateChoice({ held, existing, baseFields }: { held: string; 
         </button>
       </div>
       {choice === "duplicate" ? (
-        <div className="rounded-[12px] border border-line-strong bg-paper-deep p-4">
+        <div className="rounded-control border border-line-strong bg-paper-deep p-4">
           <p className="font-sans text-base">
             &apos;{held}&apos; will be kept as another name for &apos;{existing}&apos;. It will still turn up in search, its listings move to that variety, and the scout
             won&apos;t propose it again.
           </p>
-          <form method="post" action="/admin/review/decide" className="mt-3 flex flex-col gap-2 min-[744px]:flex-row">
+          <form method="post" action="/admin/review/decide" className="mt-3 flex flex-col gap-2 admin:flex-row">
             <Hidden fields={{ ...baseFields, action: "mark_duplicate" }} />
             <button type="button" className="btn btn-secondary" onClick={() => setChoice(null)}>
               Back
@@ -134,11 +134,11 @@ export function DuplicateChoice({ held, existing, baseFields }: { held: string; 
         </div>
       ) : null}
       {choice === "not_duplicate" ? (
-        <div className="rounded-[12px] border border-line-strong bg-paper-deep p-4">
+        <div className="rounded-control border border-line-strong bg-paper-deep p-4">
           <p className="font-sans text-base">
             &apos;{held}&apos; will be added as its own variety, with its listings. It gets its own public page.
           </p>
-          <form method="post" action="/admin/review/decide" className="mt-3 flex flex-col gap-2 min-[744px]:flex-row">
+          <form method="post" action="/admin/review/decide" className="mt-3 flex flex-col gap-2 admin:flex-row">
             <Hidden fields={{ ...baseFields, action: "add_hold_variety" }} />
             <button type="button" className="btn btn-secondary" onClick={() => setChoice(null)}>
               Back

@@ -37,7 +37,7 @@ export function ImportedRatingPanel({ rating }: { rating: ImportedRating }) {
     <section
       aria-labelledby="seller-imported-rating"
       data-imported-rating={rating.source}
-      className="mt-6 max-w-3xl rounded-[18px] border border-line-strong bg-surface p-4"
+      className="mt-6 max-w-3xl rounded-card border border-line-strong bg-surface p-4"
     >
       <h2 id="seller-imported-rating" className="text-xl font-semibold">
         Reviews from {rating.source}

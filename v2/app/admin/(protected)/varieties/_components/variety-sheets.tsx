@@ -105,7 +105,7 @@ export function AddAliasForm({ ctx }: { ctx: VarietyCtx }) {
     <form ref={formRef} method="post" action="/admin/varieties/actions" noValidate onSubmit={onSubmit} className="flex flex-col gap-3">
       <HiddenCtx ctx={ctx} action="alias_add" />
       {formError ? (
-        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-[12px] border border-line-strong bg-warn-50 p-4">
+        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-control border border-line-strong bg-warn-50 p-4">
           <p className="flex items-start gap-1.5 font-sans text-base font-semibold text-warn">
             <ErrorIcon />
             <span>{formError}</span>
@@ -124,7 +124,7 @@ export function AddAliasForm({ ctx }: { ctx: VarietyCtx }) {
           autoComplete="off"
           aria-invalid={nameError ? true : undefined}
           aria-describedby={nameError ? "alias-name-error" : undefined}
-          className="field min-h-[44px] w-full"
+          className="field min-h-target w-full"
         />
         {nameError ? (
           <span id="alias-name-error" className="mt-1 flex items-start gap-1.5 font-sans text-sm text-warn">
@@ -134,7 +134,7 @@ export function AddAliasForm({ ctx }: { ctx: VarietyCtx }) {
         ) : null}
       </p>
       <p className="font-sans text-[15px] text-ink-soft">{ADD_ALIAS_CONSEQUENCE}</p>
-      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 min-[744px]:-mx-6 min-[744px]:px-6">
+      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 admin:-mx-6 admin:px-6">
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {busy ? "Adding…" : "Add name"}
         </button>
@@ -172,7 +172,7 @@ export function RemoveAliasButton({ alias, ctx }: { alias: string; ctx: VarietyC
   const formRef = useRef<HTMLFormElement>(null);
   return (
     <>
-      <button type="button" className="btn btn-secondary min-h-[44px]" disabled={busy} onClick={() => setOpen(true)} aria-label={`Remove the name '${alias}'`}>
+      <button type="button" className="btn btn-secondary min-h-target" disabled={busy} onClick={() => setOpen(true)} aria-label={`Remove the name '${alias}'`}>
         Remove
       </button>
       <form ref={formRef} method="post" action="/admin/varieties/actions" className="hidden" aria-hidden="true" tabIndex={-1}>

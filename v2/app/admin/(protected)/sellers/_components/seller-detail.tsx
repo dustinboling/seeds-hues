@@ -76,7 +76,7 @@ function listingStatusWord(status: string): string {
 
 function InfoRow({ term, children }: { term: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-1 gap-0.5 py-2 min-[744px]:grid-cols-[10rem_minmax(0,1fr)] min-[744px]:gap-3">
+    <div className="grid grid-cols-1 gap-0.5 py-2 admin:grid-cols-[10rem_minmax(0,1fr)] admin:gap-3">
       <dt className="font-sans text-sm font-semibold text-ink-soft">{term}</dt>
       <dd className="min-w-0 font-sans text-base">{children}</dd>
     </div>
@@ -127,7 +127,7 @@ export function SellerDetail({
   };
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <p className="min-[744px]:hidden">
+      <p className="admin:hidden">
         <a href={backHref} className="font-sans text-[15px] font-semibold text-link underline">
           ← All sellers
         </a>
@@ -135,7 +135,7 @@ export function SellerDetail({
       {genericStatus ? <StatusBanner status={genericStatus} /> : null}
 
       {deactivated ? (
-        <div role="status" className="flex flex-wrap items-center gap-3 rounded-[18px] border border-line-strong bg-warn-50 p-4">
+        <div role="status" className="flex flex-wrap items-center gap-3 rounded-card border border-line-strong bg-warn-50 p-4">
           <span className="flex min-w-0 flex-1 items-start gap-2 text-warn">
             <CautionIcon />
             <span className="font-sans text-base text-ink">This seller is deactivated — their page and listings are hidden from the public site.</span>
@@ -176,7 +176,7 @@ export function SellerDetail({
         ) : null}
       </header>
 
-      <section aria-labelledby="info-heading" id="info" className="card scroll-mt-4 p-4 min-[744px]:p-5">
+      <section aria-labelledby="info-heading" id="info" className="card scroll-mt-4 p-4 admin:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 id="info-heading" className="text-xl font-semibold">
             Information
@@ -184,7 +184,7 @@ export function SellerDetail({
           {isAdmin ? <EditSellerButton seller={editDefaults} typeOptions={typeOptions} platformOptions={platformOptions} ctx={ctx} /> : null}
         </div>
         {updatedLine ? (
-          <p role="status" className="mt-2 rounded-[10px] bg-leaf-50 p-3 font-sans text-[15px] text-ink">
+          <p role="status" className="mt-2 rounded-field bg-leaf-50 p-3 font-sans text-[15px] text-ink">
             {updatedLine}
           </p>
         ) : null}
@@ -210,7 +210,7 @@ export function SellerDetail({
         </dl>
       </section>
 
-      <section aria-labelledby="classification-heading" id="classification" className="card scroll-mt-4 p-4 min-[744px]:p-5">
+      <section aria-labelledby="classification-heading" id="classification" className="card scroll-mt-4 p-4 admin:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 id="classification-heading" className="text-xl font-semibold">
             Classification
@@ -218,7 +218,7 @@ export function SellerDetail({
           {isAdmin ? <ClassifyButton sellerName={d.name} isSmallFarm={d.isSmallFarm} isCandidate={d.eligibility === "candidate"} ctx={ctx} /> : null}
         </div>
         {classifiedLine ? (
-          <p role="status" className="mt-2 rounded-[10px] bg-leaf-50 p-3 font-sans text-[15px] text-ink">
+          <p role="status" className="mt-2 rounded-field bg-leaf-50 p-3 font-sans text-[15px] text-ink">
             {classifiedLine}
           </p>
         ) : null}
@@ -227,7 +227,7 @@ export function SellerDetail({
         </p>
       </section>
 
-      <section aria-labelledby="notes-heading" id="notes" className="scroll-mt-4 rounded-[18px] border border-line-strong bg-paper-deep p-4 min-[744px]:p-5">
+      <section aria-labelledby="notes-heading" id="notes" className="scroll-mt-4 rounded-card border border-line-strong bg-paper-deep p-4 admin:p-5">
         <p className="flex items-center gap-2 font-sans text-[12px] font-bold uppercase tracking-[0.09em] text-ink-soft">
           <LockIcon />
           <span id="notes-heading">Internal notes — never shown on the public site</span>
@@ -251,7 +251,7 @@ export function SellerDetail({
         )}
       </section>
 
-      <section aria-labelledby="listings-heading" className="card p-4 min-[744px]:p-5">
+      <section aria-labelledby="listings-heading" className="card p-4 admin:p-5">
         <h3 id="listings-heading" className="text-xl font-semibold">
           Listings
         </h3>
@@ -262,7 +262,7 @@ export function SellerDetail({
           <ol className="mt-2 flex flex-col divide-y divide-line">
             {d.listings.map((l) => (
               <li key={l.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 py-2 font-sans">
-                <a href={`/go/${l.id}`} rel="nofollow noopener noreferrer" className="min-h-[44px] content-center text-base font-semibold text-ink underline decoration-ink-soft decoration-[1px] underline-offset-[3px]">
+                <a href={`/go/${l.id}`} rel="nofollow noopener noreferrer" className="min-h-target content-center text-base font-semibold text-ink underline decoration-ink-soft decoration-[1px] underline-offset-[3px]">
                   {l.titleRaw || l.varietyName}
                 </a>
                 <span className="text-sm text-ink-soft">on {l.varietyName}</span>
@@ -283,7 +283,7 @@ export function SellerDetail({
           <h3 id="danger-heading" className="text-xl font-semibold">
             Danger zone
           </h3>
-          <div className="mt-3 flex flex-col gap-2 min-[744px]:flex-row">
+          <div className="mt-3 flex flex-col gap-2 admin:flex-row">
             <DeactivateButton sellerName={d.name} listingCount={d.liveListingCount} ctx={ctx} />
             <RemoveButton sellerName={d.name} listingCount={d.liveListingCount} ctx={ctx} />
           </div>

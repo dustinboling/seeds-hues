@@ -19,7 +19,7 @@ export function CropList({ rows }: { rows: CropListRow[] }) {
         <li key={r.slug}>
           <a
             href={varietyHref({ crop: r.slug })}
-            className="block rounded-[12px] border-b border-line px-3 py-3 font-sans last:border-b-0 hover:bg-paper-deep"
+            className="block rounded-control border-b border-line px-3 py-3 font-sans last:border-b-0 hover:bg-paper-deep"
           >
             <span className="block text-base font-semibold">{r.commonName}</span>
             <span className="mt-0.5 block text-sm tabular-nums text-muted">

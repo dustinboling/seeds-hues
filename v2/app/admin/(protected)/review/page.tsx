@@ -55,7 +55,7 @@ function parseAfter(v: string | null): { createdAt: string; kind: ItemRef["kind"
 
 function ErrorCard({ label, retry }: { label: string; retry: string }) {
   return (
-    <div role="alert" className="rounded-[18px] border border-line-strong bg-warn-50 p-4 min-[744px]:p-5">
+    <div role="alert" className="rounded-card border border-line-strong bg-warn-50 p-4 admin:p-5">
       <p className="font-sans text-base font-semibold text-warn">{label} didn&apos;t load.</p>
       <p className="mt-1 font-sans text-[15px] text-ink">Check your connection and try again.</p>
       <p className="mt-3">
@@ -175,8 +175,8 @@ export default async function AdminReviewPage({ searchParams }: Props) {
         ) : null}
       </header>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 min-[744px]:grid-cols-[340px_minmax(0,1fr)]">
-        <div className="flex min-w-0 flex-col gap-3 min-[744px]:max-h-[calc(100dvh-10rem)] min-[744px]:overflow-y-auto">
+      <div className="mt-4 grid grid-cols-1 gap-4 admin:grid-cols-[340px_minmax(0,1fr)]">
+        <div className="flex min-w-0 flex-col gap-3 admin:max-h-[calc(100dvh-10rem)] admin:overflow-y-auto">
           <QueueNav active={queue} counts={counts} />
           {listError ? (
             <ErrorCard label="This queue" retry={retry} />
@@ -195,7 +195,7 @@ export default async function AdminReviewPage({ searchParams }: Props) {
             <ErrorCard label="This item" retry={retry} />
           ) : decided ? (
             decidedSelected ? (
-              <article aria-labelledby="review-detail-title" className="card flex flex-col gap-1 p-4 min-[744px]:p-5">
+              <article aria-labelledby="review-detail-title" className="card flex flex-col gap-1 p-4 admin:p-5">
                 <h2 id="review-detail-title" className="text-[28px] font-semibold leading-[1.15]">
                   {decidedSelected.name}
                 </h2>
@@ -206,13 +206,13 @@ export default async function AdminReviewPage({ searchParams }: Props) {
                 </p>
               </article>
             ) : (
-              <div className="card p-4 min-[744px]:p-5">
+              <div className="card p-4 admin:p-5">
                 <div aria-hidden="true" className="divider-stem" />
                 <p className="mt-3 font-serif text-[17px] leading-[1.6]">{decidedTotal === 0 ? "No decisions in this queue yet." : "Select a decided item to read it."}</p>
               </div>
             )
           ) : !detail ? (
-            <div className="card p-4 min-[744px]:p-5">
+            <div className="card p-4 admin:p-5">
               <div aria-hidden="true" className="divider-stem" />
               <p className="mt-3 font-serif text-[17px] leading-[1.6]">{queueDef(queue)?.empty ?? "Nothing waiting here."}</p>
               {nextQueue ? (

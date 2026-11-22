@@ -43,7 +43,7 @@ export function VarietyDetail({ detail: v, role, ctx, backHref, genericStatus }:
   const subline = [v.commonName, v.seriesName ? `${v.seriesName} series` : null, v.latinName].filter(Boolean).join(" · ");
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <p className="min-[744px]:hidden">
+      <p className="admin:hidden">
         <a href={backHref} className="font-sans text-[15px] font-semibold text-link underline">
           ← All varieties
         </a>
@@ -64,7 +64,7 @@ export function VarietyDetail({ detail: v, role, ctx, backHref, genericStatus }:
         ) : null}
       </header>
 
-      <section aria-labelledby="listings-heading" className="card p-4 min-[744px]:p-5">
+      <section aria-labelledby="listings-heading" className="card p-4 admin:p-5">
         <h3 id="listings-heading" className="text-xl font-semibold">
           Listings
         </h3>
@@ -86,7 +86,7 @@ export function VarietyDetail({ detail: v, role, ctx, backHref, genericStatus }:
         </p>
       </section>
 
-      <section aria-labelledby="waitlist-heading" className="card p-4 min-[744px]:p-5">
+      <section aria-labelledby="waitlist-heading" className="card p-4 admin:p-5">
         <h3 id="waitlist-heading" className="text-xl font-semibold">
           Waitlist
         </h3>
@@ -98,7 +98,7 @@ export function VarietyDetail({ detail: v, role, ctx, backHref, genericStatus }:
         </p>
       </section>
 
-      <section aria-labelledby="names-heading" id="names" className="card scroll-mt-4 p-4 min-[744px]:p-5">
+      <section aria-labelledby="names-heading" id="names" className="card scroll-mt-4 p-4 admin:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 id="names-heading" className="text-xl font-semibold">
             Other names

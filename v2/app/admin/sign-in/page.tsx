@@ -42,23 +42,23 @@ export default async function AdminSignInPage({ searchParams }: Props) {
 
   return (
     <div className="admin-root mx-auto w-full max-w-[420px] pt-8">
-      <div className="card flex flex-col gap-3 p-5 min-[744px]:p-6">
+      <div className="card flex flex-col gap-3 p-5 admin:p-6">
         <p className="text-center font-sans text-sm font-semibold text-muted">Seed Directory</p>
         <div aria-hidden="true" className="divider-stem" />
         <h1 className="text-[28px] font-semibold leading-[1.15]">Admin sign-in</h1>
         {expired ? (
-          <p role="status" className="rounded-[10px] bg-paper-deep p-3 font-sans text-[15px]">
+          <p role="status" className="rounded-field bg-paper-deep p-3 font-sans text-[15px]">
             Your admin session ended — admin sessions last a week. Sign in again to pick up where you left off.
           </p>
         ) : null}
         {signedOut ? (
-          <p role="status" className="rounded-[10px] bg-paper-deep p-3 font-sans text-[15px]">
+          <p role="status" className="rounded-field bg-paper-deep p-3 font-sans text-[15px]">
             {visitor ? "You signed out of admin — you’re still signed in to your Seed Directory account." : "You signed out of admin."}
           </p>
         ) : null}
         <p className="font-serif text-[17px] leading-[1.6]">Sign in with the email on your Seed Directory account.</p>
         {error ? (
-          <p role="alert" className="rounded-[10px] bg-warn-50 p-3 font-sans text-[15px] font-medium text-warn">
+          <p role="alert" className="rounded-field bg-warn-50 p-3 font-sans text-[15px] font-medium text-warn">
             {error}
           </p>
         ) : null}

@@ -66,13 +66,13 @@ export function ReportDetailView({ detail, role, queue, show, submittedOn }: Det
       </header>
 
       {d.message ? (
-        <section aria-label="The reporter's words" className="card p-4 min-[744px]:p-5">
+        <section aria-label="The reporter's words" className="card p-4 admin:p-5">
           <h3 className="font-sans text-base font-semibold">The reporter&apos;s words</h3>
           <p className="mt-1 font-serif text-[17px] leading-[1.6]">{d.message}</p>
         </section>
       ) : null}
 
-      <section aria-label="What it concerns" className="card flex flex-col gap-2 p-4 min-[744px]:p-5">
+      <section aria-label="What it concerns" className="card flex flex-col gap-2 p-4 admin:p-5">
         <h3 className="font-sans text-base font-semibold">What it concerns</h3>
         {d.seller ? (
           <div className="font-sans text-[15px]">
@@ -111,7 +111,7 @@ export function ReportDetailView({ detail, role, queue, show, submittedOn }: Det
       </section>
 
       {d.hasFields ? (
-        <section aria-label="Reported and currently shown values" className="card overflow-x-auto p-4 min-[744px]:p-5">
+        <section aria-label="Reported and currently shown values" className="card overflow-x-auto p-4 admin:p-5">
           <h3 className="font-sans text-base font-semibold">Reported | Currently shown</h3>
           <table className="mt-2 w-full font-sans text-[15px]">
             <thead>
@@ -141,13 +141,13 @@ export function ReportDetailView({ detail, role, queue, show, submittedOn }: Det
 
       <div className="border-t border-line pt-4">
         {structuredSellerCorrection ? <p className="font-sans text-[15px] text-ink-soft">Applying updates the seller&apos;s record right away.</p> : null}
-        <div className="mt-3 flex flex-col gap-2 min-[744px]:flex-row min-[744px]:flex-wrap">
+        <div className="mt-3 flex flex-col gap-2 admin:flex-row admin:flex-wrap">
           {structuredSellerCorrection ? (
             <form method="post" action="/admin/review/decide">
               {Object.entries({ ...base, action: "apply_correction", seller_name: sellerName }).map(([k, v]) => (
                 <input key={k} type="hidden" name={k} value={v} />
               ))}
-              <button type="submit" className="btn btn-primary w-full min-[744px]:w-auto">
+              <button type="submit" className="btn btn-primary w-full admin:w-auto">
                 Apply the correction
               </button>
             </form>
@@ -179,7 +179,7 @@ export function ReportDetailView({ detail, role, queue, show, submittedOn }: Det
               {Object.entries({ ...base, action: "confirm_report" }).map(([k, v]) => (
                 <input key={k} type="hidden" name={k} value={v} />
               ))}
-              <button type="submit" className="btn btn-primary w-full min-[744px]:w-auto">
+              <button type="submit" className="btn btn-primary w-full admin:w-auto">
                 Confirm report
               </button>
             </form>

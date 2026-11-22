@@ -189,7 +189,7 @@ function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; col
       </div>
       {c.media[0] ? <VarietyHeroImage media={c.media[0]} label={c.commonName} testId="crop-hero" /> : null}
       {c.description || c.sowingNotes ? (
-        <section className="mt-4 max-w-3xl rounded-lg bg-leaf-50 p-4" aria-labelledby="crop-intro">
+        <section className="mt-4 max-w-3xl rounded-inner bg-leaf-50 p-4" aria-labelledby="crop-intro">
           <h2 id="crop-intro" className="font-semibold">
             About {common.toLowerCase()}
           </h2>

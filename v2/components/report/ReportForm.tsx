@@ -79,26 +79,26 @@ export function ReportForm(props: { type: Intent; targetType: "variety" | "selle
         <label className="text-sm font-semibold" htmlFor="target_type">
           About
         </label>
-        <select id="target_type" value={targetType} onChange={(e) => setTargetType(e.target.value as "variety" | "seller")} className="tap rounded-[10px] border border-line-strong bg-surface px-3">
+        <select id="target_type" value={targetType} onChange={(e) => setTargetType(e.target.value as "variety" | "seller")} className="tap rounded-field border border-line-strong bg-surface px-3">
           <option value="seller">A seller</option>
           <option value="variety">A variety</option>
         </select>
         <label className="text-sm text-muted" htmlFor="target_ref">
           Page address name (the last part of the URL, e.g. songbird-seed-co)
         </label>
-        <input id="target_ref" name="target_ref" required defaultValue={props.targetRef} pattern="[a-z0-9]+(-[a-z0-9]+)*" className="tap rounded-[10px] border border-line-strong bg-surface px-3" />
+        <input id="target_ref" name="target_ref" required defaultValue={props.targetRef} pattern="[a-z0-9]+(-[a-z0-9]+)*" className="tap rounded-field border border-line-strong bg-surface px-3" />
       </div>
       <div className="flex flex-col gap-2">
         <label className="text-sm font-semibold" htmlFor="message">
           Details
         </label>
-        <textarea id="message" name="message" required minLength={5} maxLength={4000} rows={5} className="rounded-[10px] border border-line-strong bg-surface p-3" />
+        <textarea id="message" name="message" required minLength={5} maxLength={4000} rows={5} className="rounded-field border border-line-strong bg-surface p-3" />
       </div>
       <div className="flex flex-col gap-2">
         <label className="text-sm font-semibold" htmlFor="contact">
           Your email (so we can reply and, for claims and removals, confirm you run the seller)
         </label>
-        <input id="contact" name="contact" type="email" required maxLength={320} className="tap rounded-[10px] border border-line-strong bg-surface px-3" />
+        <input id="contact" name="contact" type="email" required maxLength={320} className="tap rounded-field border border-line-strong bg-surface px-3" />
       </div>
       <Turnstile siteKey={props.siteKey} onToken={setToken} resetKey={reset} action="report" />
       <div>

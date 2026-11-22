@@ -88,7 +88,7 @@ export function GuideTabs({ label, panels }: { label: string; panels: GuideTabPa
               onClick={() => setSelected(i)}
               onKeyDown={(e) => onKeyDown(e, i)}
               data-testid="grower-guide-tab"
-              className={`tap -mb-px rounded-t-lg border-b-[3px] px-3 py-2 font-sans text-sm font-semibold transition-colors duration-150 ease-out ${
+              className={`tap -mb-px rounded-t-inner border-b-[3px] px-3 py-2 font-sans text-sm font-semibold transition-colors duration-150 ease-out ${
                 on ? "border-leaf text-leaf" : "border-transparent text-ink-soft hover:bg-leaf-50 hover:text-leaf"
               }`}
             >

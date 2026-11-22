@@ -30,7 +30,7 @@ export function ConfirmDialog({
       <p id={consequenceId} className="font-sans text-base">
         {consequence}
       </p>
-      <div className="flex flex-col gap-2 min-[744px]:flex-row">
+      <div className="flex flex-col gap-2 admin:flex-row">
         <button ref={cancelRef} type="button" className="btn btn-secondary" onClick={onCancel} disabled={busy}>
           Cancel
         </button>

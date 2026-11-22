@@ -242,7 +242,7 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
             Loading waiting-list status…
           </p>
           <div aria-hidden="true" className="skeleton-delayed flex flex-col gap-3">
-            <div className="skeleton h-11 w-52 max-w-full rounded-xl" />
+            <div className="skeleton h-11 w-52 max-w-full rounded-control" />
             <div className="skeleton h-4 w-64 max-w-full" />
           </div>
         </div>

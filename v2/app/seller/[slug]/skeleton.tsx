@@ -33,11 +33,11 @@ export function SellerSkeleton() {
               <Bar className="mt-0.5 h-5 w-28 max-w-full" />
             </div>
           </div>
-          <Bar className="mt-4 h-11 w-56 max-w-full rounded-xl" />
+          <Bar className="mt-4 h-11 w-56 max-w-full rounded-control" />
         </div>
-        {/* StatePlate stand-in: the figure's own classes; aspect-square and rounded-[18px]
+        {/* StatePlate stand-in: the figure's own classes; aspect-square and rounded-card
             come from its 1600×1600 .art-frame img (--radius-card: 18px). */}
-        <Bar className="mx-auto mt-6 aspect-square w-[280px] shrink-0 rounded-[18px] sm:mx-0 sm:mt-1 sm:w-[300px] lg:w-[320px]" />
+        <Bar className="mx-auto mt-6 aspect-square w-[280px] shrink-0 rounded-card sm:mx-0 sm:mt-1 sm:w-[300px] lg:w-[320px]" />
       </div>
       {/* About section (mt-6 max-w-3xl): text-xl heading + description / ordering-notes lines. */}
       <div className="mt-6 max-w-3xl">

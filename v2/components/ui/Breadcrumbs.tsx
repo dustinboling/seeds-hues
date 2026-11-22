@@ -19,7 +19,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
                 </span>
               ) : (
                 <>
-                  <Link href={c.href} className="inline-flex min-h-[44px] items-center py-1 sm:min-h-0">
+                  <Link href={c.href} className="inline-flex min-h-target items-center py-1 sm:min-h-0">
                     {c.name}
                   </Link>
                   <span aria-hidden="true">/</span>

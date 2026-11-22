@@ -39,7 +39,7 @@ export default async function AdminCodePage({ searchParams }: Props) {
 
   return (
     <div className="admin-root mx-auto w-full max-w-[420px] pt-8">
-      <div className="card flex flex-col gap-3 p-5 min-[744px]:p-6">
+      <div className="card flex flex-col gap-3 p-5 admin:p-6">
         <p className="text-center font-sans text-sm font-semibold text-muted">Seed Directory</p>
         <div aria-hidden="true" className="divider-stem" />
         <h1 className="text-[28px] font-semibold leading-[1.15]">Enter your code</h1>
@@ -47,12 +47,12 @@ export default async function AdminCodePage({ searchParams }: Props) {
           We sent a 6-digit code to <strong>{email}</strong>. It works for {ADMIN_CODE_TTL_MINUTES} minutes.
         </p>
         {sent ? (
-          <p role="status" className="rounded-[10px] bg-paper-deep p-3 font-sans text-[15px]">
+          <p role="status" className="rounded-field bg-paper-deep p-3 font-sans text-[15px]">
             We sent a new code to {email}.
           </p>
         ) : null}
         {error ? (
-          <p role="alert" className="rounded-[10px] bg-warn-50 p-3 font-sans text-[15px] font-medium text-warn">
+          <p role="alert" className="rounded-field bg-warn-50 p-3 font-sans text-[15px] font-medium text-warn">
             {error}
           </p>
         ) : null}

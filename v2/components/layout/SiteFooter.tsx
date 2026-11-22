@@ -47,13 +47,13 @@ export function SiteFooter() {
             <ul className="flex flex-wrap gap-x-4 gap-y-1">
               {LINKS.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="inline-flex min-h-[44px] items-center">
+                  <Link href={l.href} className="inline-flex min-h-target items-center">
                     {l.label}
                   </Link>
                 </li>
               ))}
               <li>
-                <a href="/llms.txt" className="inline-flex min-h-[44px] items-center">
+                <a href="/llms.txt" className="inline-flex min-h-target items-center">
                   llms.txt
                 </a>
               </li>

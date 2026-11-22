@@ -43,11 +43,11 @@ export function SignupFields({ idPrefix, smsOptIn = false, farmOwner = true }: {
       {farmOwner ? (
         <fieldset className="flex flex-col gap-2">
           <legend className="text-sm font-semibold">Account type</legend>
-          <label className="flex min-h-[44px] items-center gap-2">
+          <label className="flex min-h-target items-center gap-2">
             <input type="radio" name="account_type" value="gardener" defaultChecked />
             <span>I’m a gardener</span>
           </label>
-          <label className="flex min-h-[44px] items-start gap-2">
+          <label className="flex min-h-target items-start gap-2">
             <input type="radio" name="account_type" value="farm_owner" className="mt-1" />
             <span>
               I’m a farm owner

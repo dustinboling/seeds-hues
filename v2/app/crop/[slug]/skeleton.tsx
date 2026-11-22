@@ -19,10 +19,10 @@ export function CropSkeleton() {
           <Bar className="mt-1 h-4 w-56 max-w-full" />
           <Bar className="mt-1 h-4 w-48 max-w-full" />
         </div>
-        <Bar className="h-24 w-24 shrink-0 rounded-lg sm:h-36 sm:w-36" />
+        <Bar className="h-24 w-24 shrink-0 rounded-inner sm:h-36 sm:w-36" />
       </div>
       <HeroArtSkeleton />
-      <Bar className="mt-4 h-28 w-full max-w-3xl rounded-lg" />
+      <Bar className="mt-4 h-28 w-full max-w-3xl rounded-inner" />
       <div className="mt-6 flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <Bar className="h-4 w-14" />
@@ -47,9 +47,9 @@ export function CropSkeleton() {
       <div className="card mt-8 max-w-3xl p-4 sm:p-6">
         <Bar className="h-6 w-48 max-w-full" />
         <div className="mt-3 flex gap-2">
-          <Bar className="h-10 w-28 rounded-lg" />
-          <Bar className="h-10 w-28 rounded-lg" />
-          <Bar className="h-10 w-28 rounded-lg" />
+          <Bar className="h-10 w-28 rounded-inner" />
+          <Bar className="h-10 w-28 rounded-inner" />
+          <Bar className="h-10 w-28 rounded-inner" />
         </div>
         <Bar className="mt-3 h-4 w-full" />
         <Bar className="mt-2 h-4 w-full" />

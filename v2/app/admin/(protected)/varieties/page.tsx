@@ -25,7 +25,7 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 function ErrorCard({ label, retry }: { label: string; retry: string }) {
   return (
-    <div role="alert" className="rounded-[18px] border border-line-strong bg-warn-50 p-4 min-[744px]:p-5">
+    <div role="alert" className="rounded-card border border-line-strong bg-warn-50 p-4 admin:p-5">
       <p className="font-sans text-base font-semibold text-warn">{label} didn&apos;t load.</p>
       <p className="mt-1 font-sans text-[15px] text-ink">Check your connection and try again.</p>
       <p className="mt-3">
@@ -88,7 +88,7 @@ export default async function AdminVarietiesPage({ searchParams }: Props) {
   const genericStatus = varietyStatusLine({ status: firstParam(sp.status), name: firstParam(sp.name) });
   const ctx = { variety: selected ?? "", tab: params.tab, q: params.q, crop: params.crop, show: String(params.show) };
   const cropOptions = cropRows.map((c) => ({ slug: c.slug, commonName: c.commonName }));
-  const segmentClass = (active: boolean) => `chip tap flex min-h-[44px] items-center ${active ? "font-semibold" : ""}`;
+  const segmentClass = (active: boolean) => `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
 
   return (
     <AdminShell viewer={viewer} section="varieties" reviewTotal={totalWaiting}>
@@ -105,8 +105,8 @@ export default async function AdminVarietiesPage({ searchParams }: Props) {
       {cropsTab ? (
         <div className="mt-4">{cropsError ? <ErrorCard label="This list" retry={retry} /> : <CropList rows={cropRows} />}</div>
       ) : (
-        <div className="mt-4 grid grid-cols-1 gap-4 min-[744px]:grid-cols-[360px_minmax(0,1fr)]">
-          <div className={`min-w-0 flex-col gap-3 min-[744px]:max-h-[calc(100dvh-10rem)] min-[744px]:overflow-y-auto ${explicit ? "hidden min-[744px]:flex" : "flex"}`}>
+        <div className="mt-4 grid grid-cols-1 gap-4 admin:grid-cols-[360px_minmax(0,1fr)]">
+          <div className={`min-w-0 flex-col gap-3 admin:max-h-[calc(100dvh-10rem)] admin:overflow-y-auto ${explicit ? "hidden admin:flex" : "flex"}`}>
             {!explicit && genericStatus ? (
               <div className="mb-1">
                 <StatusBanner status={genericStatus} />
@@ -119,11 +119,11 @@ export default async function AdminVarietiesPage({ searchParams }: Props) {
             )}
           </div>
 
-          <section aria-label="Variety detail" id="detail" className={`min-w-0 scroll-mt-4 ${explicit ? "block" : "hidden min-[744px]:block"}`}>
+          <section aria-label="Variety detail" id="detail" className={`min-w-0 scroll-mt-4 ${explicit ? "block" : "hidden admin:block"}`}>
             {detailError ? (
               <ErrorCard label="This variety" retry={retry} />
             ) : missing || !detail ? (
-              <div className="card p-4 min-[744px]:p-5">
+              <div className="card p-4 admin:p-5">
                 <div aria-hidden="true" className="divider-stem" />
                 <p className="mt-3 font-serif text-[17px] leading-[1.6]">
                   {missing ? "That variety is gone." : rows.length === 0 ? "No varieties match these filters." : "Select a variety to inspect it."}

@@ -54,7 +54,7 @@ export function FilterStrip({ legend, children }: { legend: string; children: Re
   };
 
   const btn =
-    "filter-strip-btn absolute top-1/2 z-10 h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line-strong bg-paper text-ink shadow disabled:cursor-default disabled:opacity-40";
+    "filter-strip-btn absolute top-1/2 z-10 h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line-strong bg-paper text-ink shadow-strip-button disabled:cursor-default disabled:opacity-40";
 
   return (
     <div className="relative">

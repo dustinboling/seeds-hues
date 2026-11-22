@@ -80,10 +80,10 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
         </h3>
         {showBadge ? <SmallFarmBadge /> : null}
       </div>
-      <p className="mt-[3px] text-base text-muted">
+      <p className="mt-listing-subline text-base text-muted">
         {context === "variety" ? (l.seller.location ?? (region || "Location unknown")) : l.variety.plant.commonName}
       </p>
-      <p className="mt-[9px] font-sans text-[13px] text-muted">
+      <p className="mt-listing-status font-sans text-[13px] text-muted">
         <span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-[1px] ${tone.dot}`} />
         <span className={`font-semibold ${tone.word}`}>{AVAILABILITY_LABEL[l.availability]}</span>
         {checked ? ` · Checked ${checked}` : " · Not yet checked"}
@@ -98,10 +98,10 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
   );
   return (
     <article
-      className={`rounded-[18px] border px-4 pb-3 pt-[18px]${context === "seller" ? " h-full" : ""} ${
+      className={`rounded-card border px-4 pb-3 pt-listing-top${context === "seller" ? " h-full" : ""} ${
         soldOut
-          ? "listing-card-soldout border-line bg-paper shadow-[0_2px_8px_rgba(151,134,95,0.08)]"
-          : "border-[#e9dfc2] bg-surface shadow-[0_6px_20px_rgba(151,134,95,0.14)]"
+          ? "listing-card-soldout border-line bg-paper shadow-listing-flat"
+          : "border-listing bg-surface shadow-listing-raised"
       }`}
       aria-labelledby={`listing-${l.id}`}
       data-availability={l.availability}
@@ -126,7 +126,7 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
       <div className="flex items-center justify-between gap-3">
         <Link
           href={reportHref}
-          className="inline-flex min-h-[44px] items-center font-sans text-[13px] text-muted underline underline-offset-[3px]"
+          className="inline-flex min-h-target items-center font-sans text-[13px] text-muted underline underline-offset-[3px]"
         >
           Report a problem
         </Link>
@@ -134,10 +134,10 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
           href={`/go/${l.id}`}
           rel="nofollow noopener noreferrer"
           target="_blank"
-          className={`inline-flex h-11 shrink-0 items-center justify-center rounded-full border-[1.5px] border-leaf px-[18px] font-sans text-[15px] font-semibold text-leaf no-underline ${
+          className={`inline-flex h-11 shrink-0 items-center justify-center rounded-full border-(length:--border-visit) border-leaf px-visit-inline font-sans text-[15px] font-semibold text-leaf no-underline ${
             soldOut
               ? "bg-transparent shadow-none"
-              : "bg-[#dfe9d6] shadow-[inset_0_-1px_0_rgba(46,107,79,0.35),inset_0_1px_0_rgba(255,255,255,0.5)]"
+              : "bg-visit shadow-visit-pill"
           }`}
         >
           <span aria-hidden="true">Visit shop →</span>

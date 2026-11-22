@@ -10,7 +10,7 @@ const RANGES: StatRange[] = ["7d", "30d", "12w"];
 const SIGNALS: StatSignal[] = ["views", "clicks", "waitlist", "searches"];
 
 function chipClass(active: boolean): string {
-  return `chip tap flex min-h-[44px] items-center ${active ? "font-semibold" : ""}`;
+  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
 }
 
 export function TimeRangeControl({ range, signal, show, words }: { range: StatRange; signal: StatSignal; show: number; words: string }) {

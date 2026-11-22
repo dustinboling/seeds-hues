@@ -189,7 +189,7 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
               {shops.inStockSellers} in stock
             </p>
           ) : null}
-          <p className="mt-[5px] max-w-[34ch] text-[15px] leading-[1.45] text-muted">
+          <p className="mt-caption-offset max-w-[34ch] text-[15px] leading-[1.45] text-muted">
             Stock is as last seen when we checked each shop — it may have changed since. Prices are shown at the
             shop, not here.
           </p>
@@ -281,7 +281,7 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
             </h2>
             {v.sowingNotes ? <p className="mt-2">{v.sowingNotes}</p> : null}
             {v.plant.sowingNotes || v.plant.description ? (
-              <div className="mt-3 rounded-lg bg-leaf-50 p-3 text-sm">
+              <div className="mt-3 rounded-inner bg-leaf-50 p-3 text-sm">
                 <p className="font-semibold">Crop-level guidance for {common}</p>
                 {v.plant.description ? <p className="mt-1">{v.plant.description}</p> : null}
                 {v.plant.sowingNotes ? <p className="mt-1">{v.plant.sowingNotes}</p> : null}

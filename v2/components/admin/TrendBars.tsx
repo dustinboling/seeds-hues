@@ -24,11 +24,11 @@ export function TrendBars({
   const last = buckets.length - 1;
   return (
     <figure className="flex min-w-0 flex-col gap-2">
-      <div aria-hidden="true" className={`flex items-end gap-1 rounded-[10px] bg-leaf-50 p-2 ${size === "full" ? "h-28" : "h-12"}`}>
+      <div aria-hidden="true" className={`flex items-end gap-1 rounded-field bg-leaf-50 p-2 ${size === "full" ? "h-28" : "h-12"}`}>
         {buckets.map((b, i) => (
           <div
             key={b.key}
-            className="min-w-0 flex-1 rounded-sm bg-leaf"
+            className="min-w-0 flex-1 rounded-bar bg-leaf"
             style={{ height: `${max > 0 ? Math.round((b.value / max) * 100) : 0}%`, opacity: i === last ? 1 : 0.55 }}
           />
         ))}

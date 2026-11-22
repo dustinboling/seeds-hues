@@ -64,7 +64,7 @@ export default function ApiDocsPage() {
       </dl>
 
       <h2 className="mt-8 text-2xl font-semibold">Envelope</h2>
-      <pre className="mt-2 overflow-x-auto rounded-lg bg-ink p-4 text-sm text-white">
+      <pre className="mt-2 overflow-x-auto rounded-inner bg-ink p-4 text-sm text-white">
         <code>{`{ "data": …, "page": { "next_cursor": "…" | null, "has_more": true },
   "meta": { "nextCursor": "…" | null, "count": 24, "total": 68, "catalog_seq": 111, "generated_at": "…" }, "error": null }
 { "data": null, "meta": null, "error": { "code": "not_found", "message": "variety not found" } }
@@ -117,7 +117,7 @@ export default function ApiDocsPage() {
       </ul>
 
       <h2 className="mt-8 text-2xl font-semibold">Examples</h2>
-      <pre className="mt-2 overflow-x-auto rounded-lg bg-ink p-4 text-sm text-white">
+      <pre className="mt-2 overflow-x-auto rounded-inner bg-ink p-4 text-sm text-white">
         <code>{`curl ${base}/varieties?crop=sweet-pea&limit=5
 curl ${base}/varieties/sweet-pea-kings-ransom
 curl "${base}/search?q=poppy"

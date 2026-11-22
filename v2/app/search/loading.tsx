@@ -4,7 +4,7 @@ export default function Loading() {
   return (
     <LoadingShell label="Loading search results…">
       <h1 className="text-3xl font-semibold text-leaf">Search</h1>
-      <Bar className="mt-4 h-14 w-full max-w-2xl rounded-[14px]" />
+      <Bar className="mt-4 h-14 w-full max-w-2xl rounded-search" />
       <Bar className="mt-8 h-7 w-64 max-w-full" />
       <FilterGroupsSkeleton
         groups={[
@@ -16,7 +16,7 @@ export default function Loading() {
       {[3, 3].map((rows, g) => (
         <div key={g} className="mt-6">
           <Bar className="h-4 w-20" />
-          <ul className="mt-2 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+          <ul className="mt-2 divide-y divide-line overflow-hidden rounded-control border border-line bg-surface">
             {Array.from({ length: rows }, (_, i) => (
               <li key={i} className="px-4 py-3">
                 <Bar className="h-5 w-56 max-w-[70%]" />

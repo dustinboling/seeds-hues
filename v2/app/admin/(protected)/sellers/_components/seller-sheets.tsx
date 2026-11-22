@@ -144,7 +144,7 @@ function EditField({
   const id = `edit-${field}`;
   const errorId = `${id}-error`;
   const described = field === "shipsTo" ? `${id}-hint${error ? ` ${errorId}` : ""}` : error ? errorId : undefined;
-  const inputClass = "field min-h-[44px] w-full";
+  const inputClass = "field min-h-target w-full";
   const label = (
     <label htmlFor={id} className="mb-1 block font-sans text-sm font-semibold">
       {EDIT_LABELS[field]}
@@ -282,7 +282,7 @@ export function EditSellerForm({
       <input type="hidden" name="action" value="edit_save" />
       <HiddenCtx ctx={ctx} />
       {showSummary ? (
-        <div ref={summaryRef} tabIndex={-1} role="alert" aria-label="Save problems" className="rounded-[12px] border border-line-strong bg-warn-50 p-4">
+        <div ref={summaryRef} tabIndex={-1} role="alert" aria-label="Save problems" className="rounded-control border border-line-strong bg-warn-50 p-4">
           <p className="flex items-start gap-1.5 font-sans text-base font-semibold text-warn">
             <ErrorIcon />
             <span>{formError ?? "Some fields need attention before saving."}</span>
@@ -317,7 +317,7 @@ export function EditSellerForm({
           ))}
         </fieldset>
       ))}
-      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 min-[744px]:-mx-6 min-[744px]:px-6">
+      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 admin:-mx-6 admin:px-6">
         <button type="button" className="btn btn-secondary" disabled={busy} onClick={onCancelClick}>
           Cancel
         </button>
@@ -365,7 +365,7 @@ export function EditSellerButton({
       {open && discarding ? (
         <Sheet title="Discard your changes?" onClose={() => setDiscarding(false)}>
           <p className="font-sans text-base">Your edits will be lost.</p>
-          <div className="flex flex-col gap-2 min-[744px]:flex-row">
+          <div className="flex flex-col gap-2 admin:flex-row">
             <button type="button" className="btn btn-primary" onClick={() => setDiscarding(false)}>
               Keep editing
             </button>
@@ -414,7 +414,7 @@ export function ClassifyForm({ sellerName, isSmallFarm, isCandidate, ctx }: { se
   }
 
   const card = (value: "true" | "false", title: string, words: string) => (
-    <label className="block cursor-pointer rounded-[12px] border border-line-strong bg-surface p-4 has-[:checked]:border-leaf has-[:checked]:bg-leaf-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-focus">
+    <label className="block cursor-pointer rounded-control border border-line-strong bg-surface p-4 has-[:checked]:border-leaf has-[:checked]:bg-leaf-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-focus">
       <span className="flex items-start gap-3">
         <input type="radio" name="is_small_farm" value={value} defaultChecked={(value === "true") === isSmallFarm} className="mt-1 size-5 shrink-0 accent-leaf" />
         <span>
@@ -430,7 +430,7 @@ export function ClassifyForm({ sellerName, isSmallFarm, isCandidate, ctx }: { se
       <input type="hidden" name="action" value="classify" />
       <HiddenCtx ctx={ctx} />
       {error ? (
-        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-[12px] border border-line-strong bg-warn-50 p-4">
+        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-control border border-line-strong bg-warn-50 p-4">
           <p className="flex items-start gap-1.5 font-sans text-base font-semibold text-warn">
             <ErrorIcon />
             <span>{error}</span>
@@ -447,10 +447,10 @@ export function ClassifyForm({ sellerName, isSmallFarm, isCandidate, ctx }: { se
         <label htmlFor="classify-note" className="mb-1 block font-sans text-sm font-semibold">
           Why <span className="font-normal text-muted">(optional — kept with the internal notes)</span>
         </label>
-        <textarea id="classify-note" name="note" rows={3} maxLength={2000} autoComplete="off" className="field min-h-[44px] w-full" />
+        <textarea id="classify-note" name="note" rows={3} maxLength={2000} autoComplete="off" className="field min-h-target w-full" />
       </p>
       {isCandidate ? <p className="font-sans text-[15px] text-ink-soft">Saving the classification lists {sellerName} publicly — their details are finished.</p> : null}
-      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 min-[744px]:-mx-6 min-[744px]:px-6">
+      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 admin:-mx-6 admin:px-6">
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {busy ? "Saving…" : "Save classification"}
         </button>
@@ -509,7 +509,7 @@ export function NoteComposerForm({ ctx }: { ctx: SellerCtx }) {
       <input type="hidden" name="action" value="add_note" />
       <HiddenCtx ctx={ctx} />
       {error ? (
-        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-[12px] border border-line-strong bg-warn-50 p-4">
+        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-control border border-line-strong bg-warn-50 p-4">
           <p className="flex items-start gap-1.5 font-sans text-base font-semibold text-warn">
             <ErrorIcon />
             <span>{error}</span>
@@ -522,7 +522,7 @@ export function NoteComposerForm({ ctx }: { ctx: SellerCtx }) {
         </label>
         <textarea id="note-body" name="body" rows={5} maxLength={2000} autoComplete="off" aria-invalid={error ? true : undefined} className="field min-h-[88px] w-full" />
       </p>
-      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 min-[744px]:-mx-6 min-[744px]:px-6">
+      <div className="sticky bottom-0 -mx-5 flex gap-2 border-t border-line bg-surface px-5 py-3 admin:-mx-6 admin:px-6">
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {busy ? "Adding…" : "Add note"}
         </button>

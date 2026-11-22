@@ -33,7 +33,7 @@ export function AccountList({ rows, total, params, selected }: { rows: AccountLi
           Search accounts
         </label>
         <div className="flex gap-2">
-          <input id="account-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Name or email" className="field min-h-[44px] w-full" />
+          <input id="account-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Name or email" className="field min-h-target w-full" />
           <button type="submit" className="btn btn-secondary shrink-0">
             Search
           </button>
@@ -67,7 +67,7 @@ export function AccountList({ rows, total, params, selected }: { rows: AccountLi
                   <a
                     href={`${accountHref({ account: r.id, q, show })}#detail`}
                     aria-current={current ? "true" : undefined}
-                    className={`block rounded-[12px] border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
+                    className={`block rounded-control border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
                   >
                     <span className="block text-base font-semibold">{shownName(r)}</span>
                     <span className="mt-0.5 block break-all text-sm text-ink-soft">{r.email}</span>

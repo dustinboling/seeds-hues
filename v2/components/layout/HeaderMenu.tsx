@@ -74,7 +74,7 @@ export function HeaderMenu() {
         id="header-menu-panel"
         data-testid="header-menu"
         hidden={!open}
-        className="absolute right-0 top-full z-50 mt-2 min-w-56 rounded-xl border border-line bg-paper py-2 shadow-lg"
+        className="absolute right-0 top-full z-50 mt-2 min-w-56 rounded-control border border-line bg-paper py-2 shadow-menu"
       >
         <nav aria-label="Menu">
           <ul>
@@ -86,7 +86,7 @@ export function HeaderMenu() {
                     ref={i === 0 ? firstLinkRef : undefined}
                     href={item.href}
                     aria-current={current ? "page" : undefined}
-                    className={`flex min-h-[44px] items-center px-4 font-sans no-underline hover:bg-leaf-50 ${current ? "font-semibold text-leaf" : "text-ink"}`}
+                    className={`flex min-h-target items-center px-4 font-sans no-underline hover:bg-leaf-50 ${current ? "font-semibold text-leaf" : "text-ink"}`}
                   >
                     {item.label}
                   </Link>

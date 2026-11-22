@@ -15,7 +15,7 @@ export function CropCardImage({ media, commonName }: { media: Media[]; commonNam
   const m = media[0];
   if (!m) return null;
   return (
-    <div className="card-image mb-2 aspect-[1/2] w-full overflow-hidden rounded-lg bg-paper" data-testid="crop-card-image">
+    <div className="card-image mb-2 aspect-[1/2] w-full overflow-hidden rounded-inner bg-paper" data-testid="crop-card-image">
       {/* A plain <img>: sizing is done by the image CDN's transformations, so next/image adds nothing here. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

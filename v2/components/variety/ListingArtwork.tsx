@@ -32,7 +32,7 @@ export function ListingArtwork({
   const plate = varietyPlate ?? cropMedia[0];
   if (plate) {
     return (
-      <div className="aspect-[1/2] w-18 shrink-0 self-start overflow-hidden rounded-lg border border-line bg-paper sm:w-24">
+      <div className="aspect-[1/2] w-18 shrink-0 self-start overflow-hidden rounded-inner border border-line bg-paper sm:w-24">
         {/* A plain <img>: sizing is done by the image CDN's transformations, so next/image adds nothing here. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -50,7 +50,7 @@ export function ListingArtwork({
   const motif = podArtForPlant(plantSlug)?.motif;
   if (motif) {
     return (
-      <div className="flex aspect-[1/2] w-18 shrink-0 items-center justify-center self-start overflow-hidden rounded-lg border border-line bg-paper sm:w-24">
+      <div className="flex aspect-[1/2] w-18 shrink-0 items-center justify-center self-start overflow-hidden rounded-inner border border-line bg-paper sm:w-24">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageUrl(motif, { width: 480 })}
@@ -66,7 +66,7 @@ export function ListingArtwork({
     );
   }
   return (
-    <div className="flex aspect-[1/2] w-18 shrink-0 items-center justify-center self-start overflow-hidden rounded-lg border border-line bg-paper sm:w-24">
+    <div className="flex aspect-[1/2] w-18 shrink-0 items-center justify-center self-start overflow-hidden rounded-inner border border-line bg-paper sm:w-24">
       <span aria-hidden="true" className="divider-stem w-full opacity-50" />
     </div>
   );

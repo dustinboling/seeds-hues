@@ -132,7 +132,7 @@ export default async function HomePage({ searchParams }: Props) {
         {recent.length === 0 ? (
           <p className="mt-3 text-muted">Nothing new yet.</p>
         ) : (
-          <ul className="mt-4 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+          <ul className="mt-4 divide-y divide-line overflow-hidden rounded-control border border-line bg-surface">
             {recent.map((r) => (
               <li key={`${r.listing.id}-${r.at}-${r.event}`} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
                 <span>
@@ -152,7 +152,7 @@ export default async function HomePage({ searchParams }: Props) {
       </section>
       <PodDivider bundle="/ornaments/bundle-sunflower.webp" className="my-2" />
 
-      <section aria-labelledby="how-title" className="my-6 rounded-[18px] bg-leaf-50 px-4 py-6 md:px-6">
+      <section aria-labelledby="how-title" className="my-6 rounded-card bg-leaf-50 px-4 py-6 md:px-6">
         <h2 id="how-title" className="text-2xl font-semibold">
           How this directory works
         </h2>

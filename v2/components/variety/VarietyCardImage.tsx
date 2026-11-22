@@ -24,7 +24,7 @@ export function VarietyCardImage({ media, varietyName, plantSlug }: { media: Med
     const motif = podArtForPlant(plantSlug)?.motif;
     return (
       <div
-        className="card-image mb-2 flex aspect-[1/2] w-full items-center justify-center overflow-hidden rounded-lg bg-paper"
+        className="card-image mb-2 flex aspect-[1/2] w-full items-center justify-center overflow-hidden rounded-inner bg-paper"
         data-testid="variety-card-placeholder"
       >
         {motif ? (
@@ -50,7 +50,7 @@ export function VarietyCardImage({ media, varietyName, plantSlug }: { media: Med
   const isVarietyArtwork = m.url.startsWith("/artwork/") && !m.url.startsWith("/artwork/crops/");
   const srcSet = isVarietyArtwork ? imageSrcSet(m.url, [480, 768]) : undefined;
   return (
-    <div className="card-image mb-2 aspect-[1/2] w-full overflow-hidden rounded-lg bg-paper" data-testid="variety-card-image">
+    <div className="card-image mb-2 aspect-[1/2] w-full overflow-hidden rounded-inner bg-paper" data-testid="variety-card-image">
       {/* A plain <img>: sizing is done by the image CDN's transformations, so next/image adds nothing here. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

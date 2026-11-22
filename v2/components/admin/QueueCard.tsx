@@ -6,7 +6,7 @@
 export function QueueCard({ name, description, count, oldest, href }: { name: string; description: string; count: number; oldest: string | null; href: string }) {
   const clear = count === 0;
   return (
-    <a href={href} className="card flex flex-col gap-1 p-4 min-[744px]:p-5">
+    <a href={href} className="card flex flex-col gap-1 p-4 admin:p-5">
       <span className="font-sans text-base font-semibold">{name}</span>
       {clear ? (
         <span className="font-sans text-[32px] font-semibold leading-[1.1] text-leaf">All clear</span>
