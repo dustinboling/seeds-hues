@@ -1,14 +1,8 @@
 import Link from "next/link";
 import { HuesLogo } from "./HuesLogo";
 import { HeaderMenu } from "./HeaderMenu";
+import { HeaderNav } from "./HeaderNav";
 import { PersonIcon } from "./icons";
-
-const NAV = [
-  { href: "/crop", label: "Crops" },
-  { href: "/variety", label: "Varieties" },
-  { href: "/seller", label: "Sellers" },
-  { href: "/search", label: "Search" },
-];
 
 /**
  * Header on the plate paper (theme §5): paper ground, `line` hairline, Fraunces wordmark,
@@ -21,12 +15,18 @@ const NAV = [
  * - Mobile: Hues logo at 24px (no side padding) + one-line "Seed Directory" wordmark
  *   (text-[15px]), with NO divider. No byline. This sizing exists so the full wordmark fits
  *   untruncated at 360-390px while the account and menu targets stay ≥ 44px.
- * - md: logo 44px (px-1) and the divider joins between logo and wordmark; the sans nav appears.
- * - lg: the "by Hues Floral Park" byline appears inline after the wordmark (no stem motif
- *   between them; the byline stays in the DOM below lg, hidden; it also lives in the footer).
+ * - md: logo 44px (px-1) and the divider joins between logo and wordmark; the sans nav appears
+ *   with four destinations (Crops · Varieties · Sellers · Search).
+ * - lg (the takeover tier): the nav gains Add Your Farm as its fifth link (nav padding
+ *   narrows `px-3` → `px-2` at this tier only, §6 lever 1) and the hamburger retires
+ *   (`lg:hidden` on `HeaderMenu`'s wrapper — CSS only, the menu stays mounted and fully
+ *   functional below lg). The "by Hues Floral Park" byline is suppressed at this tier (§6
+ *   lever 2: the 1024px fit needs its width); it stays in the DOM, hidden, and it also
+ *   lives in the footer.
  * - Right side, in order: the sans nav (md+), the account icon (/account), then the hamburger
- *   menu (`HeaderMenu`) at the far right; both icons keep ≥ 44px tap targets. There is no
- *   "Add Your Farm" pill in the header: Add Your Farm lives in the hamburger menu and the footer.
+ *   menu (`HeaderMenu`) at the far right below lg; both icons keep ≥ 44px tap targets. There
+ *   is no "Add Your Farm" pill in the header: Add Your Farm is a plain nav link (lg+) and a
+ *   hamburger menu item (below lg).
  * The old stacked mobile lockup and the second-row wrap of the right-side controls are gone.
  */
 export function SiteHeader() {
@@ -42,24 +42,11 @@ export function SiteHeader() {
             <span className="truncate font-display text-[15px] font-semibold leading-tight tracking-[-0.02em] md:text-[1.25rem]">
               Seed Directory
             </span>
-            <span className="hidden whitespace-nowrap font-sans text-sm leading-tight text-muted lg:block">by Hues Floral Park</span>
+            <span className="hidden whitespace-nowrap font-sans text-sm leading-tight text-muted">by Hues Floral Park</span>
           </Link>
         </div>
         <div className="ml-auto flex flex-none items-center gap-1 md:gap-2">
-          <nav aria-label="Main" className="hidden md:block">
-            <ul className="flex items-center gap-1">
-              {NAV.map((n) => (
-                <li key={n.href}>
-                  <Link
-                    href={n.href}
-                    className="tap inline-flex items-center rounded-inner px-3 font-sans font-medium text-ink no-underline transition-colors duration-150 ease-out hover:bg-leaf-50 hover:text-leaf"
-                  >
-                    {n.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <HeaderNav />
           <Link
             href="/account"
             aria-label="Your account"
