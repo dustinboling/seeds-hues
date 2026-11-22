@@ -60,22 +60,12 @@ const fake = vi.hoisted(() => ({
   crop: null as unknown,
   seller: null as unknown,
 }));
-vi.mock("@/lib/services/context", () => ({
-  getServices: async () => ({
-    catalog: {
-      counts: async () => fake.counts,
-      listCrops: async () => fake.crops,
-      coverage: async () => fake.coverage,
-      recent: async () => fake.recent,
-      getVariety: async () => fake.variety,
-      listVarieties: async () => fake.varieties,
-      getCrop: async () => fake.crop,
-      getSeller: async () => fake.seller,
-    },
-  }),
-}));
+const store = vi.hoisted(() => ({ services: null as unknown }));
+vi.mock("@/lib/services/context", () => ({ getServices: async () => store.services }));
 // The search widget needs router context; the hero line and Recent list do not.
 vi.mock("@/components/search/SearchBox", () => ({ SearchBox: () => null }));
+
+import { fakeServices } from "../helpers/services-context";
 
 // Imported after the mocks are registered (vi.mock is hoisted above these too).
 const { default: HomePage } = await import("@/app/page");
@@ -87,6 +77,19 @@ const { default: TermsPage } = await import("@/app/terms/page");
 const { default: PrivacyPage } = await import("@/app/privacy/page");
 const { VarietyCard } = await import("@/components/variety/VarietyCard");
 const { ImportedRatingPanel } = await import("@/components/seller/ImportedRatingPanel");
+
+store.services = fakeServices({
+  catalog: {
+    counts: async () => fake.counts,
+    listCrops: async () => fake.crops,
+    coverage: async () => fake.coverage,
+    recent: async () => fake.recent,
+    getVariety: async () => fake.variety,
+    listVarieties: async () => fake.varieties,
+    getCrop: async () => fake.crop,
+    getSeller: async () => fake.seller,
+  },
+});
 
 beforeEach(() => {
   fake.counts = { varieties: 0, sellers: 0, listings: 0, plants: 0 };

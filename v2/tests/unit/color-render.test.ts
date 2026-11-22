@@ -6,8 +6,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import type { Services } from "@/lib/services";
 import type { VarietyDetail } from "@/lib/validators";
+import { fakeServices } from "../helpers/services-context";
 
 const ctx = vi.hoisted(() => ({ services: null as unknown }));
 vi.mock("@/lib/services/context", () => ({ getServices: async () => ctx.services }));
@@ -123,13 +123,13 @@ const FIXTURES: Record<string, VarietyDetail> = {
   "poppy-test-plain": detailFixture({ slug: "poppy-test-plain", varietyName: "Test Poppy", colorFamily: "unknown", colorSwatch: "#9370DB" }),
 };
 
-ctx.services = {
+ctx.services = fakeServices({
   catalog: {
     getVariety: async (slug: string) => FIXTURES[slug] ?? null,
     listVarieties: async () => ({ items: [], total: 0 }),
     mergedVarietyTarget: async () => null,
   },
-} as unknown as Services;
+});
 
 const pageHtml = async (slug: string) => renderToStaticMarkup(await VarietyView({ slug, smallFarmOnly: false }));
 
