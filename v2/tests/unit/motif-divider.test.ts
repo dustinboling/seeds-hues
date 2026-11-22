@@ -1,58 +1,49 @@
 /**
- * Divider motif B (2026-11-19): the centred ornament for major breaks — the home hero break and the
- * waitlist success moment. Decorative, rendered whole through lib/images.
+ * Divider motif B — RETIRED 2026-11-21 at Dustin's direction: removed from the site entirely.
+ * Its last two placements are gone: the home hero break now uses the site's standard thin-stem
+ * divider rule, and the waitlist success moment carries no ornament. (The R2 asset and its
+ * image-manifest entry stay until the separate asset-retirement operation; the waitlist success
+ * wording is unchanged.) The component file itself is deleted; these tests pin the new truth
+ * and fail on the old code. The waitlist success render is pinned in tests/dom/waitlist-success.
  *
- * History: it also shipped in a footer-adjacent slot (FooterStem, "footer" variant) on every page;
- * that placement was removed 2026-11-19 at Dustin's direction — the motif's painted ground did not
- * match the page ground and read as a visible band above the footer. On 2026-11-20 Dustin directed
- * the slot's original occupant restored instead: FooterStem renders the thin divider-stem rule
- * (theme §3), a transparent-ground vector that takes the page's own paper and cannot band. The
- * SiteFooter regression test below keeps Motif B out of the slot and the stem in it.
+ * History: motif B also shipped in a footer-adjacent slot on every page; that placement was
+ * removed 2026-11-19 at Dustin's direction — the motif's painted ground did not match the page
+ * ground and read as a visible band above the footer. On 2026-11-20 Dustin directed the slot's
+ * original occupant restored instead: FooterStem renders the thin divider-stem rule (theme §3),
+ * a transparent-ground vector that takes the page's own paper and cannot band. The SiteFooter
+ * regression test below keeps Motif B out of the slot and the stem in it.
  */
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { MOTIF_B_PATH, MotifDivider } from "@/components/ui/MotifDivider";
 import { FooterStem } from "@/components/layout/FooterStem";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
-const T = (w: number) => `https://images.seeds.hues.flowers/cdn-cgi/image/width=${w},quality=80,format=auto,fit=scale-down/ornaments/motif-divider-b.webp`;
+const MOTIF_B_KEY = "ornaments/motif-divider-b.webp";
 const attr = (tag: string, name: string) => new RegExp(`\\b${name}="([^"]*)"`).exec(tag)?.[1] ?? null;
-const img = (h: string) => /<img\b[^>]*>/.exec(h)?.[0] ?? "";
 
-describe("MotifDivider (divider motif B)", () => {
-  it("renders the stored path only via lib/images, whole and decorative", () => {
-    expect(MOTIF_B_PATH).toBe("/ornaments/motif-divider-b.webp");
-    const h = renderToStaticMarkup(createElement(MotifDivider, { variant: "home", className: "mb-8 mt-10" }));
-    expect(h).toMatch(/^<div aria-hidden="true" data-testid="motif-b" class="w-full mb-8 mt-10"><img /);
-    const i = img(h);
-    expect(attr(i, "src")).toBe(T(1200));
-    expect(attr(i, "srcSet")).toBe(`${T(600)} 600w, ${T(900)} 900w, ${T(1200)} 1200w`);
-    expect(attr(i, "alt")).toBe("");
-    expect(attr(i, "width")).toBe("2400");
-    expect(attr(i, "height")).toBe("518");
-    expect(attr(i, "loading")).toBe("lazy");
-    expect(attr(i, "decoding")).toBe("async");
-    // Shown whole: height follows the intrinsic aspect, never stretched or cropped.
-    const cls = (attr(i, "class") ?? "").split(/\s+/);
-    expect(cls).toEqual(expect.arrayContaining(["mx-auto", "block", "h-auto", "max-w-full"]));
-    expect(cls.some((c) => /^(?:object-|h-\[|aspect-)/.test(c))).toBe(false);
-    // No vertical margins baked in: only the caller's.
-    expect(renderToStaticMarkup(createElement(MotifDivider, { variant: "home" }))).toMatch(/^<div aria-hidden="true" data-testid="motif-b" class="w-full">/);
-  });
-
-  it("sizes each placement inside its guidance band, with sizes matching the CSS width", () => {
-    const home = img(renderToStaticMarkup(createElement(MotifDivider, { variant: "home" })));
-    expect(attr(home, "sizes")).toBe("min(480px, 92vw)");
-    expect(attr(home, "class")).toContain("w-[min(480px,92vw)]");
-  });
-
-  it("gives way to the thin stem rule below a 360px viewport (shared markup, every variant)", () => {
-    for (const variant of ["home", "success"] as const) {
-      const h = renderToStaticMarkup(createElement(MotifDivider, { variant }));
-      expect(attr(img(h), "class"), variant).toContain("max-[360px]:hidden");
-      expect(h, variant).toContain('<span class="divider-stem hidden max-[360px]:block"></span>');
+describe("Motif B retirement (2026-11-21)", () => {
+  it("the component is gone: no file, no live reference in either former placement", () => {
+    expect(existsSync(join(process.cwd(), "components/ui/MotifDivider.tsx"))).toBe(false);
+    for (const f of ["app/page.tsx", "components/variety/WaitlistBlock.tsx"]) {
+      const src = readFileSync(join(process.cwd(), f), "utf8");
+      expect(src, f).not.toContain("MotifDivider");
+      expect(src, f).not.toContain("motif-divider-b");
+      expect(src, f).not.toContain("MOTIF_B");
     }
+  });
+
+  it("home hero break: the thin-stem divider rule sits between the hero and Browse by crop", () => {
+    const src = readFileSync(join(process.cwd(), "app/page.tsx"), "utf8");
+    const stem = '<div aria-hidden="true" className="divider-stem mb-8 mt-10" />';
+    const at = src.indexOf(stem);
+    expect(at).toBeGreaterThanOrEqual(0);
+    // Exactly one hero-break rule, ordered between the two sections.
+    expect(src.indexOf(stem, at + 1)).toBe(-1);
+    expect(src.indexOf('id="hero-title"')).toBeLessThan(at);
+    expect(at).toBeLessThan(src.indexOf('id="crops-title"'));
   });
 
   it("FooterStem renders the thin stem rule in its slot in server HTML (suppression is client-side)", () => {
@@ -69,7 +60,7 @@ describe("MotifDivider (divider motif B)", () => {
       /^<div aria-hidden="true" class="divider-stem mt-16" data-testid="footer-stem"><\/div>(?:<!-- -->)?<footer\b[\s\S]*<\/footer>$/,
     );
     expect(h).not.toContain("motif-b");
-    expect(h).not.toContain(MOTIF_B_PATH.slice(1));
+    expect(h).not.toContain(MOTIF_B_KEY);
     expect(h).not.toContain("ornaments/");
     // The only image in the footer is the Hues wordmark — the stem is a CSS background, not an <img>.
     expect([...h.matchAll(/<img\b[^>]*>/g)].map((m) => attr(m[0], "src"))).toEqual(["/brand/hues-logo.svg"]);

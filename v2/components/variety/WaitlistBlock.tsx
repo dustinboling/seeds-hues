@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Turnstile } from "@/components/ui/Turnstile";
-import { MotifDivider } from "@/components/ui/MotifDivider";
 import { callApi, deliveryNote } from "@/components/account/api";
 import { CodeEntry } from "@/components/account/CodeEntry";
 import { SignupFields, signupBody } from "@/components/account/SignupFields";
@@ -37,7 +36,7 @@ function heldSentence(held: readonly string[]): string {
  *  - signed out → inline mini-form that creates the account AND joins in one submission;
  *  - signed in, not on the list → one-click join;
  *  - on the list → the success moment (UX spec 2026-11-19 §3): a celebration on the paper ground
- *    (Motif B + heading + per-state line), then a card with the next step and the leave / alerts
+ *    (heading + per-state line), then a card with the next step and the leave / alerts
  *    actions. States, in precedence order: B/C unverified email (code entry; B carries this
  *    session's delivery status), D verified but alerts held, A verified and alerts on.
  * Focus moves to the success heading (or back to the join heading after leaving) only after a
@@ -203,10 +202,9 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
 
     return (
       <div className="mt-4" data-testid="waitlist-block">
-        {/* Celebration — on the PAPER ground: no .card, no border, no background (Motif B's painted ground). */}
+        {/* Celebration — on the PAPER ground: no .card, no border, no background. */}
         <section aria-labelledby="waitlist-success-title" className="mt-10 flex flex-col items-center text-center">
-          <MotifDivider variant="success" />
-          <h3 id="waitlist-success-title" ref={successHeadingRef} tabIndex={-1} className="mt-8 text-2xl font-semibold text-leaf">
+          <h3 id="waitlist-success-title" ref={successHeadingRef} tabIndex={-1} className="text-2xl font-semibold text-leaf">
             You’re on the waiting list for {varietyName} — glad to have you here.
           </h3>
           {celebration}
