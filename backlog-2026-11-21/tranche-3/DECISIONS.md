@@ -98,6 +98,8 @@ Sources: `SPEC.md` (Nadia), `FIELD-STATES-DESIGN.md` (Mina), `ADA-RULINGS-3-3.md
 
 **What it gates:** Item 3.3's build (one declaration inside the field-state set).
 
+**RULING — 2026-11-22 (Dustin, via Hue): (a) "Leaf accent on checkboxes and radios"** — Mina's recommendation adopted. `accent-color` set to leaf via the tokenized `component.field.accent` declaration inside Item 3.3's field-state build. With this ruling, all six Tranche 3 decisions are ruled and Item 3.3's build is fully un-gated.
+
 ---
 
 *Assembled by the backlog coordinator (continuation #9), 2026-11-22, from the design records above. No decision here is pre-empted; builds gated above wait for Dustin's rulings via Hue.*
