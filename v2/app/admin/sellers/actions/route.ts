@@ -59,6 +59,7 @@ function friendlyError(err: unknown): string {
     if (err.code === "seller_not_found") return "That seller is gone.";
     if (err.code === "seller_removed") return "That seller was removed from the directory.";
     if (err.code === "invalid_fields") return "Some fields need attention before saving.";
+    if (err.code === "description_rejected") return "That About text can't be published: it contains a price or working notes. Remove those and save again.";
   }
   return "That didn't go through. Nothing was changed — try again.";
 }
