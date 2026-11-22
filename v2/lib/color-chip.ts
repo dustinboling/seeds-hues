@@ -10,14 +10,27 @@
  */
 import { COLOR_FAMILY_SWATCHES, type ColorFamily } from "@/lib/validators";
 
-/** The Mixed gradient stops, in order: the pink/orange/yellow/green/blue/purple representatives, closed back to pink. */
-const MIX_STOPS = ["pink", "orange", "yellow", "green", "blue", "purple", "pink"] as const;
+/**
+ * The families around the Mixed disc, in order: the ONE source for both Mixed renderings
+ * below, so the CSS gradient and the Satori-safe wedges can never drift apart.
+ */
+const MIX_WEDGE_FAMILIES = ["pink", "orange", "yellow", "green", "blue", "purple"] as const;
+
+/** The Mixed gradient stops, in order: the wedge families, closed back to pink. */
+const MIX_STOPS = [...MIX_WEDGE_FAMILIES, MIX_WEDGE_FAMILIES[0]] as const;
 
 /**
  * The Mixed conic gradient — the single definition shared by the Hue filter chip, the
- * variety page chip, and the OG card. There is no single hex for a mix.
+ * variety page chip, and the OG card model. There is no single hex for a mix.
  */
 export const MIX_GRADIENT = `conic-gradient(${MIX_STOPS.map((f) => COLOR_FAMILY_SWATCHES[f]).join(", ")})`;
+
+/**
+ * The Mixed disc wedges, in order: the same family stops the conic uses, as flat hexes
+ * for renderers without conic-gradient (Satori, on the OG card). Same source as the
+ * gradient; the closing pink repeat is the loop point, not a seventh wedge.
+ */
+export const MIX_WEDGE_HEXES: readonly string[] = MIX_WEDGE_FAMILIES.map((f) => COLOR_FAMILY_SWATCHES[f]!);
 
 /** What a variety's color chip shows: the gradient, nothing, or one flat hex. */
 export type ColorChip = { kind: "gradient" } | { kind: "none" } | { kind: "hex"; hex: string };

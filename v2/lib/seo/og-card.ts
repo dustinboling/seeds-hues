@@ -10,11 +10,23 @@
  */
 import { getServices } from "@/lib/services/context";
 import type { CatalogService } from "@/lib/services/catalog";
-import { chipBackground, resolveColorChip } from "@/lib/color-chip";
+import { MIX_WEDGE_HEXES, chipBackground, resolveColorChip } from "@/lib/color-chip";
 import { shortCommonName } from "@/lib/format";
 import { zeroSellerSentence } from "@/lib/zero-seller";
 
-export type OgCard = { eyebrow: string; title: string; subtitle: string; swatch: string | null; footer: string };
+export type OgCard = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  swatch: string | null;
+  footer: string;
+  /**
+   * The Mixed disc wedges (Satori cannot parse the conic gradient in `swatch`, so the
+   * route draws these flat hexes as inline SVG instead). Set exactly when the variety
+   * resolves to the Mixed gradient; null on every other card.
+   */
+  mixWedges: readonly string[] | null;
+};
 
 type OgCatalog = Pick<CatalogService, "getVariety" | "getSeller" | "getCrop">;
 
@@ -27,20 +39,23 @@ export async function buildOgCard(kind: string, slug: string, catalog: OgCatalog
       subtitle: "Hard-to-find flower seed · stock as last seen · direct links",
       swatch: "#8E2A52",
       footer: "seeds.hues.flowers",
+      mixWedges: null,
     };
   }
   if (kind === "variety") {
     const v = await catalog.getVariety(slug);
     if (!v) return null;
     const n = new Set(v.listings.map((l) => l.seller.slug)).size;
+    // The same resolved chip the variety page draws: Mixed renders the shared gradient,
+    // a contradicting swatch falls back to its family, unfiled draws the neutral ground.
+    const chip = resolveColorChip({ colorFamily: v.colorFamily, colorSwatch: v.colorSwatch });
     return {
       eyebrow: v.plant.latinName ? `${shortCommonName(v.plant.commonName)} · ${v.plant.latinName}` : shortCommonName(v.plant.commonName),
       title: v.varietyName,
       subtitle: n === 0 ? zeroSellerSentence(v.varietyName) : `${n} seller${n === 1 ? "" : "s"} list it`,
-      // The same resolved chip the variety page draws: Mixed renders the shared gradient,
-      // a contradicting swatch falls back to its family, unfiled draws the neutral ground.
-      swatch: chipBackground(resolveColorChip({ colorFamily: v.colorFamily, colorSwatch: v.colorSwatch })),
+      swatch: chipBackground(chip),
       footer: "seeds.hues.flowers",
+      mixWedges: chip.kind === "gradient" ? MIX_WEDGE_HEXES : null,
     };
   }
   if (kind === "seller") {
@@ -52,6 +67,7 @@ export async function buildOgCard(kind: string, slug: string, catalog: OgCatalog
       subtitle: `${s.varietyCount} flower seed ${s.varietyCount === 1 ? "variety" : "varieties"} listed`,
       swatch: null,
       footer: "seeds.hues.flowers",
+      mixWedges: null,
     };
   }
   if (kind === "crop") {
@@ -63,6 +79,7 @@ export async function buildOgCard(kind: string, slug: string, catalog: OgCatalog
       subtitle: `${r.crop.varietyCount} ${r.crop.varietyCount === 1 ? "variety" : "varieties"} · ${r.crop.varietiesWithSellers} with sellers`,
       swatch: null,
       footer: "seeds.hues.flowers",
+      mixWedges: null,
     };
   }
   return null;
