@@ -34,3 +34,11 @@ Run 44983535271 collapsed mid-build: its only tree change was a scratch file, `v
 
 ## Re-dispatch note 2 (2026-11-21, coordinator)
 Run 44989244473 got much further — a real change set, four gate attempts — and failed ONLY on typecheck: 14 errors, every one a possibly-'undefined' error (TS2345/TS2532/TS18048) in your own new test file `tests/unit/tranche-2-foundation.test.ts`. This repo's TypeScript is strict about indexed access and lookup results (`T | undefined`). Write test code that narrows or asserts after every lookup/index from the start, and run `npm run typecheck` on the new test file BEFORE the full verify — do not leave typecheck errors for the gate to find.
+
+## Re-dispatch note 3 (2026-11-21, coordinator)
+
+Run 44990987708 built the change set but failed the gate on LINT: a parsing error at `v2/components/layout/icons.tsx` 74:1 ("Expression expected") — the file that gains the new ProtectionIcon. The final tree was never verified green, so no PR opened. This is the third consecutive run lost to a basic self-check the gate had to catch (run 1: scratch-file lint; run 2: new-test-file typecheck; run 3: icons.tsx parse). On this run:
+
+- After editing `icons.tsx` — and after every file group — run ESLint on the touched files immediately. The ProtectionIcon is plain TSX; the file must parse before you move on.
+- The FULL `npm run verify` (lint + typecheck + test) on the final tree is the literal last thing you do before finishing. If it is not green, fix and re-run it. Do not finish on a red or unrun verify.
+- All earlier re-dispatch notes remain in force (no scratch files in the tree; strict-narrowing discipline in test code).
