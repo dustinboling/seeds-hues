@@ -11,6 +11,7 @@ import {
   ReviewListQuerySchema,
   SellerActionBodySchema,
   SellerBadgeBodySchema,
+  SellerDescriptionBodySchema,
   ListingRemoveBodySchema,
 } from "@/lib/services/admin";
 import { LeaseBodySchema, ObservationsBodySchema, SellerCandidateBodySchema, SourceBodySchema } from "@/lib/services/ingest";
@@ -171,6 +172,22 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "seller not found");
       const b = parseBody(SellerBadgeBodySchema, body);
       const r = await services.admin.sellerBadge(ref, b.is_small_farm);
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // The seller About copy (audit 2026-11-21 C1 + C2): the same sellerUpdate funnel as
+    // the admin UI, so the changed list and revalidation match a UI edit exactly.
+    method: "POST",
+    pattern: "sellers/:id/description",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "seller not found");
+      const b = parseBody(SellerDescriptionBodySchema, body);
+      const r = await services.admin.sellerUpdate(ref, { description: b.description });
       return { data: r.data, revalidate: r.revalidate };
     },
   },
