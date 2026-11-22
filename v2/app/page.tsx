@@ -5,14 +5,15 @@ import { CropCardImage } from "@/components/crop/CropCardImage";
 import { AvailabilityBadge } from "@/components/variety/Availability";
 import { ThemeArt } from "@/components/ui/ThemeArt";
 import { PodDivider } from "@/components/ui/PodDivider";
-import { BrowseFilters, activeFilterLabels, type BrowseFilterState } from "@/components/ui/BrowseFilters";
+import { BrowseFilters } from "@/components/ui/BrowseFilters";
+import { activeFilterLabels, type BrowseFilterState } from "@/lib/browse";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { siteOrganizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/lib/config";
 import { formatFriendlyDate, plural, shortCommonName } from "@/lib/format";
-import { parseMethodParam, parseSeasonParam } from "@/lib/paging";
+import { parseMethodParam, parseSeasonParam } from "@/lib/browse";
 import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +33,7 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 export default async function HomePage({ searchParams }: Props) {
   const sp = await searchParams;
-  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: null, smallFarm: false };
+  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: [], smallFarm: false };
   const active = activeFilterLabels(filters);
   const { catalog } = await getServices();
   const [counts, crops, coverage, recent] = await Promise.all([

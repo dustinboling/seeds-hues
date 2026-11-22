@@ -356,6 +356,25 @@ export async function listVarietySummaryRows(
   };
 }
 
+/**
+ * The total behind a filter set: the same joins and the same varietyWhere() as
+ * listVarietySummaryRows' own total query, so per-option counts and results can never disagree.
+ */
+export async function countVarietyRows(db: Db, filters: VarietyFilters): Promise<number> {
+  const ls = listingStatsSq(db);
+  const where = varietyWhere(db, filters, ls, filters.lifeCycle?.length ? await plantLifeCycleIn(db, filters.lifeCycle) : undefined);
+  const [totalRow] = await db
+    .select({ n: count() })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .innerJoin(categories, eq(categories.id, varieties.categoryId))
+    .leftJoin(subcategories, eq(subcategories.id, varieties.subcategoryId))
+    .leftJoin(series, eq(series.id, varieties.seriesId))
+    .leftJoin(ls, eq(ls.varietyId, varieties.id))
+    .where(where);
+  return totalRow?.n ?? 0;
+}
+
 /** Distinct colour families in use for a crop (crop-page filter options). */
 export async function colorFamiliesForPlant(db: Db, plantSlug: string): Promise<string[]> {
   const rows = await db

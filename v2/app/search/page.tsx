@@ -3,10 +3,10 @@ import Link from "next/link";
 import { SearchBox } from "@/components/search/SearchBox";
 import { ThemeArt } from "@/components/ui/ThemeArt";
 import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
-import { BrowseFilters, activeFilterLabels, type BrowseFilterState } from "@/components/ui/BrowseFilters";
+import { BrowseFilters } from "@/components/ui/BrowseFilters";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { parseHueParam, parseMethodParam, parseSeasonParam } from "@/lib/paging";
+import { activeFilterLabels, parseHueParamSingle, parseMethodParam, parseSeasonParam, type BrowseFilterState } from "@/lib/browse";
 import { METHOD_PARAMS, SEASON_PARAMS, type SearchResult } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
@@ -40,11 +40,13 @@ const GROUPS = [
 export default async function SearchPage({ searchParams }: Props) {
   const sp = await searchParams;
   const q = readQ(sp.q);
+  // /search stays single-select hue (Item 3.1b spreads the core): today's parse rule, one family at most.
+  const hue = parseHueParamSingle(sp.color_family);
   const filters: BrowseFilterState = {
     season: parseSeasonParam(sp.season),
     method: parseMethodParam(sp.method),
     lifeCycle: null,
-    hue: parseHueParam(sp.color_family),
+    hue: hue ? [hue] : [],
     smallFarm: false,
   };
   const active = activeFilterLabels(filters);
@@ -55,7 +57,7 @@ export default async function SearchPage({ searchParams }: Props) {
         limit: 50,
         season: filters.season ? SEASON_PARAMS[filters.season] : undefined,
         methods: filters.method ? [METHOD_PARAMS[filters.method]] : undefined,
-        colorFamily: filters.hue ? [filters.hue] : undefined,
+        colorFamily: filters.hue.length ? [...filters.hue] : undefined,
         logClient: "web/search-page",
       })
     : null;

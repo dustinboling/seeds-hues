@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { BrowseFilters, activeFilterLabels, type BrowseFilterState } from "@/components/ui/BrowseFilters";
+import { BrowseFilters } from "@/components/ui/BrowseFilters";
+import { activeFilterLabels, type BrowseFilterState } from "@/lib/browse";
 import { CropCardImage } from "@/components/crop/CropCardImage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { plural } from "@/lib/format";
-import { parseMethodParam, parseSeasonParam } from "@/lib/paging";
+import { parseMethodParam, parseSeasonParam } from "@/lib/browse";
 import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
 import { proseCommonName } from "@/lib/services/template";
 import { CropsSkeleton } from "./skeleton";
@@ -38,7 +39,7 @@ export default function CropsPage({ searchParams }: Props) {
 
 async function CropsContent({ searchParams }: Props) {
   const sp = await searchParams;
-  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: null, smallFarm: false };
+  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: [], smallFarm: false };
   const active = activeFilterLabels(filters);
   const { catalog } = await getServices();
   const { items } = await catalog.listCrops(

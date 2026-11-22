@@ -2,97 +2,20 @@ import Link from "next/link";
 import { FilterStrip } from "@/components/ui/FilterStrip";
 import { SmallFarmLegend } from "@/components/seller/SmallFarmBadge";
 import { MIX_GRADIENT } from "@/lib/color-chip";
-import { SMALL_FARM_CHIP_LABEL, SMALL_FARM_FILTER_LABEL, SMALL_FARM_PARAM } from "@/lib/small-farm";
 import {
-  COLOR_FAMILIES,
-  COLOR_FAMILY_LABELS,
+  BROWSE_OPTIONS,
+  chipHref,
   COLOR_FAMILY_SWATCHES,
-  LIFE_CYCLE_LABELS,
-  LIFE_CYCLE_PARAMS,
-  METHOD_PARAMS,
-  SEASON_LABELS,
-  SEASON_PARAMS,
-  SOWING_METHOD_LABELS,
+  countFor,
+  isOptionActive,
+  type BrowseFilterGroup,
+  type BrowseFilterState,
   type ColorFamily,
-  type LifeCycleParam,
-  type MethodParam,
-  type SeasonParam,
-} from "@/lib/validators";
+  type HueMode,
+} from "@/lib/browse";
+import type { BrowseCounts } from "@/lib/validators";
 
-/** The active browse filters. Each group is single-select; null / false = "All". */
-export interface BrowseFilterState {
-  season: SeasonParam | null;
-  method: MethodParam | null;
-  lifeCycle: LifeCycleParam | null;
-  hue: ColorFamily | null;
-  /**
-   * "Sellers" group (Open Directory, ux-spec §3): only varieties with at least one listing from a
-   * seller carrying the Small farm badge. Shown on /variety only; every other surface passes false.
-   */
-  smallFarm: boolean;
-}
-
-export type BrowseFilterGroup = keyof BrowseFilterState;
-
-/** Query-param name per group (the same names /api/v1 uses). */
-const PARAM: Record<BrowseFilterGroup, string> = {
-  season: "season",
-  method: "method",
-  lifeCycle: "life_cycle",
-  hue: "color_family",
-  smallFarm: SMALL_FARM_PARAM,
-};
-
-/** A group's active value as its URL value; null = "All". The Sellers group is on = "true" (never "false"). */
-function groupValue(state: BrowseFilterState, g: BrowseFilterGroup): string | null {
-  if (g === "smallFarm") return state.smallFarm ? "true" : null;
-  return state[g];
-}
-
-function withGroup(state: BrowseFilterState, g: BrowseFilterGroup, value: string | null): BrowseFilterState {
-  return g === "smallFarm" ? { ...state, smallFarm: value === "true" } : { ...state, [g]: value };
-}
-
-/** The filter params to carry on links (e.g. Pagination) — only the active groups. */
-export function filterParams(state: BrowseFilterState): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const g of Object.keys(PARAM) as BrowseFilterGroup[]) {
-    const v = groupValue(state, g);
-    if (v) out[PARAM[g]] = v;
-  }
-  return out;
-}
-
-/** Labels of the active filters, in group order, for result-count lines ("48 crops · …"). */
-export function activeFilterLabels(state: BrowseFilterState): string[] {
-  return [
-    state.season ? SEASON_LABELS[SEASON_PARAMS[state.season]] : null,
-    state.method ? SOWING_METHOD_LABELS[METHOD_PARAMS[state.method]] : null,
-    state.lifeCycle ? LIFE_CYCLE_LABELS[state.lifeCycle] : null,
-    state.hue ? COLOR_FAMILY_LABELS[state.hue] : null,
-    state.smallFarm ? SMALL_FARM_FILTER_LABEL : null,
-  ].filter((x): x is string => x !== null);
-}
-
-/**
- * Link for one chip: the other groups' active values and the extra params (q on /search) are
- * kept; ?page= is never carried (a changed filter starts at page 1).
- */
-function chipHref(
-  basePath: string,
-  state: BrowseFilterState,
-  group: BrowseFilterGroup,
-  value: string | null,
-  params: Record<string, string>,
-): string {
-  const p = new URLSearchParams(params);
-  p.delete("page");
-  for (const [k, v] of Object.entries(filterParams(withGroup(state, group, value)))) p.set(k, v);
-  const qs = p.toString();
-  return qs ? `${basePath}?${qs}` : basePath;
-}
-
-function SwatchDot({ family }: { family: ColorFamily }) {
+export function SwatchDot({ family }: { family: ColorFamily }) {
   // Mixed draws the shared conic gradient (there is no single hex for it).
   const hex = COLOR_FAMILY_SWATCHES[family];
   return (
@@ -104,42 +27,10 @@ function SwatchDot({ family }: { family: ColorFamily }) {
   );
 }
 
-type Option = { value: string | null; label: string; hue?: ColorFamily };
-
-const OPTIONS: Record<BrowseFilterGroup, { legend: string; options: Option[] }> = {
-  season: {
-    legend: "Season",
-    options: [
-      { value: null, label: "All" },
-      ...(Object.keys(SEASON_PARAMS) as SeasonParam[]).map((k) => ({ value: k, label: SEASON_LABELS[SEASON_PARAMS[k]] })),
-    ],
-  },
-  method: {
-    legend: "Sowing method",
-    options: [
-      { value: null, label: "All" },
-      ...(Object.keys(METHOD_PARAMS) as MethodParam[]).map((k) => ({ value: k, label: SOWING_METHOD_LABELS[METHOD_PARAMS[k]] })),
-    ],
-  },
-  lifeCycle: {
-    legend: "Life cycle",
-    options: [{ value: null, label: "All" }, ...LIFE_CYCLE_PARAMS.map((k) => ({ value: k, label: LIFE_CYCLE_LABELS[k] }))],
-  },
-  hue: {
-    legend: "Hue",
-    options: [{ value: null, label: "All" }, ...COLOR_FAMILIES.map((f) => ({ value: f, label: COLOR_FAMILY_LABELS[f], hue: f }))],
-  },
-  // An attribute of the variety's sellers, not of the variety — its own group, last (ux-spec §3.1).
-  // Plain text chips: the mark is NOT inside the filter chip (RULING carry-over); the legend line
-  // under this strip is where the badge appears beside the filter.
-  smallFarm: {
-    legend: "Sellers",
-    options: [
-      { value: null, label: "All" },
-      { value: "true", label: SMALL_FARM_CHIP_LABEL },
-    ],
-  },
-};
+/** The per-option count inside a chip — shared with the hydrated buttons so the two can never drift. */
+export function ChipCount({ counts, group, value }: { counts: BrowseCounts; group: BrowseFilterGroup; value: string | null }) {
+  return <span className="text-muted tabular-nums">({countFor(counts, group, value)})</span>;
+}
 
 /**
  * Browse filters: one fieldset per group — Season, Sowing method and, on variety lists, Life
@@ -150,27 +41,36 @@ const OPTIONS: Record<BrowseFilterGroup, { legend: string; options: Option[] }> 
  * component) — no wrapping anywhere. Rows swipe sideways on narrow screens, with left/right edge
  * fades showing which side has more chips; on fine-pointer (mouse/trackpad) devices, chevron
  * buttons also scroll the row.
+ *
+ * Hue mode (Tranche 3.1a, PB-2): "multi" on /variety — independent toggles, "All" clearing the
+ * set; "single" everywhere else, today's behavior exactly. Counts: when provided (/variety
+ * only), every chip carries its per-option count in parentheses — a 0-count option renders its
+ * 0 and stays operable.
  */
 export function BrowseFilters({
   basePath,
   state,
   groups,
   params = {},
+  hueMode = "single",
+  counts = null,
 }: {
   basePath: string;
   state: BrowseFilterState;
   groups: BrowseFilterGroup[];
   params?: Record<string, string>;
+  hueMode?: HueMode;
+  counts?: BrowseCounts | null;
 }) {
   return (
     <nav aria-label="Filters" className="mt-4 flex flex-col gap-3">
       {groups.map((g) => {
-        const items = OPTIONS[g].options.map((o) => {
-          const active = o.value === groupValue(state, g);
+        const items = BROWSE_OPTIONS[g].options.map((o) => {
+          const active = isOptionActive(state, g, o.value, hueMode);
           return (
             <li key={o.value ?? "all"} className="flex-none">
               <Link
-                href={chipHref(basePath, state, g, o.value, params)}
+                href={chipHref(basePath, state, g, o.value, params, hueMode)}
                 scroll={false}
                 className="chip-filter"
                 aria-current={active ? "true" : undefined}
@@ -178,14 +78,20 @@ export function BrowseFilters({
               >
                 {o.hue ? <SwatchDot family={o.hue} /> : null}
                 {o.label}
+                {counts ? (
+                  <>
+                    {" "}
+                    <ChipCount counts={counts} group={g} value={o.value} />
+                  </>
+                ) : null}
               </Link>
             </li>
           );
         });
         return (
           <fieldset key={g} className="min-w-0">
-            <legend className="eyebrow mb-1">{OPTIONS[g].legend}</legend>
-            <FilterStrip legend={OPTIONS[g].legend}>{items}</FilterStrip>
+            <legend className="eyebrow mb-1">{BROWSE_OPTIONS[g].legend}</legend>
+            <FilterStrip legend={BROWSE_OPTIONS[g].legend}>{items}</FilterStrip>
             {/* The page's one legend line (ux-spec §5.1): directly under the Sellers strip. */}
             {g === "smallFarm" ? <SmallFarmLegend className="mt-1" /> : null}
           </fieldset>

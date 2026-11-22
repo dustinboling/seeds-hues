@@ -31,7 +31,16 @@ import { formatFriendlyDate } from "@/lib/format";
 import { foldText } from "@/lib/names";
 import { zeroSellerSentence } from "@/lib/zero-seller";
 import { stateByCode } from "@/lib/data/states";
+import { totalPages } from "@/lib/paging";
 import {
+  browseCountQueries,
+  varietyFiltersFromBrowse,
+  type BrowseCountQuery,
+  type BrowseFilterState,
+} from "@/lib/browse";
+import {
+  BrowseCountsSchema,
+  BrowseVarietiesPayloadSchema,
   CatalogVersionSchema,
   CategoryDetailSchema,
   CategorySchema,
@@ -48,6 +57,8 @@ import {
   VarietyDetailSchema,
   VarietyListItemSchema,
   VarietySummarySchema,
+  type BrowseCounts,
+  type BrowseVarietiesPayload,
   type CatalogVersion,
   type Category,
   type CategoryDetail,
@@ -350,6 +361,36 @@ interface SearchOptions {
   colorFamily?: string[];
 }
 
+/**
+ * Count-query totals → BrowseCounts. The matrix shape is validated by the schema parse (a
+ * missing or extra option fails loudly); the sellers on-count is looked up strictly — a
+ * missing "true" option is a matrix defect, never a silent 0.
+ */
+function assembleBrowseCounts(queries: BrowseCountQuery[], totals: number[]): BrowseCounts {
+  const byGroup = new Map<string, { all: number; options: Record<string, number> }>();
+  for (const [i, q] of queries.entries()) {
+    const g = byGroup.get(q.group) ?? { all: 0, options: {} };
+    if (q.option === null) g.all = totals[i] ?? 0;
+    else g.options[q.option] = totals[i] ?? 0;
+    byGroup.set(q.group, g);
+  }
+  const g = (name: string) => byGroup.get(name) ?? { all: 0, options: {} };
+  const sellers = g("smallFarm");
+  const on = sellers.options["true"];
+  if (on === undefined) throw new Error("browse counts: small-farm on-count missing from the count matrix");
+  return parse(
+    BrowseCountsSchema,
+    {
+      season: g("season"),
+      method: g("method"),
+      lifeCycle: g("lifeCycle"),
+      hue: g("hue"),
+      smallFarm: { all: sellers.all, on },
+    },
+    "browse counts",
+  );
+}
+
 export function createCatalogService(db: Db) {
   /**
    * Variety summaries without media. Used directly only where list media is never shown: search
@@ -431,6 +472,32 @@ export function createCatalogService(db: Db) {
     async listVarieties(opts: { filters?: VarietyFilters; sort?: VarietySort; page: Page }): Promise<Paged<VarietyListItem>> {
       const { items, total } = await summaries(opts.filters ?? {}, opts.sort ?? "name", opts.page);
       return { items, total };
+    },
+
+    /**
+     * The /variety browse payload (Tranche 3.1a): the page of results plus the per-option
+     * counts describing them, from the same query behind the results. The server page and
+     * GET /api/browse/varieties share this — first paint and every in-place update consume
+     * the identical contract. Resting order is Name A–Z (PB-1: the sort control is Item 3.4).
+     */
+    async browseVarieties(opts: { filters: BrowseFilterState; page: Page }): Promise<BrowseVarietiesPayload> {
+      const vf = varietyFiltersFromBrowse(opts.filters);
+      const queries = browseCountQueries(opts.filters);
+      const [{ items, total }, totals] = await Promise.all([
+        summaries(vf, "name", opts.page),
+        Promise.all(queries.map((q) => repo.countVarietyRows(db, q.filters))),
+      ]);
+      return parse(
+        BrowseVarietiesPayloadSchema,
+        {
+          items,
+          total,
+          page: Math.floor(opts.page.offset / opts.page.limit) + 1,
+          pages: totalPages(total, opts.page.limit),
+          counts: assembleBrowseCounts(queries, totals),
+        },
+        "browse varieties payload",
+      );
     },
 
     async getVariety(slug: string): Promise<VarietyDetail | null> {

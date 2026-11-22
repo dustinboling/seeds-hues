@@ -54,13 +54,13 @@ export function FilterStrip({ legend, children }: { legend: string; children: Re
   };
 
   const btn =
-    "filter-strip-btn absolute top-1/2 z-10 h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line-strong bg-paper text-ink shadow-strip-button disabled:cursor-default disabled:opacity-40";
+    "filter-strip-btn absolute top-1/2 z-10 h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-line-strong bg-paper text-ink shadow-strip-button disabled:cursor-default disabled:opacity-40";
 
   return (
     <div className="relative">
       <ul
         ref={ref}
-        className="flex flex-nowrap items-center gap-2 overflow-x-auto px-1 py-1 -mx-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex flex-nowrap items-center gap-2 overflow-x-auto px-1.5 py-1.5 -mx-1.5 [scroll-padding-inline:3rem] [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </ul>
