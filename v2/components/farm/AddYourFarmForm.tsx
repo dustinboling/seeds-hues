@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Turnstile } from "@/components/ui/Turnstile";
 import { callApi } from "@/components/account/api";
+import { farmErrorMessage } from "./farm-errors";
 
 /**
  * Add Your Farm (design §9, field list locked 2026-11-16). REQUIRED: farm name, contact name +
@@ -54,7 +55,7 @@ export function AddYourFarmForm(props: {
       setDone(true);
       return;
     }
-    setError(r.message);
+    setError(farmErrorMessage(r.status, r.code, r.message));
     setReset((n) => n + 1);
   }
 
