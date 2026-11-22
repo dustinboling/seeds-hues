@@ -18,6 +18,8 @@ Sources: `SPEC.md` (Nadia), `FIELD-STATES-DESIGN.md` (Mina), `ADA-RULINGS-3-3.md
 
 **What it gates:** Item 3.4's §5.2 sort build only. The rest of Tranche 3 proceeds either way.
 
+**RULING — 2026-11-22 (Dustin, via Hue): (b) "Keep Name A–Z as the default."** Ruled against Nadia's recommendation. §5.2 builds on the §5.2.5 fallback: the sort control ships with all three options and the full `sort` parameter vocabulary; only the absent-parameter meaning and the resting count-line phrase differ — the resting order stays Name A–Z.
+
 ---
 
 ## 2. PB-2 — Hue becomes a multi-select filter (Nadia)
@@ -32,6 +34,8 @@ Sources: `SPEC.md` (Nadia), `FIELD-STATES-DESIGN.md` (Mina), `ADA-RULINGS-3-3.md
 
 **What it gates:** Item 3.1a — the in-place filter core on `/variety`, the tranche's first and riskiest build. It does not start until PB-2 is ruled.
 
+**RULING — 2026-11-22 (Dustin, via Hue): (a) "Multi-select Hue"** — Nadia's recommendation adopted. Hue ships as independent toggles: any set of hues, OR within Hue, AND across the other groups; one remover chip per selected hue; per-option counts per SPEC §2.4.5 ("results if this hue were toggled"). Item 3.1a is un-gated and builds in programme order.
+
 ---
 
 ## 3. §11.1 — Sign-in for accounts created without a phone (Nadia)
@@ -45,6 +49,8 @@ Sources: `SPEC.md` (Nadia), `FIELD-STATES-DESIGN.md` (Mina), `ADA-RULINGS-3-3.md
 **Team recommendation: (a).** Such an account must never be a dead end; the code path already exists and is already trusted elsewhere in the product. It's carried to Dustin explicitly because it amends the credential model he approved in the Phase 3 account spec — the same class of decision as the waitlist flip itself, which he ruled on personally.
 
 **What it gates:** Nothing in the build sequence — open by design. The waitlist build is fully specified without it; the ruling decides whether the `/account` accommodation is added to 3.2's scope.
+
+**RULING — 2026-11-22 (Dustin, via Hue): (a) "Offer 'Email me a code instead'"** — the team's recommendation adopted. The `/account` email-code accommodation for phone-less accounts is IN Item 3.2's scope.
 
 ---
 
