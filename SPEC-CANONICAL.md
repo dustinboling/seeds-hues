@@ -9,6 +9,8 @@
 
 > **RENAME (2026-11-16):** the product was renamed from "Seed Finder" to **"Seed Directory"** by Dustin. All user-visible strings use the new name; the domain (seeds.hues.flowers), URL paths, and internal identifiers are unchanged. The spec text below is the verbatim adopted document and keeps the original name where it appears.
 
+> **ZERO-SELLER INDEXATION AMENDMENT (2026-11-22):** Dustin ruled that **zero-seller variety pages stay indexable** — every published variety page is indexable and in the sitemap, including pages with no seller yet (262 of 812 at ruling time, per Bea Discovery's audit) — subject to a **zero-seller substance standard**, with sitemaps **segmented by page type and the zero-seller cohort in its own file** so its indexation is measurable separately, and a **pre-committed fallback**: if the cohort's not-indexed share runs materially worse than the listed cohort's in the first Search Console reads after the Dec 16, 2026 launch, the cohort (or its below-standard pages) returns to `noindex`. This **supersedes decision 8** and the `noindex` clause of the §5 index rule; see decision 27. Source: Bea Discovery's full SEO/GEO audit, 2026-11-22 (`~/workspace/seeds-hues/seo-audit-2026-11-22/AUDIT.md`, finding M-1).
+
 > **OPEN DIRECTORY AMENDMENT (2026-11-19):** Dustin ruled the directory **open**: it lists a variety wherever the seed is available, from **any US seller, whatever its size** — the small-farms-only rule is **superseded** (principle 3, the seller-qualification paragraph, open question 1's default, and the size scope of decisions 5 and 25; see decision 26). Small family farms carry a **"Small farm" badge** — Hue's judgment call, recorded per seller on `sellers.is_small_farm`, with no formal test — and a **"Small farms" filter** narrows browse and variety listings to badged sellers. **US sellers only still holds.** The "Add Your Farm" page and route keep their name. Passages below that stated the old rule have been amended in place.
 
 ---
@@ -105,7 +107,7 @@ Traffic targets are left blank on purpose: a new subdomain has no baseline, so s
 
 | Risk | Why it matters | Mitigation |
 | --- | --- | --- |
-| Thin pages on a new subdomain | Near-empty pages can hold back indexing of the whole site | Zero-seller pages stay noindex; seller catalogs first; real growing notes on top crops |
+| Thin pages on a new subdomain | Near-empty pages can hold back indexing of the whole site | Zero-seller pages stay indexable under the substance standard, segmented in their own sitemap file so the cohort is measurable, with a pre-committed noindex fallback (decision 27); seller catalogs first; real growing notes on top crops |
 | A farm objects to being listed | These are the farms Phase 3 depends on | Email before launch with a preview, one-form removal, UTM tags so they see the traffic |
 | A listing is matched to the wrong variety | One bad match costs more trust than ten missing ones | Evidence-quote check, review queue, weekly audit, report link on every row |
 | Hues uses the data to compete with listed farms | It is the Amazon private-label problem at farm scale | Disclose it, use variety-level demand only, give each claimed seller their own stats |
@@ -669,9 +671,9 @@ Move before Phase 3 work starts, not when D1 fills. Orders and inventory need co
 ### SEO
 
 - **Server-render every public page** with its full content in the HTML.
-- **Index rule:** a variety page is indexable when it has at least one published listing, or 150 or more words of your own growing notes. Otherwise it sends `noindex, follow` and stays out of the sitemap.
+- **Index rule (amended 2026-11-22, decision 27):** every published variety page is indexable and in the sitemap, including pages with no seller yet, subject to the **zero-seller substance standard**: a zero-seller page carries a real description and complete facts from the catalog's own fields (color, height, days to bloom, pollination), and pages below standard are enriched rather than noindexed — unless the pre-committed fallback triggers (the cohort's not-indexed share running materially worse than the listed cohort's in the first Search Console reads after the Dec 16, 2026 launch returns the cohort, or its below-standard pages, to `noindex, follow` and out of the sitemap).
 - **Canonical URL on every page.** Lowercase, no trailing slash, 301 on redirects, 410 on removed sellers.
-- **Sitemaps:** an index plus one file per type, indexable URLs only, `lastmod` from `updated_at`.
+- **Sitemaps:** an index plus one file per type, with the zero-seller variety cohort in its own file so its indexation is measurable separately, indexable URLs only, `lastmod` from `updated_at`.
 - **Titles written from facts,** aimed at "where to buy" intent: variety, crop, and the number of farms listing it.
 - **Internal links** run crop to series to variety to seller and back. "Also sold as" names appear as visible text.
 - **Freshness in text:** every listing row prints "Last checked" with its date.
@@ -751,7 +753,7 @@ Outreach on Dec 2 gives every farm two weeks to correct or opt out before launch
 - [ ] Invariant queries return zero rows
 - [ ] No open removal request, and every opted-out domain is in `blocked_domains`
 - [ ] Review queue under 50 groups
-- [ ] Ten zero-seller pages spot-checked: each sends noindex and is absent from the sitemap
+- [ ] Ten zero-seller pages spot-checked: each is indexable, present in the zero-seller sitemap file, and meets the substance standard (decision 27)
 - [ ] robots.txt, the sitemap index and llms.txt resolve on production
 - [ ] AI crawler policies on the hues.flowers zone are set as intended
 - [ ] /go/ links for five sellers log a click and land on the farm's page with UTM tags
@@ -771,14 +773,14 @@ Outreach on Dec 2 gives every farm two weeks to correct or opt out before launch
 2. **Series hub pages.** Series becomes a filter on the crop page.
 3. **Markdown alternates and the OpenAPI file.** Keep llms.txt.
 4. **Offline catalog search.** Keep the manifest, install and cached shell.
-5. **Reference enumeration for crops no approved seller stocks.** Those pages would be noindex anyway.
+5. **Reference enumeration for crops no approved seller stocks.** Those pages carry no seller path yet (they stay indexable under decision 27, but they are the last to earn their substance).
 6. **Photos.** Launch text-only and add your own after.
 7. **Demand dashboard screens.** Events are still logged; query them by hand.
 8. **Self-serve claim form.** A mail link, handled by hand.
 9. **Full-text search.** Prefix match on names.
 10. **Crop count.** From 30 to 15, then to 10.
 
-Never cut: source and date on every listing, the seller allowlist, robots.txt compliance, the removal flow, the noindex rule, click logging, the evidence check, and "Not yet rated".
+Never cut: source and date on every listing, the seller allowlist, robots.txt compliance, the removal flow, the indexation rule (decision 27), click logging, the evidence check, and "Not yet rated".
 
 ## 7. Phased roadmap
 
@@ -847,7 +849,7 @@ Two questions block week 1; the rest have defaults that hold until you say other
 
 ### Decisions log
 
-All decided Nov 16, 2026, except decision 26 (2026-11-19).
+All decided Nov 16, 2026, except decision 26 (2026-11-19) and decision 27 (2026-11-22).
 
 | # | Decision | Basis |
 | --- | --- | --- |
@@ -858,7 +860,7 @@ All decided Nov 16, 2026, except decision 26 (2026-11-19).
 | 5 | Every seller is approved by hand; agents only propose *(seller size is no longer a criterion — see decision 26)* | Your answer |
 | 6 | Farms are listed without asking, emailed before launch, and removed within 48 hours on request | Your answer |
 | 7 | US sellers only at launch | Your answer |
-| 8 | Zero-seller pages are noindex and out of the sitemap | Your answer |
+| 8 | Zero-seller pages are noindex and out of the sitemap *(superseded by decision 27, 2026-11-22)* | Your answer |
 | 9 | Ratings ship as schema and "Not yet rated"; no accounts or submissions in Phase 1 | Your answer |
 | 10 | Day 1 is Nov 16, launch is Dec 16, at 50 hours a week | Your answer |
 | 11 | Agent spend capped at $150 a month; 30 minutes a day of review | Your answer |
@@ -877,6 +879,7 @@ All decided Nov 16, 2026, except decision 26 (2026-11-19).
 | 24 | A seller does not have to grow the seed it sells; bought-in seed is listed the same way | Your message |
 | 25 | The 20 research candidates are dropped; sellers come from the six exemplars plus agent discovery, each approved by hand *(the hand-approval framing is superseded for seller size by decision 26)* | Your message |
 | 26 | **Open directory (2026-11-19):** the directory lists any US seller regardless of size — the small-farms-only rule is superseded. Small family farms carry a "Small farm" badge (Hue's judgment call, no formal test; `sellers.is_small_farm`, set only through the admin path) and a "Small farms" filter narrows browse and variety listings to badged sellers. US-only (decision 7) holds. "Add Your Farm" keeps its name. | Dustin's ruling, 2026-11-19 |
+| 27 | **Zero-seller pages stay indexable (2026-11-22):** every published variety page is indexable and in the sitemap, including the 262 with no seller yet (of 812, per Bea Discovery's 2026-11-22 audit), subject to a zero-seller substance standard (a real description and complete facts from the catalog's own fields). Sitemaps are segmented by page type with the zero-seller cohort in its own file, so the cohort's indexation is measurable separately. **Pre-committed fallback:** if the cohort's not-indexed share runs materially worse than the listed cohort's in the first Search Console reads after the Dec 16, 2026 launch, the cohort (or its below-standard pages) returns to noindex. Supersedes decision 8 and the noindex clause of the §5 index rule. | Dustin's ruling, voice call 2026-11-22 — "Yeah, we need to keep those pages indexable" — adopting Bea Discovery's audit recommendation (a) with (c) pre-committed |
 
 Decisions 17 to 23 are mine. Strike any you disagree with and I will rework the sections they touch.
 
