@@ -9,16 +9,12 @@ import { RANGE_LABELS, SIGNAL_LABELS, statisticsHref, type StatRange, type StatS
 const RANGES: StatRange[] = ["7d", "30d", "12w"];
 const SIGNALS: StatSignal[] = ["views", "clicks", "waitlist", "searches"];
 
-function chipClass(active: boolean): string {
-  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
-}
-
 export function TimeRangeControl({ range, signal, show, words }: { range: StatRange; signal: StatSignal; show: number; words: string }) {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <div role="group" aria-label="Time range" className="flex flex-wrap gap-2">
         {RANGES.map((r) => (
-          <a key={r} href={statisticsHref({ range: r, signal, show })} aria-current={range === r ? "true" : undefined} className={chipClass(range === r)}>
+          <a key={r} href={statisticsHref({ range: r, signal, show })} aria-current={range === r ? "true" : undefined} className="chip-filter flex items-center">
             {RANGE_LABELS[r]}
           </a>
         ))}
@@ -32,7 +28,7 @@ export function SignalControl({ range, signal, show }: { range: StatRange; signa
   return (
     <div role="group" aria-label="Popularity signal" className="flex flex-wrap gap-2">
       {SIGNALS.map((s) => (
-        <a key={s} href={statisticsHref({ range, signal: s, show })} aria-current={signal === s ? "true" : undefined} className={chipClass(signal === s)}>
+        <a key={s} href={statisticsHref({ range, signal: s, show })} aria-current={signal === s ? "true" : undefined} className="chip-filter flex items-center">
           {SIGNAL_LABELS[s]}
         </a>
       ))}

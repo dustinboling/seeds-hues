@@ -172,7 +172,7 @@ export function BrowseFilters({
               <Link
                 href={chipHref(basePath, state, g, o.value, params)}
                 scroll={false}
-                className={`chip tap ${active ? "font-semibold" : ""}`}
+                className="chip-filter"
                 aria-current={active ? "true" : undefined}
                 data-filter={g}
               >

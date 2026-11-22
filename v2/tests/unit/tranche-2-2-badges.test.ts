@@ -465,9 +465,9 @@ describe("2.2 — Listing status line (R-2; STATUS_TONE derived from source)", (
 });
 
 describe("2.2 — scope guards (item 2.2 surfaces only)", () => {
-  it("RoleChip is untouched: still a chip, no badge class (its migration is 2.3)", () => {
+  it("RoleChip migrated in 2.3: chip-tag with its tone, still no badge class", () => {
     const role = readSource("components/admin/RoleChip.tsx");
-    expect(role).toContain('"chip');
+    expect(role).toContain("chip-tag");
     expect(role).not.toContain("badge-");
   });
 
@@ -475,10 +475,10 @@ describe("2.2 — scope guards (item 2.2 surfaces only)", () => {
     expect(readSource("components/admin/AdminShell.tsx")).not.toContain("badge-");
   });
 
-  it("no chip split exists yet: bare .chip stands, filter/tag classes do not", () => {
-    expect(css).toContain(".chip {");
-    for (const future of ["chip-filter", "chip-tag", "chip-removable"]) {
-      expect(css, future).not.toContain(future);
+  it("the 2.3 chip split stands: bare .chip retired, filter/tag classes present", () => {
+    expect(css).not.toContain(".chip {");
+    for (const present of ["chip-filter", "chip-tag", "chip-removable"]) {
+      expect(css, present).toContain(present);
     }
   });
 });

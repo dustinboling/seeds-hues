@@ -127,7 +127,7 @@ function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; col
     { name: common, href: `/crop/${c.slug}` },
   ];
   const chip = (label: string, next: CropFilters, active: boolean) => (
-    <Link href={href(c.slug, next)} scroll={false} className={`chip tap ${active ? "border-leaf bg-leaf-50 font-semibold" : ""}`} aria-current={active ? "page" : undefined}>
+    <Link href={href(c.slug, next)} scroll={false} className="chip-filter" aria-current={active ? "true" : undefined}>
       {label}
     </Link>
   );
