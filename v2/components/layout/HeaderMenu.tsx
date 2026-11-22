@@ -57,7 +57,7 @@ export function HeaderMenu() {
   }, [open]);
 
   return (
-    <div ref={wrapperRef} className="relative flex-none">
+    <div ref={wrapperRef} className="relative flex-none lg:hidden">
       <button
         ref={buttonRef}
         type="button"
