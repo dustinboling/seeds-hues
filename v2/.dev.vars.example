@@ -17,3 +17,7 @@ REVALIDATE_TOKEN=change-me-local-only
 # TWILIO_ACCOUNT_SID=
 # TWILIO_AUTH_TOKEN=
 # ADMIN_NOTIFY_EMAIL=
+# Web Analytics read token for the admin Statistics Visitors card (Account → Account
+# Analytics → Read; production: `wrangler secret put CF_ANALYTICS_API_TOKEN`). Unset →
+# the card keeps its designed no-data state.
+# CF_ANALYTICS_API_TOKEN=

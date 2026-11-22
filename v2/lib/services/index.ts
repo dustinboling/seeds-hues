@@ -41,6 +41,12 @@ export interface ServiceDeps {
   unsubscribeKey?: string | null;
   /** Where Add Your Farm admin notices go (ADMIN_NOTIFY_EMAIL); null = not sent. */
   adminNotifyEmail?: string | null;
+  /** CF_ANALYTICS_API_TOKEN — the Visitors card goes live only when this is set. */
+  analyticsToken?: string | null;
+  /** Web Analytics GraphQL fetch override (tests). */
+  analyticsFetch?: typeof fetch;
+  /** Web Analytics per-request timeout override (tests). */
+  analyticsTimeoutMs?: number;
   now?: () => Date;
   /** Test hook: plaintext verification codes at issue time. */
   onCode?: (channel: CodeChannel, userId: number, code: string) => void;
@@ -70,7 +76,7 @@ export function createServices(db: Db, deps: ServiceDeps = {}) {
     adminListings: createAdminListingService(db, { now }),
     adminVarieties: createAdminVarietyService(db, { now }),
     adminAccounts: createAdminAccountService(db, { now }),
-    adminStatistics: createAdminStatisticsService(db, { now }),
+    adminStatistics: createAdminStatisticsService(db, { now, analyticsToken: deps.analyticsToken ?? null, analyticsFetch: deps.analyticsFetch, analyticsTimeoutMs: deps.analyticsTimeoutMs }),
     farms: createFarmService(db, { turnstile, mailer, siteUrl, adminNotifyEmail: deps.adminNotifyEmail ?? null, now }),
     notifications: createNotificationService(db, { mailer, sms, siteUrl, unsubscribeKey: deps.unsubscribeKey ?? null, now }),
     /** Idempotency-Key replay store for ingest/admin POSTs. */

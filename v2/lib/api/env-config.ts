@@ -28,6 +28,8 @@ export interface RuntimeEnv {
   /** UNSUBSCRIBE_SIGNING_KEY (a dev constant under `next dev` only). */
   unsubscribeKey?: string | null;
   adminNotifyEmail?: string | null;
+  /** CF_ANALYTICS_API_TOKEN — the Visitors card goes live only when this is set. */
+  analyticsToken?: string | null;
 }
 
 type Env = CloudflareEnv & {
@@ -42,6 +44,7 @@ type Env = CloudflareEnv & {
   TWILIO_AUTH_TOKEN?: string;
   UNSUBSCRIBE_SIGNING_KEY?: string;
   ADMIN_NOTIFY_EMAIL?: string;
+  CF_ANALYTICS_API_TOKEN?: string;
 };
 
 /** Build the RuntimeEnv from raw Worker bindings (request context or the scheduled handler). */
@@ -74,5 +77,6 @@ export function runtimeEnvFrom(env: unknown): RuntimeEnv {
     },
     unsubscribeKey: e.UNSUBSCRIBE_SIGNING_KEY?.trim() || (dev ? DEV_UNSUBSCRIBE_KEY : null),
     adminNotifyEmail: e.ADMIN_NOTIFY_EMAIL?.trim() || null,
+    analyticsToken: e.CF_ANALYTICS_API_TOKEN?.trim() || null,
   };
 }
