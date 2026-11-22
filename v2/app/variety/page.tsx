@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
+import { Suspense } from "react";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
 import { Pagination } from "@/components/ui/Pagination";
 import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
@@ -26,8 +27,9 @@ import {
 import { legacySlug } from "@/lib/legacy";
 import { plural } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/config";
-import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
+import { METHOD_PARAMS, SEASON_PARAMS, type VarietyListItem } from "@/lib/validators";
 import { EMPTY_BROWSE, SMALL_FARM_EMPTY_BROWSE, parseSmallFarmParam } from "@/lib/small-farm";
+import { VarietiesSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,10 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function VarietiesPage({ searchParams }: Props) {
+  // Soft-404 fix: every notFound() below (bad ?page=, page past the end) resolves BEFORE
+  // anything streams (this segment has no loading.tsx), so out-of-range pages answer a
+  // true 404. The skeleton lives on as the inner Suspense fallback — the page's single
+  // loading announcement.
   const sp = await searchParams;
   // R10: v1 query URLs → 308 to the clean URL.
   const legacy = legacySlug(sp.v);
@@ -67,9 +73,6 @@ export default async function VarietiesPage({ searchParams }: Props) {
 
   const page = parsePage(sp.page);
   const filters = readFilters(sp);
-  const active = activeFilterLabels(filters);
-  // Every filter group joins navKey, so ResultsScrollClamp fires on each list navigation (ux-spec §3.4.2).
-  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue, filters.smallFarm].join("|");
   const { catalog } = await getServices();
   const { items, total } = await catalog.listVarieties({
     filters: {
@@ -82,6 +85,27 @@ export default async function VarietiesPage({ searchParams }: Props) {
     page: pageWindow(page),
   });
   assertPageInRange(page, total);
+  return (
+    <Suspense fallback={<VarietiesSkeleton />}>
+      <VarietiesContent page={page} filters={filters} items={items} total={total} />
+    </Suspense>
+  );
+}
+
+function VarietiesContent({
+  page,
+  filters,
+  items,
+  total,
+}: {
+  page: number;
+  filters: BrowseFilterState;
+  items: VarietyListItem[];
+  total: number;
+}) {
+  const active = activeFilterLabels(filters);
+  // Every filter group joins navKey, so ResultsScrollClamp fires on each list navigation (ux-spec §3.4.2).
+  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue, filters.smallFarm].join("|");
   const pages = totalPages(total);
   const crumbs = [
     { name: "Home", href: "/" },

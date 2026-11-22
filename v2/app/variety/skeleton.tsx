@@ -7,7 +7,16 @@ import {
   VarietyGridSkeleton,
 } from "@/components/ui/Skeleton";
 
-export default function Loading() {
+/**
+ * The variety index's loading skeleton — formerly this segment's loading.tsx, moved
+ * verbatim (same components, classes, "Loading varieties…" label). It lives here as the
+ * inner Suspense fallback of app/variety/page.tsx because a segment loading.tsx streams
+ * its shell with HTTP 200 before the page's assertPageInRange guard can resolve, answering
+ * out-of-range pages with a 200 shell instead of a true 404 (the soft-404 defect PR #11
+ * fixed on the seller/crop/state routes). The detail page below carries its own boundary
+ * (app/variety/[slug]/loading.tsx), unaffected by this move.
+ */
+export function VarietiesSkeleton() {
   return (
     <LoadingShell label="Loading varieties…">
       {/* BreadcrumbSkeleton, never the real Breadcrumbs — its links would be
