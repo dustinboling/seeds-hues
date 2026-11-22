@@ -28,3 +28,6 @@ Traps the spec calls out — treat as binding:
 - `npm run verify` green on your final branch.
 - PR body carries: the SPEC §6 grep counts with their expected zeros; the computed-equality evidence; the list of updated test pins (if any); explicit confirmation that the only rendered changes are R-1–R-5.
 - Scope discipline: Tranche 2 surfaces only. No Tranche 3 flow changes (no filter behavior, no strip rebuild), no data/seed changes, no prices anywhere, US spelling in all copy and comments.
+
+## Re-dispatch note (2026-11-21, coordinator)
+Run 44983535271 collapsed mid-build: its only tree change was a scratch file, `v2/t2-fixture.tmp.tsx`, which then failed the gate's lint — no part of the change set landed. On this run: do not leave scratch or fixture files anywhere in the tree; build any temporary fixture outside the repo or delete it before finishing. The final tree must contain only the intended Tranche 2 change set, and `npm run verify` must pass on exactly that tree.
