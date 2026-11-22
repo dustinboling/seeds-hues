@@ -13,7 +13,7 @@ const T = (opts: string, key: string) => `${CDN}/cdn-cgi/image/${opts}/${key}`;
 
 describe("lib/images originalKey", () => {
   it("maps through the manifest when the extension differs (variety .webp → .png master)", () => {
-    expect(originalKey("/artwork/amaranth-mira.webp")).toBe("artwork/amaranth-mira.png");
+    expect(originalKey("/artwork/amaranth-mira.webp")).toBe("artwork/amaranth-mira-v2.png");
     expect(originalKey("/artwork/states/oregon.webp")).toBe("artwork/states/oregon.png");
     expect(originalKey("/theme/state-scenes/oregon.webp")).toBe("theme/state-scenes/oregon.png");
     expect(originalKey("/ornaments/motif-zinnia.webp")).toBe("ornaments/motif-zinnia.png");
@@ -63,7 +63,7 @@ describe("lib/images imageUrl", () => {
     expect(IMAGE_ORIGIN).toBe(CDN);
     expect(DEFAULT_IMAGE_QUALITY).toBe(80);
     expect(imageUrl("/artwork/amaranth-mira.webp", { width: 480 })).toBe(
-      T("width=480,quality=80,format=auto,fit=scale-down", "artwork/amaranth-mira.png"),
+      T("width=480,quality=80,format=auto,fit=scale-down", "artwork/amaranth-mira-v2.png"),
     );
     expect(imageUrl("/theme/hero-cutting-garden-960.webp", { width: 960 })).toBe(
       T("width=960,quality=80,format=auto,fit=scale-down", "theme/hero-cutting-garden-1600.webp"),
@@ -105,8 +105,8 @@ describe("lib/images imageUrl", () => {
 describe("lib/images imageSrcSet", () => {
   it("lists one transformation of the same original per width", () => {
     expect(imageSrcSet("/artwork/amaranth-mira.webp", [480, 768])).toBe(
-      `${T("width=480,quality=80,format=auto,fit=scale-down", "artwork/amaranth-mira.png")} 480w, ` +
-        `${T("width=768,quality=80,format=auto,fit=scale-down", "artwork/amaranth-mira.png")} 768w`,
+      `${T("width=480,quality=80,format=auto,fit=scale-down", "artwork/amaranth-mira-v2.png")} 480w, ` +
+        `${T("width=768,quality=80,format=auto,fit=scale-down", "artwork/amaranth-mira-v2.png")} 768w`,
     );
   });
 

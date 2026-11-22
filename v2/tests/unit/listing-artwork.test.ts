@@ -77,7 +77,7 @@ describe("ListingArtwork — four tiers", () => {
     const h = art({ media: [media("/artwork/amaranth-mira.webp")], cropMedia: [media("/artwork/crops/zinnia.webp")] });
     expect(firstDivClass(h)).toBe(PLATE_FRAME);
     const tag = img(h);
-    expect(attr(tag, "src")).toBe(T(480, "artwork/amaranth-mira.png"));
+    expect(attr(tag, "src")).toBe(T(480, "artwork/amaranth-mira-v2.png"));
     expect(attr(tag, "alt")).toBe("Blue Vein — illustration");
     expect(attr(tag, "width")).toBe("480");
     expect(attr(tag, "height")).toBe("960");

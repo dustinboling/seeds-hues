@@ -884,7 +884,7 @@ async function main() {
     };
     const out: string[] = [];
     // A shipped WebP original, a .png master looked up from a .webp stored path, and the 1:2 standard.
-    for (const [width, key] of [[480, MEDIA_KEY], [768, MEDIA_KEY], [480, "artwork/amaranth-mira.png"]] as const) {
+    for (const [width, key] of [[480, MEDIA_KEY], [768, MEDIA_KEY], [480, "artwork/amaranth-mira-v2.png"]] as const) {
       const { type, bytes } = await probe(cdn(width, key));
       assert(type.startsWith("image/webp"), `${key}@${width}: content-type ${type}`);
       const size = webpSize(bytes);
@@ -892,7 +892,7 @@ async function main() {
       out.push(`${key}@${width}=${size.w}×${size.h}`);
     }
     // Never upscaled: asking for more than the 1120-wide original returns the original width.
-    const big = webpSize((await probe(cdn(2000, "artwork/amaranth-mira.png"))).bytes);
+    const big = webpSize((await probe(cdn(2000, "artwork/amaranth-mira-v2.png"))).bytes);
     assert(big && big.w === 1120 && big.h === 2240, `upscaled: ${big ? `${big.w}×${big.h}` : "not a WebP"}`);
     // A non-1:2 crop original keeps its own aspect (no crop / pad by the transformation).
     const crop = webpSize((await probe(PLANT_HERO_SRC)).bytes);

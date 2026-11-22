@@ -8,7 +8,7 @@
  * The manifest (~/workspace/seeds-hues/image-migration/manifest.json, built by Hue's
  * build_manifest.py) lists every path the app serves (`served`, e.g. /artwork/amaranth-mira.webp)
  * with the R2 key of its full-quality original in bucket seeds-hues-images (`key`, e.g.
- * artwork/amaranth-mira.png). Extensions differ for most variety artwork, so rendering must look
+ * artwork/amaranth-mira-v2.png). Extensions differ for most variety artwork, so rendering must look
  * the key up rather than derive it. The output is deterministic (sorted by served path), so a
  * re-run on an unchanged manifest is a no-op diff.
  *

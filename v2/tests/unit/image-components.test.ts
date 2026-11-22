@@ -22,8 +22,8 @@ const img = (h: string) => /<img\b[^>]*>/.exec(h)?.[0] ?? "";
 describe("variety card image", () => {
   it("variety artwork: 480 transformation src + 480w/768w srcset of the mapped .png original", () => {
     const tag = img(renderToStaticMarkup(createElement(VarietyCardImage, { media: [media("/artwork/amaranth-mira.webp")], varietyName: "Mira" })));
-    expect(attr(tag, "src")).toBe(T(480, "artwork/amaranth-mira.png"));
-    expect(attr(tag, "srcSet") ?? attr(tag, "srcset")).toBe(`${T(480, "artwork/amaranth-mira.png")} 480w, ${T(768, "artwork/amaranth-mira.png")} 768w`);
+    expect(attr(tag, "src")).toBe(T(480, "artwork/amaranth-mira-v2.png"));
+    expect(attr(tag, "srcSet") ?? attr(tag, "srcset")).toBe(`${T(480, "artwork/amaranth-mira-v2.png")} 480w, ${T(768, "artwork/amaranth-mira-v2.png")} 768w`);
     expect(attr(tag, "width")).toBe("480");
     expect(attr(tag, "height")).toBe("960");
     expect(attr(tag, "alt")).toBe("Mira — illustration");
@@ -40,8 +40,8 @@ describe("variety card image", () => {
 describe("hero image", () => {
   it("variety hero: 1120 src, 768w/1120w srcset, 1120×2240, eager + high priority, whole 1:2 frame", () => {
     const tag = img(renderToStaticMarkup(createElement(VarietyHeroImage, { media: media("/artwork/amaranth-mira.webp"), label: "Mira Amaranth" })));
-    expect(attr(tag, "src")).toBe(T(1120, "artwork/amaranth-mira.png"));
-    expect(attr(tag, "srcSet") ?? attr(tag, "srcset")).toBe(`${T(768, "artwork/amaranth-mira.png")} 768w, ${T(1120, "artwork/amaranth-mira.png")} 1120w`);
+    expect(attr(tag, "src")).toBe(T(1120, "artwork/amaranth-mira-v2.png"));
+    expect(attr(tag, "srcSet") ?? attr(tag, "srcset")).toBe(`${T(768, "artwork/amaranth-mira-v2.png")} 768w, ${T(1120, "artwork/amaranth-mira-v2.png")} 1120w`);
     expect(attr(tag, "width")).toBe("1120");
     expect(attr(tag, "height")).toBe("2240");
     expect(attr(tag, "loading")).toBe("eager");
@@ -97,7 +97,7 @@ describe("theme art", () => {
 describe("OG image for media", () => {
   it("is the 1120 transformation on the image CDN, 1120×2240, with no fixed MIME type", () => {
     const og = mediaOgImage("/artwork/amaranth-mira.webp", "Mira Amaranth");
-    expect(og).toEqual({ url: T(1120, "artwork/amaranth-mira.png"), width: 1120, height: 2240, alt: "Mira Amaranth" });
+    expect(og).toEqual({ url: T(1120, "artwork/amaranth-mira-v2.png"), width: 1120, height: 2240, alt: "Mira Amaranth" });
     const md = pageMetadata({ title: "t", description: "d", path: "/variety/amaranth-mira", og });
     expect(md.openGraph?.images).toEqual([og]);
     expect(md.twitter?.images).toEqual([og.url]);
