@@ -63,7 +63,7 @@ The placeholder exemplifies the two things the in-shop matcher actually matches 
 
 ## 5. Pattern-fixed slots CS-11…CS-24 — checked, not rewritten
 
-Nadia fixed these patterns; my pass checked each against the governing copy rules (US spelling, factual accuracy about what the list is doing, one pattern per job, no implied sales or prices, no source attributions). **Twenty-two of the twenty-four stand exactly as specced. One is flagged with a fix (CS-19); one carries a typesetting note the build must observe (CS-21).**
+Nadia fixed these patterns; my pass checked each against the governing copy rules (US spelling, factual accuracy about what the list is doing, one pattern per job, no implied sales or prices, no source attributions). **Thirteen of the fourteen stand exactly as specced (CS-21 among them, with its typesetting note the build must observe, below); one is flagged with a fix (CS-19).**
 
 | Slot | Pattern (as specced) | Verdict |
 |---|---|---|
