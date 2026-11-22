@@ -1,3 +1,4 @@
+import { formatFriendlyDate } from "@/lib/format";
 import type { ImportedRating } from "@/lib/validators";
 
 const STAR = "M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9Z";
@@ -53,7 +54,7 @@ export function ImportedRatingPanel({ rating }: { rating: ImportedRating }) {
         </span>
       </p>
       <p className="mt-2 text-xs text-muted">
-        Ratings from {rating.source} · fetched {rating.fetchedDate}
+        Ratings from {rating.source} · fetched {formatFriendlyDate(rating.fetchedDate)}
       </p>
     </section>
   );

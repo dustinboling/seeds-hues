@@ -51,6 +51,24 @@ export function formatCheckedDate(lastCheckedAt: string | null, now: Date = new 
   return `${MONTH_SHORT[month - 1]} ${day}`;
 }
 
+/**
+ * Friendly absolute date for reader prose (Tranche 1.4, Batch 0.1): "Nov 20, 2026".
+ * The year-including sibling of formatCheckedDate for contexts where "today" or "Mon D"
+ * would be ambiguous or misleading — answer lines, coverage lines, meta descriptions,
+ * the home Recent feed. Never an ISO string. Returns null for a missing or unparseable
+ * value — callers omit the date rather than print ISO.
+ */
+export function formatFriendlyDate(value: string | null): string | null {
+  if (!value) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  return `${MONTH_SHORT[month - 1]} ${day}, ${year}`;
+}
+
 export function hostOf(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, "");

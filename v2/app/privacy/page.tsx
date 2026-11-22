@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactLine } from "@/components/layout/ContactLine";
+import { formatFriendlyDate } from "@/lib/format";
 import { pageMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = pageMetadata({
@@ -78,7 +79,7 @@ export default function PrivacyPage() {
       <p>
         Questions: <ContactLine subject="Privacy question" />.
       </p>
-      <p className="text-sm text-muted">Last updated 2026-11-17.</p>
+      <p className="text-sm text-muted">Last updated {formatFriendlyDate("2026-11-17")}.</p>
     </article>
   );
 }

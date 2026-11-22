@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL } from "@/lib/config";
 import { shortCommonName } from "@/lib/format";
 import { imageUrl } from "@/lib/images";
+import { ZERO_SELLER_TITLE } from "@/lib/zero-seller";
 import type { SellerDetail, SellerState, VarietyDetail } from "@/lib/validators";
 
 export function clip(text: string, max = 160): string {
@@ -71,7 +72,7 @@ export function pageMetadata(opts: {
   };
 }
 
-const sellerCount = (n: number) => (n === 0 ? "No Seller Listing Yet" : `${n} Seller${n === 1 ? "" : "s"}`);
+const sellerCount = (n: number) => (n === 0 ? ZERO_SELLER_TITLE : `${n} Seller${n === 1 ? "" : "s"}`);
 
 /** "Where to buy" intent, written from facts: variety, crop, and the number of sellers listing it. */
 export function varietyTitle(v: VarietyDetail): string {

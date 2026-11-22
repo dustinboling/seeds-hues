@@ -4,6 +4,8 @@
  * field exists in the Phase 1 data, so it is never mentioned) and the live distinct-seller
  * count. No LLM text, no invented traits.
  */
+import { zeroSellerSentence } from "@/lib/zero-seller";
+
 export interface TemplateFacts {
   varietyName: string;
   commonName: string;
@@ -29,7 +31,7 @@ export function templateDescription(f: TemplateFacts): string {
   if (f.breeder) parts.push(`It was bred by ${f.breeder}.`);
   parts.push(
     f.sellerCount === 0
-      ? "No seller in this directory lists it yet."
+      ? zeroSellerSentence(f.varietyName)
       : f.sellerCount === 1
         ? "It is listed by 1 seed seller in this directory."
         : `It is listed by ${f.sellerCount} seed sellers in this directory.`,
@@ -37,8 +39,8 @@ export function templateDescription(f: TemplateFacts): string {
   return parts.join(" ");
 }
 
-/** Factual meta-description fragment (S1): "Available from N supplier(s)". */
-export function availabilityPhrase(sellerCount: number): string {
-  if (sellerCount === 0) return "No sellers listed yet";
-  return `Available from ${sellerCount} supplier${sellerCount === 1 ? "" : "s"}`;
+/** Factual meta-description fragment (S1): "Available from N seller(s)". */
+export function availabilityPhrase(sellerCount: number, varietyName: string): string {
+  if (sellerCount === 0) return zeroSellerSentence(varietyName);
+  return `Available from ${sellerCount} seller${sellerCount === 1 ? "" : "s"}`;
 }

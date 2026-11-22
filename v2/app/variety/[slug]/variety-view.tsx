@@ -20,6 +20,7 @@ import { breadcrumbJsonLd, varietySellersJsonLd } from "@/lib/seo/jsonld";
 import { formatHeight, shortCommonName, titleCaseTag } from "@/lib/format";
 import { sellerCounts } from "@/lib/seller-counts";
 import { proseCommonName } from "@/lib/services/template";
+import { zeroSellerSentence } from "@/lib/zero-seller";
 import { SEASON_LABELS, SOWING_METHOD_LABELS, type VarietyFacts } from "@/lib/validators";
 import { SMALL_FARM_PARAM } from "@/lib/small-farm";
 
@@ -193,9 +194,9 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
             <>
             <ThemeArt name="empty-no-sellers" className="art-frame mx-auto mt-4 h-[220px] w-auto" />
             <p className="mt-2 text-muted">
-              <strong className="font-semibold text-ink">No sellers yet — currently unavailable.</strong> No seller in
-              this directory is selling this variety right now. Browse <Link href="/seller">all sellers</Link> or
-              other <Link href={`/crop/${v.plant.slug}`}>{common.toLowerCase()} varieties</Link>. Know a seller who
+              <strong className="font-semibold text-ink">{zeroSellerSentence(v.varietyName)}</strong> Browse{" "}
+              <Link href="/seller">all sellers</Link> or other{" "}
+              <Link href={`/crop/${v.plant.slug}`}>{common.toLowerCase()} varieties</Link>. Know a seller who
               sells it? <Link href={`/report?type=correct&variety=${v.slug}`}>Tell us</Link>.
             </p>
             <WaitlistBlock varietySlug={v.slug} varietyName={v.varietyName} />

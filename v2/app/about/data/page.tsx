@@ -79,8 +79,7 @@ export default function AboutDataPage() {
       <h2>Who runs this site</h2>
       <p>
         seeds.hues.flowers is owned and operated by <a href={OWNER_SITE_URL} target="_blank" rel="noopener noreferrer">Hues Floral Park<span className="sr-only"> (opens in a new tab)</span></a>, a flower farm that
-        also buys seed from some listed sellers. Sellers do not pay for placement. If Hues ever lists its own seed, its
-        seller page says so.
+        also buys seed from some listed sellers. Sellers do not pay for placement.
       </p>
     </article>
   );
