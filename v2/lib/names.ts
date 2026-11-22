@@ -36,7 +36,7 @@ export function foldText(s: string): string {
 }
 
 /** Crop phrases to strip, from a crop common name like "Cornflower / Bachelor's Buttons". */
-export function cropPhrases(commonName: string | null | undefined): string[] {
+function cropPhrases(commonName: string | null | undefined): string[] {
   if (!commonName) return [];
   return commonName
     .split("/")
@@ -86,9 +86,4 @@ export function hostOnDomain(host: string | null, domain: string | null): boolea
   const h = host.toLowerCase().replace(/^www\./, "");
   const d = domain.toLowerCase().replace(/^www\./, "");
   return h === d || h.endsWith(`.${d}`);
-}
-
-/** Word count for the R5 index rule (own notes ≥ 150 words). */
-export function wordCount(...texts: (string | null | undefined)[]): number {
-  return texts.reduce((n, t) => n + (t ? t.trim().split(/\s+/).filter(Boolean).length : 0), 0);
 }

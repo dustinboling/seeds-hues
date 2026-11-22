@@ -6,7 +6,7 @@
 
 export type QueueKey = "duplicates" | "sellers" | "listings" | "reports";
 
-export interface QueueDef {
+interface QueueDef {
   key: QueueKey;
   /** Pane/list heading. */
   name: string;
@@ -30,9 +30,6 @@ export function queueDef(key: string): QueueDef | null {
   return QUEUES.find((q) => q.key === key) ?? null;
 }
 
-/** The sellers queue folds pending Add Your Farm submissions in beside hunt candidates. */
-export const SELLERS_QUEUE_FARM = true;
-
 /** Initial list window (≤ 50); "Show more" appends one window at a time. */
 export const QUEUE_WINDOW = 25;
 /** Decided-history page size (the site's Pagination component). */
@@ -40,7 +37,7 @@ export const DECIDED_PAGE_SIZE = 20;
 
 // ─── Item references (deep links) ────────────────────────────────────────────
 
-export type ItemKind = "review" | "farm";
+type ItemKind = "review" | "farm";
 
 export interface ItemRef {
   kind: ItemKind;
@@ -258,7 +255,7 @@ export function verifiedLine(name: string | null | undefined): string | null {
 
 // ─── Status lines (decisions resolve to these, role="status") ─────────────────
 
-export type StatusKind =
+type StatusKind =
   | "seller_created"
   | "candidate_declined"
   | "farm_declined"

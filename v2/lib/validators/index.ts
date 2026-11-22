@@ -30,7 +30,7 @@ const hex = z.string().regex(/^#[0-9A-Fa-f]{6}$/);
 const httpUrl = z.string().url().refine((u) => /^https?:\/\//.test(u), "http(s) URL");
 const dateish = z.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO date or timestamp");
 
-export const AvailabilitySchema = z.enum(AVAILABILITY).meta({ id: "Availability" });
+const AvailabilitySchema = z.enum(AVAILABILITY).meta({ id: "Availability" });
 
 export const RatingSchema = z
   .object({
@@ -55,7 +55,7 @@ export const ProvenanceSchema = z
 
 export const CategoryRefSchema = z.object({ slug, name: z.string().min(1) }).meta({ id: "CategoryRef" });
 
-export const SeasonClassSchema = z.enum(SEASON_CLASSES).meta({
+const SeasonClassSchema = z.enum(SEASON_CLASSES).meta({
   id: "SeasonClass",
   description: "Crop season class (The Gardener's Workshop seed categories). null = not classified.",
 });
@@ -70,7 +70,7 @@ export const SEASON_LABELS: Record<z.infer<typeof SeasonClassSchema>, string> = 
 export const SEASON_PARAMS = { cool: "cool_season_hardy_annual", warm: "warm_season_tender_annual" } as const;
 export type SeasonParam = keyof typeof SEASON_PARAMS;
 
-export const SowingMethodSchema = z.enum(SOWING_METHODS).meta({
+const SowingMethodSchema = z.enum(SOWING_METHODS).meta({
   id: "SowingMethod",
   description: "How a crop is sown (Floret Library sowing notes): direct_sow and/or transplant (start indoors).",
 });
@@ -502,7 +502,7 @@ export const SearchResponseSchema = z
 
 // ─── Sync (canonical §3 "Bulk sync for native apps"; snake_case, new in the delta) ─────────
 
-export const SyncCropSchema = z
+const SyncCropSchema = z
   .object({
     id: z.number().int(),
     slug,
@@ -516,10 +516,10 @@ export const SyncCropSchema = z
     updated_seq: z.number().int(),
   })
   .meta({ id: "SyncCrop" });
-export const SyncSeriesSchema = z
+const SyncSeriesSchema = z
   .object({ id: z.number().int(), slug, name: z.string(), crop_id: z.number().int(), updated_seq: z.number().int() })
   .meta({ id: "SyncSeries" });
-export const SyncVarietySchema = z
+const SyncVarietySchema = z
   .object({
     id: z.number().int(),
     slug,
@@ -536,10 +536,10 @@ export const SyncVarietySchema = z
     updated_seq: z.number().int(),
   })
   .meta({ id: "SyncVariety" });
-export const SyncNameSchema = z
+const SyncNameSchema = z
   .object({ variety_id: z.number().int(), name: z.string(), kind: z.string() })
   .meta({ id: "SyncName" });
-export const SyncSellerSchema = z
+const SyncSellerSchema = z
   .object({
     id: z.number().int(),
     slug,
@@ -567,7 +567,7 @@ export const SyncSellerSchema = z
     updated_seq: z.number().int(),
   })
   .meta({ id: "SyncSeller" });
-export const SyncListingSchema = z
+const SyncListingSchema = z
   .object({
     id: z.number().int(),
     variety_id: z.number().int(),
@@ -581,8 +581,8 @@ export const SyncListingSchema = z
     updated_seq: z.number().int(),
   })
   .meta({ id: "SyncListing" });
-export const SYNC_TYPES = ["crop", "series", "variety", "seller", "listing"] as const;
-export const SyncDeleteSchema = z
+const SYNC_TYPES = ["crop", "series", "variety", "seller", "listing"] as const;
+const SyncDeleteSchema = z
   .object({ type: z.enum(SYNC_TYPES), id: z.number().int(), merged_into: z.number().int().optional() })
   .meta({ id: "SyncDelete" });
 export const SyncSnapshotSchema = z
@@ -639,7 +639,7 @@ export const PageSchema = z
   .object({ next_cursor: z.string().nullable(), has_more: z.boolean() })
   .meta({ id: "Page" });
 
-export const ErrorCodeSchema = z.enum([
+const ErrorCodeSchema = z.enum([
   "not_found",
   "gone",
   "validation_error",

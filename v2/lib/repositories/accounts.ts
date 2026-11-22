@@ -3,7 +3,7 @@
  * codes (email + alert phone, one shape), the farm-owner audit trail, and account deletion.
  * PRIVATE data — nothing here is ever read by the snapshot, sync or public API paths.
  */
-import { and, count, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import {
   authAttempts,
@@ -98,7 +98,7 @@ export async function pruneAttempts(db: Db, beforeIso: string): Promise<void> {
 
 export type CodeChannel = "email" | "phone";
 
-export interface CodeRow {
+interface CodeRow {
   id: number;
   userId: number;
   /** The address/number the code was sent to. */
@@ -248,9 +248,4 @@ export async function accountTotals(db: Db) {
   const [u] = await db.select({ n: count() }).from(users);
   const [v] = await db.select({ n: count() }).from(users).where(eq(users.emailVerified, true));
   return { accounts: u?.n ?? 0, verified: v?.n ?? 0 };
-}
-
-export async function usersByIds(db: Db, ids: number[]) {
-  if (ids.length === 0) return [];
-  return db.select().from(users).where(inArray(users.id, ids));
 }

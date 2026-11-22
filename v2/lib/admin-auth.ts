@@ -7,10 +7,7 @@
 import { CODE_MAX_ATTEMPTS, CODE_TTL_MINUTES, RESEND_PER_HOUR, RESEND_PER_MINUTE } from "@/lib/accounts";
 import { USER_ROLES } from "@/lib/db/schema";
 
-export type AccountRole = (typeof USER_ROLES)[number];
-
-/** Roles that may hold an admin session. */
-export const PRIVILEGED_ROLES: readonly AccountRole[] = ["reviewer", "admin"];
+type AccountRole = (typeof USER_ROLES)[number];
 
 export function isPrivilegedRole(role: string): role is Extract<AccountRole, "reviewer" | "admin"> {
   return role === "reviewer" || role === "admin";
@@ -29,7 +26,7 @@ export function roleLabel(role: string): string {
 export const ADMIN_SESSION_COOKIE = "sf_admin_session";
 /** Admin sessions last a week (spec §7A/§8.1: "~1 week", designed as 7 days). */
 export const ADMIN_SESSION_DAYS = 7;
-export const ADMIN_SESSION_MAX_AGE = ADMIN_SESSION_DAYS * 86_400;
+const ADMIN_SESSION_MAX_AGE = ADMIN_SESSION_DAYS * 86_400;
 
 export function adminSessionCookie(token: string): string {
   return `${ADMIN_SESSION_COOKIE}=${token}; Path=/admin; Max-Age=${ADMIN_SESSION_MAX_AGE}; HttpOnly; Secure; SameSite=Lax`;
@@ -63,7 +60,7 @@ export interface AdminNavItem {
 }
 
 /** Rail order = tab order = decision priority. Reviewers never see Accounts. */
-export const ADMIN_SECTIONS: readonly AdminNavItem[] = [
+const ADMIN_SECTIONS: readonly AdminNavItem[] = [
   { key: "home", label: "Home", href: "/admin", adminOnly: false },
   { key: "review", label: "Review", href: "/admin/review", adminOnly: false },
   { key: "sellers", label: "Sellers", href: "/admin/sellers", adminOnly: false },

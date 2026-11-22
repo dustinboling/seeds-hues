@@ -82,8 +82,6 @@ export interface Paged<T> {
   total: number;
 }
 
-export const DEFAULT_PAGE_SIZE = 24;
-
 /**
  * media row → API media (design D3). url = r2_key as stored (the canonical public path; never
  * rewritten). Since the R2 + Image Transformations migration (2026-11-18) card and hero sizes are
@@ -94,7 +92,7 @@ export function toMedia(row: repo.MediaRow): Media {
   return { url: row.r2Key, licence: row.licence, credit: row.credit };
 }
 /** A subject shows an average only once it has this many reviews (canonical §2 "Ratings"). */
-export const MIN_REVIEWS_FOR_RATING = 3;
+const MIN_REVIEWS_FOR_RATING = 3;
 
 /** Validate (throws on bad data — fail loudly, NFR4). */
 export function parse<T>(schema: z.ZodType<T>, value: unknown, what: string): T {
@@ -114,7 +112,7 @@ export function ratingOf(reviewCount: number, average: number | null): Rating {
 export const goUrl = (listingId: number) => `${SITE_URL}/go/${listingId}`;
 
 /** The ONE PlantRef builder: every repository row that joins plants carries these columns. */
-export function plantRefOf(r: {
+function plantRefOf(r: {
   plantSlug: string;
   commonName: string;
   latinName: string | null;
@@ -198,7 +196,7 @@ function groupPackets(rows: PacketRow[]): Map<number, PacketSize[]> {
 }
 
 /** The ONE public listing serializer (pages, API, /recent, /sync all go through it). */
-export function mapListing(l: PublicListingRow, packets: PacketSize[], media: Media[] = [], cropMedia: Media[] = []): PublicListing {
+function mapListing(l: PublicListingRow, packets: PacketSize[], media: Media[] = [], cropMedia: Media[] = []): PublicListing {
   return parse(
     PublicListingSchema,
     {
@@ -283,7 +281,7 @@ function summaryFrom(r: repo.VarietySummaryRow): VarietySummary {
 type SellerRow = NonNullable<Awaited<ReturnType<typeof repo.sellerRow>>>;
 
 /** The six sellers.imported_rating_* columns (catalog read and sync rows share these names). */
-export interface ImportedRatingColumns {
+interface ImportedRatingColumns {
   importedRatingSource: ImportedRating["source"] | null;
   importedRatingPlaceName: string | null;
   importedRatingPlaceId: string | null;
@@ -339,7 +337,7 @@ function likePattern(query: string): string {
   return [...lowered].length >= 3 ? `%${lowered}%` : `${lowered}%`;
 }
 
-export interface SearchOptions {
+interface SearchOptions {
   limit?: number;
   types?: SearchType[];
   /** When set, the search is logged to search_events with this client label. */

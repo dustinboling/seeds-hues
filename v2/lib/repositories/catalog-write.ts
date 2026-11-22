@@ -32,7 +32,7 @@ import {
 import type { AtomicOp } from "./atomic";
 import { CATALOG_SEQ_KEY } from "./seq";
 
-export const D1_MAX_BOUND_PARAMS = 100;
+const D1_MAX_BOUND_PARAMS = 100;
 
 /** Build chunked INSERT statements (not executed) for use inside atomic(). */
 export function insertOps<T extends SQLiteTable>(db: Db, table: T, rows: InferInsertModel<T>[]): AtomicOp[] {
@@ -44,11 +44,6 @@ export function insertOps<T extends SQLiteTable>(db: Db, table: T, rows: InferIn
     ops.push(db.insert(table).values(rows.slice(i, i + perChunk)) as unknown as AtomicOp);
   }
   return ops;
-}
-
-export async function getBatchByLabel(db: Db, label: string) {
-  const [row] = await db.select().from(importBatches).where(eq(importBatches.label, label)).limit(1);
-  return row ?? null;
 }
 
 export async function latestPublishedBatch(db: Db) {
