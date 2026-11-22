@@ -291,6 +291,7 @@
     font-size: 0.875rem;
     line-height: 1.5;
     text-decoration: none;
+    cursor: default;
   }
   /*
    * Removable-filter marker (SPEC §4.4, rendered change R-3): always carried with
