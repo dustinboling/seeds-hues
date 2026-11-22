@@ -11,6 +11,12 @@
  * after it. AvailabilityBadge renders in isolation; AccountPanel needs the Next router
  * and the home page needs live services, so those two are pinned by source assertions —
  * the same pattern the variety-filter suite uses for wiring static markup cannot show.
+ *
+ * Tranche 2.2 re-pinning (values unchanged): the badge family moved the per-tone
+ * ground/text/border values from hand-written utilities into globals.css tone rules
+ * (.badge plus one .badge-* class) at byte-identical computed values. The Fix 1 pins
+ * below follow the values to their new home: rendered markup carries the family
+ * classes, and the tone rules carry Ada's prescribed alphas.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -32,14 +38,42 @@ function walk(dir: string, exts = /\.(ts|tsx|css)$/): string[] {
   return out;
 }
 
-describe("Fix 1 — Availability badge borders (rendered)", () => {
-  // Ada's prescribed per-tone alphas: the nearest passing value for each tone's own ground.
-  const PRESCRIBED: Record<Availability, string> = {
-    in_stock: "border-leaf/60",
-    sold_out: "border-petal/65",
-    preorder: "border-leaf-600/70",
-    shop_closed: "border-muted/70",
-    unknown: "border-warn/75",
+describe("Fix 1 — Availability badge borders (rendered plus tone rules)", () => {
+  // Ada's prescribed per-tone values: tone class, ground, text, and the border at the
+  // nearest passing alpha for each tone's own ground. Since Tranche 2.2 the values live
+  // in the globals.css tone rules; the border declarations use the exact color-mix
+  // serialization Tailwind v4 emits for the border utilities they replaced.
+  const PRESCRIBED: Record<Availability, { tone: string; ground: string; text: string; border: string }> = {
+    in_stock: {
+      tone: "badge-in-stock",
+      ground: "var(--color-leaf-50)",
+      text: "var(--color-leaf)",
+      border: "color-mix(in oklab, var(--color-leaf) 60%, transparent)",
+    },
+    sold_out: {
+      tone: "badge-sold-out",
+      ground: "var(--color-petal-50)",
+      text: "var(--color-petal)",
+      border: "color-mix(in oklab, var(--color-petal) 65%, transparent)",
+    },
+    preorder: {
+      tone: "badge-preorder",
+      ground: "var(--color-surface)",
+      text: "var(--color-leaf-600)",
+      border: "color-mix(in oklab, var(--color-leaf-600) 70%, transparent)",
+    },
+    shop_closed: {
+      tone: "badge-shop-closed",
+      ground: "var(--color-surface)",
+      text: "var(--color-muted)",
+      border: "color-mix(in oklab, var(--color-muted) 70%, transparent)",
+    },
+    unknown: {
+      tone: "badge-unknown",
+      ground: "var(--color-warn-50)",
+      text: "var(--color-warn)",
+      border: "color-mix(in oklab, var(--color-warn) 75%, transparent)",
+    },
   };
   const OLD: Record<Availability, string> = {
     in_stock: "border-leaf/40",
@@ -48,44 +82,56 @@ describe("Fix 1 — Availability badge borders (rendered)", () => {
     shop_closed: "border-muted/40",
     unknown: "border-warn/40",
   };
+  const css = readFileSync(join(ROOT, "app/globals.css"), "utf8");
+
+  function ruleFor(selector: string): string {
+    return css.match(new RegExp(`\\.${selector} \\{[\\s\\S]*?\\n  \\}`))?.[0] ?? "";
+  }
 
   for (const value of Object.keys(PRESCRIBED) as Availability[]) {
-    it(`${value} carries ${PRESCRIBED[value]} (was ${OLD[value]})`, () => {
+    it(`${value} renders the family base plus its tone class (was ${OLD[value]})`, () => {
       const h = renderToStaticMarkup(createElement(AvailabilityBadge, { value }));
-      expect(h).toContain(PRESCRIBED[value]);
+      expect(h).toContain(`badge ${PRESCRIBED[value].tone}`);
       expect(h).not.toContain(OLD[value]);
+    });
+
+    it(`${value} tone rule carries the prescribed ground, text and border alpha`, () => {
+      const rule = ruleFor(PRESCRIBED[value].tone);
+      expect(rule, `${PRESCRIBED[value].tone} rule is missing`).not.toBe("");
+      expect(rule).toContain(`background-color: ${PRESCRIBED[value].ground};`);
+      expect(rule).toContain(`color: ${PRESCRIBED[value].text};`);
+      expect(rule).toContain(`border-color: ${PRESCRIBED[value].border};`);
     });
   }
 
-  it("keeps the badge grounds, text colors and shape (only the border alpha changes)", () => {
-    const grounds: Record<Availability, [string, string]> = {
-      in_stock: ["bg-leaf-50", "text-leaf"],
-      sold_out: ["bg-petal-50", "text-petal"],
-      preorder: ["bg-surface", "text-leaf-600"],
-      shop_closed: ["bg-surface", "text-muted"],
-      unknown: ["bg-warn-50", "text-warn"],
-    };
-    for (const value of Object.keys(grounds) as Availability[]) {
+  it("keeps the standard pill construction and the shared base (values moved, not changed)", () => {
+    for (const value of Object.keys(PRESCRIBED) as Availability[]) {
       const h = renderToStaticMarkup(createElement(AvailabilityBadge, { value }));
-      for (const cls of grounds[value]) expect(h, value).toContain(cls);
-      expect(h, value).toContain("rounded-full border");
+      expect(h, value).toContain("px-2 py-0.5 text-xs font-bold uppercase tracking-[0.06em]");
     }
+    const base = ruleFor("badge");
+    expect(base, ".badge rule is missing").not.toBe("");
+    expect(base).toContain("display: inline-flex;");
+    expect(base).toContain("align-items: center;");
+    expect(base).toContain("border: 1px solid;");
+    expect(base).toContain("border-radius: 999px;");
+    expect(base).toContain("font-family: var(--font-sans);");
   });
 });
 
 describe("Fix 1 — AccountPanel status badges (source)", () => {
   const panel = readFileSync(join(ROOT, "components/account/AccountPanel.tsx"), "utf8");
 
-  it("Found carries border-leaf/60", () => {
-    expect(panel).toContain('border-leaf/60 bg-leaf-50 px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-leaf">Found');
+  it("Found carries the in-stock tone", () => {
+    expect(panel).toContain('badge badge-in-stock px-2 py-0.5 text-xs font-bold uppercase tracking-[0.06em]">Found');
   });
 
-  it("Waiting · active carries border-leaf-600/70", () => {
-    expect(panel).toContain('border-leaf-600/70 bg-surface px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-leaf-600">Waiting · active');
+  it("Waiting · active carries the preorder tone", () => {
+    expect(panel).toContain('badge badge-preorder px-2 py-0.5 text-xs font-bold uppercase tracking-[0.06em]">Waiting · active');
   });
 
-  it("Held carries border-warn/75", () => {
-    expect(panel).toContain('border-warn/75 bg-warn-50 px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-[0.06em] text-warn">Held');
+  it("Held carries the unknown tone", () => {
+    expect(panel).toContain('badge badge-unknown px-2 py-0.5 text-xs font-bold uppercase tracking-[0.06em]">Held');
   });
 
   it("no /40 border remains on those tones in AccountPanel", () => {

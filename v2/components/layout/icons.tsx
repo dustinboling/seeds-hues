@@ -72,3 +72,16 @@ export const ChevronRightIcon = () => (
     <path d="M9.5 5.5 16 12l-6.5 6.5" />
   </svg>
 );
+/**
+ * Protection seal — the variety-page protection notice mark (Tranche 2.2, SPEC §3.5):
+ * an outline shield holding a check, drawn to the interface icon family's rules
+ * (24px grid, 20px live area, stroke 1.8, currentColor, no fill). The label text
+ * carries the meaning alone; the icon is a redundant channel, always aria-hidden.
+ * The caller sizes it (the notice renders it at 16px via size-4).
+ */
+export const ProtectionIcon = ({ className = "" }: { className?: string }) => (
+  <svg {...base} className={className}>
+    <path d="M12 3.2 18.6 5.6v5.2c0 4.3-2.9 7.5-6.6 9.2-3.7-1.7-6.6-4.9-6.6-9.2V5.6L12 3.2Z" />
+    <path d="m9.2 11.6 2 2 3.8-4.4" />
+  </svg>
+);
