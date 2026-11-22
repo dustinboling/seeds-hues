@@ -31,3 +31,6 @@ Traps the spec calls out — treat as binding:
 
 ## Re-dispatch note (2026-11-21, coordinator)
 Run 44983535271 collapsed mid-build: its only tree change was a scratch file, `v2/t2-fixture.tmp.tsx`, which then failed the gate's lint — no part of the change set landed. On this run: do not leave scratch or fixture files anywhere in the tree; build any temporary fixture outside the repo or delete it before finishing. The final tree must contain only the intended Tranche 2 change set, and `npm run verify` must pass on exactly that tree.
+
+## Re-dispatch note 2 (2026-11-21, coordinator)
+Run 44989244473 got much further — a real change set, four gate attempts — and failed ONLY on typecheck: 14 errors, every one a possibly-'undefined' error (TS2345/TS2532/TS18048) in your own new test file `tests/unit/tranche-2-foundation.test.ts`. This repo's TypeScript is strict about indexed access and lookup results (`T | undefined`). Write test code that narrows or asserts after every lookup/index from the start, and run `npm run typecheck` on the new test file BEFORE the full verify — do not leave typecheck errors for the gate to find.
