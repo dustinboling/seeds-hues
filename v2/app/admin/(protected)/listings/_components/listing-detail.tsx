@@ -58,7 +58,7 @@ export function ListingDetail({ detail: l, role, ctx, backHref, genericStatus }:
   const title = l.titleRaw || l.varietyName;
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <p className="min-[744px]:hidden">
+      <p className="admin:hidden">
         <a href={backHref} className="font-sans text-[15px] font-semibold text-link underline">
           ← All listings
         </a>
@@ -66,7 +66,7 @@ export function ListingDetail({ detail: l, role, ctx, backHref, genericStatus }:
       {genericStatus ? <StatusBanner status={genericStatus} /> : null}
 
       {retired ? (
-        <div role="status" className="flex flex-wrap items-center gap-3 rounded-[18px] border border-line-strong bg-warn-50 p-4">
+        <div role="status" className="flex flex-wrap items-center gap-3 rounded-card border border-line-strong bg-warn-50 p-4">
           <span className="flex min-w-0 flex-1 items-start gap-2 text-warn">
             <CautionIcon />
             <span className="font-sans text-base text-ink">This listing is retired — it is off &apos;{l.varietyName}&apos;s page.</span>
@@ -113,11 +113,11 @@ export function ListingDetail({ detail: l, role, ctx, backHref, genericStatus }:
           </a>
         </p>
         <p className="font-sans text-[15px] tabular-nums">
-          <span className="chip inline-flex min-h-[44px] items-center">{statusWordForListing(l)}</span>
+          <span className="chip inline-flex min-h-target items-center">{statusWordForListing(l)}</span>
         </p>
       </header>
 
-      <section aria-labelledby="packets-heading" className="card p-4 min-[744px]:p-5">
+      <section aria-labelledby="packets-heading" className="card p-4 admin:p-5">
         <h3 id="packets-heading" className="text-xl font-semibold">
           Packet sizes
         </h3>
@@ -135,7 +135,7 @@ export function ListingDetail({ detail: l, role, ctx, backHref, genericStatus }:
         )}
       </section>
 
-      <section aria-labelledby="history-heading" className="card p-4 min-[744px]:p-5">
+      <section aria-labelledby="history-heading" className="card p-4 admin:p-5">
         <h3 id="history-heading" className="text-xl font-semibold">
           History
         </h3>

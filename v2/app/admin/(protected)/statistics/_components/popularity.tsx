@@ -67,7 +67,7 @@ function ShowControl({ range, signal, show, shown, total }: { range: StatRange; 
 function ViewsClicksTable({ data, range, signal, show }: { data: ViewsClicksPopularity; range: StatRange; signal: StatSignal; show: number }) {
   const noun = data.valueLabel.toLowerCase();
   return (
-    <section aria-labelledby="popularity-table" className="card p-4 min-[744px]:p-5">
+    <section aria-labelledby="popularity-table" className="card p-4 admin:p-5">
       <h3 id="popularity-table" className="text-xl font-semibold">
         {data.title}
       </h3>
@@ -75,9 +75,9 @@ function ViewsClicksTable({ data, range, signal, show }: { data: ViewsClicksPopu
       {data.rows.length === 0 ? (
         <p className="mt-2 font-serif text-[17px] leading-[1.6] text-ink-soft">{data.emptyLine}</p>
       ) : (
-        <table className="mt-2 block w-full font-sans text-base min-[744px]:table">
+        <table className="mt-2 block w-full font-sans text-base admin:table">
           <caption className="sr-only">{data.title}</caption>
-          <thead className="hidden min-[744px]:table-header-group">
+          <thead className="hidden admin:table-header-group">
             <tr className="border-b border-line text-left text-sm text-muted">
               <th scope="col" className="py-2 pr-3 font-semibold">
                 Rank
@@ -98,21 +98,21 @@ function ViewsClicksTable({ data, range, signal, show }: { data: ViewsClicksPopu
               )}
             </tr>
           </thead>
-          <tbody className="block min-[744px]:table-row-group">
+          <tbody className="block admin:table-row-group">
             {data.rows.map((r: RankRowData) => (
-              <tr key={r.slug} className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 border-b border-line py-3 align-top last:border-b-0 min-[744px]:table-row min-[744px]:py-0">
-                <td className="tabular-nums text-muted min-[744px]:py-2 min-[744px]:pr-3">{r.rank}</td>
-                <th scope="row" className="min-w-0 text-left font-normal min-[744px]:py-2 min-[744px]:pr-3">
+              <tr key={r.slug} className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 border-b border-line py-3 align-top last:border-b-0 admin:table-row admin:py-0">
+                <td className="tabular-nums text-muted admin:py-2 admin:pr-3">{r.rank}</td>
+                <th scope="row" className="min-w-0 text-left font-normal admin:py-2 admin:pr-3">
                   <VarietyLinks slug={r.slug} name={r.name} />
-                  <span className="mt-0.5 block text-sm text-muted min-[744px]:hidden">
+                  <span className="mt-0.5 block text-sm text-muted admin:hidden">
                     {r.crop} · {r.value.toLocaleString("en-US")} {noun}
                     {r.movement ? ` · ${r.movement.text}` : ""}
                   </span>
                 </th>
-                <td className="hidden min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pr-3">{r.crop}</td>
-                <td className="hidden text-right tabular-nums min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pl-3">{r.value.toLocaleString("en-US")}</td>
+                <td className="hidden admin:table-cell admin:py-2 admin:pr-3">{r.crop}</td>
+                <td className="hidden text-right tabular-nums admin:table-cell admin:py-2 admin:pl-3">{r.value.toLocaleString("en-US")}</td>
                 {data.thin ? null : (
-                  <td className={`hidden text-right tabular-nums min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pl-3 ${r.movement ? movementClass(r.movement.kind) : ""}`}>
+                  <td className={`hidden text-right tabular-nums admin:table-cell admin:py-2 admin:pl-3 ${r.movement ? movementClass(r.movement.kind) : ""}`}>
                     {r.movement?.text ?? ""}
                   </td>
                 )}
@@ -130,16 +130,16 @@ function ViewsClicksTable({ data, range, signal, show }: { data: ViewsClicksPopu
 
 function WaitlistTable({ data, range, signal, show }: { data: WaitlistPopularity; range: StatRange; signal: StatSignal; show: number }) {
   return (
-    <section aria-labelledby="waitlist-table" className="card p-4 min-[744px]:p-5">
+    <section aria-labelledby="waitlist-table" className="card p-4 admin:p-5">
       <h3 id="waitlist-table" className="text-xl font-semibold">
         {WAITLIST_TITLE}
       </h3>
       {data.rows.length === 0 ? (
         <p className="mt-2 font-serif text-[17px] leading-[1.6] text-ink-soft">{NO_WAITERS_LINE}</p>
       ) : (
-        <table className="mt-2 block w-full font-sans text-base min-[744px]:table">
+        <table className="mt-2 block w-full font-sans text-base admin:table">
           <caption className="sr-only">{WAITLIST_TITLE}</caption>
-          <thead className="hidden min-[744px]:table-header-group">
+          <thead className="hidden admin:table-header-group">
             <tr className="border-b border-line text-left text-sm text-muted">
               <th scope="col" className="py-2 pr-3 font-semibold">
                 Rank
@@ -161,21 +161,21 @@ function WaitlistTable({ data, range, signal, show }: { data: WaitlistPopularity
               </th>
             </tr>
           </thead>
-          <tbody className="block min-[744px]:table-row-group">
+          <tbody className="block admin:table-row-group">
             {data.rows.map((r: WaitlistRowData) => (
-              <tr key={r.slug} className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 border-b border-line py-3 align-top last:border-b-0 min-[744px]:table-row min-[744px]:py-0">
-                <td className="tabular-nums text-muted min-[744px]:py-2 min-[744px]:pr-3">{r.rank}</td>
-                <th scope="row" className="min-w-0 text-left font-normal min-[744px]:py-2 min-[744px]:pr-3">
+              <tr key={r.slug} className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 border-b border-line py-3 align-top last:border-b-0 admin:table-row admin:py-0">
+                <td className="tabular-nums text-muted admin:py-2 admin:pr-3">{r.rank}</td>
+                <th scope="row" className="min-w-0 text-left font-normal admin:py-2 admin:pr-3">
                   <VarietyLinks slug={r.slug} name={r.name} />
-                  <span className="mt-0.5 block text-sm text-muted min-[744px]:hidden">
+                  <span className="mt-0.5 block text-sm text-muted admin:hidden">
                     {r.crop} · {r.waiters.toLocaleString("en-US")} waiting · {r.verified.toLocaleString("en-US")} verified · {r.sellers.toLocaleString("en-US")}{" "}
                     {r.sellers === 1 ? "seller" : "sellers"}
                   </span>
                 </th>
-                <td className="hidden min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pr-3">{r.crop}</td>
-                <td className="hidden text-right tabular-nums min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pl-3">{r.waiters.toLocaleString("en-US")}</td>
-                <td className="hidden text-right tabular-nums min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pl-3">{r.verified.toLocaleString("en-US")}</td>
-                <td className="hidden text-right tabular-nums min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pl-3">{r.sellers.toLocaleString("en-US")}</td>
+                <td className="hidden admin:table-cell admin:py-2 admin:pr-3">{r.crop}</td>
+                <td className="hidden text-right tabular-nums admin:table-cell admin:py-2 admin:pl-3">{r.waiters.toLocaleString("en-US")}</td>
+                <td className="hidden text-right tabular-nums admin:table-cell admin:py-2 admin:pl-3">{r.verified.toLocaleString("en-US")}</td>
+                <td className="hidden text-right tabular-nums admin:table-cell admin:py-2 admin:pl-3">{r.sellers.toLocaleString("en-US")}</td>
               </tr>
             ))}
           </tbody>
@@ -189,9 +189,9 @@ function WaitlistTable({ data, range, signal, show }: { data: WaitlistPopularity
 
 function TopSearchesTable({ rows }: { rows: SearchRowData[] }) {
   return (
-    <table className="mt-2 block w-full font-sans text-base min-[744px]:table">
+    <table className="mt-2 block w-full font-sans text-base admin:table">
       <caption className="sr-only">{TOP_SEARCHES_TITLE}</caption>
-      <thead className="hidden min-[744px]:table-header-group">
+      <thead className="hidden admin:table-header-group">
         <tr className="border-b border-line text-left text-sm text-muted">
           <th scope="col" className="py-2 pr-3 font-semibold">
             Search
@@ -204,18 +204,18 @@ function TopSearchesTable({ rows }: { rows: SearchRowData[] }) {
           </th>
         </tr>
       </thead>
-      <tbody className="block min-[744px]:table-row-group">
+      <tbody className="block admin:table-row-group">
         {rows.map((r) => (
-          <tr key={r.term} className="grid grid-cols-[minmax(0,1fr)] items-baseline border-b border-line py-3 align-top last:border-b-0 min-[744px]:table-row min-[744px]:py-0">
-            <th scope="row" className="min-w-0 break-words text-left font-semibold min-[744px]:py-2 min-[744px]:pr-3 min-[744px]:font-normal">
+          <tr key={r.term} className="grid grid-cols-[minmax(0,1fr)] items-baseline border-b border-line py-3 align-top last:border-b-0 admin:table-row admin:py-0">
+            <th scope="row" className="min-w-0 break-words text-left font-semibold admin:py-2 admin:pr-3 admin:font-normal">
               <span className="font-semibold">{r.term}</span>
-              <span className="mt-0.5 block text-sm font-normal text-muted min-[744px]:hidden">
+              <span className="mt-0.5 block text-sm font-normal text-muted admin:hidden">
                 {r.count.toLocaleString("en-US")} {r.count === 1 ? "search" : "searches"}
                 {r.finds ? ` · usually finds ${r.finds.name}` : ""}
               </span>
             </th>
-            <td className="hidden text-right tabular-nums min-[744px]:table-cell min-[744px]:py-2 min-[744px]:px-3">{r.count.toLocaleString("en-US")}</td>
-            <td className="hidden min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pl-3">
+            <td className="hidden text-right tabular-nums admin:table-cell admin:py-2 admin:px-3">{r.count.toLocaleString("en-US")}</td>
+            <td className="hidden admin:table-cell admin:py-2 admin:pl-3">
               {r.finds ? (
                 <span>
                   usually finds{" "}
@@ -237,7 +237,7 @@ function TopSearchesTable({ rows }: { rows: SearchRowData[] }) {
 function SearchTables({ data, range, signal, show }: { data: SearchesPopularity; range: StatRange; signal: StatSignal; show: number }) {
   return (
     <div className="flex flex-col gap-4">
-      <section aria-labelledby="top-searches" className="card p-4 min-[744px]:p-5">
+      <section aria-labelledby="top-searches" className="card p-4 admin:p-5">
         <h3 id="top-searches" className="text-xl font-semibold">
           {TOP_SEARCHES_TITLE}
         </h3>
@@ -250,7 +250,7 @@ function SearchTables({ data, range, signal, show }: { data: SearchesPopularity;
         <p className="mt-2 font-sans text-[13px] leading-[1.4] text-muted">{data.caption}</p>
       </section>
 
-      <section aria-labelledby="searches-no-results" className="card p-4 min-[744px]:p-5">
+      <section aria-labelledby="searches-no-results" className="card p-4 admin:p-5">
         <h3 id="searches-no-results" className="text-xl font-semibold">
           {NO_RESULTS_TITLE}
         </h3>
@@ -258,9 +258,9 @@ function SearchTables({ data, range, signal, show }: { data: SearchesPopularity;
         {data.noResults.length === 0 ? (
           <p className="mt-2 font-serif text-[17px] leading-[1.6] text-ink-soft">{NO_FRUITLESS_LINE}</p>
         ) : (
-          <table className="mt-2 block w-full font-sans text-base min-[744px]:table">
+          <table className="mt-2 block w-full font-sans text-base admin:table">
             <caption className="sr-only">{NO_RESULTS_TITLE}</caption>
-            <thead className="hidden min-[744px]:table-header-group">
+            <thead className="hidden admin:table-header-group">
               <tr className="border-b border-line text-left text-sm text-muted">
                 <th scope="col" className="py-2 pr-3 font-semibold">
                   Search
@@ -270,16 +270,16 @@ function SearchTables({ data, range, signal, show }: { data: SearchesPopularity;
                 </th>
               </tr>
             </thead>
-            <tbody className="block min-[744px]:table-row-group">
+            <tbody className="block admin:table-row-group">
               {data.noResults.map((r) => (
-                <tr key={r.term} className="grid grid-cols-[minmax(0,1fr)] items-baseline border-b border-line py-3 align-top last:border-b-0 min-[744px]:table-row min-[744px]:py-0">
-                  <th scope="row" className="min-w-0 break-words text-left font-semibold min-[744px]:py-2 min-[744px]:pr-3">
+                <tr key={r.term} className="grid grid-cols-[minmax(0,1fr)] items-baseline border-b border-line py-3 align-top last:border-b-0 admin:table-row admin:py-0">
+                  <th scope="row" className="min-w-0 break-words text-left font-semibold admin:py-2 admin:pr-3">
                     {r.term}
-                    <span className="mt-0.5 block text-sm font-normal text-muted min-[744px]:hidden">
+                    <span className="mt-0.5 block text-sm font-normal text-muted admin:hidden">
                       {r.count.toLocaleString("en-US")} {r.count === 1 ? "search" : "searches"}
                     </span>
                   </th>
-                  <td className="hidden text-right tabular-nums min-[744px]:table-cell min-[744px]:py-2 min-[744px]:pl-3">{r.count.toLocaleString("en-US")}</td>
+                  <td className="hidden text-right tabular-nums admin:table-cell admin:py-2 admin:pl-3">{r.count.toLocaleString("en-US")}</td>
                 </tr>
               ))}
             </tbody>
@@ -295,7 +295,7 @@ function SearchTables({ data, range, signal, show }: { data: SearchesPopularity;
 export function PopularityTables({ data, range, signal, show, retryHref }: { data: PopularityData; range: StatRange; signal: StatSignal; show: number; retryHref: string }) {
   if (data.error) {
     return (
-      <div role="alert" className="rounded-[18px] border border-line-strong bg-warn-50 p-4 min-[744px]:p-5">
+      <div role="alert" className="rounded-card border border-line-strong bg-warn-50 p-4 admin:p-5">
         <p className="font-sans text-base font-semibold text-warn">This ranking didn&apos;t load.</p>
         <p className="mt-1 font-sans text-[15px] text-ink">Check your connection and try again.</p>
         <p className="mt-3">

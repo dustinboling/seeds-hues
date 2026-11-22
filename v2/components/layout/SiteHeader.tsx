@@ -52,7 +52,7 @@ export function SiteHeader() {
                 <li key={n.href}>
                   <Link
                     href={n.href}
-                    className="tap inline-flex items-center rounded-lg px-3 font-sans font-medium text-ink no-underline transition-colors duration-150 ease-out hover:bg-leaf-50 hover:text-leaf"
+                    className="tap inline-flex items-center rounded-inner px-3 font-sans font-medium text-ink no-underline transition-colors duration-150 ease-out hover:bg-leaf-50 hover:text-leaf"
                   >
                     {n.label}
                   </Link>

@@ -14,7 +14,7 @@ export function Swatch({ chip, size = "md", label }: { chip: ColorChip; size?: "
       <span
         className={frame}
         style={{
-          backgroundImage: "repeating-linear-gradient(45deg, #f0e5cb 0 4px, #fffdf6 4px 8px)",
+          backgroundImage: "repeating-linear-gradient(45deg, var(--color-paper-deep) 0 4px, var(--color-surface) 4px 8px)",
         }}
         role="img"
         aria-label={label ? `${label}: no color on file` : "No color on file"}

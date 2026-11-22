@@ -129,7 +129,7 @@ export function SearchBox({
         aria-controls={listId}
         aria-autocomplete="list"
         aria-activedescendant={active >= 0 ? `${id}-opt-${active}` : undefined}
-        className={`w-full rounded-[14px] border-2 border-line-strong bg-surface ${inputCls} text-ink placeholder:text-muted focus:border-leaf focus:outline-none focus-visible:outline-3 focus-visible:outline-focus`}
+        className={`w-full rounded-search border-2 border-line-strong bg-surface ${inputCls} text-ink placeholder:text-muted focus:border-leaf focus:outline-none focus-visible:outline-3 focus-visible:outline-focus`}
       />
       <span className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-leaf-600 ${size === "lg" ? "left-3.5" : "left-3"}`}>
         <SearchIcon />
@@ -145,7 +145,7 @@ export function SearchBox({
         role="listbox"
         aria-label="Suggestions"
         hidden={!open || results.length === 0}
-        className="absolute inset-x-0 top-full z-30 mt-1 max-h-[60vh] overflow-auto rounded-[14px] border border-line-strong bg-surface p-1 shadow-card"
+        className="absolute inset-x-0 top-full z-30 mt-1 max-h-[60vh] overflow-auto rounded-search border border-line-strong bg-surface p-1 shadow-card"
       >
         {results.map((r, i) => (
           <li
@@ -153,7 +153,7 @@ export function SearchBox({
             id={`${id}-opt-${i}`}
             role="option"
             aria-selected={i === active}
-            className={`cursor-pointer rounded-lg px-3 py-2 ${i === active ? "bg-leaf-50" : ""}`}
+            className={`cursor-pointer rounded-inner px-3 py-2 ${i === active ? "bg-leaf-50" : ""}`}
             onMouseDown={(e) => {
               e.preventDefault();
               setOpen(false);

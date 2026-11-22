@@ -17,7 +17,7 @@ function deltaClass(kind: DeltaKind): string {
 function SnapshotCard({ card }: { card: SiteCardData }) {
   if (card.error) {
     return (
-      <div role="alert" className="card flex flex-col gap-1 p-4 min-[744px]:p-5">
+      <div role="alert" className="card flex flex-col gap-1 p-4 admin:p-5">
         <p className="font-sans text-base font-semibold">{card.label}</p>
         <p className="font-sans text-[15px] text-ink">These stats didn&apos;t load.</p>
         <p className="mt-1 font-sans text-[15px]">
@@ -30,7 +30,7 @@ function SnapshotCard({ card }: { card: SiteCardData }) {
   }
   if (card.noData || card.total === null || !card.trend) {
     return (
-      <a href={card.href} className="card flex min-h-[44px] flex-col gap-1 p-4 min-[744px]:p-5">
+      <a href={card.href} className="card flex min-h-target flex-col gap-1 p-4 admin:p-5">
         <p className="font-sans text-base font-semibold">{card.label}</p>
         <p className="font-serif text-[17px] leading-[1.6] text-ink-soft">{card.noData}</p>
       </a>
@@ -39,7 +39,7 @@ function SnapshotCard({ card }: { card: SiteCardData }) {
   const comparison = card.delta ? card.delta.text : (card.thinLine ?? "");
   const accessible = `${card.label}, ${card.total.toLocaleString("en-US")}${comparison ? `, ${comparison}` : ""}, ${card.trend.summary}`;
   return (
-    <a href={card.href} aria-label={accessible} className="card flex min-h-[44px] flex-col gap-1 p-4 min-[744px]:p-5">
+    <a href={card.href} aria-label={accessible} className="card flex min-h-target flex-col gap-1 p-4 admin:p-5">
       <p className="font-sans text-base font-semibold">{card.label}</p>
       <p className="font-sans text-[32px] font-semibold leading-[1.1] tabular-nums">{card.total.toLocaleString("en-US")}</p>
       {card.delta ? (
@@ -57,7 +57,7 @@ function SnapshotCard({ card }: { card: SiteCardData }) {
 export function StatsSnapshot({ snapshot }: { snapshot: SnapshotData | null }) {
   if (!snapshot) {
     return (
-      <div role="alert" className="rounded-[18px] border border-line-strong bg-warn-50 p-4 min-[744px]:p-5">
+      <div role="alert" className="rounded-card border border-line-strong bg-warn-50 p-4 admin:p-5">
         <p className="font-sans text-base font-semibold text-warn">These stats didn&apos;t load.</p>
         <p className="mt-1 font-sans text-[15px] text-ink">Check your connection and try again.</p>
         <p className="mt-3">
@@ -69,7 +69,7 @@ export function StatsSnapshot({ snapshot }: { snapshot: SnapshotData | null }) {
     );
   }
   return (
-    <div className="grid grid-cols-1 gap-4 min-[744px]:grid-cols-2 min-[1024px]:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 admin:grid-cols-2 lg:grid-cols-4">
       {snapshot.cards.map((card) => (
         <SnapshotCard key={card.key} card={card} />
       ))}

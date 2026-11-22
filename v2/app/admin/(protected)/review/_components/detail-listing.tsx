@@ -24,7 +24,7 @@ export function ListingDetailView({ detail, queue, show, submittedOn }: DetailSh
         </p>
       </header>
 
-      <section aria-label="The listing" className="card flex flex-col gap-2 p-4 min-[744px]:p-5">
+      <section aria-label="The listing" className="card flex flex-col gap-2 p-4 admin:p-5">
         <h3 className="font-sans text-base font-semibold">The listing</h3>
         <p className="flex flex-wrap items-center gap-2 font-sans text-[15px]">
           <span className="font-semibold">{d.listing.sellerName}</span>
@@ -45,7 +45,7 @@ export function ListingDetailView({ detail, queue, show, submittedOn }: DetailSh
         matched to
       </p>
 
-      <section aria-label="The variety" className="card flex flex-col gap-2 p-4 min-[744px]:p-5">
+      <section aria-label="The variety" className="card flex flex-col gap-2 p-4 admin:p-5">
         <h3 className="font-sans text-base font-semibold">The variety</h3>
         {d.variety.kind === "existing" ? (
           <>
@@ -74,7 +74,7 @@ export function ListingDetailView({ detail, queue, show, submittedOn }: DetailSh
 
       <div className="mt-0 border-t border-line pt-4">
         <p className="font-sans text-[15px] text-ink-soft">Publishing puts this listing on {varietyName}&apos;s public page, linking to the seller&apos;s product page.</p>
-        <div className="mt-3 flex flex-col gap-2 min-[744px]:flex-row">
+        <div className="mt-3 flex flex-col gap-2 admin:flex-row">
           <form method="post" action="/admin/review/decide">
             <input type="hidden" name="action" value={isNew ? "add_variety" : "publish_listing"} />
             <input type="hidden" name="kind" value="review" />
@@ -83,7 +83,7 @@ export function ListingDetailView({ detail, queue, show, submittedOn }: DetailSh
             <input type="hidden" name="show" value={String(show)} />
             <input type="hidden" name="created_at" value={d.createdAt} />
             <input type="hidden" name="variety_name" value={varietyName} />
-            <button type="submit" className="btn btn-primary w-full min-[744px]:w-auto">
+            <button type="submit" className="btn btn-primary w-full admin:w-auto">
               {isNew ? "Add the variety" : "Publish listing"}
             </button>
           </form>

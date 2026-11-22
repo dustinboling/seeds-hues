@@ -58,7 +58,7 @@ export function AccountDetail({
   const latestRole = a.roleAudit[0] ?? null;
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <p className="min-[744px]:hidden">
+      <p className="admin:hidden">
         <a href={backHref} className="font-sans text-[15px] font-semibold text-link underline">
           ← All accounts
         </a>
@@ -93,7 +93,7 @@ export function AccountDetail({
         </dl>
       </header>
 
-      <section aria-labelledby="role-heading" id="role" className="card scroll-mt-4 p-4 min-[744px]:p-5">
+      <section aria-labelledby="role-heading" id="role" className="card scroll-mt-4 p-4 admin:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 id="role-heading" className="text-xl font-semibold">
             Role
@@ -105,7 +105,7 @@ export function AccountDetail({
         {self ? <p className="mt-2 font-sans text-[15px] text-ink-soft">{SELF_ROLE_LINE}</p> : null}
       </section>
 
-      <section aria-labelledby="farm-heading" id="farm" className="card scroll-mt-4 p-4 min-[744px]:p-5">
+      <section aria-labelledby="farm-heading" id="farm" className="card scroll-mt-4 p-4 admin:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 id="farm-heading" className="text-xl font-semibold">
             Farm owner

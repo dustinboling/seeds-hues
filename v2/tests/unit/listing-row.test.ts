@@ -90,11 +90,11 @@ describe("ListingRow — Quiet Ledger card", () => {
   it("is a separate surface card: surface ground, warm border, radius and diffuse shadow", () => {
     const h = html(listing());
     expect(h).toContain("bg-surface");
-    expect(h).toContain("border-[#e9dfc2]");
-    expect(h).toContain("rounded-[18px]");
-    expect(h).toContain("shadow-[0_6px_20px_rgba(151,134,95,0.14)]");
+    expect(h).toContain("border-listing");
+    expect(h).toContain("rounded-card");
+    expect(h).toContain("shadow-listing-raised");
     expect(h).toContain("px-4");
-    expect(h).toContain("pt-[18px]");
+    expect(h).toContain("pt-listing-top");
     expect(h).toContain("pb-3");
     expect(h).not.toContain("listing-card-soldout");
   });
@@ -121,10 +121,10 @@ describe("ListingRow — Quiet Ledger card", () => {
     expect(a).toContain('rel="nofollow noopener noreferrer"');
     // 44 px pill, sage-tint fill, load-bearing 1.5 px leaf border, leaf text.
     expect(a).toContain("h-11");
-    expect(a).toContain("px-[18px]");
+    expect(a).toContain("px-visit-inline");
     expect(a).toContain("rounded-full");
-    expect(a).toContain("bg-[#dfe9d6]");
-    expect(a).toContain("border-[1.5px]");
+    expect(a).toContain("bg-visit");
+    expect(a).toContain("border-(length:--border-visit)");
     expect(a).toContain("border-leaf");
     expect(a).toContain("text-leaf");
     expect(a).toContain("text-[15px]");
@@ -154,7 +154,7 @@ describe("ListingRow — Quiet Ledger card", () => {
     expect(h).toContain("listing-card-soldout");
     expect(h).toContain("bg-paper");
     expect(h).toContain("border-line");
-    expect(h).toContain("shadow-[0_2px_8px_rgba(151,134,95,0.08)]");
+    expect(h).toContain("shadow-listing-flat");
     expect(h).toContain("Sold out");
     expect(h).toContain("bg-petal");
     expect(h).toContain("text-petal");
@@ -172,7 +172,7 @@ describe("ListingRow — Quiet Ledger card", () => {
     const h = html(listing());
     const a = anchor(h, "/report?type=correct&amp;seller=songbird-seed-co&amp;variety=sweet-pea-blue-vein");
     expect(a).not.toBe("");
-    expect(a).toContain("min-h-[44px]");
+    expect(a).toContain("min-h-target");
     expect(a).toContain("text-[13px]");
     expect(h).toContain(">Report a problem</a>");
     expect(h).not.toContain("Report a problem with this listing");
@@ -257,8 +257,8 @@ describe("variety page — Quiet Ledger header block (source)", () => {
 
   it("stacks the cards with a 12 px gap and sorts in-stock above sold-out in the view", () => {
     expect(sellers).toContain("flex flex-col gap-3");
-    expect(page).not.toContain("divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card");
-    expect(sellers).not.toContain("divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card");
+    expect(page).not.toContain("divide-y divide-line overflow-hidden rounded-card border border-line bg-surface shadow-card");
+    expect(sellers).not.toContain("divide-y divide-line overflow-hidden rounded-card border border-line bg-surface shadow-card");
     expect(sellers).toContain("sortedListings");
     expect(sellers).toContain('a === "in_stock" ? 0 : a === "sold_out" ? 2 : 1');
   });

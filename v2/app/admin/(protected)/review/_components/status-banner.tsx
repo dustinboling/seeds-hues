@@ -4,7 +4,7 @@
  */
 export function StatusBanner({ status }: { status: { kind?: string; text: string; href?: string; hrefLabel?: string } }) {
   return (
-    <p role="status" className="rounded-[10px] bg-leaf-50 p-3 font-sans text-[15px] text-ink">
+    <p role="status" className="rounded-field bg-leaf-50 p-3 font-sans text-[15px] text-ink">
       {status.text}{" "}
       {status.href ? (
         <a href={status.href} className="font-semibold text-link underline">

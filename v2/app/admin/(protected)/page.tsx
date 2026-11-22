@@ -40,7 +40,7 @@ export default async function AdminHomePage() {
         <h2 id="admin-needs-decision" className="text-xl font-semibold">
           Needs a decision
         </h2>
-        <div className="mt-3 grid grid-cols-1 gap-4 min-[744px]:grid-cols-2 min-[1181px]:grid-cols-4">
+        <div className="mt-3 grid grid-cols-1 gap-4 admin:grid-cols-2 admin-wide:grid-cols-4">
           {cards.map((c) => (
             <QueueCard key={c.key} name={c.name} description={c.description} count={c.count} oldest={oldestLine(c.oldest)} href={c.href} />
           ))}
@@ -57,8 +57,8 @@ export default async function AdminHomePage() {
         </div>
       </section>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 min-[1024px]:grid-cols-2">
-        <section aria-labelledby="admin-most-wanted" className="card flex flex-col gap-2 p-4 min-[744px]:p-5">
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <section aria-labelledby="admin-most-wanted" className="card flex flex-col gap-2 p-4 admin:p-5">
           <h2 id="admin-most-wanted" className="font-sans text-base font-semibold">
             Most wanted
           </h2>
@@ -81,7 +81,7 @@ export default async function AdminHomePage() {
           )}
         </section>
 
-        <section aria-labelledby="admin-recent-decisions" className="card flex flex-col gap-2 p-4 min-[744px]:p-5">
+        <section aria-labelledby="admin-recent-decisions" className="card flex flex-col gap-2 p-4 admin:p-5">
           <h2 id="admin-recent-decisions" className="font-sans text-base font-semibold">
             Recent decisions
           </h2>

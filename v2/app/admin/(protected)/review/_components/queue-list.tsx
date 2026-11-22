@@ -12,7 +12,7 @@ export type ListedRow = QueueRow & { age: string };
 export type ListedDecidedRow = DecidedRow & { time: string };
 
 function segmentLink(active: boolean): string {
-  return `chip tap flex min-h-[44px] items-center ${active ? "font-semibold" : ""}`;
+  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
 }
 
 export function QueueList({
@@ -62,7 +62,7 @@ export function QueueList({
                     <a
                       href={`${reviewHref({ queue, item: r.ref, show, decided: true, page: decidedPage > 1 ? decidedPage : undefined })}#detail`}
                       aria-current={current ? "true" : undefined}
-                      className={`block rounded-[12px] border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
+                      className={`block rounded-control border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
                     >
                       <span className="block text-base font-semibold">{r.name}</span>
                       <span className="mt-0.5 block text-sm text-ink-soft">{r.outcome}</span>
@@ -92,7 +92,7 @@ export function QueueList({
                   <a
                     href={`${reviewHref({ queue, item: r.ref, show })}#detail`}
                     aria-current={current ? "true" : undefined}
-                    className={`block rounded-[12px] px-3 py-3 font-sans ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
+                    className={`block rounded-control px-3 py-3 font-sans ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
                   >
                     <span className="block text-base font-semibold">{r.name}</span>
                     {r.facts ? <span className="mt-0.5 block text-sm text-ink-soft">{r.facts}</span> : null}

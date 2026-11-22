@@ -28,7 +28,7 @@ export interface CropOption {
 }
 
 function chipClass(active: boolean): string {
-  return `chip tap flex min-h-[44px] items-center ${active ? "font-semibold" : ""}`;
+  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
 }
 
 function sellersLine(n: number): string {
@@ -51,7 +51,7 @@ export function VarietyList({ rows, total, params, selected, crops }: { rows: Va
           Search varieties
         </label>
         <div className="flex gap-2">
-          <input id="variety-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Variety or another name" className="field min-h-[44px] w-full" />
+          <input id="variety-search" name="q" type="search" defaultValue={q ?? ""} maxLength={120} autoComplete="off" placeholder="Variety or another name" className="field min-h-target w-full" />
           <button type="submit" className="btn btn-secondary shrink-0">
             Search
           </button>
@@ -106,7 +106,7 @@ export function VarietyList({ rows, total, params, selected, crops }: { rows: Va
                   <a
                     href={`${varietyHref({ variety: r.slug, q, crop, show })}#detail`}
                     aria-current={current ? "true" : undefined}
-                    className={`block rounded-[12px] border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
+                    className={`block rounded-control border-b border-line px-3 py-3 font-sans last:border-b-0 ${current ? "bg-leaf-50" : "hover:bg-paper-deep"}`}
                   >
                     <span className="block text-base font-semibold">{r.name}</span>
                     <span className="mt-0.5 block text-sm text-ink-soft">{r.commonName}</span>

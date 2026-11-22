@@ -22,7 +22,7 @@ function panelContent(tab: GuideTab) {
         <>
           <Items items={tab.items} />
           {tab.goodToKnow.length ? (
-            <div className="mt-4 rounded-lg bg-leaf-50 p-3" data-testid="grower-guide-good-to-know">
+            <div className="mt-4 rounded-inner bg-leaf-50 p-3" data-testid="grower-guide-good-to-know">
               <p className="font-semibold">Good to know</p>
               {tab.goodToKnow.length === 1 ? (
                 <p className="mt-0.5">{tab.goodToKnow[0]}</p>

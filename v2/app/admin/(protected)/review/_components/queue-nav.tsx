@@ -10,7 +10,7 @@ import { reviewHref } from "./urls";
 export function QueueNav({ active, counts }: { active: QueueKey; counts: Record<QueueKey, number> }) {
   return (
     <nav aria-label="Queues">
-      <ul className="flex gap-2 overflow-x-auto pb-1 min-[744px]:flex-col min-[744px]:overflow-visible min-[744px]:pb-0">
+      <ul className="flex gap-2 overflow-x-auto pb-1 admin:flex-col admin:overflow-visible admin:pb-0">
         {QUEUES.map((q) => {
           const current = q.key === active;
           const n = counts[q.key] ?? 0;
@@ -19,7 +19,7 @@ export function QueueNav({ active, counts }: { active: QueueKey; counts: Record<
               <a
                 href={reviewHref({ queue: q.key })}
                 aria-current={current ? "true" : undefined}
-                className={`chip tap flex min-h-[44px] items-center gap-2 ${current ? "font-semibold" : ""}`}
+                className={`chip tap flex min-h-target items-center gap-2 ${current ? "font-semibold" : ""}`}
               >
                 <span>{q.name}</span>
                 <span className="text-sm tabular-nums text-muted">{n === 0 ? "All clear" : n}</span>

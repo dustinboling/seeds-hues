@@ -15,7 +15,7 @@ function deltaClass(kind: DeltaKind): string {
 
 export function SiteStatCard({ card, retryHref }: { card: SiteCardData; retryHref: string }) {
   return (
-    <section aria-labelledby={`stat-${card.key}`} className="card flex min-w-0 flex-col gap-1 p-4 min-[744px]:p-5">
+    <section aria-labelledby={`stat-${card.key}`} className="card flex min-w-0 flex-col gap-1 p-4 admin:p-5">
       <h2 id={`stat-${card.key}`} className="font-sans text-base font-semibold">
         {card.label}
       </h2>

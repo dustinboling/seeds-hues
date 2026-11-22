@@ -22,9 +22,9 @@ const attr = (tag: string, name: string) => new RegExp(`\\b${name}="([^"]*)"`).e
 const img = (h: string) => /<img\b[^>]*>/.exec(h)?.[0] ?? "";
 const firstDivClass = (h: string) => /<div\b[^>]*class="([^"]*)"/.exec(h)?.[1] ?? "";
 
-const PLATE_FRAME = "aspect-[1/2] w-18 shrink-0 self-start overflow-hidden rounded-lg border border-line bg-paper sm:w-24";
+const PLATE_FRAME = "aspect-[1/2] w-18 shrink-0 self-start overflow-hidden rounded-inner border border-line bg-paper sm:w-24";
 const GLYPH_FRAME =
-  "flex aspect-[1/2] w-18 shrink-0 items-center justify-center self-start overflow-hidden rounded-lg border border-line bg-paper sm:w-24";
+  "flex aspect-[1/2] w-18 shrink-0 items-center justify-center self-start overflow-hidden rounded-inner border border-line bg-paper sm:w-24";
 
 const art = (over: Partial<Parameters<typeof ListingArtwork>[0]> = {}): string =>
   renderToStaticMarkup(
@@ -152,8 +152,8 @@ describe("ListingRow — seller-context-only artwork slot", () => {
     expect(h.indexOf("Report a problem")).toBeLessThan(h.indexOf("Visit shop →"));
     // Text column classes byte-identical to the card's own: heading, subline, status.
     expect(h).toContain("font-display text-[20px] font-semibold leading-[1.2]");
-    expect(h).toContain('<p class="mt-[3px] text-base text-muted">Sweet Pea</p>');
-    expect(h).toContain('mt-[9px] font-sans text-[13px] text-muted');
+    expect(h).toContain('<p class="mt-listing-subline text-base text-muted">Sweet Pea</p>');
+    expect(h).toContain('mt-listing-status font-sans text-[13px] text-muted');
     // Equal-height row support: the seller-context article carries h-full.
     expect(h).toMatch(/<article[^>]*class="[^"]*h-full/);
   });
@@ -196,7 +196,7 @@ describe("ListingSheetSkeleton — opt-in artwork variant", () => {
     const h = renderToStaticMarkup(createElement(ListingSheetSkeleton, { rows: 2, className: "mt-3", artwork: true }));
     expect(h).toContain("flex flex-col gap-3 lg:grid lg:grid-cols-2 mt-3");
     expect(h).toContain("grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 sm:gap-4");
-    expect(h).toContain("aspect-[1/2] w-18 rounded-lg sm:w-24");
+    expect(h).toContain("aspect-[1/2] w-18 rounded-inner sm:w-24");
     expect(h).toContain('<div class="min-w-0">');
     expect(h).toContain("<li class="); // h-full rows for the equal-height grid
     expect(h).toContain("h-full");

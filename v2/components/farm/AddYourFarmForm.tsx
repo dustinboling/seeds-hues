@@ -142,10 +142,10 @@ export function AddYourFarmForm(props: {
             Do you sell wholesale too? <span className="font-normal text-muted">(optional)</span>
           </legend>
           <div className="flex gap-4">
-            <label className="flex min-h-[44px] items-center gap-2">
+            <label className="flex min-h-target items-center gap-2">
               <input type="radio" name="wholesale" value="yes" /> Yes
             </label>
-            <label className="flex min-h-[44px] items-center gap-2">
+            <label className="flex min-h-target items-center gap-2">
               <input type="radio" name="wholesale" value="no" /> No
             </label>
           </div>

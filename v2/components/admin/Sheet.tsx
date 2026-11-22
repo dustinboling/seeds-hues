@@ -67,7 +67,7 @@ export function Sheet({
   }, [onClose, initialFocusRef]);
 
   return (
-    <div role="presentation" className="fixed inset-0 z-50 flex items-stretch justify-center bg-ink/50 min-[744px]:items-center min-[744px]:p-6" onClick={(e) => {
+    <div role="presentation" className="fixed inset-0 z-50 flex items-stretch justify-center bg-ink/50 admin:items-center admin:p-6" onClick={(e) => {
       if (e.target === e.currentTarget) onClose();
     }}>
       <div
@@ -77,13 +77,13 @@ export function Sheet({
         aria-labelledby={titleId}
         aria-describedby={describedById}
         tabIndex={-1}
-        className="mt-auto max-h-[92dvh] w-full overflow-y-auto rounded-t-[18px] bg-surface p-5 shadow-xl min-[744px]:m-auto min-[744px]:max-w-[560px] min-[744px]:rounded-[18px] min-[744px]:p-6"
+        className="mt-auto max-h-[92dvh] w-full overflow-y-auto rounded-t-card bg-surface p-5 shadow-sheet admin:m-auto admin:max-w-[560px] admin:rounded-card admin:p-6"
       >
         <div className="flex items-start justify-between gap-3">
           <h2 id={titleId} className="text-xl font-semibold">
             {title}
           </h2>
-          <button type="button" aria-label="Close" onClick={onClose} className="btn btn-secondary min-h-[44px] min-w-[44px] px-3">
+          <button type="button" aria-label="Close" onClick={onClose} className="btn btn-secondary min-h-target min-w-target px-3">
             ×
           </button>
         </div>

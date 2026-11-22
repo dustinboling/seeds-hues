@@ -29,7 +29,7 @@ export function Bar({ className, style }: { className: string; style?: CSSProper
 /** Breadcrumb stand-in: a bar in a box with the real Breadcrumbs block's height (44 px mobile, ~21 px sm+). */
 export function BreadcrumbSkeleton() {
   return (
-    <div className="mb-4 flex min-h-[44px] items-center sm:min-h-[1.3125rem]">
+    <div className="mb-4 flex min-h-target items-center sm:min-h-[1.3125rem]">
       <Bar className="h-4 w-44 max-w-[60vw]" />
     </div>
   );
@@ -62,7 +62,7 @@ export function FilterGroupsSkeleton({ groups }: { groups: { legendWidth: number
 export function VarietyCardSkeleton() {
   return (
     <div className="card packet flex h-full flex-col items-center p-4 text-center">
-      <Bar className="card-image mb-2 aspect-[1/2] w-full rounded-lg" />
+      <Bar className="card-image mb-2 aspect-[1/2] w-full rounded-inner" />
       <Bar className="mt-1 h-3 w-10" />
       <div className="flex h-[6.25rem] flex-col items-center justify-center gap-2">
         <Bar className="h-5 w-4/5" />
@@ -94,7 +94,7 @@ export function VarietyGridSkeleton({ wide = false, count }: { wide?: boolean; c
 export function CropCardSkeleton() {
   return (
     <div className="card relative p-4">
-      <Bar className="card-image mb-2 aspect-[1/2] w-full rounded-lg" />
+      <Bar className="card-image mb-2 aspect-[1/2] w-full rounded-inner" />
       <Bar className="h-6 w-3/4" />
       <Bar className="mt-1 h-4 w-1/2" />
       <Bar className="mt-1 h-4 w-2/5" />
@@ -121,17 +121,17 @@ export function ListingSheetSkeleton({ rows, className, artwork = false }: { row
       {Array.from({ length: rows }, (_, i) => (
         <li key={i} className={artwork ? "h-full" : undefined}>
           <div
-            className={`rounded-[18px] border border-[#e9dfc2] bg-surface px-4 pb-3 pt-[18px] shadow-[0_6px_20px_rgba(151,134,95,0.14)]${artwork ? " h-full" : ""}`}
+            className={`rounded-card border border-listing bg-surface px-4 pb-3 pt-listing-top shadow-listing-raised${artwork ? " h-full" : ""}`}
           >
             {artwork ? (
               <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 sm:gap-4">
-                <Bar className="aspect-[1/2] w-18 rounded-lg sm:w-24" />
+                <Bar className="aspect-[1/2] w-18 rounded-inner sm:w-24" />
                 <div className="min-w-0">{bars}</div>
               </div>
             ) : (
               bars
             )}
-            <div className="mt-4 flex items-center justify-between gap-3 border-t border-[rgba(151,134,95,0.45)] pt-2">
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-stem-rule pt-2">
               <Bar className="h-4 w-24" />
               <Bar className="h-11 w-32 shrink-0 rounded-full" />
             </div>
@@ -146,16 +146,16 @@ export function ListingSheetSkeleton({ rows, className, artwork = false }: { row
 export function PaginationSkeleton() {
   return (
     <div className="mt-8 flex items-center justify-center gap-2">
-      <Bar className="h-11 w-28 rounded-xl" />
-      <Bar className="h-11 w-11 rounded-xl" />
-      <Bar className="h-11 w-11 rounded-xl" />
-      <Bar className="h-11 w-11 rounded-xl" />
-      <Bar className="h-11 w-24 rounded-xl" />
+      <Bar className="h-11 w-28 rounded-control" />
+      <Bar className="h-11 w-11 rounded-control" />
+      <Bar className="h-11 w-11 rounded-control" />
+      <Bar className="h-11 w-11 rounded-control" />
+      <Bar className="h-11 w-24 rounded-control" />
     </div>
   );
 }
 
 /** VarietyHeroImage stand-in: the 1:2 hero frame at its real max width. */
 export function HeroArtSkeleton() {
-  return <Bar className="mt-6 aspect-[1/2] w-full max-w-[380px] rounded-[18px]" />;
+  return <Bar className="mt-6 aspect-[1/2] w-full max-w-[380px] rounded-card" />;
 }

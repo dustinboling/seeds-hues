@@ -72,7 +72,7 @@ export function GrantAdminConfirmView({ accountName, busy, onBack }: { accountNa
   return (
     <div className="flex flex-col gap-3">
       <p className="font-sans text-base">{grantAdminConsequence(accountName)}</p>
-      <div className="flex flex-col gap-2 min-[744px]:flex-row">
+      <div className="flex flex-col gap-2 admin:flex-row">
         <button type="button" className="btn btn-secondary" disabled={busy} onClick={onBack}>
           Back
         </button>
@@ -122,7 +122,7 @@ export function RoleForm({ accountName, currentRole, ctx }: { accountName: strin
     <form ref={formRef} method="post" action="/admin/accounts/actions" onSubmit={onSubmit} className="flex flex-col gap-3">
       <HiddenCtx ctx={ctx} action="role_save" />
       {error ? (
-        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-[12px] border border-line-strong bg-warn-50 p-4">
+        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-control border border-line-strong bg-warn-50 p-4">
           <p className="flex items-start gap-1.5 font-sans text-base font-semibold text-warn">
             <ErrorIcon />
             <span>{error}</span>
@@ -139,7 +139,7 @@ export function RoleForm({ accountName, currentRole, ctx }: { accountName: strin
           <fieldset className="flex flex-col gap-3" onChange={(e) => setChosen((e.target as unknown as HTMLInputElement).value as AccountRoleValue)}>
             <legend className="mb-1 font-sans text-base font-semibold">Change {accountName}&apos;s role</legend>
             {ROLE_CARDS.map((c) => (
-              <label key={c.value} className="block cursor-pointer rounded-[12px] border border-line-strong bg-surface p-4 has-[:checked]:border-leaf has-[:checked]:bg-leaf-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-focus">
+              <label key={c.value} className="block cursor-pointer rounded-control border border-line-strong bg-surface p-4 has-[:checked]:border-leaf has-[:checked]:bg-leaf-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-focus">
                 <span className="flex items-start gap-3">
                   <input type="radio" name="role" value={c.value} defaultChecked={c.value === chosen} className="mt-1 size-5 shrink-0 accent-leaf" />
                   <span>
@@ -185,7 +185,7 @@ export function GrantFarmOwnerConfirmView({ accountName, sellerName, busy, onBac
   return (
     <div className="flex flex-col gap-3">
       <p className="font-sans text-base">{grantFarmOwnerConsequence(accountName, sellerName)}</p>
-      <div className="flex flex-col gap-2 min-[744px]:flex-row">
+      <div className="flex flex-col gap-2 admin:flex-row">
         <button type="button" className="btn btn-secondary" disabled={busy} onClick={onBack}>
           Back
         </button>
@@ -236,7 +236,7 @@ export function FarmOwnerForm({ accountName, sellers, ctx }: { accountName: stri
     <form ref={formRef} method="post" action="/admin/accounts/actions" onSubmit={onSubmit} className="flex flex-col gap-3">
       <HiddenCtx ctx={ctx} action="farm_grant" />
       {error ? (
-        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-[12px] border border-line-strong bg-warn-50 p-4">
+        <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-control border border-line-strong bg-warn-50 p-4">
           <p className="flex items-start gap-1.5 font-sans text-base font-semibold text-warn">
             <ErrorIcon />
             <span>{error}</span>
@@ -261,13 +261,13 @@ export function FarmOwnerForm({ accountName, sellers, ctx }: { accountName: stri
               onChange={(e) => setQuery(e.target.value)}
               autoComplete="off"
               placeholder="Seller name"
-              className="field min-h-[44px] w-full"
+              className="field min-h-target w-full"
             />
           </p>
           {matches.length === 0 ? (
             <p className="font-sans text-[15px] text-ink-soft">{sellers.length === 0 ? "No sellers in the directory yet." : "No sellers match."}</p>
           ) : (
-            <ul className="flex max-h-[40dvh] flex-col overflow-y-auto rounded-[12px] border border-line" role="listbox" aria-label="Sellers">
+            <ul className="flex max-h-[40dvh] flex-col overflow-y-auto rounded-control border border-line" role="listbox" aria-label="Sellers">
               {matches.map((s) => (
                 <li key={s.slug}>
                   <button
@@ -276,7 +276,7 @@ export function FarmOwnerForm({ accountName, sellers, ctx }: { accountName: stri
                     aria-selected="false"
                     disabled={busy}
                     onClick={() => setChosen(s.slug)}
-                    className="block min-h-[44px] w-full px-3 py-2.5 text-left font-sans hover:bg-paper-deep"
+                    className="block min-h-target w-full px-3 py-2.5 text-left font-sans hover:bg-paper-deep"
                   >
                     <span className="block text-base font-semibold">{s.name}</span>
                     {s.location ? <span className="block text-sm text-ink-soft">{s.location}</span> : null}

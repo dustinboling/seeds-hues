@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-US" className={`${fraunces.variable} ${newsreader.variable}`}>
       <body className="flex min-h-dvh flex-col">
-        <a href="#main" className="sr-only-focusable fixed left-2 top-2 z-50 rounded-lg bg-leaf px-4 py-3 font-sans font-semibold text-white">
+        <a href="#main" className="sr-only-focusable fixed left-2 top-2 z-50 rounded-inner bg-leaf px-4 py-3 font-sans font-semibold text-white">
           Skip to main content
         </a>
         <SiteHeader />

@@ -42,7 +42,7 @@ export default async function AdminStatisticsPage({ searchParams }: Props) {
         <TimeRangeControl range={params.range} signal={params.signal} show={params.show} words={overview.period.words} />
       </header>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 min-[744px]:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-4 admin:grid-cols-2">
         {overview.cards.map((card) => (
           <SiteStatCard key={card.key} card={card} retryHref={returnTo} />
         ))}

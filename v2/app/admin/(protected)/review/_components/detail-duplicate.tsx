@@ -11,7 +11,7 @@ import type { DetailShell, HoldDetail } from "./detail-types";
 
 function Panel({ eyebrow, name, cropLine, latinName, sellers, footer }: { eyebrow: string; name: string; cropLine: string; latinName: string | null; sellers: { name: string; title: string | null; url: string | null }[]; footer?: ReactNode }) {
   return (
-    <section aria-label={eyebrow} className="card flex min-w-0 flex-col gap-2 p-4 min-[744px]:p-5">
+    <section aria-label={eyebrow} className="card flex min-w-0 flex-col gap-2 p-4 admin:p-5">
       <p className="font-sans text-[12px] font-bold uppercase tracking-[0.09em] text-muted">{eyebrow}</p>
       <h3 className="text-xl font-semibold">{name}</h3>
       <p className="font-sans text-sm text-ink-soft">{cropLine}</p>
@@ -63,11 +63,11 @@ export function DuplicateDetailView({ detail, queue, show, submittedOn }: Detail
         <p className="mt-1 font-sans text-sm text-muted">Possible duplicate · held {submittedOn}</p>
       </header>
 
-      <p className="sticky top-0 z-10 rounded-[10px] bg-paper-deep p-2 font-sans text-sm font-semibold min-[1024px]:hidden">
+      <p className="sticky top-0 z-10 rounded-field bg-paper-deep p-2 font-sans text-sm font-semibold lg:hidden">
         Comparing: &apos;{d.held.name}&apos; ↔ &apos;{existing?.name ?? d.candidateName}&apos;
       </p>
 
-      <div className="grid grid-cols-1 gap-4 min-[1024px]:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel
           eyebrow="The held variety"
           name={d.held.name}
@@ -97,20 +97,20 @@ export function DuplicateDetailView({ detail, queue, show, submittedOn }: Detail
             }
           />
         ) : (
-          <section aria-label="The variety already in the directory" className="card flex min-w-0 flex-col gap-2 p-4 min-[744px]:p-5">
+          <section aria-label="The variety already in the directory" className="card flex min-w-0 flex-col gap-2 p-4 admin:p-5">
             <p className="font-sans text-[12px] font-bold uppercase tracking-[0.09em] text-muted">The variety already in the directory</p>
             <p className="font-sans text-[15px]">The held-as match (&apos;{d.candidateName}&apos;) is no longer in the directory — it was merged or removed while this hold waited.</p>
           </section>
         )}
       </div>
 
-      <ul aria-label="Comparison" className="flex flex-col gap-2 rounded-[18px] border border-line bg-surface p-4 font-sans text-[15px] min-[744px]:p-5">
+      <ul aria-label="Comparison" className="flex flex-col gap-2 rounded-card border border-line bg-surface p-4 font-sans text-[15px] admin:p-5">
         <li className="flex items-start gap-2">
           <span aria-hidden="true" className="mt-0.5 inline-block size-3 shrink-0 rounded-full bg-leaf" />
           {d.comparison.cropLine}
         </li>
         <li className="flex items-start gap-2">
-          <span aria-hidden="true" className="mt-0.5 inline-block size-3 shrink-0 rounded-[3px] bg-leaf" />
+          <span aria-hidden="true" className="mt-0.5 inline-block size-3 shrink-0 rounded-marker bg-leaf" />
           {d.comparison.nameLine}
         </li>
         <li className="flex items-start gap-2">
@@ -120,7 +120,7 @@ export function DuplicateDetailView({ detail, queue, show, submittedOn }: Detail
       </ul>
 
       {d.holdReason || d.evidenceQuote ? (
-        <section aria-label="Why the scout held it" className="rounded-[18px] border border-line bg-surface p-4 min-[744px]:p-5">
+        <section aria-label="Why the scout held it" className="rounded-card border border-line bg-surface p-4 admin:p-5">
           <h3 className="font-sans text-base font-semibold">Why the scout held it</h3>
           {d.holdReason ? <p className="mt-1 font-sans text-[15px]">{d.holdReason}</p> : null}
           {d.evidenceQuote ? <p className="mt-1 font-sans text-sm text-muted">“{d.evidenceQuote}”</p> : null}
@@ -133,7 +133,7 @@ export function DuplicateDetailView({ detail, queue, show, submittedOn }: Detail
           {Object.entries({ ...baseFields, action: "skip_hold" }).map(([k, v]) => (
             <input key={k} type="hidden" name={k} value={v} />
           ))}
-          <button type="submit" className="link-button min-h-[44px] font-sans text-[15px]">
+          <button type="submit" className="link-button min-h-target font-sans text-[15px]">
             Skip for now
           </button>
         </form>

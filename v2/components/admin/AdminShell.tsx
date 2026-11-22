@@ -16,7 +16,7 @@ export interface AdminShellViewer {
 }
 
 function railLinkClass(active: boolean): string {
-  const base = "flex min-h-[44px] items-center justify-between gap-2 rounded-xl px-3 py-2 font-sans";
+  const base = "flex min-h-target items-center justify-between gap-2 rounded-control px-3 py-2 font-sans";
   return active ? `${base} bg-leaf-50 font-semibold text-leaf` : `${base} text-ink hover:bg-paper-deep`;
 }
 
@@ -58,7 +58,7 @@ export function AdminShell({ viewer, section, reviewTotal, children }: { viewer:
   const tabs = [...items.filter((i) => i.key === "home" || i.key === "review" || i.key === "sellers" || i.key === "statistics"), ADMIN_MORE];
   return (
     <div className="admin-root flex items-start gap-6">
-      <nav aria-label="Admin sections" className="hidden w-[216px] shrink-0 flex-col gap-1 rounded-[18px] border border-line bg-paper-deep p-3 min-[744px]:sticky min-[744px]:top-6 min-[744px]:flex min-[744px]:max-h-[calc(100dvh-3rem)] min-[744px]:overflow-y-auto min-[1181px]:w-[232px]">
+      <nav aria-label="Admin sections" className="hidden w-[216px] shrink-0 flex-col gap-1 rounded-card border border-line bg-paper-deep p-3 admin:sticky admin:top-6 admin:flex admin:max-h-[calc(100dvh-3rem)] admin:overflow-y-auto admin-wide:w-[232px]">
         <p className="px-3 pb-1 pt-2 font-sans text-[12px] font-bold uppercase tracking-[0.09em] text-muted">Seed Directory admin</p>
         <ul className="flex flex-col gap-1">
           {items.map((item) => (
@@ -80,10 +80,10 @@ export function AdminShell({ viewer, section, reviewTotal, children }: { viewer:
           </form>
         </div>
       </nav>
-      <div className="min-w-0 flex-1 pb-28 min-[744px]:pb-12">
-        <div className="mx-auto w-full max-w-[1080px] min-[1181px]:max-w-[1280px]">{children}</div>
+      <div className="min-w-0 flex-1 pb-28 admin:pb-12">
+        <div className="mx-auto w-full max-w-[1080px] admin-wide:max-w-[1280px]">{children}</div>
       </div>
-      <nav aria-label="Admin sections" className="fixed inset-x-0 bottom-0 z-40 border-t border-line-strong bg-paper-deep min-[744px]:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <nav aria-label="Admin sections" className="fixed inset-x-0 bottom-0 z-40 border-t border-line-strong bg-paper-deep admin:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <ul className="grid grid-cols-5">
           {tabs.map((item) => (
             <li key={item.key}>

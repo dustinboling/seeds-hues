@@ -21,7 +21,7 @@ function DecisionBar({ role, queue, show, kind, id, createdAt, itemName, approve
   return (
     <div className="mt-4 border-t border-line pt-4">
       <Consequence role={role} />
-      <div className="mt-3 flex flex-col gap-2 min-[744px]:flex-row">
+      <div className="mt-3 flex flex-col gap-2 admin:flex-row">
         <form method="post" action="/admin/review/decide">
           <input type="hidden" name="action" value={approveAction} />
           <input type="hidden" name="kind" value={kind} />
@@ -29,7 +29,7 @@ function DecisionBar({ role, queue, show, kind, id, createdAt, itemName, approve
           <input type="hidden" name="queue" value={queue} />
           <input type="hidden" name="show" value={String(show)} />
           <input type="hidden" name="created_at" value={createdAt} />
-          <button type="submit" className="btn btn-primary w-full min-[744px]:w-auto">
+          <button type="submit" className="btn btn-primary w-full admin:w-auto">
             {approveLabel}
           </button>
         </form>
@@ -54,15 +54,15 @@ export function HuntDetailView({ detail, role, queue, show, submittedOn }: Detai
         </h2>
         <p className="mt-1 font-sans text-sm text-muted">Found by the hunt · {submittedOn}</p>
       </header>
-      <section aria-label="The record approval will create" className="card flex flex-col gap-2 p-4 min-[744px]:p-5">
+      <section aria-label="The record approval will create" className="card flex flex-col gap-2 p-4 admin:p-5">
         <h3 className="font-sans text-base font-semibold">The record approval will create</h3>
         <dl className="flex flex-col gap-2 font-sans">
-          <div className="flex flex-col gap-0.5 min-[744px]:flex-row min-[744px]:gap-3">
-            <dt className="min-[744px]:w-32 shrink-0 text-sm text-muted">Name</dt>
+          <div className="flex flex-col gap-0.5 admin:flex-row admin:gap-3">
+            <dt className="admin:w-32 shrink-0 text-sm text-muted">Name</dt>
             <dd className="text-base">{detail.name}</dd>
           </div>
-          <div className="flex flex-col gap-0.5 min-[744px]:flex-row min-[744px]:gap-3">
-            <dt className="min-[744px]:w-32 shrink-0 text-sm text-muted">Website</dt>
+          <div className="flex flex-col gap-0.5 admin:flex-row admin:gap-3">
+            <dt className="admin:w-32 shrink-0 text-sm text-muted">Website</dt>
             <dd className="text-base">
               {site ? (
                 <a href={site} target="_blank" rel="noreferrer" className="text-link underline">
@@ -73,8 +73,8 @@ export function HuntDetailView({ detail, role, queue, show, submittedOn }: Detai
               )}
             </dd>
           </div>
-          <div className="flex flex-col gap-0.5 min-[744px]:flex-row min-[744px]:gap-3">
-            <dt className="min-[744px]:w-32 shrink-0 text-sm text-muted">Domain</dt>
+          <div className="flex flex-col gap-0.5 admin:flex-row admin:gap-3">
+            <dt className="admin:w-32 shrink-0 text-sm text-muted">Domain</dt>
             <dd className="text-base">{detail.domain ?? "—"}</dd>
           </div>
         </dl>
@@ -97,7 +97,7 @@ export function FarmDetailView({ detail, role, queue, show, submittedOn }: Detai
         <p className="mt-1 font-sans text-sm text-muted">Add Your Farm submission · {submittedOn}</p>
       </header>
 
-      <section aria-label="Submitted and suggested values" className="card overflow-x-auto p-4 min-[744px]:p-5">
+      <section aria-label="Submitted and suggested values" className="card overflow-x-auto p-4 admin:p-5">
         <h3 className="font-sans text-base font-semibold">Submitted | Suggested</h3>
         <table className="mt-2 w-full font-sans text-[15px]">
           <thead>
@@ -167,7 +167,7 @@ export function FarmDetailView({ detail, role, queue, show, submittedOn }: Detai
       </section>
 
       {d.draftSummary || d.evidence.length > 0 ? (
-        <section aria-label="Draft summary" className="rounded-[18px] border border-line-strong bg-leaf-50 p-4 min-[744px]:p-5">
+        <section aria-label="Draft summary" className="rounded-card border border-line-strong bg-leaf-50 p-4 admin:p-5">
           <h3 className="font-sans text-base font-semibold">Draft summary — never published automatically</h3>
           {d.draftSummary ? <p className="mt-2 font-sans text-[15px]">{d.draftSummary}</p> : null}
           {d.evidence.length > 0 ? (

@@ -132,7 +132,7 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
             You’re not waiting on any varieties yet. On any variety page with no sellers, choose “Join the waiting list”. <Link href="/variety">Browse varieties</Link>.
           </p>
         ) : (
-          <ul className="divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-surface shadow-card" data-testid="alerts-list">
+          <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-surface shadow-card" data-testid="alerts-list">
             {alerts.map((a) => (
               <li key={a.variety.slug} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 flex-col gap-1">

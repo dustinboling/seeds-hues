@@ -22,7 +22,7 @@ export default async function AdminMorePage() {
       <ul className="card mt-3 flex flex-col p-2">
         {links.map((item) => (
           <li key={item.key}>
-            <a href={item.href} className="flex min-h-[44px] items-center rounded-xl px-3 py-2 font-sans hover:bg-paper-deep">
+            <a href={item.href} className="flex min-h-target items-center rounded-control px-3 py-2 font-sans hover:bg-paper-deep">
               {item.label}
             </a>
           </li>

@@ -14,7 +14,7 @@ export function ProtectionBadge({ protection, note }: { protection: VarietyDetai
   const label = LABELS[protection];
   if (!label || !note) return null;
   return (
-    <p className="inline-flex flex-col rounded-lg border border-petal bg-petal-50 px-3 py-2 text-sm">
+    <p className="inline-flex flex-col rounded-inner border border-petal bg-petal-50 px-3 py-2 text-sm">
       <span className="font-semibold text-petal">{label}</span>
       <span className="text-muted">{note}</span>
     </p>
