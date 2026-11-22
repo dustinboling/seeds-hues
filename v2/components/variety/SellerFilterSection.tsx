@@ -81,14 +81,13 @@ function SellerFilterChips({
   onSelect: (next: boolean) => void;
   allSellersRef: RefObject<HTMLButtonElement | null>;
 }) {
-  const chipClass = (active: boolean): string => `chip tap ${active ? "font-semibold" : ""}`;
   if (!hydrated) {
     const chip = (label: string, href: string, active: boolean) => (
       <Link
         href={href}
         scroll={false}
         prefetch={false}
-        className={chipClass(active)}
+        className="chip-filter"
         aria-current={active ? "true" : undefined}
         data-filter="smallFarm"
       >
@@ -111,7 +110,7 @@ function SellerFilterChips({
         type="button"
         aria-pressed={!smallFarmOnly}
         onClick={() => onSelect(false)}
-        className={chipClass(!smallFarmOnly)}
+        className="chip-filter"
         data-filter="smallFarm"
       >
         All sellers
@@ -120,7 +119,7 @@ function SellerFilterChips({
         type="button"
         aria-pressed={smallFarmOnly}
         onClick={() => onSelect(true)}
-        className={chipClass(smallFarmOnly)}
+        className="chip-filter"
         data-filter="smallFarm"
       >
         {SMALL_FARM_CHIP_LABEL}

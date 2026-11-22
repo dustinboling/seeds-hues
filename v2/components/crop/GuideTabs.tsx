@@ -33,7 +33,7 @@ export function GuideTabs({ label, panels }: { label: string; panels: GuideTabPa
           <ul className="flex flex-wrap gap-2">
             {panels.map((p) => (
               <li key={p.id}>
-                <a href={`#${p.id}`} className="chip tap" data-testid="grower-guide-tab">
+                <a href={`#${p.id}`} className="chip-filter" data-testid="grower-guide-tab">
                   {p.label}
                 </a>
               </li>

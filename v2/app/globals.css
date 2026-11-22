@@ -231,10 +231,19 @@
       display: none;
     }
   }
-  .chip {
+  /*
+   * Chip split (Tranche 2.3, SPEC tranche-2 §4.2): the retired bare chip class
+   * stood at 32px with callers adding .tap for 44px by hand. Two classes
+   * replace it, both recorded in design-tokens/tokens.json (component.chip.*).
+   * Shared DNA is why they still read as relatives: full radius, 1px
+   * line-strong border at rest, surface ground, ink text, sans 14px / 1.5.
+   * Resting, the two are twins by decision — the split declares itself through
+   * size, response, and selected dress, never a resting costume change.
+   */
+  .chip-filter {
     display: inline-flex;
     align-items: center;
-    min-height: 2rem;
+    min-height: var(--size-target);
     padding: 0.125rem 0.75rem;
     border-radius: 999px;
     border: 1px solid var(--color-line-strong);
@@ -248,22 +257,51 @@
       background-color 160ms ease-out,
       border-color 160ms ease-out;
   }
-  a.chip:hover,
-  button.chip:hover {
+  a.chip-filter:hover,
+  button.chip-filter:hover {
     border-color: var(--color-leaf-600);
     background: var(--color-leaf-50);
     color: var(--color-ink);
   }
-  .chip[aria-current="page"],
-  .chip[aria-current="true"],
-  .chip[aria-pressed="true"] {
+  .chip-filter[aria-current="true"],
+  .chip-filter[aria-pressed="true"] {
     border-color: var(--color-leaf);
     background: var(--color-leaf-50);
     color: var(--color-leaf);
+    font-weight: 600;
   }
   /* Hydrated toggle chips are <button>s: same pointer cursor as the pre-hydration links. */
-  button.chip {
+  button.chip-filter {
     cursor: pointer;
+  }
+  /*
+   * Inert tag (SPEC §4.2): span only, never focusable, no hover rule, no
+   * selected rule, no transition. Its 2rem minimum is the retired bare chip
+   * height, preserved exactly — tags that already rendered at 32px do not move.
+   */
+  .chip-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.125rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+    cursor: default;
+  }
+  /*
+   * Removable filter chip (SPEC §4.4, rendered change R-3): a chip-filter that
+   * removes an applied filter instead of choosing a group option. Same geometry
+   * and states; the 6px gap seats the drawn close glyph after the label. The
+   * whole chip stays one hit target — the glyph is never a separate button.
+   */
+  .chip-removable {
+    gap: 6px;
   }
   /*
    * Badge family (Tranche 2.2, SPEC tranche-2 §3): one base construction, tone

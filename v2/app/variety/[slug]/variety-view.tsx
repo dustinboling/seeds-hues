@@ -259,7 +259,7 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
                 <dt className="text-sm text-muted">Tags</dt>
                 <dd className="mt-1 flex flex-wrap gap-2">
                   {v.tags.map((t) => (
-                    <span key={t} className="chip">
+                    <span key={t} className="chip-tag">
                       {titleCaseTag(t)}
                     </span>
                   ))}

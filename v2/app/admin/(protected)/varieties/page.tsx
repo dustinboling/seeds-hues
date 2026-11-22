@@ -88,16 +88,14 @@ export default async function AdminVarietiesPage({ searchParams }: Props) {
   const genericStatus = varietyStatusLine({ status: firstParam(sp.status), name: firstParam(sp.name) });
   const ctx = { variety: selected ?? "", tab: params.tab, q: params.q, crop: params.crop, show: String(params.show) };
   const cropOptions = cropRows.map((c) => ({ slug: c.slug, commonName: c.commonName }));
-  const segmentClass = (active: boolean) => `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
-
   return (
     <AdminShell viewer={viewer} section="varieties" reviewTotal={totalWaiting}>
       <h1 className="text-[28px] font-semibold leading-[1.15]">Varieties</h1>
       <div role="group" aria-label="Varieties section" className="mt-3 flex flex-wrap gap-2">
-        <a href={varietyHref({ variety: explicit, q: params.q, crop: params.crop, show: params.show })} aria-current={!cropsTab ? "true" : undefined} className={segmentClass(!cropsTab)}>
+        <a href={varietyHref({ variety: explicit, q: params.q, crop: params.crop, show: params.show })} aria-current={!cropsTab ? "true" : undefined} className="chip-filter flex items-center">
           Varieties
         </a>
-        <a href={varietyHref({ tab: "crops" })} aria-current={cropsTab ? "true" : undefined} className={segmentClass(cropsTab)}>
+        <a href={varietyHref({ tab: "crops" })} aria-current={cropsTab ? "true" : undefined} className="chip-filter flex items-center">
           Crops
         </a>
       </div>

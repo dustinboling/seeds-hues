@@ -23,7 +23,7 @@ export function StateFilter({ basePath, states, active }: { basePath: string; st
           <li>
             <Link
               href={stateFilterHref(basePath, null)}
-              className={`chip tap ${active === null ? "font-semibold" : ""}`}
+              className="chip-filter"
               aria-current={active === null ? "true" : undefined}
               data-filter="state"
             >
@@ -40,7 +40,7 @@ export function StateFilter({ basePath, states, active }: { basePath: string; st
               <li key={s.code}>
                 <Link
                   href={stateFilterHref(basePath, s.code)}
-                  className={`chip tap gap-1.5 ${on ? "font-semibold" : ""}`}
+                  className="chip-filter gap-1.5"
                   aria-current={on ? "true" : undefined}
                   data-filter="state"
                   data-state={s.code}

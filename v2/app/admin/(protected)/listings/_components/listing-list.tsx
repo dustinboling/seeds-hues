@@ -4,6 +4,7 @@
  * line, and the windowed rows. Chips and rows are links with aria-current — the list
  * works with JS disabled.
  */
+import { ChipRemoveIcon } from "@/components/layout/icons";
 import { formatAdminDate } from "@/lib/admin-auth";
 import { statusWordForListing, type ListingChip } from "@/lib/admin/listings";
 import { listingHref } from "./urls";
@@ -38,10 +39,6 @@ export interface ListingDeepLinks {
   variety: { slug: string; name: string } | null;
 }
 
-function chipClass(active: boolean): string {
-  return `chip tap flex min-h-target items-center ${active ? "font-semibold" : ""}`;
-}
-
 const CHIPS: { key: ListingChip; label: string }[] = [
   { key: "all", label: "All" },
   { key: "active", label: "Active" },
@@ -72,7 +69,7 @@ export function ListingList({ rows, total, params, selected, deepLinks }: { rows
 
       <div role="group" aria-label="Filter by status" className="flex flex-wrap gap-2">
         {CHIPS.map((c) => (
-          <a key={c.key} href={listingHref({ ...base, chip: c.key })} aria-current={chip === c.key ? "true" : undefined} className={chipClass(chip === c.key)}>
+          <a key={c.key} href={listingHref({ ...base, chip: c.key })} aria-current={chip === c.key ? "true" : undefined} className="chip-filter flex items-center">
             {c.label}
           </a>
         ))}
@@ -81,13 +78,15 @@ export function ListingList({ rows, total, params, selected, deepLinks }: { rows
       {seller || variety ? (
         <div className="flex flex-wrap gap-2" aria-label="Deep-link filters">
           {seller ? (
-            <a href={listingHref({ ...base, seller: null })} className="chip tap flex min-h-target items-center" aria-label={`Remove the seller filter, Seller: ${deepLinks.seller?.name ?? seller}`}>
-              Seller: {deepLinks.seller?.name ?? seller} <span aria-hidden="true" className="ml-1 font-semibold">×</span>
+            <a href={listingHref({ ...base, seller: null })} className="chip-filter chip-removable flex items-center" aria-label={`Remove the seller filter, Seller: ${deepLinks.seller?.name ?? seller}`}>
+              Seller: {deepLinks.seller?.name ?? seller}
+              <ChipRemoveIcon className="size-3.5 shrink-0" />
             </a>
           ) : null}
           {variety ? (
-            <a href={listingHref({ ...base, variety: null })} className="chip tap flex min-h-target items-center" aria-label={`Remove the variety filter, Variety: ${deepLinks.variety?.name ?? variety}`}>
-              Variety: {deepLinks.variety?.name ?? variety} <span aria-hidden="true" className="ml-1 font-semibold">×</span>
+            <a href={listingHref({ ...base, variety: null })} className="chip-filter chip-removable flex items-center" aria-label={`Remove the variety filter, Variety: ${deepLinks.variety?.name ?? variety}`}>
+              Variety: {deepLinks.variety?.name ?? variety}
+              <ChipRemoveIcon className="size-3.5 shrink-0" />
             </a>
           ) : null}
         </div>

@@ -85,3 +85,16 @@ export const ProtectionIcon = ({ className = "" }: { className?: string }) => (
     <path d="m9.2 11.6 2 2 3.8-4.4" />
   </svg>
 );
+/**
+ * Removable-chip close mark (Tranche 2.3, SPEC §4.4): the drawn cross for
+ * applied-filter remover chips, to the interface icon family's rules (24px
+ * grid, stroke 1.8, currentColor, no fill). The caller sizes it (remover chips
+ * render it at 14px via size-3.5); the chip's accessible name carries the
+ * meaning alone, so the glyph is always aria-hidden and never focusable.
+ */
+export const ChipRemoveIcon = ({ className = "" }: { className?: string }) => (
+  <svg {...base} className={className}>
+    <path d="M6 6l12 12" />
+    <path d="M18 6 6 18" />
+  </svg>
+);

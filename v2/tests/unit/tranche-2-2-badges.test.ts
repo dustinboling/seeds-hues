@@ -16,8 +16,9 @@
  *   petal left in the component, and the render gate unchanged (2.2-E).
  * - R-2: the listing In stock dot and word darken leaf-600 to leaf; every other
  *   listing state is unchanged.
- * - Scope guards: RoleChip and AdminShell are untouched (their migration is
- *   item 2.3), and no chip split exists yet.
+ * - Scope guards: AdminShell is untouched (the review-count pill keeps its
+ *   dress); RoleChip and the chip split migrated under item 2.3, pinned here
+ *   in their migrated state.
  *
  * Every set asserted about a source file is derived from that file at test
  * time: tone values from tokens.json, the Availability TONE map and the
@@ -465,20 +466,22 @@ describe("2.2 — Listing status line (R-2; STATUS_TONE derived from source)", (
 });
 
 describe("2.2 — scope guards (item 2.2 surfaces only)", () => {
-  it("RoleChip is untouched: still a chip, no badge class (its migration is 2.3)", () => {
+  it("RoleChip migrated under 2.3: an inert tag with its §3.2 tone, no badge class, no bare chip", () => {
     const role = readSource("components/admin/RoleChip.tsx");
-    expect(role).toContain('"chip');
+    expect(role).toContain("chip-tag");
+    expect(role).toContain("bg-leaf-50 font-semibold text-leaf");
     expect(role).not.toContain("badge-");
+    expect(role).not.toMatch(/"chip[\s"]/);
   });
 
   it("AdminShell is untouched: the review-count pill keeps its dress", () => {
     expect(readSource("components/admin/AdminShell.tsx")).not.toContain("badge-");
   });
 
-  it("no chip split exists yet: bare .chip stands, filter/tag classes do not", () => {
-    expect(css).toContain(".chip {");
-    for (const future of ["chip-filter", "chip-tag", "chip-removable"]) {
-      expect(css, future).not.toContain(future);
+  it("the 2.3 chip split stands: bare .chip retired, filter/tag classes defined", () => {
+    expect(css).not.toContain(".chip {");
+    for (const rule of ["chip-filter", "chip-tag", "chip-removable"]) {
+      expect(css, rule).toContain(rule);
     }
   });
 });
