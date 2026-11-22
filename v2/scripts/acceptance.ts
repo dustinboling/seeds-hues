@@ -547,7 +547,7 @@ async function main() {
     const t = text(h);
     assert(t.includes("As of Nov 15, 2026, 1 seller lists King's Ransom: Songbird Seed Co."), "answer sentence");
     assert(t.includes("Songbird Seed Co.") && /Skagit Valley, WA/.test(t), "seller + region");
-    assert(t.includes("In stock") && t.includes("Last checked 2026-11-15"), "stock state / last checked");
+    assert(t.includes("In stock") && /Checked (Nov 15|today|yesterday)/.test(t), "stock state / last checked");
     assert(/<a href="\/go\/\d+" rel="nofollow noopener noreferrer"/.test(h) && t.includes("Shop at Songbird Seed Co."), "Shop button via /go");
     assert(t.includes("Not yet rated") && t.includes("Also sold as"), "rating / also sold as");
     assert(h.includes('href="/report?variety=sweet-pea-kings-ransom"'), "report link");
@@ -588,7 +588,7 @@ async function main() {
   });
   await check("Emma sold out; Dawn Creek Pastels unknown availability (labels)", async () => {
     assert(text(crawled.get("/variety/sweet-pea-emma")!).includes("Sold out"), "Emma");
-    assert(/Unknown\s+Last checked 2026-11-15/.test(text(crawled.get("/variety/zinnia-dawn-creek-pastels")!)), "Dawn Creek Pastels");
+    assert(/Unknown · Checked (Nov 15|today|yesterday)/.test(text(crawled.get("/variety/zinnia-dawn-creek-pastels")!)), "Dawn Creek Pastels");
   });
   await check("index rule (owner ruling 2026-11-16): all 778 varieties indexable; robots meta matches the API flag", async () => {
     let idx = 0;
