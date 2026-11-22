@@ -1,0 +1,44 @@
+# Verify — the repo's own verification gate for every change (seeds-hues).
+#
+# Muse runs are already gated: the `Muse` workflow runs
+# `npm run verify` in `v2/` after the Muse run and opens no pull request
+# unless it passes. Human-authored changes had no such gate — no workflow
+# ran on push or pull request at all. This workflow closes that gap: every
+# push to `main` and every pull request gets the same verification Muse
+# runs get.
+#
+# The live app is the Next.js app in `v2/` (the root `app/` is a legacy
+# static site), so the gate installs and verifies in `v2/`.
+# `npm run verify` is lint + typecheck + vitest.
+
+name: Verify
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: v2/package-lock.json
+
+      - name: Install dependencies
+        working-directory: v2
+        run: npm ci
+
+      - name: Gate on the repo's own tests
+        working-directory: v2
+        run: npm run verify

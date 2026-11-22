@@ -52,7 +52,6 @@ on:
         description: "Task prompt file for Muse to run"
         type: string
         required: true
-        default: "muse-tasks/fix-soft-404.md"
       max_model_steps:
         description: "Maximum model steps for the headless Muse run"
         type: number
@@ -82,9 +81,6 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: v2/package-lock.json
-
-      - name: Install bubblewrap (required for the Muse sandbox on Linux)
-        run: sudo apt-get update && sudo apt-get install -y bubblewrap
 
       - name: Install Muse Code
         run: |
@@ -153,13 +149,21 @@ jobs:
           git commit -m "Muse: $(basename "${{ inputs.task_file }}")"
           git push origin "$BRANCH"
 
+          # The PR title comes from the task file itself: its first H1
+          # line ("# ..."), stripped of the "# " prefix. If the task file
+          # has no H1, fall back to the file's basename.
+          PR_TITLE="$(grep -m 1 '^# ' "${{ inputs.task_file }}" | sed 's/^# //')"
+          if [ -z "$PR_TITLE" ]; then
+            PR_TITLE="$(basename "${{ inputs.task_file }}")"
+          fi
+
           gh pr create \
             --base main \
             --head "$BRANCH" \
-            --title "Muse: fix soft-404 on seller and crop pages" \
-            --body "This pull request is the first Muse Code run for this repository.
+            --title "$PR_TITLE" \
+            --body "This pull request was produced by a manually dispatched \`Muse\` workflow run.
 
           - Task file used: \`${{ inputs.task_file }}\`
-          - Produced by the manually dispatched \`Muse\` workflow (run ${{ github.run_id }}); the full Muse run log is attached to that workflow run as the \`muse-run-log\` artifact.
-          - Gate: \`npm run verify\` in \`v2/\` passed in the workflow after the Muse run — no PR is created when verification fails.
-          - Not auto-merged. Hue verifies the change live before any merge."
+          - Workflow run: ${{ github.run_id }}; the full Muse run log is attached to that workflow run as the \`muse-run-log\` artifact.
+          - Gate: \`npm run verify\` in \`v2/\` passed in the workflow before this PR was created — no PR is created when verification fails.
+          - Not auto-merged. Hue verifies the change before any merge."
