@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
+import { Suspense } from "react";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
 import { Pagination } from "@/components/ui/Pagination";
 import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
@@ -26,8 +27,9 @@ import {
 import { legacySlug } from "@/lib/legacy";
 import { plural } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/config";
-import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
+import { METHOD_PARAMS, SEASON_PARAMS, type VarietyListItem } from "@/lib/validators";
 import { EMPTY_BROWSE, SMALL_FARM_EMPTY_BROWSE, parseSmallFarmParam } from "@/lib/small-farm";
+import { VarietiesSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function VarietiesPage({ searchParams }: Props) {
+  // Soft-404 fix: the bounds check below resolves BEFORE anything streams (this segment has no
+  // loading.tsx), so pages past the end answer a true 404. The skeleton lives on as the inner
+  // Suspense fallback — the page's single loading announcement.
   const sp = await searchParams;
   // R10: v1 query URLs → 308 to the clean URL.
   const legacy = legacySlug(sp.v);
@@ -82,6 +87,28 @@ export default async function VarietiesPage({ searchParams }: Props) {
     page: pageWindow(page),
   });
   assertPageInRange(page, total);
+  return (
+    <Suspense fallback={<VarietiesSkeleton />}>
+      <VarietiesContent items={items} total={total} page={page} filters={filters} active={active} navKey={navKey} />
+    </Suspense>
+  );
+}
+
+function VarietiesContent({
+  items,
+  total,
+  page,
+  filters,
+  active,
+  navKey,
+}: {
+  items: VarietyListItem[];
+  total: number;
+  page: number;
+  filters: BrowseFilterState;
+  active: string[];
+  navKey: string;
+}) {
   const pages = totalPages(total);
   const crumbs = [
     { name: "Home", href: "/" },

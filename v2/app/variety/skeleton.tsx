@@ -7,7 +7,14 @@ import {
   VarietyGridSkeleton,
 } from "@/components/ui/Skeleton";
 
-export default function Loading() {
+/**
+ * Varieties index loading fallback (soft-404 fix): the former segment loading.tsx, demoted to the
+ * inner Suspense fallback inside VarietiesPage. Same tree, same geometry, same "Loading varieties…"
+ * label — the bounds check now resolves before anything streams, so pages past the end answer a
+ * true 404 instead of streaming this shell with a 200. This is the page's single loading
+ * announcement; add no nested LoadingShells.
+ */
+export function VarietiesSkeleton() {
   return (
     <LoadingShell label="Loading varieties…">
       {/* BreadcrumbSkeleton, never the real Breadcrumbs — its links would be

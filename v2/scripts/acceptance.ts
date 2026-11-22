@@ -21,6 +21,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { SMALL_FARM_BADGE_SLUGS } from "@/lib/catalog/small-farm-classification";
+import { stateSlugOf } from "@/lib/data/states";
+import { totalPages } from "@/lib/paging";
 import { openPlatform, parseArgs } from "./lib/platform";
 
 const args = parseArgs();
@@ -257,6 +259,113 @@ async function main() {
       const r = await get(p);
       assert(r.status === 404, `status ${r.status}`);
     });
+  }
+
+  section("Pagination bounds: last page 200s, past-the-end 404s (tranche 3.5)");
+  {
+    // Every totals-derived number below comes from the live page's own count line — no
+    // catalog counts are hardcoded, so this holds for any catalog size on any base.
+    // Body markers account for the RSC flight payload: it duplicates page text — including
+    // the not-found copy on 200s — and carries the 404's not-found tree, so the 200
+    // negative is literal-HTML anchored (<h1 id="nf-title">, never present in flight data)
+    // while the 404 positive matches the marker in either form plus the terminal digest.
+    const firstCount = (re: RegExp, h: string, what: string): number => {
+      const m = re.exec(h);
+      assert(m?.[1], `no ${what} count in page`);
+      return Number(m[1].replace(/,/g, ""));
+    };
+    const absurd = (pages: number): number => pages * 100;
+    const paged = (path: string, page: number): string => `${path}${path.includes("?") ? "&" : "?"}page=${page}`;
+    const loadTotal = async (label: string, path: string, re: RegExp, what: string): Promise<number | null> => {
+      let total: number | null = null;
+      await check(`${label}: page 1 → 200 with a parseable count`, async () => {
+        total = firstCount(re, await html(path), what);
+        return `${total} rows`;
+      });
+      return total;
+    };
+    const probeBounds = async (label: string, path: string, total: number): Promise<void> => {
+      const pages = totalPages(total);
+      await check(`${label}: last page (?page=${pages} of ${pages}) → 200`, async () => {
+        const r = await get(paged(path, pages));
+        assert(r.status === 200, `status ${r.status}`);
+        assert(!((await r.text()).includes('<h1 id="nf-title"')), "last page renders the not-found body");
+      });
+      for (const p of [pages + 1, absurd(pages)]) {
+        await check(`${label}: ?page=${p} → 404 (standard not-found, noindex, not self-canonical)`, async () => {
+          const r = await get(paged(path, p));
+          assert(r.status === 404, `status ${r.status}`);
+          const body = await r.text();
+          assert(body.includes("nf-title"), "missing standard not-found body");
+          assert(body.includes("NEXT_HTTP_ERROR_FALLBACK;404"), "404 without the guard's digest");
+          assert(body.includes('content="noindex"'), "404 without noindex");
+          assert(!body.includes('<link rel="canonical"'), "404 carries a canonical link");
+        });
+      }
+    };
+
+    // /variety, unfiltered and filtered — each bounds against its own total.
+    const varietyCount = /id="variety-results-count"[^>]*>([\d,]+)\s+variet(?:y|ies)/;
+    const varietyTotal = await loadTotal("GET /variety", "/variety", varietyCount, "variety");
+    if (varietyTotal !== null) await probeBounds("GET /variety", "/variety", varietyTotal);
+    for (const f of ["season=cool", "method=trays"]) {
+      const t = await loadTotal(`GET /variety?${f}`, `/variety?${f}`, varietyCount, `variety?${f}`);
+      if (t !== null) await probeBounds(`GET /variety?${f}`, `/variety?${f}`, t);
+    }
+    // /seller.
+    const sellerTotal = await loadTotal(
+      "GET /seller",
+      "/seller",
+      /max-w-2xl text-muted">([\d,]+)\s+sellers?/,
+      "seller",
+    );
+    if (sellerTotal !== null) await probeBounds("GET /seller", "/seller", sellerTotal);
+    // /crop/[slug].
+    const cropTotal = await loadTotal(
+      "GET /crop/zinnia",
+      "/crop/zinnia",
+      /data-testid="coverage">([\d,]+)\s+variet(?:y|ies)/,
+      "crop varieties",
+    );
+    if (cropTotal !== null) await probeBounds("GET /crop/zinnia", "/crop/zinnia", cropTotal);
+    // /seller/[slug] + /state/[slug] targets from the catalog: the seller with the most
+    // listings, and the state with the most sellers (either way the probed total comes
+    // from the target page's own count line).
+    let allSellers: { slug: string; region: string | null; varietyCount: number }[] = [];
+    await check("bounds targets: catalog sellers list", async () => {
+      allSellers = (await getJson<{ data: { slug: string; region: string | null; varietyCount: number }[] }>(
+        "/api/v1/sellers?limit=100",
+      )).data;
+      assert(allSellers.length > 0, "no sellers in catalog");
+      return `${allSellers.length} sellers`;
+    });
+    if (allSellers.length > 0) {
+      const topSeller = allSellers.reduce((a, b) => (b.varietyCount > a.varietyCount ? b : a));
+      const listings = await loadTotal(
+        `GET /seller/${topSeller.slug}`,
+        `/seller/${topSeller.slug}`,
+        /id="seller-varieties"[\s\S]{0,400}?>(\d[\d,]*)\s+listings?</,
+        "seller listings",
+      );
+      if (listings !== null) await probeBounds(`GET /seller/${topSeller.slug}`, `/seller/${topSeller.slug}`, listings);
+      const regions = new Map<string, number>();
+      for (const s of allSellers) if (s.region) regions.set(s.region, (regions.get(s.region) ?? 0) + 1);
+      const topRegion = [...regions.entries()].reduce((a, b) => (b[1] > a[1] ? b : a), ["", 0])[0];
+      const stateSlug = stateSlugOf(topRegion || null);
+      if (stateSlug) {
+        const stateTotal = await loadTotal(
+          `GET /state/${stateSlug}`,
+          `/state/${stateSlug}`,
+          /data-state-intro[^>]*>([\d,]+)\s+seed sellers? in /,
+          "state sellers",
+        );
+        if (stateTotal !== null) await probeBounds(`GET /state/${stateSlug}`, `/state/${stateSlug}`, stateTotal);
+      } else {
+        await check("bounds targets: a seller region maps to a state page", async () => {
+          assert(false, `no state slug for region ${topRegion || "(none)"}`);
+        });
+      }
+    }
   }
 
   section("Redirects: plural → singular 308s, legacy ?v=/?s= (R3)");
