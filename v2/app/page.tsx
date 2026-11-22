@@ -95,7 +95,7 @@ export default async function HomePage({ searchParams }: Props) {
         </div>
         <BrowseFilters basePath="/" state={filters} groups={["season", "method"]} />
         {active.length ? (
-          <p className="mt-3 text-muted" data-testid="filter-result">
+          <p className="mt-3 text-muted" data-testid="filter-result" aria-live="polite" aria-atomic="true">
             {[plural(crops.total, "crop"), ...active].join(" · ")}
           </p>
         ) : null}
