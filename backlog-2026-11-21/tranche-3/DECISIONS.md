@@ -66,6 +66,8 @@ Sources: `SPEC.md` (Nadia), `FIELD-STATES-DESIGN.md` (Mina), `ADA-RULINGS-3-3.md
 
 **What it gates:** Item 3.2 (waitlist flip + no-JS fallback) does not start until this is ruled. The rest of Tranche 3 is unaffected.
 
+**RULING — 2026-11-22 (Dustin, via Hue): (a) "Exempt the no-JS endpoint, with the verification hold + rate limiting"** — the team's recommendation adopted. The exemption covers only the form-encoded no-JS create-and-join endpoint, with the compensating controls exactly as specified: alerts stay held until the email is confirmed by the inline verification code, the site's existing rate limiting applies to the endpoint, and Turnstile remains required on the JavaScript path exactly as today. Item 3.2 is un-gated and builds in programme order, with the §11.1 email-code accommodation in its scope and Ada's Ruling 9 (the no-JS redirect-back URL carries the waitlist block's fragment; Quinn check 3.2-G) carried in its brief.
+
 ---
 
 ## 5. PB-A — The filled-state field border (Mina)
@@ -79,6 +81,8 @@ Sources: `SPEC.md` (Nadia), `FIELD-STATES-DESIGN.md` (Mina), `ADA-RULINGS-3-3.md
 **Team recommendation: (a).** Mina: a state set that leaves "filled" undrawn invites engineering to invent it. The cost, stated plainly: on a nearly complete form, most borders read darker — the form visibly *fills up* as it's worked, which Mina judges satisfying ledger feedback and Dustin may judge heaviness.
 
 **What it gates:** Item 3.3's build (field states). The rest of the field-state set is untouched by either ruling.
+
+**RULING — 2026-11-22 (Dustin, via Hue): (a) "Ink-soft border on filled fields"** — Mina's recommendation adopted. A filled field's border darkens from line-strong to ink-soft (#4A4438, Ada-verified). Item 3.3's build carries it in its field-state set.
 
 ---
 
