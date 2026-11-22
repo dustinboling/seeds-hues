@@ -21,6 +21,7 @@ import { PAGE_SIZE } from "@/lib/config";
 import { stateByCode } from "@/lib/data/states";
 import { statePlateFor } from "@/lib/data/state-plates";
 import { SMALL_FARM_LEGEND } from "@/lib/small-farm";
+import { SELLER_NO_LISTINGS } from "@/lib/zero-seller";
 import type { SellerDetail } from "@/lib/validators";
 import { SellerSkeleton } from "./skeleton";
 
@@ -186,7 +187,7 @@ function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
           </p>
           {shown.length === 0 ? (
             <p className="mt-3 text-muted">
-              No listings for this seller yet. <Link href="/variety">Browse all varieties</Link>.
+              {SELLER_NO_LISTINGS} <Link href="/variety">Browse all varieties</Link>.
             </p>
           ) : (
             <ul className="mt-3 flex flex-col gap-3 lg:grid lg:grid-cols-2">

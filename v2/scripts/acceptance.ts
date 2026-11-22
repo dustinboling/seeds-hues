@@ -459,12 +459,12 @@ async function main() {
     assert(allHref === "/crop/sweet-pea", `filtered Sellers "All" chip href ${allHref}`);
     return `${filteredCount} of ${unfilteredCount} varieties have sellers`;
   });
-  await check("zero-seller crop: ?has_sellers=true shows the 'No sellers yet for this crop' empty state; unfiltered shows cards", async () => {
+  await check("zero-seller crop: ?has_sellers=true shows the canonical zero-seller empty state; unfiltered shows cards", async () => {
     const cov = await getJson<{ data: { crop: { slug: string }; varieties: number; varieties_with_sellers: number }[] }>("/api/v1/coverage");
     const crop = cov.data.find((r) => r.varieties > 0 && r.varieties_with_sellers === 0)?.crop.slug;
     assert(crop, "no crop with varieties and zero sellers in /api/v1/coverage");
     const [all, only] = await Promise.all([html(`/crop/${crop}`), html(`/crop/${crop}?has_sellers=true`)]);
-    assert(text(only).includes("No sellers yet for this crop"), `${crop}: empty-state text missing`);
+    assert(/No seller found selling .+ yet\./.test(text(only)), `${crop}: empty-state text missing`);
     assert(gridSlugs(only).length === 0, `${crop}: filtered grid renders cards`);
     assert(gridSlugs(all).length >= 1, `${crop}: unfiltered grid renders no cards`);
     return crop;
@@ -545,7 +545,7 @@ async function main() {
   await check("King's Ransom: answer sentence, seller, region, stock state, Last checked, Shop → /go, no source attributions", async () => {
     const h = crawled.get("/variety/sweet-pea-kings-ransom")!;
     const t = text(h);
-    assert(t.includes("As of 2026-11-15, 1 seller lists King's Ransom: Songbird Seed Co."), "answer sentence");
+    assert(t.includes("As of Nov 15, 2026, 1 seller lists King's Ransom: Songbird Seed Co."), "answer sentence");
     assert(t.includes("Songbird Seed Co.") && /Skagit Valley, WA/.test(t), "seller + region");
     assert(t.includes("In stock") && t.includes("Last checked 2026-11-15"), "stock state / last checked");
     assert(/<a href="\/go\/\d+" rel="nofollow noopener noreferrer"/.test(h) && t.includes("Shop at Songbird Seed Co."), "Shop button via /go");
@@ -583,7 +583,7 @@ async function main() {
     for (const f of ["Pollination Unknown", "Days to bloom Unknown"]) assert(t.includes(f), `missing "${f}"`);
     assert(text(crawled.get("/variety/sweet-pea-susan-burgess")!).includes("Hue Unknown"), 'missing "Hue Unknown"');
     assert(t.includes("No seller found selling Katz Mix yet."), "zero-seller answer");
-    assert(t.includes("No sellers yet — currently unavailable."), "zero-seller where-to-buy state");
+    assert(!t.includes("currently unavailable"), "old where-to-buy wording gone");
     assert(t.includes("Know a seller who sells it?"), "zero-seller report prompt");
   });
   await check("Emma sold out; Dawn Creek Pastels unknown availability (labels)", async () => {

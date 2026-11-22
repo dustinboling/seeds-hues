@@ -12,6 +12,7 @@ import {
 import { varietyDescription, varietyTitle } from "@/lib/seo/metadata";
 import { answerSentence } from "@/lib/services/catalog";
 import { templateDescription } from "@/lib/services/template";
+import { ZERO_SELLER_TITLE, zeroSellerSentence } from "@/lib/zero-seller";
 import type { PublicListing, SellerDetail, VarietyDetail } from "@/lib/validators";
 
 const listing = (id: number, sellerSlug: string, sellerName: string, checked: string): PublicListing => ({
@@ -113,16 +114,18 @@ describe("JSON-LD per the canonical §5 table (R4)", () => {
 describe("answer sentence + titles (canonical §5 GEO/SEO) — data only, no prices", () => {
   it("names the date, the count and the sellers", () => {
     expect(answerSentence("King's Ransom", [listing(1, "a", "Farm A", "2026-11-15"), listing(2, "b", "Farm B", "2026-11-14")])).toBe(
-      "As of 2026-11-15, 2 sellers list King's Ransom: Farm A and Farm B.",
+      "As of Nov 15, 2026, 2 sellers list King's Ransom: Farm A and Farm B.",
     );
-    expect(answerSentence("Emma", [listing(1, "a", "Farm A", "2026-11-15T09:12:00Z")])).toBe("As of 2026-11-15, 1 seller lists Emma: Farm A.");
+    expect(answerSentence("Emma", [listing(1, "a", "Farm A", "2026-11-15T09:12:00Z")])).toBe("As of Nov 15, 2026, 1 seller lists Emma: Farm A.");
+    expect(answerSentence("Katz Mix", [])).toBe(zeroSellerSentence("Katz Mix"));
     expect(answerSentence("Katz Mix", [])).toBe("No seller found selling Katz Mix yet.");
   });
 
   it("titles aim at where-to-buy intent with the seller count; descriptions carry no price", () => {
     const v = variety([listing(1, "a", "Farm A", "2026-11-15")]);
     expect(varietyTitle(v)).toBe("Test Sweet Pea Seeds — Where to Buy (1 Seller)");
-    expect(varietyTitle(variety([]))).toBe("Test Sweet Pea Seeds — Where to Buy (No Seller Listing Yet)");
+    expect(varietyTitle(variety([]))).toBe(`Test Sweet Pea Seeds — Where to Buy (${ZERO_SELLER_TITLE})`);
+    expect(varietyTitle(variety([]))).toBe("Test Sweet Pea Seeds — Where to Buy (No Seller Found Yet)");
     expect(varietyDescription(v)).not.toMatch(/\$\d/);
   });
 });
@@ -130,7 +133,7 @@ describe("answer sentence + titles (canonical §5 GEO/SEO) — data only, no pri
 describe("template descriptions", () => {
   it("are deterministic and use only sourced facts", () => {
     const a = templateDescription({ varietyName: "Katz Mix", commonName: "Stock", latinName: "Matthiola incana", sellerCount: 0 });
-    expect(a).toBe("Katz Mix is a Stock variety (Matthiola incana). No seller in this directory lists it yet.");
+    expect(a).toBe(`Katz Mix is a Stock variety (Matthiola incana). ${zeroSellerSentence("Katz Mix")}`);
     const b = templateDescription({ varietyName: "Juliet", commonName: "Iceland Poppy", latinName: "Papaver nudicaule", sellerCount: 2 });
     expect(b).toBe("Juliet is an Iceland Poppy variety (Papaver nudicaule). It is listed by 2 seed sellers in this directory.");
     expect(templateDescription({ varietyName: "X", commonName: "Cornflower / Bachelor's Buttons", latinName: "Centaurea cyanus", sellerCount: 1 })).toContain(

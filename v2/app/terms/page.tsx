@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactLine } from "@/components/layout/ContactLine";
 import { TRADEMARK_DISCLAIMER } from "@/lib/config";
+import { formatFriendlyDate } from "@/lib/format";
 import { pageMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = pageMetadata({
@@ -39,7 +40,7 @@ export default function TermsPage() {
         If something is wrong, contact <ContactLine subject="Correction" />. Seller removal requests (via the
         report form) are honoured within 48 hours.
       </p>
-      <p className="text-sm text-muted">Last updated 2026-11-16.</p>
+      <p className="text-sm text-muted">Last updated {formatFriendlyDate("2026-11-16")}.</p>
     </article>
   );
 }

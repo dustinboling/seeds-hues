@@ -125,7 +125,7 @@ describe("derivations + spot checks (task 3)", () => {
       confidence: 1,
     });
     expect(l.goUrl).toBe(`https://seeds.hues.flowers/go/${l.id}`);
-    expect(v.answer).toBe("As of 2026-11-15, 1 seller lists King's Ransom: Songbird Seed Co.");
+    expect(v.answer).toBe("As of Nov 15, 2026, 1 seller lists King's Ransom: Songbird Seed Co.");
   });
 
   it("Songbird × Emma: sold_out; Floret × Dawn Creek Pastels: unknown availability", async () => {
