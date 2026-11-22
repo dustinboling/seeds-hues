@@ -65,6 +65,7 @@
   --badge-small-farm-standard-mark-size: 13px;
   --badge-small-farm-large-font-size: 13px;
   --badge-small-farm-large-line-height: 18px;
+  --chip-removable-glyph-size: 14px;
   --breakpoint-admin: 744px;
   --breakpoint-admin-wide: 1181px;
 
@@ -231,10 +232,22 @@
       display: none;
     }
   }
-  .chip {
+  /*
+   * Chip split (Tranche 2.3, SPEC tranche-2 §4): the pre-split single chip class
+   * is retired. Two classes replace it, both from the token file's chip group.
+   * Shared DNA: full radius, 1px line-strong border, surface ground, ink text, sans 14px/1.5.
+   * `.chip-filter` is interactive (<a> or <button> only, 44px in both dimensions —
+   * the minimum width preserves the pre-split 44px tap width, SPEC §4.2 F-1 cure);
+   * `.chip-tag` is inert (<span> only, 32px, no interactive states, no hover rule).
+   * `.chip-removable` marks an applied-filter remover: same geometry and states
+   * plus the drawn close glyph (ChipRemoveIcon, 14px) with a 6px gap after the
+   * label. The crop rows carry aria-current="true" now, so no "page" selector.
+   */
+  .chip-filter {
     display: inline-flex;
     align-items: center;
-    min-height: 2rem;
+    min-height: var(--size-target);
+    min-width: var(--size-target);
     padding: 0.125rem 0.75rem;
     border-radius: 999px;
     border: 1px solid var(--color-line-strong);
@@ -248,22 +261,44 @@
       background-color 160ms ease-out,
       border-color 160ms ease-out;
   }
-  a.chip:hover,
-  button.chip:hover {
+  a.chip-filter:hover,
+  button.chip-filter:hover {
     border-color: var(--color-leaf-600);
     background: var(--color-leaf-50);
     color: var(--color-ink);
   }
-  .chip[aria-current="page"],
-  .chip[aria-current="true"],
-  .chip[aria-pressed="true"] {
+  .chip-filter[aria-current="true"],
+  .chip-filter[aria-pressed="true"] {
     border-color: var(--color-leaf);
     background: var(--color-leaf-50);
     color: var(--color-leaf);
+    font-weight: 600;
   }
   /* Hydrated toggle chips are <button>s: same pointer cursor as the pre-hydration links. */
-  button.chip {
+  button.chip-filter {
     cursor: pointer;
+  }
+  .chip-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.125rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+  }
+  /*
+   * Removable-filter marker (SPEC §4.4, rendered change R-3): always carried with
+   * .chip-filter, never alone. The only declaration is the 6px gap the drawn
+   * glyph sits in after the label; geometry and states come from .chip-filter.
+   */
+  .chip-removable {
+    gap: 6px;
   }
   /*
    * Badge family (Tranche 2.2, SPEC tranche-2 §3): one base construction, tone

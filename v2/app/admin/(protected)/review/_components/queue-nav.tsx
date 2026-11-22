@@ -19,7 +19,7 @@ export function QueueNav({ active, counts }: { active: QueueKey; counts: Record<
               <a
                 href={reviewHref({ queue: q.key })}
                 aria-current={current ? "true" : undefined}
-                className={`chip tap flex min-h-target items-center gap-2 ${current ? "font-semibold" : ""}`}
+                className="chip-filter flex items-center gap-2"
               >
                 <span>{q.name}</span>
                 <span className="text-sm tabular-nums text-muted">{n === 0 ? "All clear" : n}</span>

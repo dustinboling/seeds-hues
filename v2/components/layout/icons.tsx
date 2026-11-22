@@ -85,3 +85,16 @@ export const ProtectionIcon = ({ className = "" }: { className?: string }) => (
     <path d="m9.2 11.6 2 2 3.8-4.4" />
   </svg>
 );
+/**
+ * Removable-chip close mark (Tranche 2.3, SPEC §4.4, rendered change R-3): a drawn
+ * × — two diagonal strokes on the family's 24px grid (stroke 1.8, currentColor, no
+ * fill), never the Sheet's typographic character. The whole chip stays one hit
+ * target; the glyph is decoration, always aria-hidden. The caller sizes it (the
+ * listing-list removers render it at 14px via the removable glyph-size token).
+ */
+export const ChipRemoveIcon = ({ className = "" }: { className?: string }) => (
+  <svg {...base} className={className}>
+    <path d="M6 6l12 12" />
+    <path d="M18 6 6 18" />
+  </svg>
+);
