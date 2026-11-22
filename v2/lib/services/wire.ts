@@ -14,5 +14,6 @@ export function servicesFor(db: Db, env: RuntimeEnv): Services {
     siteUrl: env.siteUrl,
     unsubscribeKey: env.unsubscribeKey ?? null,
     adminNotifyEmail: env.adminNotifyEmail ?? null,
+    analyticsToken: env.analyticsToken ?? null,
   });
 }

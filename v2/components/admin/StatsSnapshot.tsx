@@ -1,7 +1,8 @@
 /**
  * Dashboard stats snapshot band, wired (spec §7 B, Slice D): the four site cards over
- * the fixed 7-day window — Visitors in its not-connected state (no number, ever), the
- * other three live with Stat number, delta-or-thin-line and a 7-bar mini trend. The
+ * the fixed 7-day window — Visitors live from Web Analytics when its read token is
+ * set, else its designed no-data state — with Stat number, delta-or-thin-line and a
+ * 7-bar mini trend on the live cards. The
  * whole card is the tap target. A failed band degrades to its error card with Retry;
  * one failed card never blanks the other three.
  */

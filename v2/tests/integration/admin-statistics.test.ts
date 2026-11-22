@@ -11,8 +11,10 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createTestD1, type TestD1 } from "../helpers/d1";
+import { mockAnalyticsServer, type AnalyticsFixtureRow } from "../helpers/analytics-mock";
 import { createServices, type Services } from "@/lib/services";
 import { createAdminStatisticsService } from "@/lib/admin/statistics";
+import { CF_ANALYTICS_SITE_TAG, VISITORS_REQUEST_HOST } from "@/lib/admin/visitors";
 import type { Db } from "@/lib/db/client";
 import * as adminRepo from "@/lib/repositories/admin";
 import * as accountsRepo from "@/lib/repositories/accounts";
@@ -411,5 +413,38 @@ describe("snapshot and error degradation", () => {
     }
     const snap = await broken.snapshot();
     expect(snap.cards.filter((c) => c.key !== "visitors").every((c) => c.error)).toBe(true);
+  });
+});
+
+describe("visitors live (Web Analytics read path)", () => {
+  it("renders the host's pageloads live while the other three cards stay exactly themselves", async () => {
+    const rows: AnalyticsFixtureRow[] = [];
+    const push = (from: string, to: string, host: string, count: number) => {
+      for (let d = from; d <= to; d = new Date(Date.parse(`${d}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10)) rows.push({ date: d, host, count });
+    };
+    push("2026-11-07", "2026-11-13", VISITORS_REQUEST_HOST, 10);
+    push("2026-11-14", "2026-11-19", VISITORS_REQUEST_HOST, 5);
+    rows.push({ date: "2026-11-20", host: VISITORS_REQUEST_HOST, count: 50 });
+    push("2026-11-07", "2026-11-20", "www.hues.flowers", 999);
+    const server = mockAnalyticsServer(rows);
+    const svc = createAdminStatisticsService(t.db, {
+      now: () => new Date("2026-11-20T12:00:00.000Z"),
+      analyticsToken: "test-analytics-token",
+      analyticsFetch: server.fetchFn,
+    });
+    const overview = await svc.overview("7d");
+    const visitors = overview.cards.find((c) => c.key === "visitors")!;
+    expect(visitors.error).toBe(false);
+    expect(visitors.total).toBe(80);
+    expect(visitors.delta).toEqual({ kind: "up", text: "▲ 14% up" });
+    expect(visitors.trend!.summary).toBe("Visitors peaked on Friday, Nov 20, with 50.");
+    expect(visitors.caption).toContain("Pageloads from Cloudflare Web Analytics for seeds.hues.flowers");
+    // The other three cards are untouched by the wiring: the same totals pinned above.
+    expect(overview.cards.find((c) => c.key === "accounts")).toMatchObject({ total: 8, delta: { kind: "up", text: "▲ 100% up" } });
+    expect(overview.cards.find((c) => c.key === "waitlist")!.total).toBe(17);
+    expect(overview.cards.find((c) => c.key === "clicks")!.total).toBe(25);
+    // And the one query carried both filters over the previous + current periods.
+    expect(server.seen).toHaveLength(1);
+    expect(server.seen[0]!.variables).toMatchObject({ siteTag: CF_ANALYTICS_SITE_TAG, requestHost: VISITORS_REQUEST_HOST, from: "2026-11-07", to: "2026-11-20" });
   });
 });

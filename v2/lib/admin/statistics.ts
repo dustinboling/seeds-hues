@@ -11,6 +11,7 @@ import { formatAdminDate } from "@/lib/admin-auth";
 import * as accountsRepo from "@/lib/repositories/accounts";
 import * as events from "@/lib/repositories/events";
 import * as waitlist from "@/lib/repositories/waitlist";
+import { fetchVisitorsDaily } from "./visitors";
 
 // ─── Params (?range= ?signal= ?show= — they compose) ─────────────────────────
 
@@ -258,9 +259,15 @@ export function trendSummary(label: string, buckets: TrendBucket[], weekly: bool
 
 // ─── Pinned copy ─────────────────────────────────────────────────────────────
 
-/** Visitors has no live source in this slice — the card ships in its designed no-data state. */
+/**
+ * Visitors falls back to its designed no-data state whenever the Web Analytics read
+ * token is unset or the API fails — the card shows the line and no number, never an
+ * error. The live card captions its number with VISITORS_SOURCE instead.
+ */
 export const VISITORS_LINE_H = "Visitor counts come from Cloudflare Web Analytics. It isn’t connected to the directory yet, so there are no visitor numbers to show.";
 export const VISITORS_LINE_HOME = "Not connected yet — visitor counts come from Cloudflare Web Analytics.";
+/** The live Visitors caption's source clause: what the number counts and where it comes from. */
+export const VISITORS_SOURCE = "Pageloads from Cloudflare Web Analytics for seeds.hues.flowers";
 
 /** The waitlist ranking is current, not period-bound — its caption says so. */
 export const WAITLIST_RANGE_LINE = "The current waiting list — it doesn’t change with the date range.";
@@ -398,15 +405,21 @@ function prevByValueThenSlug(a: { prev: number; slug: string }, b: { prev: numbe
   return b.prev - a.prev || (a.slug < b.slug ? -1 : 1);
 }
 
-export function createAdminStatisticsService(db: Db, deps: { now?: () => Date } = {}) {
+export function createAdminStatisticsService(
+  db: Db,
+  deps: { now?: () => Date; analyticsToken?: string | null; analyticsFetch?: typeof fetch; analyticsTimeoutMs?: number } = {},
+) {
   const now = deps.now ?? (() => new Date());
   const today = () => now().toISOString().slice(0, 10);
+  const analyticsToken = deps.analyticsToken ?? null;
+  const analyticsFetch = deps.analyticsFetch;
+  const analyticsTimeoutMs = deps.analyticsTimeoutMs;
 
   function errorCard(key: SiteCardKey, label: string, href: string, caption: string): SiteCardData {
     return { key, label, href, caption, total: null, delta: null, trend: null, thinLine: null, noData: null, error: true };
   }
 
-  function visitorsCard(period: StatPeriod, home: boolean): SiteCardData {
+  function darkVisitorsCard(period: StatPeriod, home: boolean): SiteCardData {
     return {
       key: "visitors",
       label: "Visitors",
@@ -419,6 +432,44 @@ export function createAdminStatisticsService(db: Db, deps: { now?: () => Date } 
       noData: home ? VISITORS_LINE_HOME : VISITORS_LINE_H,
       error: false,
     };
+  }
+
+  /**
+   * Visitors, live from Cloudflare Web Analytics when the read token is set: the same
+   * total / delta-or-thin-line / trend / caption shape as the first-party cards, over
+   * the host's daily pageloads. No token, no collection evidence, or any API failure
+   * keeps the designed no-data state — the card never errors and never throws.
+   */
+  async function visitorsCard(period: StatPeriod, weekly: boolean, home: boolean): Promise<SiteCardData> {
+    try {
+      if (!analyticsToken) return darkVisitorsCard(period, home);
+      const res = await fetchVisitorsDaily(analyticsToken, period.prevStart, period.end, { fetchFn: analyticsFetch, timeoutMs: analyticsTimeoutMs });
+      if (!res || !res.since) return darkVisitorsCard(period, home);
+      const thin = thinState(res.since, period.prevStart, period.start, today());
+      let cur = 0;
+      let prev = 0;
+      for (const [d, n] of res.byDay) {
+        if (d >= period.start) cur += n;
+        else prev += n;
+      }
+      const from = period.start < res.since ? res.since : period.start;
+      const buckets = weekly ? weeklyTrend(from, period.end, res.byDay) : dailyTrend(from, period.end, res.byDay);
+      const caption = `${period.caption} · ${VISITORS_SOURCE}${thin.dataBegins ? ` · ${thin.dataBegins}` : ""}`;
+      return {
+        key: "visitors",
+        label: "Visitors",
+        href: "/admin/statistics",
+        caption,
+        total: cur,
+        delta: thin.thin ? null : statDelta(cur, prev),
+        trend: { buckets, summary: trendSummary("Visitors", buckets, weekly) },
+        thinLine: thin.thinLine,
+        noData: null,
+        error: false,
+      };
+    } catch {
+      return darkVisitorsCard(period, home);
+    }
   }
 
   /** One live site card: total, delta-or-thin-line, trend, caption. A failed signal degrades to that card's error state — never a thrown page. */
@@ -600,17 +651,18 @@ export function createAdminStatisticsService(db: Db, deps: { now?: () => Date } 
   }
 
   return {
-    /** H's site band: the four cards over `range` (visitors in its no-data state). */
+    /** H's site band: the four cards over `range` (visitors live when the read token is set, else its no-data state). */
     async overview(range: StatRange): Promise<StatisticsOverview> {
       const t = today();
       const period = statPeriod(t, range);
       const weekly = range === "12w";
-      const [accounts, waitlistCard, clicks] = await Promise.all([
+      const [visitors, accounts, waitlistCard, clicks] = await Promise.all([
+        visitorsCard(period, weekly, false),
         siteCard("accounts", "New accounts", "/admin/statistics", period, weekly, NO_ACCOUNTS_YET, () => accountsRepo.accountsDataSince(db), (from, to) => accountsRepo.accountsCreatedDaily(db, from, to)),
         siteCard("waitlist", "Waitlist signups", statisticsHref({ range, signal: "waitlist" }), period, weekly, NO_SIGNUPS_YET, () => waitlist.waitlistDataSince(db), (from, to) => waitlist.waitlistSignupsDaily(db, from, to)),
         siteCard("clicks", "Clicks to sellers", statisticsHref({ range, signal: "clicks" }), period, weekly, NO_CLICKS_YET, () => events.signalDataSince(db).then((s) => s.clicks), (from, to) => events.clicksDaily(db, from, to)),
       ]);
-      return { period, cards: [visitorsCard(period, false), accounts, waitlistCard, clicks] };
+      return { period, cards: [visitors, accounts, waitlistCard, clicks] };
     },
 
     /** H's popularity centerpiece for the selected signal. */
@@ -625,12 +677,13 @@ export function createAdminStatisticsService(db: Db, deps: { now?: () => Date } 
     /** The home snapshot: the four cards over the fixed 7-day window. */
     async snapshot(): Promise<StatisticsSnapshot> {
       const period = statPeriod(today(), "7d");
-      const [accounts, waitlistCard, clicks] = await Promise.all([
+      const [visitors, accounts, waitlistCard, clicks] = await Promise.all([
+        visitorsCard(period, false, true),
         siteCard("accounts", "New accounts", "/admin/statistics", period, false, NO_ACCOUNTS_YET, () => accountsRepo.accountsDataSince(db), (from, to) => accountsRepo.accountsCreatedDaily(db, from, to)),
         siteCard("waitlist", "Waitlist signups", "/admin/statistics?signal=waitlist", period, false, NO_SIGNUPS_YET, () => waitlist.waitlistDataSince(db), (from, to) => waitlist.waitlistSignupsDaily(db, from, to)),
         siteCard("clicks", "Clicks to sellers", "/admin/statistics?signal=clicks", period, false, NO_CLICKS_YET, () => events.signalDataSince(db).then((s) => s.clicks), (from, to) => events.clicksDaily(db, from, to)),
       ]);
-      return { cards: [visitorsCard(period, true), accounts, waitlistCard, clicks] };
+      return { cards: [visitors, accounts, waitlistCard, clicks] };
     },
   };
 }

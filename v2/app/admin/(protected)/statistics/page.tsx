@@ -1,7 +1,8 @@
 /**
  * Statistics section (Slice D, spec §7 H): how the site is doing (the four site
- * stat cards — Visitors in its not-connected state, the other three live) and
- * which varieties are popular (the Views · Clicks · Waitlist · Searches signal
+ * stat cards — Visitors live from Web Analytics when its read token is set, else its
+ * designed no-data state) and which varieties are popular (the
+ * Views · Clicks · Waitlist · Searches signal
  * switcher over one ranking centerpiece). Server-rendered and read-only; identical
  * for Admin and Reviewer. The header band is not sticky (gate Finding 7) — every
  * card caption restates the range instead. One card's failure never blanks the
