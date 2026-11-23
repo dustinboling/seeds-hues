@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 869 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 878 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -166,7 +166,12 @@ describe("lib/images-data (generated)", () => {
     // Chocolate Covered Cherry / Wizard Rose / Wizard Velvet Red, Columbine
     // McKana Giants Mix, Craspedia Drumstick, Delphinium Bellamosum /
     // Guardian Lavender (2026-11-22, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(869);
+    // +9 for Tranche 4 batch 5: Delphinium Guardian White / Magic Fountains
+    // Mix / Magic Fountains Sky Blue White Bee, Echinacea Cheyenne Spirit /
+    // Paradiso Tall Mix, Eryngium White Glitter, Globe Thistle, Hollyhock
+    // Chater's Double Mix, Mullein Southern Charm (2026-11-22, Quinn PASS
+    // WITH NOTES after confirmation check).
+    expect(entries).toHaveLength(878);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);

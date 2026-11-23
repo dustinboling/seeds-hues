@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 869 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 878 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -319,14 +319,20 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/dahlia-shooting-stars.webp": "artwork/dahlia-shooting-stars.webp",
   "/artwork/delphinium-bellamosum.webp": "artwork/delphinium-bellamosum.png",
   "/artwork/delphinium-guardian-lavender.webp": "artwork/delphinium-guardian-lavender.png",
+  "/artwork/delphinium-guardian-white.webp": "artwork/delphinium-guardian-white.png",
+  "/artwork/delphinium-magic-fountains-mix.webp": "artwork/delphinium-magic-fountains-mix.png",
+  "/artwork/delphinium-magic-fountains-sky-blue-white-bee.webp": "artwork/delphinium-magic-fountains-sky-blue-white-bee.png",
   "/artwork/dill-bouquet.webp": "artwork/dill-bouquet.png",
   "/artwork/dusty-miller-new-look.webp": "artwork/dusty-miller-new-look.png",
   "/artwork/dusty-miller-silver-dust.webp": "artwork/dusty-miller-silver-dust.png",
+  "/artwork/echinacea-cheyenne-spirit.webp": "artwork/echinacea-cheyenne-spirit.png",
   "/artwork/echinacea-echinacea-purpurea.webp": "artwork/echinacea-echinacea-purpurea.png",
+  "/artwork/echinacea-paradiso-tall-mix.webp": "artwork/echinacea-paradiso-tall-mix.png",
   "/artwork/echinacea-powwow-white.webp": "artwork/echinacea-powwow-white.png",
   "/artwork/echinacea-powwow-wild-berry.webp": "artwork/echinacea-powwow-wild-berry.png",
   "/artwork/echinacea-white-swan.webp": "artwork/echinacea-white-swan.png",
   "/artwork/eryngium-blue-glitter.webp": "artwork/eryngium-blue-glitter.png",
+  "/artwork/eryngium-white-glitter.webp": "artwork/eryngium-white-glitter.png",
   "/artwork/eucalyptus-baby-blue.webp": "artwork/eucalyptus-baby-blue.png",
   "/artwork/eucalyptus-nichols-willow.webp": "artwork/eucalyptus-nichols-willow.png",
   "/artwork/eucalyptus-round-leaved-mallee.webp": "artwork/eucalyptus-round-leaved-mallee.png",
@@ -356,6 +362,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/foxglove-excelsior.webp": "artwork/foxglove-excelsior.png",
   "/artwork/foxglove-obscura-sunset.webp": "artwork/foxglove-obscura-sunset.png",
   "/artwork/foxglove-pams-choice.webp": "artwork/foxglove-pams-choice.png",
+  "/artwork/globe-thistle-globe-thistle.webp": "artwork/globe-thistle-globe-thistle.png",
   "/artwork/godetia-grace-salmon.webp": "artwork/godetia-grace-salmon.png",
   "/artwork/goldenrod-showy-goldenrod.webp": "artwork/goldenrod-showy-goldenrod.png",
   "/artwork/gomphrena-audray-pink.webp": "artwork/gomphrena-audray-pink.png",
@@ -364,6 +371,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/gomphrena-rose.webp": "artwork/gomphrena-rose.png",
   "/artwork/gomphrena-sunset-mix.webp": "artwork/gomphrena-sunset-mix.png",
   "/artwork/gomphrena-white.webp": "artwork/gomphrena-white.png",
+  "/artwork/hollyhock-chaters-double-mix.webp": "artwork/hollyhock-chaters-double-mix.png",
   "/artwork/honeywort-pride-of-gibraltar.webp": "artwork/honeywort-pride-of-gibraltar.png",
   "/artwork/hyacinth-bean-ruby-moon.webp": "artwork/hyacinth-bean-ruby-moon.png",
   "/artwork/iceland-poppy-champagne-bubbles-pink.webp": "artwork/iceland-poppy-champagne-bubbles-pink.png",
@@ -415,6 +423,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/mignonette-white-mignonette.webp": "artwork/mignonette-white-mignonette.png",
   "/artwork/milkweed-swamp-milkweed-white.webp": "artwork/milkweed-swamp-milkweed-white.png",
   "/artwork/milkweed-swamp-milkweed.webp": "artwork/milkweed-swamp-milkweed.png",
+  "/artwork/mullein-southern-charm.webp": "artwork/mullein-southern-charm.png",
   "/artwork/nasturtium-caribbean-crush.webp": "artwork/nasturtium-caribbean-crush.png",
   "/artwork/nasturtium-cherry-rose-jewel.webp": "artwork/nasturtium-cherry-rose-jewel.png",
   "/artwork/nasturtium-gleam-salmon.webp": "artwork/nasturtium-gleam-salmon.png",
