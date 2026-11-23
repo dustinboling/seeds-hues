@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1047 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1054 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -946,6 +946,12 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/viola-tiger-eye.webp": "artwork/viola-tiger-eye.png",
   "/artwork/virginia-stock.webp": "artwork/virginia-stock.png",
   "/artwork/wallflower-sunset-apricot.webp": "artwork/wallflower-sunset-apricot.png",
+  "/artwork/wallflower-sunset-orange.webp": "artwork/wallflower-sunset-orange.png",
+  "/artwork/wallflower-sunset-primrose.webp": "artwork/wallflower-sunset-primrose.png",
+  "/artwork/wallflower-sunset-purple.webp": "artwork/wallflower-sunset-purple.png",
+  "/artwork/wallflower-sunset-red.webp": "artwork/wallflower-sunset-red.png",
+  "/artwork/wallflower-sunset-white.webp": "artwork/wallflower-sunset-white.png",
+  "/artwork/wallflower-sunset-yellow.webp": "artwork/wallflower-sunset-yellow.png",
   "/artwork/winged-everlasting.webp": "artwork/winged-everlasting.png",
   "/artwork/xeranthemum.webp": "artwork/xeranthemum.png",
   "/artwork/yarrow-summer-berries.webp": "artwork/yarrow-summer-berries.png",
@@ -968,6 +974,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/zinnia-dawn-creek-pastels.webp": "artwork/zinnia-dawn-creek-pastels.png",
   "/artwork/zinnia-dawn-creek-peach.webp": "artwork/zinnia-dawn-creek-peach.png",
   "/artwork/zinnia-day-glow-mix.webp": "artwork/zinnia-day-glow-mix.png",
+  "/artwork/zinnia-dearest-ellie.webp": "artwork/zinnia-dearest-ellie.png",
   "/artwork/zinnia-desert-sunset-mix.webp": "artwork/zinnia-desert-sunset-mix.png",
   "/artwork/zinnia-dreamin.webp": "artwork/zinnia-dreamin.png",
   "/artwork/zinnia-gift.webp": "artwork/zinnia-gift.png",

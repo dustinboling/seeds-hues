@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 1047 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 1054 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -274,7 +274,15 @@ describe("lib/images-data (generated)", () => {
     // base exists for the named mixes; they ship only when a
     // photo-backed or breeder record is found, or the records are
     // retired catalog-side).
-    expect(entries).toHaveLength(1047);
+    // +7 for Tranche 4 Batch 26 (plates 1–6, 8 of 9): Wallflower
+    // Sunset Orange / Primrose / Purple / Red / White / Yellow,
+    // Zinnia Dearest Ellie (2026-11-23, Quinn PASS for these
+    // seven; plates 7 and 9 — Zinnia Dearest Bubblegum / Dearest
+    // Joanna Lavender Frost — HELD at a scoped FAIL, F-1/F-2:
+    // one undeclared cut stem end each above the lower-margin
+    // band; they ship after Elena's stem fix + Quinn's
+    // confirmation).
+    expect(entries).toHaveLength(1054);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
