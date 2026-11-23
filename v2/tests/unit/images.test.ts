@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 1058 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 1060 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -289,7 +289,13 @@ describe("lib/images-data (generated)", () => {
     // per-head patterns for Kaleidoscope and Orange Creamsicle
     // correctly withheld as unphotographed, cream painted as
     // whole pale heads).
-    expect(entries).toHaveLength(1058);
+    // +2 for Tranche 4 Batch 26 completion: Zinnia Dearest
+    // Bubblegum / Dearest Joanna Lavender Frost — held at the
+    // batch gate (F-1/F-2, one undeclared high cut stem end
+    // each), corrected by Elena's targeted stem edits, Quinn
+    // confirmation CONFIRMED both (2026-11-23). Batch 26 is
+    // complete: all nine plates shipped.
+    expect(entries).toHaveLength(1060);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);

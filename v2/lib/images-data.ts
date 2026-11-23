@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1058 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1060 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -974,7 +974,9 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/zinnia-dawn-creek-pastels.webp": "artwork/zinnia-dawn-creek-pastels.png",
   "/artwork/zinnia-dawn-creek-peach.webp": "artwork/zinnia-dawn-creek-peach.png",
   "/artwork/zinnia-day-glow-mix.webp": "artwork/zinnia-day-glow-mix.png",
+  "/artwork/zinnia-dearest-bubblegum.webp": "artwork/zinnia-dearest-bubblegum.png",
   "/artwork/zinnia-dearest-ellie.webp": "artwork/zinnia-dearest-ellie.png",
+  "/artwork/zinnia-dearest-joanna-lavender-frost.webp": "artwork/zinnia-dearest-joanna-lavender-frost.png",
   "/artwork/zinnia-dearest-kaleidoscope.webp": "artwork/zinnia-dearest-kaleidoscope.png",
   "/artwork/zinnia-dearest-orange-creamsicle.webp": "artwork/zinnia-dearest-orange-creamsicle.png",
   "/artwork/zinnia-dearest-sunset.webp": "artwork/zinnia-dearest-sunset.png",
