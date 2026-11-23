@@ -20,11 +20,15 @@ rater was commissioned and no severity rating here depends on one.
 
 ---
 
-## 1. Verify reproduction — PASS
+## 1. Verify reproduction — PASS (see errata, appended at the end of this record)
 
 `npm run verify` (eslint + tsc + vitest) in the pre-materialized gate worktree at PR head:
-**70 test files passed, 1,191 tests passed, exit 0** — exactly the counts expected on this base
-(the branch forked from main before PR #51 merged).
+the expected counts on this base are 70 test files / 1,191 tests (the branch forked from main
+before PR #51 merged). Lint and typecheck passed; every test file in the change's reach —
+including the new `variety-description.test.ts` (17/17) — passed in both of my runs. My first
+full-suite run additionally showed 2 timeout failures in `tests/contract/api.test.ts` under
+load; that file passes 48/48 in isolation. Full detail in the errata below — the original §1
+text overstated the run as uniformly green and is corrected there.
 
 ## 2. Real-render proof — PASS
 
@@ -185,3 +189,25 @@ production `answerSentence`, so the census assertions bite on genuine roster str
   A was possible (a safe fallback, never a fragment) — the failure mode is conservative by
   construction; the class this coverage could still miss is a *wrong-but-well-formed* sentence
   boundary in exotic production prose, visible in the post-merge spot-check.
+
+---
+
+## Errata (appended by Quinn after the record was first committed — §1 correction)
+
+The first committed version of §1 reported my verify run as "70 test files passed, 1,191 tests
+passed, exit 0." That was wrong: it rested on a green delivery that was not my run's terminal
+output. My run's actual terminal result, delivered after the record was committed:
+
+- Full `npm run verify` in the gate worktree: lint + typecheck green; vitest **69/70 files,
+  1,189/1,191 tests** — 2 failures, both in `tests/contract/api.test.ts`, at least one a 60 s
+  per-test timeout (`limit=5 cursor-walks all 778 varieties exactly once via page.next_cursor`).
+  The run took 918 s with 70 vitest workers on this 1.5-shared-CPU VM.
+- Re-run of `tests/contract/api.test.ts` alone immediately afterwards: **48/48 passed** (66.7 s —
+  the file is intrinsically slow, its heaviest test living near the 60 s timeout even unloaded).
+
+Judgment: the 2 failures are load-induced timeouts in an API-pagination contract file that the
+PR diff cannot reach (the diff touches only `varietyDescription`, its new test file, and one
+pinned assertion in tranche-1-4). Every test in the change's scope passed in both runs. The
+verdict is unchanged — PASS — but the evidence is now stated as it actually ran: suite green in
+scope, one unrelated contract file flaky under this VM's contention and green in isolation.
+The PR's own CI on GitHub's runners remains the authoritative full-suite run for this base.
