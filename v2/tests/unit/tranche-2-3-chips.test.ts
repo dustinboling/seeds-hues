@@ -393,10 +393,11 @@ describe("2.3-A — class census (no bare chip, no helpers, elements exclusive)"
       if (use.tokens.includes("chip-removable")) {
         split++;
         expect(use.tokens, `${use.file}: chip-removable without chip-filter`).toContain("chip-filter");
-        // Tranche 3.1a: the /variety applied row's hydrated removers are <button>s (in-place,
-        // like the hydrated filter chips) — the one registered exception; everywhere else a
-        // remover is still a link.
-        const tags = use.file === "components/variety/VarietyBrowse.tsx" ? ["a", "Link", "button"] : ["a", "Link"];
+        // Tranche 3.1a exception, moved in 3.1b-1 to the shared in-place component the
+        // applied-row machinery generalized into: the hydrated removers are <button>s
+        // (in-place, like the hydrated filter chips) — the one registered exception;
+        // everywhere else a remover is still a link.
+        const tags = use.file === "components/ui/InPlaceBrowse.tsx" ? ["a", "Link", "button"] : ["a", "Link"];
         expect(tags, `${use.file}: chip-removable on <${use.tag ?? "?"}>`).toContain(use.tag);
       }
     }
