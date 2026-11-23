@@ -1,8 +1,9 @@
 /**
- * Generates the self-hosted PWA icons from the poppy pod mark
- * (public/brand/poppy-pod-mark.png) on the catalogue paper ground.
+ * Generates the self-hosted PWA icons from the Option B two-cut masters
+ * (public/brand/sown-seeds-touch.png and public/brand/sown-seeds-favicon.png),
+ * each a full-tile painting on the catalogue paper ground.
  *
- * Since 2026-11-16 the icons are composited from a raster mark, which the
+ * Since 2026-11-16 the icons are rendered from raster sources, which the
  * original pure-Node vector renderer in this file could not draw — the actual
  * generator now lives in scripts/gen-icons.py (Pillow) and this entry point just
  * runs it, so `npm run icons` keeps working. Outputs: public/icons/hues-icon-192.png,
