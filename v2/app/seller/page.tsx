@@ -8,10 +8,10 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
-import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage } from "@/lib/paging";
+import { assertPageInRange, pagePath, pageWindow, parsePage } from "@/lib/paging";
 import { legacySlug } from "@/lib/legacy";
 import { PAGE_SIZE } from "@/lib/config";
-import { readSellerBrowseFilters } from "@/lib/seller-browse";
+import { readSellerBrowseFilters, sellerBrowseTitle } from "@/lib/seller-browse";
 
 export const dynamic = "force-dynamic";
 
@@ -23,10 +23,11 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const sp = await searchParams;
   const page = parsePage(sp.page);
   const states = await loadStates();
-  const { state: code } = readSellerBrowseFilters(sp, states);
-  const state = code ? (states.find((s) => s.code === code) ?? null) : null;
+  const filters = readSellerBrowseFilters(sp, states);
+  const state = filters.state ? (states.find((s) => s.code === filters.state) ?? null) : null;
   return pageMetadata({
-    title: `${state ? `Seed sellers in ${state.name}` : "Flower seed sellers"}${pageTitleSuffix(page)}`,
+    // The in-place title sync shares sellerBrowseTitle, so SSR and hydrated commits agree.
+    title: sellerBrowseTitle(filters, states, page),
     description:
       "US farms and seed companies of every size that sell flower seed, with the varieties each one carries and when each listing was last checked.",
     // A state-filtered view is crawlable but not indexed; the canonical is the unfiltered list

@@ -25,6 +25,7 @@ vi.mock("next/link", () => ({
 
 import { VarietyBrowse, type VarietyBrowseInitial } from "@/components/variety/VarietyBrowse";
 import {
+  BROWSE_SORT_OPTIONS,
   COLOR_FAMILIES,
   LIFE_CYCLE_PARAMS,
   METHOD_PARAMS,
@@ -125,6 +126,14 @@ function filtersGroup(): HTMLElement {
 
 function chip(group: string, name: string): HTMLButtonElement {
   return within(screen.getByRole("group", { name: group })).getByRole("button", { name }) as HTMLButtonElement;
+}
+
+function sortChip(name: string): HTMLButtonElement {
+  // The hydrated Sort control nests a same-named fieldset in its group, so the label
+  // query is ambiguous — the chip's data-sort value is the stable handle.
+  const value = BROWSE_SORT_OPTIONS.find((o) => o.label === name)?.value;
+  if (!value) throw new Error(`variety-browse test: unknown sort ${name}`);
+  return need(document.querySelector(`button[data-sort="${value}"]`), `sort chip ${name}`) as HTMLButtonElement;
 }
 
 function pushSpyOn(): ReturnType<typeof vi.spyOn> {
@@ -651,4 +660,114 @@ describe("pending indication (F6: aria-busy on the results region during flight)
     await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(1));
     expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
   });
+});
+
+describe("document title sync (B-1 item 3: the committed state's server title, once, with the swap)", () => {
+  it("Clear All sets document.title to the resting title (the cleared filter's name disappears)", async () => {
+    document.title = "Cool Season Hardy Annuals — flower seed varieties | seeds.hues.flowers";
+    const next = makePayload({ items: [item(0)], total: 49 });
+    fetchImpl = async () => jsonResponse(next);
+    const s: BrowseFilterState = { ...resting(), season: "cool" };
+    render(createElement(VarietyBrowse, { initial: makeInitial({ state: s, items: [item(7)], total: 12 }) }));
+    fireEvent.click(screen.getByRole("button", { name: "Clear all filters" }));
+    await waitFor(() => expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3."));
+    expect(document.title).toBe("All flower seed varieties | seeds.hues.flowers");
+  });
+
+  it("a sort change from page 2 drops the page suffix on swap, with no in-flight flicker", async () => {
+    window.history.replaceState({}, "", "/variety?page=2");
+    document.title = "All flower seed varieties — page 2 | seeds.hues.flowers";
+    const d = deferred<Response>();
+    fetchImpl = () => d.promise;
+    render(createElement(VarietyBrowse, { initial: makeInitial({ page: 2 }) }));
+    fireEvent.click(sortChip("Most sellers first"));
+    // In flight: the title is untouched (no flicker through intermediate states).
+    expect(document.title).toBe("All flower seed varieties — page 2 | seeds.hues.flowers");
+    expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
+    d.resolve(
+      jsonResponse(makePayload({ state: { ...resting(), sort: "availability" }, items: [item(7)], total: 12 })),
+    );
+    await waitFor(() => expect(countLine().textContent).toBe("12 varieties, most sellers first."));
+    expect(document.title).toBe("All flower seed varieties | seeds.hues.flowers");
+  });
+
+  it("a soft-navigation adoption asserts the adopted page's title", () => {
+    document.title = "All flower seed varieties | seeds.hues.flowers";
+    const { rerender } = render(createElement(VarietyBrowse, { initial: makeInitial() }));
+    window.history.replaceState({}, "", "/variety?page=2");
+    rerender(createElement(VarietyBrowse, { initial: makeInitial({ items: [item(24), item(25)], page: 2 }) }));
+    expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
+    expect(document.title).toBe("All flower seed varieties — page 2 | seeds.hues.flowers");
+  });
+});
+
+describe("sort from page 2 (B-1 item 1: the commit is in place, not a navigation)", () => {
+  it("commits in place to page 1: prior visible during flight, one swap, one entry, busy set and cleared", async () => {
+    // A literal navigation anywhere on this path would call location.assign (the layer's
+    // only navigation call): spy it with a stand-in location and require silence. The
+    // pushed entry's URL is asserted from the pushState call itself (authoritative).
+    const descriptor = Object.getOwnPropertyDescriptor(window, "location");
+    const assign = vi.fn();
+    window.history.replaceState({}, "", "/variety?page=2");
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/variety", search: "?page=2", assign },
+      configurable: true,
+    });
+    try {
+      document.title = "All flower seed varieties — page 2 | seeds.hues.flowers";
+      const d = deferred<Response>();
+      fetchImpl = () => d.promise;
+      const push = pushSpyOn();
+      render(createElement(VarietyBrowse, { initial: makeInitial({ page: 2 }) }));
+      expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
+
+      fireEvent.click(sortChip("Most sellers first"));
+      // During flight: optimistic press, busy on, prior rows and count untouched, no entry.
+      expect(sortChip("Most sellers first").getAttribute("aria-pressed")).toBe("true");
+      expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+      expect(resultsRegion().textContent).toContain("Test Variety 0");
+      expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
+      expect(fetchUrls()).toEqual(["/api/browse/varieties?sort=availability"]);
+      expect(push).not.toHaveBeenCalled();
+
+      d.resolve(
+        jsonResponse(makePayload({ state: { ...resting(), sort: "availability" }, items: [item(7)], total: 12 })),
+      );
+      await waitFor(() => expect(countLine().textContent).toBe("12 varieties, most sellers first."));
+      // Exactly one swap: new rows, busy cleared, one history entry, page reset to 1.
+      expect(resultsRegion().textContent).toContain("Test Variety 7");
+      expect(resultsRegion().textContent).not.toContain("Test Variety 0");
+      expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
+      expect(push).toHaveBeenCalledTimes(1);
+      expect(push.mock.calls[0]?.[2]).toBe("/variety?sort=availability");
+      // The committed state's title (the page-1 reset drops the suffix).
+      expect(document.title).toBe("All flower seed varieties | seeds.hues.flowers");
+      expect(assign).not.toHaveBeenCalled();
+    } finally {
+      if (descriptor) Object.defineProperty(window, "location", descriptor);
+    }
+  });
+});
+
+describe("D-B1-2 pending cue (visible past ~1s in flight, removed on swap)", () => {
+  it("dims the results region past ~1s in flight and clears the cue on swap", async () => {
+    const d = deferred<Response>();
+    fetchImpl = () => d.promise;
+    const before = makeInitial();
+    render(createElement(VarietyBrowse, { initial: before }));
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
+    // Immediate: busy on, no visible cue yet.
+    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    expect(resultsRegion().className).not.toContain("opacity-50");
+    // Past ~1s still in flight: the quiet cue appears (an owned opacity utility).
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1150));
+    });
+    expect(resultsRegion().className).toContain("opacity-50");
+    // The swap clears both the cue and the busy indication, together.
+    d.resolve(jsonResponse(makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 })));
+    await waitFor(() => expect(resultsRegion().className).not.toContain("opacity-50"));
+    expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
+    expect(countLine().textContent).toBe("12 varieties · Cool Season Hardy Annuals, alphabetical.");
+  }, 15000);
 });

@@ -52,7 +52,7 @@ export function CropBrowse({ initial }: { initial: CropBrowseInitial }) {
     readPayload,
   });
   const browse = useInPlaceBrowse(initial, config);
-  const { hydrated, committed, pending, select } = browse;
+  const { hydrated, committed, pending, pendingCue, select } = browse;
 
   return (
     <>
@@ -62,7 +62,12 @@ export function CropBrowse({ initial }: { initial: CropBrowseInitial }) {
       </p>
       <InPlaceFilters config={config} browse={browse} />
       <InPlaceAppliedRow config={config} browse={browse} />
-      <div id="crop-results" className="mt-6" aria-busy={pending === null ? undefined : true}>
+      {/* D-B1-2: past ~1s in flight the region dims (an owned opacity utility). */}
+      <div
+        id="crop-results"
+        className={pendingCue ? "mt-6 opacity-50" : "mt-6"}
+        aria-busy={pending === null ? undefined : true}
+      >
         {committed.total > 0 ? (
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {committed.items.map((c) => (

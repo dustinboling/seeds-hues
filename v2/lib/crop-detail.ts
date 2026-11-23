@@ -19,11 +19,13 @@ import {
   BROWSE_SORT_PHRASE,
   COLOR_FAMILIES,
   COLOR_FAMILY_LABELS,
+  documentTitleFor,
   parseSortParam,
+  titlePageSuffix,
   type BrowseSortParam,
   type ColorFamily,
 } from "@/lib/browse";
-import { plural } from "@/lib/format";
+import { plural, shortCommonName } from "@/lib/format";
 import { legacySlug } from "@/lib/legacy";
 import type { VarietyFilters } from "@/lib/repositories/catalog-read";
 import type { CropDetailCounts } from "@/lib/validators";
@@ -272,6 +274,33 @@ export function cropDetailFiltersFromSearch(search: string): CropDetailFilterSta
  */
 export function cropDetailCountLine(state: CropDetailFilterState, total: number, page: number, pages: number): string {
   return `${plural(total, "variety", "varieties")}${hasActiveCropFilters(state) ? " match" : ""}, ${BROWSE_SORT_PHRASE[state.sort]}.${pages > 1 ? ` Page ${page} of ${pages}.` : ""}`;
+}
+
+/**
+ * The crop page title's facts: everything the title needs beyond the page number. The
+ * title never names the active filters — only the crop and the page suffix — so an
+ * in-place commit changes it exactly when the page resets from N > 1 to 1.
+ */
+export interface CropDetailTitleFacts {
+  commonName: string;
+  latinName: string | null;
+  varietyCount: number;
+  varietiesWithSellers: number;
+}
+
+/**
+ * The crop page title the server renders for a page: the crop's seed line plus the page
+ * suffix. generateMetadata shares this builder, so SSR and the in-place title sync can
+ * never disagree.
+ */
+export function cropDetailTitle(facts: CropDetailTitleFacts, page: number): string {
+  const common = shortCommonName(facts.commonName);
+  return `${common} Seeds${facts.latinName ? ` (${facts.latinName})` : ""} — ${plural(facts.varietyCount, "Variety", "Varieties")}, ${facts.varietiesWithSellers} With Sellers${titlePageSuffix(page)}`;
+}
+
+/** The crop page document.title for a committed page. */
+export function cropDetailDocumentTitle(facts: CropDetailTitleFacts, page: number): string {
+  return documentTitleFor(cropDetailTitle(facts, page));
 }
 
 /**

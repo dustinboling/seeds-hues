@@ -23,6 +23,7 @@ import {
   clearCropDetailFilters,
   cropCountStateFor,
   cropDetailCountLine,
+  cropDetailDocumentTitle,
   cropDetailFiltersFromSearch,
   cropDetailHref,
   cropFilterParams,
@@ -62,6 +63,8 @@ export function CropDetailBrowse({
   hues,
   series,
   commonName,
+  latinName,
+  varietyCount,
   varietiesWithSellers,
 }: {
   slug: string;
@@ -69,6 +72,8 @@ export function CropDetailBrowse({
   hues: CropHue[];
   series: SeriesRef[];
   commonName: string;
+  latinName: string | null;
+  varietyCount: number;
   varietiesWithSellers: number;
 }) {
   const basePath = `/crop/${slug}`;
@@ -93,9 +98,12 @@ export function CropDetailBrowse({
       return qs ? `${apiPath}?${qs}` : apiPath;
     },
     historyValueFor: (state) => ({ browse: cropFilterParams(state) }),
+    // The crop title names no filters — only the page suffix moves (page reset to 1).
+    titleFor: (_state, page) =>
+      cropDetailDocumentTitle({ commonName, latinName, varietyCount, varietiesWithSellers }, page),
   };
   const browse = useInPlaceBrowse(initial, config);
-  const { hydrated, committed, pending, shown, select, firstAllRef } = browse;
+  const { hydrated, committed, pending, pendingCue, shown, select, firstAllRef } = browse;
   const pages = totalPages(committed.total);
   const short = shortCommonName(commonName);
   const showZeroSeller = committed.state.hasSellers === true && varietiesWithSellers === 0;
@@ -128,8 +136,13 @@ export function CropDetailBrowse({
       </p>
       {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
           flight. Cleared on settle — the attribute is absent then, so settled markup is
-          byte-identical with or without this line. */}
-      <div id="crop-variety-results" className="mt-3" aria-busy={pending === null ? undefined : true}>
+          byte-identical with or without this line. D-B1-2: past ~1s in flight the region
+          also dims (an owned opacity utility — no new color, no spinner, no skeleton). */}
+      <div
+        id="crop-variety-results"
+        className={pendingCue ? "mt-3 opacity-50" : "mt-3"}
+        aria-busy={pending === null ? undefined : true}
+      >
         {committed.total > 0 ? (
           <VarietyGrid items={committed.items} />
         ) : showZeroSeller ? (

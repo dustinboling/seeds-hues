@@ -4,11 +4,12 @@
  * /api/browse/varieties payload builder, and the hydrated in-place layer, so the three can
  * never disagree on what a filter state means.
  *
- * Client-safe by construction: the only runtime imports are lib/small-farm and lib/format
- * (pure data and string helpers). The Zod-inferred key types come back as `import type`
- * (erased at build), and lib/validators re-exports this module's vocabulary so every
- * existing `@/lib/validators` import keeps working.
+ * Client-safe by construction: the only runtime imports are lib/small-farm, lib/format
+ * and lib/config (pure data, string helpers and constants). The Zod-inferred key types
+ * come back as `import type` (erased at build), and lib/validators re-exports this
+ * module's vocabulary so every existing `@/lib/validators` import keeps working.
  */
+import { SITE_NAME } from "@/lib/config";
 import { plural } from "@/lib/format";
 import {
   SMALL_FARM_CHIP_LABEL,
@@ -502,6 +503,41 @@ export function cropIndexCountLine(state: BrowseFilterState, total: number): str
   return hasActiveFilters(state)
     ? `${[plural(total, "crop"), ...activeFilterLabels(state)].join(" · ")}, alphabetical.`
     : `${plural(total, "crop")} in the directory, alphabetical.`;
+}
+
+/* ── Document titles (B-1 item 3: the in-place title sync) ── */
+
+/**
+ * The browse titles' page suffix — the client-safe mirror of pageTitleSuffix()
+ * (lib/paging imports next/navigation, so client title builders cannot import it; the two
+ * must agree: " — page N" for N > 1, else "").
+ */
+export function titlePageSuffix(page: number): string {
+  return page > 1 ? ` — page ${page}` : "";
+}
+
+/**
+ * The full document.title for a server title rendered under the root template
+ * (`%s | seeds.hues.flowers`, app/layout.tsx).
+ */
+export function documentTitleFor(title: string): string {
+  return `${title} | ${SITE_NAME}`;
+}
+
+/**
+ * The /variety title the server renders for a filter state + page: the active filter
+ * labels, or the unfiltered title at rest, plus the page suffix. generateMetadata shares
+ * this builder, so SSR and the in-place title sync can never disagree. Sort never appears
+ * — only the filter labels and the page.
+ */
+export function varietyBrowseTitle(state: BrowseFilterState, page: number): string {
+  const active = activeFilterLabels(state);
+  return `${active.length > 0 ? `${active.join(" · ")} — flower seed varieties` : "All flower seed varieties"}${titlePageSuffix(page)}`;
+}
+
+/** The /variety document.title for a committed (state, page). */
+export function varietyDocumentTitle(state: BrowseFilterState, page: number): string {
+  return documentTitleFor(varietyBrowseTitle(state, page));
 }
 
 export interface BrowseOption {

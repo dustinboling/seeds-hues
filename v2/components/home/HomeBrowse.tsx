@@ -69,7 +69,7 @@ export function HomeBrowse({ initial }: { initial: HomeBrowseInitial }) {
     readPayload,
   });
   const browse = useInPlaceBrowse(initial, config);
-  const { hydrated, committed, pending, select } = browse;
+  const { hydrated, committed, pending, pendingCue, select } = browse;
   // The resting cap (Tranche 3.4 §5.1): at rest the grid shows the top HOME_CROP_CAP crops
   // in the resting order with a "see all crops" closing line; an active filter lifts the
   // cap — every match shows, and the count line above states the filtered total.
@@ -84,7 +84,8 @@ export function HomeBrowse({ initial }: { initial: HomeBrowseInitial }) {
       </p>
       <InPlaceFilters config={config} browse={browse} />
       <InPlaceAppliedRow config={config} browse={browse} />
-      <div aria-busy={pending === null ? undefined : true}>
+      {/* D-B1-2: past ~1s in flight the region dims (an owned opacity utility). */}
+      <div className={pendingCue ? "opacity-50" : undefined} aria-busy={pending === null ? undefined : true}>
         {committed.total > 0 ? (
           <>
             <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">

@@ -9,9 +9,11 @@
  * parsed. Counts are the All-states total plus each state chip's seller count — static per
  * catalog state, served atomically with the results per §2.5.6.
  *
- * Client-safe by construction: the only runtime import is lib/format (plural, pure). The
- * Zod-inferred counts type comes back as `import type` (erased at build).
+ * Client-safe by construction: the only runtime imports are lib/format (plural, pure)
+ * and lib/browse (the title suffix/template helpers, pure). The Zod-inferred counts type
+ * comes back as `import type` (erased at build).
  */
+import { documentTitleFor, titlePageSuffix } from "@/lib/browse";
 import { plural } from "@/lib/format";
 import type { SellerBrowseCounts } from "@/lib/validators";
 
@@ -133,6 +135,22 @@ export function sellerBrowseCountText(state: SellerBrowseState, total: number, s
     return `${plural(total, "seller")} in ${name}.`;
   }
   return `${plural(total, "seller")} — US farms and seed companies of every size. Sellers do not pay for placement.`;
+}
+
+/**
+ * The /seller title the server renders for a filter state + page: the selected state's
+ * name, or the unfiltered title at rest (an unknown code reads as All states — the same
+ * forgiving rule as parsing), plus the page suffix. generateMetadata shares this builder,
+ * so SSR and the in-place title sync can never disagree.
+ */
+export function sellerBrowseTitle(state: SellerBrowseState, states: SellerStateOption[], page: number): string {
+  const active = state.state ? (states.find((s) => s.code === state.state) ?? null) : null;
+  return `${active ? `Seed sellers in ${active.name}` : "Flower seed sellers"}${titlePageSuffix(page)}`;
+}
+
+/** The /seller document.title for a committed (state, page). */
+export function sellerDocumentTitle(state: SellerBrowseState, states: SellerStateOption[], page: number): string {
+  return documentTitleFor(sellerBrowseTitle(state, states, page));
 }
 
 /**

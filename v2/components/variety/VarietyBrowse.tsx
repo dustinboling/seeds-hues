@@ -24,6 +24,7 @@ import {
   clearAllFilters,
   filterParams,
   hasActiveFilters,
+  varietyDocumentTitle,
   type BrowseFilterGroup,
   type BrowseFilterState,
   type BrowseSortParam,
@@ -64,9 +65,10 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
     failureMessage: FAILURE_MESSAGE,
     readPayload,
     withSort: true,
+    titleFor: (state, page) => varietyDocumentTitle(state, page),
   });
   const browse = useInPlaceBrowse(initial, config);
-  const { hydrated, committed, pending, shown, select } = browse;
+  const { hydrated, committed, pending, pendingCue, shown, select } = browse;
   const pages = totalPages(committed.total);
 
   return (
@@ -86,8 +88,13 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
       {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
           flight, so assistive tech hears an update coming instead of a stale list stated as
           current. Cleared on settle — the attribute is absent then, so settled markup is
-          byte-identical with or without this line. */}
-      <div id="variety-results" className="mt-6" aria-busy={pending === null ? undefined : true}>
+          byte-identical with or without this line. D-B1-2: past ~1s in flight the region
+          also dims (an owned opacity utility — no new color, no spinner, no skeleton). */}
+      <div
+        id="variety-results"
+        className={pendingCue ? "mt-6 opacity-50" : "mt-6"}
+        aria-busy={pending === null ? undefined : true}
+      >
         {committed.total > 0 ? (
           <VarietyGrid items={committed.items} wide />
         ) : (
