@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 1041 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 1047 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -265,7 +265,16 @@ describe("lib/images-data (generated)", () => {
     // Quinn gate FAIL scoped to F-1, cured: six plates by
     // corrected declaration + lead ruling, plates 1 and 3
     // repaired; confirmation re-gate CONFIRMED).
-    expect(entries).toHaveLength(1041);
+    // +6 for Tranche 4 Batch 25 (plates 1–3, 7–9 of 9): Ranunculus
+    // Maché Vanilla Rose Bicolour / White / Yellow, Trachelium
+    // Lake Forest Purple, Spike Speedwell Blauteppich, Wallflower
+    // Sunset Apricot (2026-11-23, Quinn PASS for these six; plates
+    // 4–6 — Sweet Pea Cosmic Kitty Mix / Dark Matter Mix /
+    // Luminosity Mix — HELD at a scoped FAIL, F-1: no evidence
+    // base exists for the named mixes; they ship only when a
+    // photo-backed or breeder record is found, or the records are
+    // retired catalog-side).
+    expect(entries).toHaveLength(1047);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
