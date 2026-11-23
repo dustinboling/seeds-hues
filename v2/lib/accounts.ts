@@ -2,9 +2,11 @@
  * Account primitives shared by the services and route layers (USER-ACCOUNTS-DESIGN §2/§2a/§5).
  * Pure functions + WebCrypto only (no Node built-ins), so all of it runs in the Worker.
  *
- * Sign-in model (locked): an account is name + email + phone (+ ZIP). Sign-in is the email +
- * phone pair — NO password and NO sign-in codes. The 6-digit codes here are ONLY the one-time
- * email / alert-number ownership checks and never take part in signing in.
+ * Sign-in model (locked, as amended by Tranche 3.2): an account is contact + channel at
+ * minimum (name/ZIP/type deferred). Sign-in is the email + phone pair — NO password — with two
+ * bounded code amendments (Dustin's P2 + §11.1 rulings): the waitlist's recognized-contact
+ * verify establishes the session at verify time, and a phone-less account signs in on /account
+ * by emailed code. Everywhere else the 6-digit codes stay one-time ownership checks.
  */
 import { sha256Hex } from "@/lib/api/http";
 

@@ -1029,6 +1029,25 @@ export const waitlistEntries = sqliteTable(
   (t) => [uniqueIndex("waitlist_user_variety_uq").on(t.userId, t.varietyId), index("waitlist_variety_idx").on(t.varietyId, t.notifiedAt)],
 );
 
+/**
+ * Pending recognized-contact joins (Tranche 3.2, SPEC §3.3 (iii)): when an existing email is
+ * submitted to the join path, the code issued for it is recorded here together with the
+ * variety it was issued for (plus the submitter's channel choice, applied at verify time).
+ * One row per user — a re-issue replaces it, mirroring the one-live-code rule — consumed when
+ * verification establishes the session and completes the join in the same step. PRIVATE.
+ */
+export const waitlistPendingJoins = sqliteTable("waitlist_pending_joins", {
+  userId: integer("user_id")
+    .primaryKey()
+    .references(() => users.id),
+  /** Catalog id, a plain integer with no FK (the 0008 convention — the importer re-creates catalog rows). */
+  varietyId: integer("variety_id").notNull(),
+  /** Normalized 10-digit number when the text channel was chosen, else NULL. */
+  phone: text("phone"),
+  smsOptIn: integer("sms_opt_in", { mode: "boolean" }).notNull().default(false),
+  createdAt: text("created_at").notNull(),
+});
+
 export const notificationOutbox = sqliteTable(
   "notification_outbox",
   {
@@ -1121,6 +1140,7 @@ export const PRIVATE_ACCOUNT_TABLES = [
   "phone_verification_codes",
   "farm_owner_audit",
   "waitlist_entries",
+  "waitlist_pending_joins",
   "notification_outbox",
   "farm_submissions",
   "admin_sessions",

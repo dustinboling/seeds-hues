@@ -24,6 +24,7 @@ import { proseCommonName } from "@/lib/services/template";
 import { zeroSellerSentence } from "@/lib/zero-seller";
 import { SEASON_LABELS, SOWING_METHOD_LABELS, type VarietyFacts } from "@/lib/validators";
 import { SMALL_FARM_PARAM } from "@/lib/small-farm";
+import { RESTING_FLOOR, type FloorState } from "@/lib/waitlist-floor";
 
 /**
  * The variety detail page, shared by its two ISR routes (Open Directory, ux-spec §4):
@@ -77,7 +78,7 @@ export async function varietyMetadata(slug: string, smallFarmOnly: boolean): Pro
   });
 }
 
-export async function VarietyView({ slug, smallFarmOnly }: { slug: string; smallFarmOnly: boolean }) {
+export async function VarietyView({ slug, smallFarmOnly, waitlistFloor = RESTING_FLOOR }: { slug: string; smallFarmOnly: boolean; waitlistFloor?: FloorState }) {
   const v = await load(slug);
   if (!v) {
     const { catalog } = await getServices();
@@ -208,7 +209,7 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
               <Link href={`/crop/${v.plant.slug}`}>{common.toLowerCase()} varieties</Link>. Know a seller who
               sells it? <Link href={`/report?type=correct&variety=${v.slug}`}>Tell us</Link>.
             </p>
-            <WaitlistBlock varietySlug={v.slug} varietyName={v.varietyName} />
+            <WaitlistBlock varietySlug={v.slug} varietyName={v.varietyName} floor={waitlistFloor} />
             </>
           ) : (
             <>

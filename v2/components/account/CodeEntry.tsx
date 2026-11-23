@@ -7,15 +7,32 @@ import { codeFailure } from "./account-errors";
 import { FieldErrorLine, FieldSummary, focusFailureTarget, syncFilledClass } from "@/components/ui/field-states";
 
 /**
- * Enter a one-time 6-digit code (email or alert number) + "Send a new code". These codes only
- * prove an address/number — they are never used to sign in.
+ * Enter a one-time 6-digit code (email or alert number) + "Send a new code". Sessioned uses
+ * prove an address/number; the Tranche 3.2 unauthenticated uses (the waitlist's
+ * recognized-contact path and the /account phone-less sign-in, Dustin's P2 + §11.1 rulings)
+ * establish the session at verify time — the one bounded amendment to the old "codes never
+ * sign in" rule. Same component, same field treatment, in every context: no forks.
  *
  * Field-state set member (Tranche 3.3, FIELD-STATES-DESIGN.md §8.5): W-2 association
  * (aria-invalid + hint-first-error-second describedby, Ada Ruling 5), the lifetime hint in
  * every context, spaced-paste acceptance (no length cap or pattern truncates before the strip),
  * and mapped copy (COPY-3-3 §3.3) keyed by error code.
  */
-export function CodeEntry(props: { channel: "email" | "phone"; idPrefix: string; initialNote?: string | null; onVerified: () => void; compact?: boolean }) {
+export function CodeEntry(props: {
+  channel: "email" | "phone";
+  idPrefix: string;
+  initialNote?: string | null;
+  onVerified: () => void;
+  compact?: boolean;
+  /**
+   * Unauthenticated mode (Tranche 3.2): verify and resend post the email alongside the code
+   * to the given sessionless paths instead of the sessioned ones. Everything else — dress,
+   * association, lifetime line, paste behavior, mapped copy — is identical.
+   */
+  unauth?: { email: string; verifyPath: string; resendPath: string; resendExtra?: Record<string, unknown> };
+  /** Called after every resend attempt settles (the /account code state refreshes its human-check token from this). */
+  notifyResend?: () => void;
+}) {
   const [state, setState] = useState<{ busy: "verify" | "resend" | null; fieldError: string | null; formError: string | null; note: string | null }>({
     busy: null,
     fieldError: null,
@@ -42,7 +59,7 @@ export function CodeEntry(props: { channel: "email" | "phone"; idPrefix: string;
     e.preventDefault();
     const code = String(new FormData(e.currentTarget).get("code") ?? "").replace(/\s/g, "");
     setState((s) => ({ ...s, busy: "verify", fieldError: null, formError: null }));
-    const r = await callApi(`${base}/verify`, { code });
+    const r = await callApi(props.unauth?.verifyPath ?? `${base}/verify`, props.unauth ? { email: props.unauth.email, code } : { code });
     if (r.ok) {
       setState({ busy: null, fieldError: null, formError: null, note: null });
       props.onVerified();
@@ -54,7 +71,8 @@ export function CodeEntry(props: { channel: "email" | "phone"; idPrefix: string;
 
   async function resend() {
     setState((s) => ({ ...s, busy: "resend", fieldError: null, formError: null }));
-    const r = await callApi<{ delivery: string | null }>(`${base}/resend`, {});
+    const r = await callApi<{ delivery: string | null }>(props.unauth?.resendPath ?? `${base}/resend`, props.unauth ? { email: props.unauth.email, ...props.unauth.resendExtra } : {});
+    props.notifyResend?.();
     if (r.ok) setState({ busy: null, fieldError: null, formError: null, note: deliveryNote(r.data.delivery, props.channel) ?? "Already verified." });
     else {
       const mapped = codeFailure(r.status, r.code, r.message);
