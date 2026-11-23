@@ -13,7 +13,7 @@ import { getServices } from "@/lib/services/context";
 import type { BrowseCropResult } from "@/lib/services/catalog";
 import { mediaOgImage, ogImage, pageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
-import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage } from "@/lib/paging";
+import { assertPageInRange, pagePath, pageWindow, parsePage } from "@/lib/paging";
 import { formatFriendlyDate, plural, shortCommonName } from "@/lib/format";
 import { proseCommonName } from "@/lib/services/template";
 import { PAGE_SIZE } from "@/lib/config";
@@ -21,7 +21,7 @@ import { SEASON_LABELS, SOWING_METHOD_LABELS } from "@/lib/validators";
 import { growerGuideTabs, lifeCycleFact } from "@/lib/grower-guide";
 import { podArtForPlant } from "@/lib/data/pod-ornaments";
 import { imageUrl } from "@/lib/images";
-import { cropHuesForFamilies, hasActiveCropFilters, readCropDetailFilters, type CropDetailFilterState } from "@/lib/crop-detail";
+import { cropDetailTitle, cropHuesForFamilies, hasActiveCropFilters, readCropDetailFilters, type CropDetailFilterState } from "@/lib/crop-detail";
 import { CropSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
@@ -59,7 +59,11 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const common = shortCommonName(c.commonName);
   const lastUpdatedFriendly = formatFriendlyDate(c.lastUpdated);
   return pageMetadata({
-    title: `${common} Seeds${c.latinName ? ` (${c.latinName})` : ""} — ${plural(c.varietyCount, "Variety", "Varieties")}, ${c.varietiesWithSellers} With Sellers${pageTitleSuffix(page)}`,
+    // The in-place title sync shares cropDetailTitle, so SSR and hydrated commits agree.
+    title: cropDetailTitle(
+      { commonName: c.commonName, latinName: c.latinName, varietyCount: c.varietyCount, varietiesWithSellers: c.varietiesWithSellers },
+      page,
+    ),
     description: `${plural(c.varietyCount, "variety", "varieties")} of ${proseCommonName(c.commonName)}${c.latinName ? ` (${c.latinName})` : ""} cataloged; ${c.varietiesWithSellers} sold by sellers in the directory.${lastUpdatedFriendly ? ` Last updated ${lastUpdatedFriendly}.` : ""}`,
     // Filtered views are crawlable but not indexed; the canonical is the unfiltered crop page.
     path: hasActiveCropFilters(f) ? `/crop/${c.slug}` : pagePath(`/crop/${c.slug}`, page),
@@ -183,6 +187,8 @@ function CropContent({ r, page, f }: { r: BrowseCropResult; page: number; f: Cro
         hues={cropHuesForFamilies(r.colorFamilies)}
         series={c.series}
         commonName={c.commonName}
+        latinName={c.latinName}
+        varietyCount={c.varietyCount}
         varietiesWithSellers={c.varietiesWithSellers}
       />
 

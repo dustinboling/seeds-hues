@@ -43,6 +43,10 @@
  * - Actions that unmount their own control (the applied row's removers and Clear all, the
  *   zero-results "Clear filters") hand focus to a control that survives the commit: the
  *   row's Clear all when the row persists, else the first group's "All" chip.
+ * - Every commit syncs document.title to the title the server renders for the committed
+ *   state (B-1 item 3) — once, in step with the visible swap — on the surfaces whose
+ *   title varies with state (/variety, /seller, crop detail). A commit still in flight ~1s
+ *   after the tap shows the quiet pending cue until the swap (D-B1-2).
  *
  * The hook is generic over the filter-state type S (BrowseFilterState on the 3.1b
  * surfaces; part 2's surfaces bring their own state plus their own presentational bits),
@@ -136,6 +140,14 @@ export interface InPlaceConfig<S, P, C = BrowseCounts> {
   apiUrlFor: (state: S) => string;
   /** History state value pushed per commit. */
   historyValueFor: (state: S) => unknown;
+  /**
+   * Full document.title for a committed (state, page) — the title the server renders for
+   * that state (B-1 item 3). Set on every commit (filter, sort, Clear All, remover,
+   * popstate restore, soft-navigation adoption), once, in step with the visible swap.
+   * Absent when the surface's title is state-independent (home, /crop, /search): the hook
+   * leaves the title untouched and Next owns soft-navigation titles.
+   */
+  titleFor?: (state: S, page: number) => string | null;
 }
 
 /** The browse-surface config: the generic contract plus the chips' groups, hue mode and count unit. */
@@ -166,12 +178,14 @@ export function browseInPlaceConfig<P>(opts: {
   readPayload: (json: unknown) => InPlacePayloadCore<P> | null;
   isForeignSearch?: (search: string) => boolean;
   withSort?: boolean;
+  titleFor?: (state: BrowseFilterState, page: number) => string | null;
 }): BrowseInPlaceConfig<P> {
   const params = opts.params ?? {};
   return {
     basePath: opts.basePath,
     apiPath: opts.apiPath,
     params,
+    titleFor: opts.titleFor,
     groups: opts.groups,
     hueMode: opts.hueMode,
     unit: opts.unit,
@@ -232,6 +246,12 @@ export interface InPlaceBrowse<S, P, C = BrowseCounts> {
   /** The state the controls show: optimistic while a change is in flight, else committed. */
   shown: S;
   failed: boolean;
+  /**
+   * D-B1-2 (registered deviation): true once a commit has been in flight ~1s — the
+   * results region shows the quiet pending cue until the swap. Cleared synchronously with
+   * every settle, so the cue never survives onto swapped results.
+   */
+  pendingCue: boolean;
   select: (compute: (current: S) => S, focus?: InPlaceFocusTarget | null) => void;
   firstAllRef: RefObject<HTMLButtonElement | null>;
   clearAllRef: RefObject<HTMLButtonElement | null>;
@@ -253,6 +273,16 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
   // follow this; results, counts, pagination and the count line follow `committed` only.
   const [pending, setPending] = useState<S | null>(null);
   const [failed, setFailed] = useState(false);
+  // D-B1-2 (registered deviation): the visible quiet pending cue. The timer arms when a
+  // commit starts and restarts when a newer tap supersedes it (pending identity changes);
+  // every settle path clears the cue synchronously with the swap. Removal: delete this
+  // state + the effect below + the return field and revert the surfaces' className lines.
+  const [pendingCue, setPendingCue] = useState(false);
+  useEffect(() => {
+    if (pending === null) return;
+    const t = setTimeout(() => setPendingCue(true), 1000);
+    return () => clearTimeout(t);
+  }, [pending]);
   // Last-selection-wins: every fetch takes an id; only the latest id may settle.
   const requestRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
@@ -284,6 +314,7 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
     setCommitted(initial);
     setPending(null);
     setFailed(false);
+    setPendingCue(false);
   }
 
   // Adoption follow-through: the mirrors re-base on the adopted snapshot (page AND filters)
@@ -301,6 +332,11 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
       requestRef.current += 1;
       abortRef.current?.abort();
       abortRef.current = null;
+      // Soft-navigation adoption carries its page: assert the committed state's server
+      // title (Next sets it from the navigated route's metadata; the builders are shared
+      // so this is the same string — idempotent, never a flicker).
+      const title = configRef.current.titleFor?.(committed.state, committed.page);
+      if (title != null) document.title = title;
     }
   }, [committed]);
 
@@ -332,7 +368,13 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
       committedRef.current = snapshot;
       setCommitted(snapshot);
       setPending(null);
+      setPendingCue(false);
       if (push) window.history.pushState(configRef.current.historyValueFor(next), "", configRef.current.hrefFor(next));
+      // Title sync (B-1 item 3): the committed state's server title, once, in step with
+      // the visible swap and the history entry — no flicker through intermediate states.
+      // A fetch commit always resets to page 1, so the page echo is 1 by construction.
+      const title = configRef.current.titleFor?.(next, 1);
+      if (title != null) document.title = title;
     } catch {
       if (controller.signal.aborted || id !== requestRef.current) return;
       // Failure path (§2.5.6): the prior results, counts and URL stand untouched; the control
@@ -340,6 +382,7 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
       intentRef.current = committedRef.current.state;
       focusRef.current = null;
       setPending(null);
+      setPendingCue(false);
       setFailed(true);
     }
   }, []);
@@ -367,6 +410,7 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
       intentRef.current = state;
       if (cfg.equalStates(state, committedRef.current.state)) {
         setPending(null);
+        setPendingCue(false);
         setFailed(false);
         return;
       }
@@ -410,6 +454,7 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
     pending,
     shown: pending ?? committed.state,
     failed,
+    pendingCue,
     select,
     firstAllRef,
     clearAllRef,

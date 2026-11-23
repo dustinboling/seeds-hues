@@ -90,7 +90,7 @@ export function SearchBrowse({
     isForeignSearch: (search) => new URLSearchParams(search).get("q")?.trim().slice(0, 100) !== q,
   });
   const browse = useInPlaceBrowse(initial, config);
-  const { committed, pending } = browse;
+  const { committed, pending, pendingCue } = browse;
   const active = activeFilterLabels(committed.state);
   const title =
     committed.total > 0
@@ -112,7 +112,8 @@ export function SearchBrowse({
       </h2>
       <InPlaceFilters config={config} browse={browse} />
       <InPlaceAppliedRow config={config} browse={browse} />
-      <div aria-busy={pending === null ? undefined : true}>
+      {/* D-B1-2: past ~1s in flight the region dims (an owned opacity utility). */}
+      <div className={pendingCue ? "opacity-50" : undefined} aria-busy={pending === null ? undefined : true}>
         {committed.total === 0 ? (
           <>
             <ThemeArt name="empty-search" className="art-frame mx-auto mt-4 h-[220px] w-auto" />
