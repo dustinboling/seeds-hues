@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 996 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1005 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -25,6 +25,9 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/balloon-flower-astra-light-pink.webp": "artwork/balloon-flower-astra-light-pink.png",
   "/artwork/balloon-flower-astra-mix.webp": "artwork/balloon-flower-astra-mix.png",
   "/artwork/balloon-flower-astra-pink.webp": "artwork/balloon-flower-astra-pink.png",
+  "/artwork/balloon-flower-astra-semi-double-blue.webp": "artwork/balloon-flower-astra-semi-double-blue.png",
+  "/artwork/balloon-flower-astra-semi-double-pink.webp": "artwork/balloon-flower-astra-semi-double-pink.png",
+  "/artwork/balloon-flower-astra-semi-double-white.webp": "artwork/balloon-flower-astra-semi-double-white.png",
   "/artwork/balloon-flower-astra-white.webp": "artwork/balloon-flower-astra-white.png",
   "/artwork/basil-aromatto.webp": "artwork/basil-aromatto.png",
   "/artwork/basil-cinnamon.webp": "artwork/basil-cinnamon.png",
@@ -72,6 +75,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/celosia-pampas-plume-mix.webp": "artwork/celosia-pampas-plume-mix.png",
   "/artwork/celosia-pink-champagne.webp": "artwork/celosia-pink-champagne.png",
   "/artwork/celosia-pink-chenille.webp": "artwork/celosia-pink-chenille.png",
+  "/artwork/celosia-pink-lemonade.webp": "artwork/celosia-pink-lemonade.png",
   "/artwork/celosia-rainbow-sherbet-mix.webp": "artwork/celosia-rainbow-sherbet-mix.png",
   "/artwork/celosia-raspberry-lemonade.webp": "artwork/celosia-raspberry-lemonade.png",
   "/artwork/celosia-rose-gold.webp": "artwork/celosia-rose-gold.png",
@@ -116,6 +120,9 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/coleus-wizard-velvet-red.webp": "artwork/coleus-wizard-velvet-red.png",
   "/artwork/columbine-barlow-mix.webp": "artwork/columbine-barlow-mix.png",
   "/artwork/columbine-mckana-giants-mix.webp": "artwork/columbine-mckana-giants-mix.png",
+  "/artwork/columbine-songbird-bluebird.webp": "artwork/columbine-songbird-bluebird.png",
+  "/artwork/columbine-songbird-cardinal.webp": "artwork/columbine-songbird-cardinal.png",
+  "/artwork/columbine-songbird-mixture.webp": "artwork/columbine-songbird-mixture.png",
   "/artwork/corn-cockle-dawn-creek-blush.webp": "artwork/corn-cockle-dawn-creek-blush.png",
   "/artwork/corn-cockle-ocean-pearls.webp": "artwork/corn-cockle-ocean-pearls.png",
   "/artwork/cornflower-classic-fantastic.webp": "artwork/cornflower-classic-fantastic.png",
@@ -328,6 +335,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/crops/zinnia.webp": "artwork/crops/zinnia.webp",
   "/artwork/cup-and-saucer-vine-alba.webp": "artwork/cup-and-saucer-vine-alba-v2.png",
   "/artwork/cup-and-saucer-vine-purple.webp": "artwork/cup-and-saucer-vine-purple.png",
+  "/artwork/dahlia-seed-aa-giant-flowered.webp": "artwork/dahlia-seed-aa-giant-flowered.png",
   "/artwork/dahlia-seed-bees-choice.webp": "artwork/dahlia-seed-bees-choice.png",
   "/artwork/dahlia-seed-cancan-girls.webp": "artwork/dahlia-seed-cancan-girls.png",
   "/artwork/dahlia-seed-collarette.webp": "artwork/dahlia-seed-collarette.png",
@@ -923,6 +931,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/zinnia-gift.webp": "artwork/zinnia-gift.png",
   "/artwork/zinnia-golden-hour.webp": "artwork/zinnia-golden-hour.png",
   "/artwork/zinnia-isabellina-creamy-yellow.webp": "artwork/zinnia-isabellina-creamy-yellow.png",
+  "/artwork/zinnia-karens-fave-color-mix.webp": "artwork/zinnia-karens-fave-color-mix.png",
   "/artwork/zinnia-lilliput-mix.webp": "artwork/zinnia-lilliput-mix.png",
   "/artwork/zinnia-lilliput-salmon.webp": "artwork/zinnia-lilliput-salmon.png",
   "/artwork/zinnia-little-flower-girl.webp": "artwork/zinnia-little-flower-girl.png",
