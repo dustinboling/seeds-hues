@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 942 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 951 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -369,12 +369,16 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/eucalyptus-silver-dollar.webp": "artwork/eucalyptus-silver-dollar.png",
   "/artwork/eucalyptus-small-leaved-gum.webp": "artwork/eucalyptus-small-leaved-gum.png",
   "/artwork/euphorbia.webp": "artwork/euphorbia.png",
+  "/artwork/false-indigo-blue-wild-indigo.webp": "artwork/false-indigo-blue-wild-indigo.png",
+  "/artwork/false-sunflower-summer-sun.webp": "artwork/false-sunflower-summer-sun.png",
   "/artwork/feverfew-magic-lime-green.webp": "artwork/feverfew-magic-lime-green.png",
   "/artwork/feverfew-tetra-white.webp": "artwork/feverfew-tetra-white.png",
   "/artwork/feverfew-vegmo-single.webp": "artwork/feverfew-vegmo-single.png",
   "/artwork/feverfew-vegmo-snowball.webp": "artwork/feverfew-vegmo-snowball.png",
   "/artwork/figwort.webp": "artwork/figwort.png",
   "/artwork/flax-bubble-grass.webp": "artwork/flax-bubble-grass.png",
+  "/artwork/flowering-kale-crane-early-red.webp": "artwork/flowering-kale-crane-early-red.png",
+  "/artwork/flowering-kale-crane-early-white.webp": "artwork/flowering-kale-crane-early-white.png",
   "/artwork/flowering-kale-crane-pink.webp": "artwork/flowering-kale-crane-pink.png",
   "/artwork/flowering-kale-crane-red.webp": "artwork/flowering-kale-crane-red.png",
   "/artwork/flowering-kale-crane-rose.webp": "artwork/flowering-kale-crane-rose.png",
@@ -399,6 +403,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/globe-thistle-globe-thistle.webp": "artwork/globe-thistle-globe-thistle.png",
   "/artwork/godetia-grace-salmon.webp": "artwork/godetia-grace-salmon.png",
   "/artwork/goldenrod-canada-goldenrod.webp": "artwork/goldenrod-canada-goldenrod.png",
+  "/artwork/goldenrod-golden-baby.webp": "artwork/goldenrod-golden-baby.png",
   "/artwork/goldenrod-showy-goldenrod.webp": "artwork/goldenrod-showy-goldenrod.png",
   "/artwork/gomphrena-audray-pink.webp": "artwork/gomphrena-audray-pink.png",
   "/artwork/gomphrena-pastel-mix.webp": "artwork/gomphrena-pastel-mix.png",
@@ -407,8 +412,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/gomphrena-sunset-mix.webp": "artwork/gomphrena-sunset-mix.png",
   "/artwork/gomphrena-white.webp": "artwork/gomphrena-white.png",
   "/artwork/hollyhock-chaters-double-mix.webp": "artwork/hollyhock-chaters-double-mix.png",
+  "/artwork/hollyhock-chaters-double-red.webp": "artwork/hollyhock-chaters-double-red.png",
   "/artwork/hollyhock-chaters-double-salmon.webp": "artwork/hollyhock-chaters-double-salmon.png",
   "/artwork/hollyhock-chaters-double-white.webp": "artwork/hollyhock-chaters-double-white.png",
+  "/artwork/hollyhock-chaters-double-yellow.webp": "artwork/hollyhock-chaters-double-yellow.png",
   "/artwork/honesty-honesty.webp": "artwork/honesty-honesty.png",
   "/artwork/honeywort-pride-of-gibraltar.webp": "artwork/honeywort-pride-of-gibraltar.png",
   "/artwork/hyacinth-bean-ruby-moon.webp": "artwork/hyacinth-bean-ruby-moon.png",
@@ -437,6 +444,8 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/larkspur-white-cloud.webp": "artwork/larkspur-white-cloud.png",
   "/artwork/lavatera-pink-regis.webp": "artwork/lavatera-pink-regis.png",
   "/artwork/lavender-ellagance-purple.webp": "artwork/lavender-ellagance-purple.png",
+  "/artwork/lavender-ellagance-white.webp": "artwork/lavender-ellagance-white.png",
+  "/artwork/lavender-munstead-type.webp": "artwork/lavender-munstead-type.png",
   "/artwork/linaria-northern-lights-mix.webp": "artwork/linaria-northern-lights-mix.png",
   "/artwork/lisianthus-rosanne-2-clear-green.webp": "artwork/lisianthus-rosanne-2-clear-green.png",
   "/artwork/lisianthus-voyage-2-blue.webp": "artwork/lisianthus-voyage-2-blue.png",
