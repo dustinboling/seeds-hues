@@ -13,6 +13,7 @@ import { resolveReport } from "@/lib/repositories/reports";
 import { AVAILABILITY, REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE, SELLER_PLATFORMS, SELLER_TYPES } from "@/lib/db/schema";
 import { hostOf, hostOnDomain, normalizeName } from "@/lib/names";
 import { COLOR_FAMILIES } from "@/lib/validators";
+import { stateByCode, US_STATES } from "@/lib/data/states";
 import { notifyWaitlists, ServiceError } from "./ingest";
 
 export class AdminError extends ServiceError {}
@@ -53,6 +54,29 @@ export const SellerBadgeBodySchema = z.strictObject({ is_small_farm: z.boolean()
 
 /** POST /api/v1/admin/sellers/{ref}/description — a string sets, null clears. */
 export const SellerDescriptionBodySchema = z.strictObject({ description: z.string().max(2000).nullable() });
+
+/** POST /api/v1/admin/sellers/{ref}/location — required, non-blank, max 200 (the D3 location width). */
+export const SellerLocationBodySchema = z.strictObject({ location: z.string().trim().min(1).max(200) });
+
+const STATE_NAME_TO_CODE = new Map(US_STATES.map((s) => [s.name.toLowerCase(), s.code]));
+
+/**
+ * The seller-location region derivation (sweep 2026-11-22): the USPS code when the
+ * location ends with a US state — a trailing ", XX" code, a trailing ", <full name>",
+ * or the whole value is exactly a state code or name — else null (the write then
+ * leaves region untouched). Pure; case- and whitespace-tolerant.
+ */
+export function regionForLocation(location: string): string | null {
+  const value = location.trim();
+  const whole = stateByCode(value);
+  if (whole) return whole.code;
+  const wholeName = STATE_NAME_TO_CODE.get(value.toLowerCase());
+  if (wholeName) return wholeName;
+  const comma = value.lastIndexOf(",");
+  if (comma < 0) return null;
+  const tail = value.slice(comma + 1).trim();
+  return stateByCode(tail)?.code ?? STATE_NAME_TO_CODE.get(tail.toLowerCase()) ?? null;
+}
 
 /**
  * POST /api/v1/admin/varieties/:id/color — the variety Hue filing (Tranche 1.8). Each key
