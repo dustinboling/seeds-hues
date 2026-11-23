@@ -149,8 +149,8 @@ describe("server floor (no-JS: every chip a working link)", () => {
     expect(h).toContain('aria-current="true"');
     expect(h).not.toContain("aria-pressed");
     expect(h).not.toContain("<button");
-    expect(h).toContain("(7)");
-    expect(h).toContain("(0)");
+    expect(h).toContain('<span aria-hidden="true">(7)</span><span class="sr-only">7 varieties</span>');
+    expect(h).toContain('<span aria-hidden="true">(0)</span><span class="sr-only">0 varieties</span>');
     expect(h).toContain('href="/variety?season=cool&amp;method=direct"');
   });
 
@@ -158,14 +158,15 @@ describe("server floor (no-JS: every chip a working link)", () => {
     const s: BrowseFilterState = { ...clearAllFilters(), season: "cool", hue: ["pink", "peach"] };
     const h = floor(makeInitial({ state: s }));
     expect(h).toContain("Applied filters");
-    expect(h).toContain('aria-label="Remove Cool Season Hardy Annuals"');
-    expect(h).toContain('aria-label="Remove Pink"');
-    expect(h).toContain('aria-label="Remove Peach"');
+    expect(h).toContain('aria-label="Remove the Season filter, Cool Season Hardy Annuals"');
+    expect(h).toContain('aria-label="Remove the Hue filter, Pink"');
+    expect(h).toContain('aria-label="Remove the Hue filter, Peach"');
+    expect(h).toContain(">Hue: Pink<");
     expect(h).toContain("<svg");
     // Peach's remover drops only peach; Clear all drops everything.
     expect(h).toContain('href="/variety?season=cool&amp;color_family=pink"');
     expect(h).toContain('href="/variety"');
-    expect(h).toContain(">Clear all</a>");
+    expect(h).toContain(">Clear all filters</a>");
     // Multi-hue sets serialize once (single comma-encoding, never double).
     expect(h).toContain("color_family=pink%2Cpeach");
     expect(h).not.toContain("%25");
@@ -194,9 +195,9 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
     render(createElement(VarietyBrowse, { initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] }, counts }) }));
     expect(filtersGroup()).toBeTruthy();
     expect(screen.queryByRole("navigation", { name: "Filters" })).toBeNull();
-    expect(chip("Hue", `Pink (${counts.hue.options.pink})`).getAttribute("aria-pressed")).toBe("true");
-    expect(chip("Hue", `Peach (${counts.hue.options.peach})`).getAttribute("aria-pressed")).toBe("false");
-    expect(chip("Season", `All (${counts.season.all})`).getAttribute("aria-pressed")).toBe("true");
+    expect(chip("Hue", `Pink ${counts.hue.options.pink} varieties`).getAttribute("aria-pressed")).toBe("true");
+    expect(chip("Hue", `Peach ${counts.hue.options.peach} varieties`).getAttribute("aria-pressed")).toBe("false");
+    expect(chip("Season", `All ${counts.season.all} varieties`).getAttribute("aria-pressed")).toBe("true");
   });
 
   it("a tap commits in place: optimistic press, one fetch, one entry, swapped rows — no remounts", async () => {
@@ -207,7 +208,7 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
     const countNode = countLine();
-    const coolBtn = chip("Season", `Cool Season Hardy Annuals (${before.counts.season.options.cool})`);
+    const coolBtn = chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`);
     // jsdom clicks don't take focus; take it explicitly so the commit must preserve it.
     coolBtn.focus();
 
@@ -228,14 +229,14 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
     expect(window.location.search).toBe("?season=cool");
     // No remounts: the same count node and the same chip button, counts refreshed in place.
     expect(countLine()).toBe(countNode);
-    expect(chip("Season", `Cool Season Hardy Annuals (${next.counts.season.options.cool})`)).toBe(coolBtn);
+    expect(chip("Season", `Cool Season Hardy Annuals ${next.counts.season.options.cool} varieties`)).toBe(coolBtn);
     expect(document.activeElement).toBe(coolBtn);
   });
 
   it("tapping the active option is a no-op (no fetch, no entry, no change)", () => {
     const push = pushSpyOn();
     render(createElement(VarietyBrowse, { initial: makeInitial() }));
-    fireEvent.click(chip("Season", `All (${fakeCounts(7).season.all})`));
+    fireEvent.click(chip("Season", `All ${fakeCounts(7).season.all} varieties`));
     expect(fetchMock()).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
     expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3.");
@@ -247,13 +248,13 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
     const push = pushSpyOn();
     const before = makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] } });
     render(createElement(VarietyBrowse, { initial: before }));
-    fireEvent.click(chip("Hue", `Peach (${before.counts.hue.options.peach})`));
+    fireEvent.click(chip("Hue", `Peach ${before.counts.hue.options.peach} varieties`));
     await waitFor(() => expect(countLine().textContent).toBe("9 varieties · Pink · Peach, alphabetical."));
     expect(push.mock.calls[0]?.[2]).toBe("/variety?color_family=pink%2Cpeach");
 
     const s2 = makePayload({ state: clearAllFilters(), items: [item(0)], total: 49 });
     fetchImpl = async () => jsonResponse(s2);
-    fireEvent.click(chip("Hue", `All (${s1.counts.hue.all})`));
+    fireEvent.click(chip("Hue", `All ${s1.counts.hue.all} varieties`));
     await waitFor(() => expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3."));
     expect(push).toHaveBeenCalledTimes(2);
     expect(push.mock.calls[1]?.[2]).toBe("/variety");
@@ -276,8 +277,8 @@ describe("fetch discipline (last selection wins)", () => {
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
 
-    fireEvent.click(chip("Season", `Cool Season Hardy Annuals (${before.counts.season.options.cool})`));
-    fireEvent.click(chip("Sowing method", `Direct Sow (${before.counts.method.options.direct})`));
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
+    fireEvent.click(chip("Sowing method", `Direct Sow ${before.counts.method.options.direct} varieties`));
     expect(fetchUrls()).toEqual(["/api/browse/varieties?season=cool", "/api/browse/varieties?season=cool&method=direct"]);
 
     // The first response resolves while superseded: discarded whole (no rows, no entry).
@@ -308,7 +309,7 @@ describe("Back/Forward (in place; pages stay true navigation)", () => {
     const push = pushSpyOn();
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
-    fireEvent.click(chip("Season", `Cool Season Hardy Annuals (${before.counts.season.options.cool})`));
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
     await waitFor(() => expect(window.location.search).toBe("?season=cool"));
 
     const restored = makePayload();
@@ -316,7 +317,7 @@ describe("Back/Forward (in place; pages stay true navigation)", () => {
     backTo("");
     await waitFor(() => expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3."));
     expect(resultsRegion().textContent).toContain("Test Variety 0");
-    expect(chip("Season", `All (${restored.counts.season.all})`).getAttribute("aria-pressed")).toBe("true");
+    expect(chip("Season", `All ${restored.counts.season.all} varieties`).getAttribute("aria-pressed")).toBe("true");
     expect(push).toHaveBeenCalledTimes(1);
     expect(window.location.search).toBe("");
   });
@@ -364,7 +365,7 @@ describe("failure path (§2.5.6: prior stands, control reverts, one alert)", () 
     const push = pushSpyOn();
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
-    const coolName = `Cool Season Hardy Annuals (${before.counts.season.options.cool})`;
+    const coolName = `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`;
     fetchImpl = async () => {
       throw new Error("offline");
     };
@@ -378,7 +379,7 @@ describe("failure path (§2.5.6: prior stands, control reverts, one alert)", () 
     expect(push).not.toHaveBeenCalled();
     // The control reverts (same button, All pressed again).
     expect(chip("Season", coolName).getAttribute("aria-pressed")).toBe("false");
-    expect(chip("Season", `All (${before.counts.season.all})`).getAttribute("aria-pressed")).toBe("true");
+    expect(chip("Season", `All ${before.counts.season.all} varieties`).getAttribute("aria-pressed")).toBe("true");
 
     // The next successful change clears the alert and commits.
     const next = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 });
@@ -392,7 +393,7 @@ describe("failure path (§2.5.6: prior stands, control reverts, one alert)", () 
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
     fetchImpl = async () => jsonResponse({ items: "nope", total: "many" });
-    fireEvent.click(chip("Season", `Cool Season Hardy Annuals (${before.counts.season.options.cool})`));
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
     await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(1));
     expect(resultsRegion().textContent).toContain("Test Variety 0");
     expect(window.location.search).toBe("");
@@ -404,11 +405,12 @@ describe("applied row + Clear all (in place)", () => {
     const s: BrowseFilterState = { ...clearAllFilters(), hue: ["pink", "peach"] };
     render(createElement(VarietyBrowse, { initial: makeInitial({ state: s }) }));
     const row = screen.getByRole("group", { name: "Applied filters" });
-    const pink = within(row).getByRole("button", { name: "Remove Pink" });
+    const pink = within(row).getByRole("button", { name: "Remove the Hue filter, Pink" });
     expect(pink.className).toContain("chip-removable");
+    expect(pink.textContent).toContain("Hue: Pink");
     expect(need(pink.querySelector("svg"), "remover glyph")).toBeTruthy();
-    expect(within(row).getByRole("button", { name: "Remove Peach" })).toBeTruthy();
-    expect(within(row).getByRole("button", { name: "Clear all" })).toBeTruthy();
+    expect(within(row).getByRole("button", { name: "Remove the Hue filter, Peach" })).toBeTruthy();
+    expect(within(row).getByRole("button", { name: "Clear all filters" })).toBeTruthy();
   });
 
   it("a remover clears just its entry in one entry; focus moves to Clear all while the row persists", async () => {
@@ -416,12 +418,12 @@ describe("applied row + Clear all (in place)", () => {
     fetchImpl = async () => jsonResponse(next);
     const push = pushSpyOn();
     render(createElement(VarietyBrowse, { initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink", "peach"] } }) }));
-    fireEvent.click(screen.getByRole("button", { name: "Remove Peach" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove the Hue filter, Peach" }));
     await waitFor(() => expect(countLine().textContent).toBe("11 varieties · Pink, alphabetical."));
     expect(push.mock.calls[0]?.[2]).toBe("/variety?color_family=pink");
-    expect(screen.getByRole("button", { name: "Remove Pink" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Remove Peach" })).toBeNull();
-    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Clear all" }));
+    expect(screen.getByRole("button", { name: "Remove the Hue filter, Pink" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Remove the Hue filter, Peach" })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Clear all filters" }));
   });
 
   it("Clear all resets every group in one action, entry and announcement; focus lands on the first All", async () => {
@@ -433,7 +435,7 @@ describe("applied row + Clear all (in place)", () => {
     const announcements: string[] = [];
     const observer = new MutationObserver(() => announcements.push(countLine().textContent ?? ""));
     observer.observe(countLine(), { characterData: true, childList: true, subtree: true });
-    fireEvent.click(screen.getByRole("button", { name: "Clear all" }));
+    fireEvent.click(screen.getByRole("button", { name: "Clear all filters" }));
     await waitFor(() => expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3."));
     observer.disconnect();
     expect(fetchUrls()).toEqual(["/api/browse/varieties"]);
@@ -442,7 +444,7 @@ describe("applied row + Clear all (in place)", () => {
     expect(screen.queryByRole("group", { name: "Applied filters" })).toBeNull();
     // Exactly one count-line change for the whole reset — one announcement.
     expect(announcements).toHaveLength(1);
-    expect(document.activeElement).toBe(chip("Season", `All (${next.counts.season.all})`));
+    expect(document.activeElement).toBe(chip("Season", `All ${next.counts.season.all} varieties`));
   });
 });
 
@@ -452,20 +454,20 @@ describe("zero results (recovery + focus)", () => {
     fetchImpl = async () => jsonResponse(empty);
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
-    fireEvent.click(chip("Hue", `Chocolate (${before.counts.hue.options.chocolate})`));
+    fireEvent.click(chip("Hue", `Chocolate ${before.counts.hue.options.chocolate} varieties`));
     await waitFor(() => expect(countLine().textContent).toBe("0 varieties · Chocolate, alphabetical."));
     const region = resultsRegion();
     const emptyState = need(region.querySelector('[data-testid="variety-empty"]'), "empty state");
     expect(emptyState.textContent).toContain("No varieties match.");
     // The applied row stays visible for recovery.
-    expect(screen.getByRole("button", { name: "Remove Chocolate" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Remove the Hue filter, Chocolate" })).toBeTruthy();
 
     const back = makePayload({ items: [item(0)], total: 49 });
     fetchImpl = async () => jsonResponse(back);
     fireEvent.click(within(emptyState as HTMLElement).getByRole("button", { name: "Clear filters" }));
     await waitFor(() => expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3."));
     expect(resultsRegion().textContent).toContain("Test Variety 0");
-    expect(document.activeElement).toBe(chip("Season", `All (${back.counts.season.all})`));
+    expect(document.activeElement).toBe(chip("Season", `All ${back.counts.season.all} varieties`));
   });
 });
 
@@ -475,7 +477,7 @@ describe("pagination (stays true navigation)", () => {
     fetchImpl = async () => jsonResponse(next);
     render(createElement(VarietyBrowse, { initial: makeInitial() }));
     const before = makeInitial();
-    fireEvent.click(chip("Season", `Cool Season Hardy Annuals (${before.counts.season.options.cool})`));
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
     await waitFor(() => expect(window.location.search).toBe("?season=cool"));
     const pages = screen.getByRole("navigation", { name: "Varieties pages" });
     const page2 = need(

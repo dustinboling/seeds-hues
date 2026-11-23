@@ -298,10 +298,16 @@ describe("removersFor (the applied row)", () => {
     const r = removersFor(s);
     expect(r.map((x) => x.key)).toEqual(["season", "hue:pink", "hue:peach", "smallFarm"]);
     expect(r.map((x) => x.label)).toEqual([
-      SEASON_LABELS[SEASON_PARAMS.cool],
-      COLOR_FAMILY_LABELS.pink,
-      COLOR_FAMILY_LABELS.peach,
-      "Small farms",
+      `Season: ${SEASON_LABELS[SEASON_PARAMS.cool]}`,
+      `Hue: ${COLOR_FAMILY_LABELS.pink}`,
+      `Hue: ${COLOR_FAMILY_LABELS.peach}`,
+      "Sellers: Small farms",
+    ]);
+    expect(r.map((x) => x.removeLabel)).toEqual([
+      `Remove the Season filter, ${SEASON_LABELS[SEASON_PARAMS.cool]}`,
+      `Remove the Hue filter, ${COLOR_FAMILY_LABELS.pink}`,
+      `Remove the Hue filter, ${COLOR_FAMILY_LABELS.peach}`,
+      "Remove the Sellers filter, Small farms",
     ]);
     expect(r[0]!.clear(s)).toEqual({ ...s, season: null });
     expect(r[1]!.clear(s).hue).toEqual(["peach"]);
@@ -402,9 +408,9 @@ describe("BrowseFilters server render (links floor)", () => {
     expect(h).toContain('href="/variety"');
     // Set members are current; counts render, and the 0-count option keeps its chip.
     expect(h.match(/aria-current="true"/g)).toHaveLength(2 + 1 + 1);
-    expect(h).toContain("(0)");
+    expect(h).toContain('<span aria-hidden="true">(0)</span><span class="sr-only">0 varieties</span>');
     expect(h).toContain("Start indoors");
-    expect(h).toContain("(2)");
+    expect(h).toContain('<span aria-hidden="true">(2)</span><span class="sr-only">2 varieties</span>');
   });
 
   it("keeps the fieldset/legend/strip anatomy and the sellers legend placement", () => {

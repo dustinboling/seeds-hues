@@ -170,7 +170,7 @@ function AppliedRow({
       <button
         type="button"
         className="chip-filter chip-removable"
-        aria-label={`Remove ${r.label}`}
+        aria-label={r.removeLabel}
         data-filter-remove={r.key}
         onClick={() => onAction(r.clear, hasActiveFilters(r.clear(shown)) ? "clear-all" : "first-all")}
       >
@@ -182,7 +182,7 @@ function AppliedRow({
         href={browseHref(BASE_PATH, r.clear(shown))}
         scroll={false}
         className="chip-filter chip-removable"
-        aria-label={`Remove ${r.label}`}
+        aria-label={r.removeLabel}
         data-filter-remove={r.key}
       >
         {r.label}
@@ -201,11 +201,11 @@ function AppliedRow({
       {removers.length > 0 ? (
         hydrated ? (
           <button ref={clearAllRef} type="button" className="chip-filter" onClick={() => onAction(() => clearAllFilters(), "first-all")}>
-            Clear all
+            Clear all filters
           </button>
         ) : (
           <Link href={BASE_PATH} scroll={false} className="chip-filter">
-            Clear all
+            Clear all filters
           </Link>
         )
       ) : null}

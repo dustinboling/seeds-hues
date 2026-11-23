@@ -381,13 +381,16 @@ export interface BrowseOption {
 }
 
 /**
- * One applied-row remover: its stable key, its label (the activeFilterLabels vocabulary), and
- * the clearing transition — a function of the state it applies to, so rapid taps always clear
- * from the latest intent, never from a stale render. One remover per selected hue family.
+ * One applied-row remover: its stable key, its visible label ("{Group}: {Value}" per §2.6.1 —
+ * the group word is the group's legend), its accessible name ("Remove the {Group} filter,
+ * {Value}" per §2.6.2), and the clearing transition — a function of the state it applies
+ * to, so rapid taps always clear from the latest intent, never from a stale render. One
+ * remover per selected hue family.
  */
 export interface BrowseRemover {
   key: string;
   label: string;
+  removeLabel: string;
   clear: (state: BrowseFilterState) => BrowseFilterState;
 }
 
@@ -400,21 +403,30 @@ export function removeHue(state: BrowseFilterState, family: ColorFamily): Browse
 
 /** The applied row's removers for a state, in group order (hue families in set order). */
 export function removersFor(state: BrowseFilterState): BrowseRemover[] {
+  const remover = (
+    key: string,
+    group: BrowseFilterGroup,
+    value: string,
+    clear: (s: BrowseFilterState) => BrowseFilterState,
+  ): BrowseRemover => {
+    const g = BROWSE_OPTIONS[group].legend;
+    return { key, label: `${g}: ${value}`, removeLabel: `Remove the ${g} filter, ${value}`, clear };
+  };
   const out: BrowseRemover[] = [];
   if (state.season) {
-    out.push({ key: "season", label: SEASON_LABELS[SEASON_PARAMS[state.season]], clear: (s) => clearGroup(s, "season") });
+    out.push(remover("season", "season", SEASON_LABELS[SEASON_PARAMS[state.season]], (s) => clearGroup(s, "season")));
   }
   if (state.method) {
-    out.push({ key: "method", label: SOWING_METHOD_LABELS[METHOD_PARAMS[state.method]], clear: (s) => clearGroup(s, "method") });
+    out.push(remover("method", "method", SOWING_METHOD_LABELS[METHOD_PARAMS[state.method]], (s) => clearGroup(s, "method")));
   }
   if (state.lifeCycle) {
-    out.push({ key: "lifeCycle", label: LIFE_CYCLE_LABELS[state.lifeCycle], clear: (s) => clearGroup(s, "lifeCycle") });
+    out.push(remover("lifeCycle", "lifeCycle", LIFE_CYCLE_LABELS[state.lifeCycle], (s) => clearGroup(s, "lifeCycle")));
   }
   for (const h of state.hue) {
-    out.push({ key: `hue:${h}`, label: COLOR_FAMILY_LABELS[h], clear: (s) => removeHue(s, h) });
+    out.push(remover(`hue:${h}`, "hue", COLOR_FAMILY_LABELS[h], (s) => removeHue(s, h)));
   }
   if (state.smallFarm) {
-    out.push({ key: "smallFarm", label: SMALL_FARM_FILTER_LABEL, clear: (s) => clearGroup(s, "smallFarm") });
+    out.push(remover("smallFarm", "smallFarm", SMALL_FARM_FILTER_LABEL, (s) => clearGroup(s, "smallFarm")));
   }
   return out;
 }

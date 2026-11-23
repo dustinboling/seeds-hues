@@ -27,9 +27,20 @@ export function SwatchDot({ family }: { family: ColorFamily }) {
   );
 }
 
-/** The per-option count inside a chip — shared with the hydrated buttons so the two can never drift. */
+/**
+ * The per-option count inside a chip — shared with the hydrated buttons so the two can never
+ * drift. Sighted readers see the parenthesized numeral; assistive tech gets the numeral plus
+ * this surface's unit (§2.4.2: "12 varieties"), generalizing the shipped StateFilter pattern.
+ * The visible parens are aria-hidden so the accessible name reads exactly "7 varieties".
+ */
 export function ChipCount({ counts, group, value }: { counts: BrowseCounts; group: BrowseFilterGroup; value: string | null }) {
-  return <span className="text-muted tabular-nums">({countFor(counts, group, value)})</span>;
+  const n = countFor(counts, group, value);
+  return (
+    <span className="text-muted tabular-nums">
+      <span aria-hidden="true">({n})</span>
+      <span className="sr-only">{n} varieties</span>
+    </span>
+  );
 }
 
 /**
