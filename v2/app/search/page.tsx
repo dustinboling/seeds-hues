@@ -33,8 +33,10 @@ export default async function SearchPage({ searchParams }: Props) {
   const navKey = [q, filters.season, filters.method, filters.lifeCycle, filters.hue].join("|");
   const { catalog } = await getServices();
   // The browse payload: the grouped results plus the per-option counts describing them —
-  // the identical contract GET /api/browse/search serves the in-place layer.
-  const payload = q ? await catalog.browseSearch(q, { filters }) : null;
+  // the identical contract GET /api/browse/search serves the in-place layer. The page view
+  // logs once (client web/search-page); the browse endpoint never sets logClient, so
+  // in-place refinements stay silent.
+  const payload = q ? await catalog.browseSearch(q, { filters, logClient: "web/search-page" }) : null;
   const initial: SearchBrowseInitial | null = payload
     ? {
         state: filters,
