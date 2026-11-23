@@ -112,7 +112,11 @@ const plant = {
   sowing_method_source_label: null,
 } as const;
 
-function listing(id: number, checked: string): PublicListing {
+function listing(
+  id: number,
+  checked: string,
+  seller: { slug: string; name: string } = { slug: "songbird-seed-co", name: "Songbird Seed Co." },
+): PublicListing {
   return {
     id,
     variety: {
@@ -123,7 +127,7 @@ function listing(id: number, checked: string): PublicListing {
       media: [],
       cropMedia: [],
     },
-    seller: { slug: "songbird-seed-co", name: "Songbird Seed Co.", location: "Skagit Valley, WA", region: "WA", country: "US", isSmallFarm: false },
+    seller: { slug: seller.slug, name: seller.name, location: "Skagit Valley, WA", region: "WA", country: "US", isSmallFarm: false },
     availability: "in_stock",
     lastCheckedAt: checked,
     firstSeenAt: checked,
@@ -238,10 +242,23 @@ describe("friendly dates in rendered output (Batch 0.1)", () => {
     expect(h).not.toMatch(ISO);
   });
 
-  it("variety answer line: no ISO, friendly As-of date", async () => {
-    fake.variety = variety([listing(1, "2026-11-20")]);
+  it("seller variety page: no header answer line, seller cards stay, no ISO", async () => {
+    // Dustin 2026-11-22: the visible seller-list sentence under the H1 is removed. The
+    // data-layer answer field still feeds the meta description, so it stays intact.
+    const listings = [listing(1, "2026-11-20"), listing(2, "2026-11-19", { slug: "eden-brothers", name: "Eden Brothers" })];
+    fake.variety = variety(listings);
+    expect((fake.variety as VarietyDetail).answer).toBe(
+      "As of Nov 20, 2026, 2 sellers list Katz Mix: Songbird Seed Co. and Eden Brothers.",
+    );
     const h = renderToStaticMarkup((await VarietyView({ slug: "stock-katz-mix", smallFarmOnly: false })) as ReactElement);
-    expect(h).toContain("As of Nov 20, 2026, 1 seller lists Katz Mix: Songbird Seed Co.");
+    // The header answer element is gone entirely: no element, no sentence, no seller list.
+    expect(h).not.toContain('data-testid="answer"');
+    expect(h).not.toContain("As of Nov 20, 2026, 2 sellers list Katz Mix");
+    // The seller cards below stay exactly as they are.
+    expect(h).toContain("Where to buy");
+    expect(h).toContain("Songbird Seed Co.");
+    expect(h).toContain("Eden Brothers");
+    expect(h).toContain("Visit shop");
     expect(h).not.toMatch(ISO);
   });
 
@@ -285,6 +302,9 @@ describe("one canonical zero-seller sentence (Batch 0.2)", () => {
   it("zero-seller page body carries the canonical sentence; no retired variant returns", async () => {
     fake.variety = variety([]);
     const h = renderToStaticMarkup((await VarietyView({ slug: "stock-katz-mix", smallFarmOnly: false })) as ReactElement);
+    // The header answer element survives for zero-seller pages (Dustin 2026-11-22 ruled on
+    // the seller-list string only, and this sentence names no sellers).
+    expect(h).toContain('data-testid="answer"');
     expect(h).toContain(zeroSellerSentence("Katz Mix"));
     for (const old of RETIRED) expect(h, old).not.toContain(old);
     // The rest of the body paragraph survives the replacement.
