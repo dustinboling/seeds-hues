@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 888 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 897 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -101,10 +101,16 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/cleome-cherry-queen.webp": "artwork/cleome-cherry-queen.png",
   "/artwork/cleome-mauve-queen.webp": "artwork/cleome-mauve-queen.png",
   "/artwork/cleome-queen-mix.webp": "artwork/cleome-queen-mix.png",
+  "/artwork/cleome-rose-queen.webp": "artwork/cleome-rose-queen.png",
+  "/artwork/cleome-violet-queen.webp": "artwork/cleome-violet-queen.png",
   "/artwork/cleome-white-queen.webp": "artwork/cleome-white-queen.png",
   "/artwork/coleus-chocolate-covered-cherry.webp": "artwork/coleus-chocolate-covered-cherry.png",
+  "/artwork/coleus-kong-red.webp": "artwork/coleus-kong-red.png",
+  "/artwork/coleus-kong-rose.webp": "artwork/coleus-kong-rose.png",
   "/artwork/coleus-wizard-rose.webp": "artwork/coleus-wizard-rose.png",
+  "/artwork/coleus-wizard-scarlet.webp": "artwork/coleus-wizard-scarlet.png",
   "/artwork/coleus-wizard-velvet-red.webp": "artwork/coleus-wizard-velvet-red.png",
+  "/artwork/columbine-barlow-mix.webp": "artwork/columbine-barlow-mix.png",
   "/artwork/columbine-mckana-giants-mix.webp": "artwork/columbine-mckana-giants-mix.png",
   "/artwork/corn-cockle-dawn-creek-blush.webp": "artwork/corn-cockle-dawn-creek-blush.png",
   "/artwork/corn-cockle-ocean-pearls.webp": "artwork/corn-cockle-ocean-pearls.png",
@@ -117,6 +123,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/cosmos-cupcakes-blush.webp": "artwork/cosmos-cupcakes-blush.webp",
   "/artwork/cosmos-cupcakes-white.webp": "artwork/cosmos-cupcakes-white.png",
   "/artwork/cosmos-daydream.webp": "artwork/cosmos-daydream.png",
+  "/artwork/cosmos-diablo.webp": "artwork/cosmos-diablo.png",
   "/artwork/cosmos-double-click-bicolor-rose.webp": "artwork/cosmos-double-click-bicolor-rose.png",
   "/artwork/cosmos-double-click-cranberries.webp": "artwork/cosmos-double-click-cranberries.png",
   "/artwork/cosmos-double-click-mix.webp": "artwork/cosmos-double-click-mix.png",
@@ -131,6 +138,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/cosmos-xanthos.webp": "artwork/cosmos-xanthos.png",
   "/artwork/cosmos-xsenia.webp": "artwork/cosmos-xsenia.png",
   "/artwork/craspedia-drumstick.webp": "artwork/craspedia-drumstick.png",
+  "/artwork/craspedia-sun-ball.webp": "artwork/craspedia-sun-ball.png",
   "/artwork/cress-attraxa.webp": "artwork/cress-attraxa.png",
   "/artwork/cress-emerald-beads.webp": "artwork/cress-emerald-beads.png",
   "/artwork/cress-green-dragon.webp": "artwork/cress-green-dragon.png",
@@ -320,6 +328,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/dahlia-seed-petite-florets.webp": "artwork/dahlia-seed-petite-florets.png",
   "/artwork/dahlia-shooting-stars.webp": "artwork/dahlia-shooting-stars.webp",
   "/artwork/delphinium-bellamosum.webp": "artwork/delphinium-bellamosum.png",
+  "/artwork/delphinium-casablanca.webp": "artwork/delphinium-casablanca.png",
   "/artwork/delphinium-guardian-lavender.webp": "artwork/delphinium-guardian-lavender.png",
   "/artwork/delphinium-guardian-white.webp": "artwork/delphinium-guardian-white.png",
   "/artwork/delphinium-magic-fountains-mix.webp": "artwork/delphinium-magic-fountains-mix.png",
