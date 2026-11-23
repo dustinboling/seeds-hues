@@ -90,6 +90,14 @@ export const VarietyColorBodySchema = z
   })
   .refine((b) => b.color_family !== undefined || b.color_swatch !== undefined, { message: "set color_family and/or color_swatch" });
 
+/**
+ * POST /api/v1/admin/varieties/:id/description (decision 28) — a string sets the
+ * description, null clears it to NULL. An empty string is a validation error, never a
+ * clear: clearing is null's job, stated explicitly so the two can never be confused.
+ * The 2000-char bound matches the seller description width.
+ */
+export const VarietyDescriptionBodySchema = z.strictObject({ description: z.string().min(1).max(2000).nullable() });
+
 const PRICE_PATTERNS = [
   /\$\s*\d/,
   /\bUSD\s*\$?\s*\d/i,
@@ -380,11 +388,28 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
     };
   }
 
+  /**
+   * The variety description write (decision 28): the ONE funnel for description updates,
+   * modeled on varietyColorUpdate, so any future caller (admin UI included) gets identical
+   * validation, the changed-field list, the catalog sequence bump, and the revalidation set.
+   * A string sets, null clears to NULL; an unchanged value writes nothing.
+   */
+  async function varietyDescriptionUpdate(ref: string, body: z.infer<typeof VarietyDescriptionBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+    const variety = await ingest.varietyForMatch(db, /^\d+$/.test(ref) ? Number(ref) : ref);
+    if (!variety) throw new AdminError(404, "variety_not_found", `variety ${ref} not found`);
+    const changed = await admin.updateVarietyDescription(db, variety.id, body.description, iso());
+    return {
+      data: { variety: variety.slug, id: variety.id, changed },
+      revalidate: [`/variety/${variety.slug}`, `/crop/${variety.plantSlug}`, "/variety"],
+    };
+  }
+
   return {
     removeListing,
     restoreListing,
     removeVariety,
     varietyColorUpdate,
+    varietyDescriptionUpdate,
 
     listReview: (q: z.infer<typeof ReviewListQuerySchema>, limit: number) => admin.listReviewItems(db, { ...q, limit }),
 
