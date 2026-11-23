@@ -51,3 +51,13 @@ Run the repo's full verify yourself before finishing and leave the tree clean (t
 ## PR body hygiene
 
 Provenance (this brief + the SPEC sections), Build accounting (verify summary + diff census), the payload field enumeration (T-C), and a Gate record section for Quinn's verdict.
+
+## Addendum — re-dispatch after run 45115938520 (2026-11-22, coordinator #16)
+
+The first dispatch of this brief (run 45115938520) **failed the workflow's verify gate on a single ESLint error and produced no PR**; the runner's work was discarded, so this re-dispatch starts again from `main`. The failure, from the run's gate log:
+
+- `v2/components/ui/useInPlaceBrowse.ts` (the shared in-place browse hook the build created), line ~136–137: **error — Cannot access refs during render** (react-hooks). The code mirrored the hook's config into a ref during render (`const configRef = useRef({...})` followed by a render-phase `.current` access) so popstate handlers could read latest values through stable identities. React refs may only be accessed outside render (event handlers, effects).
+
+Fix direction (mechanism is yours, the lint gate is not negotiable): keep handler identities stable WITHOUT touching `.current` during render — e.g. update the mirror inside `useEffect`, or restructure so the handlers close over an effect-maintained ref, or drop the mirror and re-subscribe the popstate listener when its dependencies change. Whatever pattern you choose, `npm run verify` must pass in full.
+
+**Finish discipline, restated with emphasis:** the failed run evidently finished without running the repo's full verify itself — the gate's ESLint step was the first full check the code ever met, and because lint runs first, typecheck and the test suite never ran at all. Before you finish, run `npm run verify` (lint + typecheck + vitest) in `v2/` yourself and fix everything it reports. A run that ends with the gate as its first verification has failed its brief even if the gate passes.
