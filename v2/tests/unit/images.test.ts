@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 887 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 888 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -175,7 +175,10 @@ describe("lib/images-data (generated)", () => {
     // Breath, Sweet Pea Juliet / Shell Pink, Verbena bonariensis, Stock
     // Katz Mix, Cleome Mauve Queen / Cherry Queen, Shirley Poppy Angel's
     // Choir (2026-11-22, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(887);
+    // +1 for Item MOTIF: the C3 Vine & Pods homepage divider original
+    // (theme/divider-home.webp, identity key) — the PR #48 build gate's R2
+    // deploy condition (2026-11-22, Quinn build re-gate PASS on PR #48).
+    expect(entries).toHaveLength(888);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
