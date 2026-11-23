@@ -16,7 +16,9 @@
  *   disabled or before hydration (progressive enhancement).
  * - Filter state is local state initialised from the server-rendered value. There is
  *   deliberately NO mount reconciliation and NO setState in any effect body. URL → state
- *   re-sync happens only inside the `popstate` event callback (the sanctioned pattern).
+ *   re-sync happens only inside the `popstate` event callback (the sanctioned pattern) and
+ *   in the soft-navigation adoption below (render-time state plus a ref-sync layout effect —
+ *   the effect itself sets no state).
  * - The links→buttons semantics upgrade after hydration (toggle buttons with `aria-pressed`,
  *   never `aria-current`, in a group labelled "Filters") rides on `useSyncExternalStore`: the
  *   server snapshot replays during hydration (identical HTML, no mismatch) and the client
@@ -26,7 +28,10 @@
  * - Each deliberate selection commits exactly one history entry (on the fetch's success — the
  *   URL always reflects committed state); tapping the active option is a no-op; Back/Forward
  *   re-sync in place. A filter change always resets to page 1. Rapid taps settle on the last
- *   selection (stale responses are discarded); pagination stays true navigation.
+ *   selection (stale responses are discarded). Pagination navigates through the Next router
+ *   (soft navigation): the server page re-renders for the target ?page= and the new snapshot
+ *   it delivers is adopted wholesale — results, counts, page and filters — so the rendered
+ *   page always matches the URL (N-D1).
  * - Failure path (§2.5.6): the prior results, counts and URL stand, the control reverts to the
  *   committed state, and one `role="alert"` error line renders with the applied row.
  * - The count line is a persistent live region — its text updates, it never remounts — and it
@@ -38,7 +43,7 @@
  */
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import { BrowseFilters, ChipCount, SwatchDot } from "@/components/ui/BrowseFilters";
 import { FilterStrip } from "@/components/ui/FilterStrip";
 import { Pagination } from "@/components/ui/Pagination";
@@ -102,6 +107,13 @@ function snapshotServer(): boolean {
 function useHydrated(): boolean {
   return useSyncExternalStore(subscribeHydrated, snapshotHydrated, snapshotServer);
 }
+
+/**
+ * Layout effect on the client, passive on the server — the SSR-safe shape for the one effect
+ * below that must run synchronously at commit (React warns for a bare useLayoutEffect during
+ * server rendering).
+ */
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /** Strict narrowing for the fetched payload: malformed means the failure path, never broken cards. */
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -233,6 +245,40 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
   const focusRef = useRef<FocusTarget | null>(null);
   const firstAllRef = useRef<HTMLButtonElement | null>(null);
   const clearAllRef = useRef<HTMLButtonElement | null>(null);
+
+  // Soft-navigation adoption (N-D1): turning a page re-renders the server page, which delivers
+  // a NEW `initial` — the target page's items, counts, total and page — to this still-mounted
+  // component. React preserves client state across that navigation, so the delivered snapshot
+  // is adopted wholesale: it is by definition committed (its URL is already in the bar), which
+  // clears pending/failed. In-place filter commits never re-render the server tree (History
+  // API only), so `initial` keeps its identity through them and this never fires for them.
+  // Render-time derived state (React's sanctioned previous-render pattern): state only — the
+  // mirrors re-base in the layout effect below, and every effect body stays setState-free.
+  const [lastInitial, setLastInitial] = useState<VarietyBrowseInitial>(initial);
+  if (lastInitial !== initial) {
+    setLastInitial(initial);
+    setCommitted(initial);
+    setPending(null);
+    setFailed(false);
+  }
+
+  // Adoption follow-through: the mirrors re-base on the adopted snapshot (page AND filters)
+  // and any in-flight filter fetch is invalidated — a navigation is the latest intent, and a
+  // stale filter response must not clobber the adopted page. Layout timing, so the sync lands
+  // in the same commit: a fetch settling between a passive effect and its commit could
+  // otherwise commit stale first. The identity check makes this a no-op for fetch commits —
+  // fetchCommitted syncs its own mirror synchronously — so only adoptions take this path.
+  // Declared before the focus handoff so a killed request can never fire for the adopted page.
+  useIsomorphicLayoutEffect(() => {
+    if (committedRef.current !== committed) {
+      committedRef.current = committed;
+      intentRef.current = committed.state;
+      focusRef.current = null;
+      requestRef.current += 1;
+      abortRef.current?.abort();
+      abortRef.current = null;
+    }
+  }, [committed]);
 
   // The one fetch path (taps and popstate share it): last id wins; stale responses — success
   // or failure — are discarded. Pushes exactly one history entry per committed tap; popstate
@@ -379,7 +425,11 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
         onAction={(compute, focus) => select(compute, focus)}
         clearAllRef={clearAllRef}
       />
-      <div id="variety-results" className="mt-6">
+      {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
+          flight, so assistive tech hears an update coming instead of a stale list stated as
+          current. Cleared on settle — the attribute is absent then, so settled markup is
+          byte-identical with or without this line. */}
+      <div id="variety-results" className="mt-6" aria-busy={pending === null ? undefined : true}>
         {committed.total > 0 ? (
           <VarietyGrid items={committed.items} wide />
         ) : (

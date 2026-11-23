@@ -4,8 +4,9 @@
  * server-rendered links floor (no-JS: every chip a working link), the hydrated buttons with
  * aria-pressed, optimistic select + last-selection-wins commits, exactly one history entry
  * per change, in-place Back/Forward, the §2.5.6 failure path, the applied row + Clear all,
- * zero-results recovery with focus, stable keys (no chip remounts), and pagination left as
- * true navigation. Fetch is stubbed per test; expected strings pin the shipped wording while
+ * zero-results recovery with focus, stable keys (no chip remounts), soft-navigation paging
+ * adopting the delivered server snapshot (N-D1), and the in-flight aria-busy on the results
+ * region (F6). Fetch is stubbed per test; expected strings pin the shipped wording while
  * every total and count derives from the test's own fake payloads.
  *
  * Non-vacuity: fails on pre-build code — VarietyBrowse does not exist there (and Hue is
@@ -471,7 +472,7 @@ describe("zero results (recovery + focus)", () => {
   });
 });
 
-describe("pagination (stays true navigation)", () => {
+describe("pagination (the layer never intercepts page turns)", () => {
   it("carries the committed filters and is never intercepted", async () => {
     const next = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 49 });
     fetchImpl = async () => jsonResponse(next);
@@ -490,5 +491,144 @@ describe("pagination (stays true navigation)", () => {
     const calls = fetchMock().mock.calls.length;
     fireEvent.click(page2);
     expect(fetchMock().mock.calls.length).toBe(calls);
+  });
+});
+
+describe("soft-navigation paging (N-D1: the delivered server snapshot commits)", () => {
+  it("renders the target page when the router delivers its snapshot (announcement, cards, URL agree)", () => {
+    const push = pushSpyOn();
+    const { rerender } = render(createElement(VarietyBrowse, { initial: makeInitial() }));
+    expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3.");
+    // The router turns the page first (URL + RSC), then delivers the new server snapshot to
+    // the still-mounted component: mirror that order — replace the URL, then the prop.
+    window.history.replaceState({}, "", "/variety?page=2");
+    rerender(createElement(VarietyBrowse, { initial: makeInitial({ items: [item(24), item(25)], page: 2 }) }));
+    expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
+    expect(resultsRegion().textContent).toContain("Test Variety 24");
+    expect(resultsRegion().textContent).not.toContain("Test Variety 0");
+    expect(window.location.search).toBe("?page=2");
+    // The server snapshot needs no fetch and pushes no entry — its URL is already in the bar.
+    expect(fetchMock()).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+    // The adopted page's own pagination is what renders now (page 2 current, neighbours linked).
+    const pages = screen.getByRole("navigation", { name: "Varieties pages" });
+    const numbered = within(pages)
+      .getAllByRole("link")
+      .filter((l) => /^Page\s+\d$/.test(l.textContent ?? ""));
+    expect(numbered.map((l) => l.getAttribute("href"))).toEqual(["/variety", "/variety?page=3"]);
+    expect(need(pages.querySelector('[aria-current="page"]'), "current page").textContent).toContain("2");
+  });
+
+  it("a soft navigation wins over an in-flight filter fetch (the stale response is discarded)", async () => {
+    const d = deferred<Response>();
+    fetchImpl = () => d.promise;
+    const before = makeInitial();
+    const { rerender } = render(createElement(VarietyBrowse, { initial: before }));
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
+    expect(fetchMock()).toHaveBeenCalledTimes(1);
+    // The page turns while the filter fetch is still in flight.
+    window.history.replaceState({}, "", "/variety?page=2");
+    rerender(createElement(VarietyBrowse, { initial: makeInitial({ items: [item(24), item(25)], page: 2 }) }));
+    expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
+    // The stale filter response lands afterwards: discarded whole — the adopted page stands.
+    d.resolve(
+      jsonResponse(makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 })),
+    );
+    await act(async () => {
+      await d.promise;
+    });
+    // One macrotask flushes the component's whole continuation (json + settle) inside act, so
+    // the assertions below prove the discard instead of racing it.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
+    expect(resultsRegion().textContent).toContain("Test Variety 24");
+    expect(resultsRegion().textContent).not.toContain("Test Variety 7");
+    expect(window.location.search).toBe("?page=2");
+  });
+
+  it("filtering after an adopted page commits from the adopted state (page resets, URL agrees)", async () => {
+    const push = pushSpyOn();
+    const page2 = makeInitial({
+      state: { ...clearAllFilters(), season: "cool" },
+      items: [item(30)],
+      total: 30,
+      page: 2,
+    });
+    const { rerender } = render(createElement(VarietyBrowse, { initial: makeInitial() }));
+    window.history.replaceState({}, "", "/variety?season=cool&page=2");
+    rerender(createElement(VarietyBrowse, { initial: page2 }));
+    expect(countLine().textContent).toBe("30 varieties · Cool Season Hardy Annuals, alphabetical. Page 2 of 2.");
+    // A chip tap now composes onto the ADOPTED filters (not the stale page-1 state).
+    const next = makePayload({
+      state: { ...clearAllFilters(), season: "cool", method: "direct" },
+      items: [item(7)],
+      total: 12,
+    });
+    fetchImpl = async () => jsonResponse(next);
+    fireEvent.click(chip("Sowing method", `Direct Sow ${page2.counts.method.options.direct} varieties`));
+    expect(fetchUrls()).toEqual(["/api/browse/varieties?season=cool&method=direct"]);
+    await waitFor(() =>
+      expect(countLine().textContent).toBe("12 varieties · Cool Season Hardy Annuals · Direct Sow, alphabetical."),
+    );
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push.mock.calls[0]?.[2]).toBe("/variety?season=cool&method=direct");
+    expect(window.location.search).toBe("?season=cool&method=direct");
+  });
+
+  it("pages a filtered set in both directions (adoption carries the committed filters)", async () => {
+    const filtered = makePayload({ state: { ...clearAllFilters(), hue: ["pink"] }, items: [item(7)], total: 49 });
+    fetchImpl = async () => jsonResponse(filtered);
+    const before = makeInitial();
+    const { rerender } = render(createElement(VarietyBrowse, { initial: before }));
+    fireEvent.click(chip("Hue", `Pink ${before.counts.hue.options.pink} varieties`));
+    await waitFor(() => expect(window.location.search).toBe("?color_family=pink"));
+    // Next → the server snapshot for filtered page 2 commits in place of the fetch snapshot.
+    window.history.replaceState({}, "", "/variety?color_family=pink&page=2");
+    rerender(
+      createElement(VarietyBrowse, {
+        initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] }, items: [item(40)], total: 98, page: 2 }),
+      }),
+    );
+    expect(countLine().textContent).toBe("98 varieties · Pink, alphabetical. Page 2 of 5.");
+    expect(resultsRegion().textContent).toContain("Test Variety 40");
+    // ← Previous: back to filtered page 1.
+    window.history.replaceState({}, "", "/variety?color_family=pink");
+    rerender(
+      createElement(VarietyBrowse, {
+        initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] }, items: [item(7)], total: 98, page: 1 }),
+      }),
+    );
+    expect(countLine().textContent).toBe("98 varieties · Pink, alphabetical. Page 1 of 5.");
+    expect(resultsRegion().textContent).toContain("Test Variety 7");
+  });
+});
+
+describe("pending indication (F6: aria-busy on the results region during flight)", () => {
+  it("marks the results region busy in flight and clears it on settle (settled markup unchanged)", async () => {
+    const next = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 });
+    const d = deferred<Response>();
+    fetchImpl = () => d.promise;
+    const before = makeInitial();
+    render(createElement(VarietyBrowse, { initial: before }));
+    expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
+    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    d.resolve(jsonResponse(next));
+    await waitFor(() => expect(countLine().textContent).toBe("12 varieties · Cool Season Hardy Annuals, alphabetical."));
+    expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
+  });
+
+  it("clears the busy indication when the flight fails", async () => {
+    const before = makeInitial();
+    render(createElement(VarietyBrowse, { initial: before }));
+    fetchImpl = async () => {
+      throw new Error("offline");
+    };
+    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
+    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(1));
+    expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
   });
 });
