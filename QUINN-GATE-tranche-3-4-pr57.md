@@ -125,3 +125,35 @@ In-register and verified: B-5 remaining clauses (home section reorder; 12-crop c
 - **Returns to the lead (not the maker):** F-1's register amendment decision; F-4's Clear All ruling.
 - **Returns to the maker/workflow owner:** F-2 (PR body rewrite). F-3/F-5 need no build change for this PR unless the lead rules otherwise; F-5 may ride a later SearchBox touch.
 - **Open after this gate:** the B-1 browser drive (re-gate item), F-1 amendment, F-2 body cure. The build's behavior needs no changes for any finding above.
+
+---
+
+## Scoped confirmation — return conditions for the FAIL (Quinn Assurance, 2026-11-23)
+
+Scope: narrow confirmation of the two cures only, plus no-drift. The build's behavior was not re-judged; the B-1 real-browser drive remains owed exactly as recorded above and is **not** discharged by this confirmation.
+
+### Cure 1 — F-1 register amendment: **CONFIRMED**
+
+- **Evidence (directly observed):** SPEC living copy (`~/workspace/seeds-hues/backlog-2026-11-21/tranche-3/SPEC.md`) §7 now carries row **B-14**, and §8 T-B reads "exactly §7's B-1…B-14 (B-14 added by the 2026-11-23 amendment under PR #57's gate Finding F-1)".
+- **Exactness:** B-14 covers precisely the difference F-1 established — the `/search` browse component's group keys aligned to the service's singular type values so every group (Crops / Series / Varieties / Sellers) renders; the pre-existing defect stated as found (plural keys against singular `type` values; only the Series group rendered while the heading announced the full total); the repair registered rather than reverted. It claims no other surface, behavior, or difference — neither broader nor narrower than F-1.
+- **Dated and attributed:** the row opens "*(Amendment, 2026-11-23 — carried by coordinator #19 under Quinn's PR #57 gate Finding F-1.)*"
+- **No loosening:** B-1…B-13 stand as the gate record cited them; §7's closing paragraph ("Everything else … renders and behaves as on pre-build `origin/main`") is intact; T-B retains its rule verbatim ("A further difference is a FAIL until reverted or carried back as a register amendment"). The only changes are the B-14 row and T-B's range/annotation. *Basis note:* the living SPEC copy is git-ignored in its repo, so no version-controlled baseline exists; this comparison rests on the register as quoted and cited in the gate record above plus the retained closing paragraph and FAIL rule.
+
+### Cure 2 — F-2 PR body rewrite: **CONFIRMED**
+
+- **Evidence (directly observed via `gh pr view 57`):** the rewritten body carries every element both briefs' hygiene sections required:
+  - **Provenance:** governing brief `muse-tasks/tranche-3-4-home-sort-search.md`, completion brief `muse-tasks/tranche-3-4-completion.md`, SPEC §5, the PB-1 ruling (b) (Dustin, 2026-11-22), and the first run **45188077840** stated plainly as cancelled by the 60-minute job timeout — a timeout, not a gate failure.
+  - **Build accounting with the true census:** "35 files changed, +1902/−157", with the completion run's own delta identified as such (2 files, +38/−4) and the original boilerplate census explicitly disowned. I independently recomputed the census from the diff: 35 files, +1902/−157 — agreement.
+  - **Payload enumeration (T-C):** exactly one new field, `sort` (`availability | name | recent`, absent = `name`), on both browse state types; no price field anywhere.
+  - **Machinery-change flags with reasons:** the `sort` state-field addition and the `SearchBrowse` GROUP_DEFS alignment, each with its reason.
+  - **Fold-in disposition:** both contract-test files (`browse-crop`, `browse-sellers`) included and passing; the validators pin cured by creation of `tests/unit/crop-detail-filters.test.ts`.
+  - **F-1 disclosure:** a dedicated section stating the pre-existing Critical defect, its mechanism, and its registration via B-14.
+  - **Gate record section:** carries this gate's FAIL and both cure states; the coordinator's **F-4 ruling** stated as ruled (the shopper's chosen sort must survive Clear All; fix dispatched as an immediate follow-up repair the moment this PR ships; **F-5 rides the same follow-up**) — matching the lead ruling as conveyed to this gate, neither overstated nor softened; the **owed B-1 drive** stated as UNCHECKED with its owner, and the item explicitly not called fully gated until it runs.
+
+### No drift: **CONFIRMED**
+
+- PR #57 head per GitHub: `ad5fa18cebdfbc3b273a23ea253614797fa5a716` — identical to the gate worktree HEAD and to the head this gate audited. GitHub's census (35 files, +1902/−157) matches the audited diff. No code has changed since the gate.
+
+### Confirmation verdict
+
+Both return conditions are **CONFIRMED** cured. The FAIL's two grounds are discharged. What remains open is unchanged from the original record: the **B-1 real-browser drive** (owed, owner: coordinator's browser delegation) and the **F-4/F-5 follow-up repair** (ruled, dispatched to ship immediately after this PR). Neither is discharged by this confirmation, and this confirmation is not a merge approval.
