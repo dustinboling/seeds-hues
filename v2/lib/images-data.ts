@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1014 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1022 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -418,6 +418,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/foxglove-obscura-sunset.webp": "artwork/foxglove-obscura-sunset.png",
   "/artwork/foxglove-pams-choice.webp": "artwork/foxglove-pams-choice.png",
   "/artwork/globe-thistle-globe-thistle.webp": "artwork/globe-thistle-globe-thistle.png",
+  "/artwork/globe-thistle-veitchs-blue.webp": "artwork/globe-thistle-veitchs-blue.png",
   "/artwork/godetia-grace-salmon.webp": "artwork/godetia-grace-salmon.png",
   "/artwork/goldenrod-canada-goldenrod.webp": "artwork/goldenrod-canada-goldenrod.png",
   "/artwork/goldenrod-golden-baby.webp": "artwork/goldenrod-golden-baby.png",
@@ -429,13 +430,18 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/gomphrena-sunset-mix.webp": "artwork/gomphrena-sunset-mix.png",
   "/artwork/gomphrena-white.webp": "artwork/gomphrena-white.png",
   "/artwork/hollyhock-chaters-double-mix.webp": "artwork/hollyhock-chaters-double-mix.png",
+  "/artwork/hollyhock-chaters-double-pink.webp": "artwork/hollyhock-chaters-double-pink.png",
   "/artwork/hollyhock-chaters-double-red.webp": "artwork/hollyhock-chaters-double-red.png",
   "/artwork/hollyhock-chaters-double-salmon.webp": "artwork/hollyhock-chaters-double-salmon.png",
   "/artwork/hollyhock-chaters-double-white.webp": "artwork/hollyhock-chaters-double-white.png",
   "/artwork/hollyhock-chaters-double-yellow.webp": "artwork/hollyhock-chaters-double-yellow.png",
+  "/artwork/honesty-alba-variegata.webp": "artwork/honesty-alba-variegata.png",
+  "/artwork/honesty-albiflora.webp": "artwork/honesty-albiflora.png",
+  "/artwork/honesty-chedglow.webp": "artwork/honesty-chedglow.png",
   "/artwork/honesty-honesty.webp": "artwork/honesty-honesty.png",
   "/artwork/honeywort-pride-of-gibraltar.webp": "artwork/honeywort-pride-of-gibraltar.png",
   "/artwork/hyacinth-bean-ruby-moon.webp": "artwork/hyacinth-bean-ruby-moon.png",
+  "/artwork/iceland-poppy-champagne-bubbles-mix.webp": "artwork/iceland-poppy-champagne-bubbles-mix.png",
   "/artwork/iceland-poppy-champagne-bubbles-pink.webp": "artwork/iceland-poppy-champagne-bubbles-pink.png",
   "/artwork/iceland-poppy-champagne-bubbles-white.webp": "artwork/iceland-poppy-champagne-bubbles-white.png",
   "/artwork/iceland-poppy-colibri-salmonato.webp": "artwork/iceland-poppy-colibri-salmonato.png",
@@ -453,6 +459,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/larkspur-giant-imperial-blue-spire.webp": "artwork/larkspur-giant-imperial-blue-spire.png",
   "/artwork/larkspur-giant-imperial-carmine-king.webp": "artwork/larkspur-giant-imperial-carmine-king.png",
   "/artwork/larkspur-giant-imperial-white-king.webp": "artwork/larkspur-giant-imperial-white-king.png",
+  "/artwork/larkspur-imperial-choice-mix.webp": "artwork/larkspur-imperial-choice-mix.png",
   "/artwork/larkspur-imperial-lilac-spire.webp": "artwork/larkspur-imperial-lilac-spire-v2.png",
   "/artwork/larkspur-pink-perfection.webp": "artwork/larkspur-pink-perfection.png",
   "/artwork/larkspur-smokey-eyes.webp": "artwork/larkspur-smokey-eyes.png",
@@ -496,6 +503,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/marigold-sunbright-mix.webp": "artwork/marigold-sunbright-mix.png",
   "/artwork/marigold-tangerine-gem.webp": "artwork/marigold-tangerine-gem.png",
   "/artwork/marigold-tiger-eyes.webp": "artwork/marigold-tiger-eyes.png",
+  "/artwork/masterwort-great-masterwort.webp": "artwork/masterwort-great-masterwort.png",
   "/artwork/mignonette-garden-mignonette.webp": "artwork/mignonette-garden-mignonette.png",
   "/artwork/mignonette-white-mignonette.webp": "artwork/mignonette-white-mignonette.png",
   "/artwork/milkweed-milkmaid.webp": "artwork/milkweed-milkmaid.png",

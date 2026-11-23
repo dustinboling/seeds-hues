@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 1014 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 1022 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -242,7 +242,15 @@ describe("lib/images-data (generated)", () => {
     // Parent / Dahlia Seed Mix / Premium Pollinator Mix, Echinacea
     // Primadonna White, False Sunflower Bleeding Hearts
     // (2026-11-23, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(1014);
+    // +8 for Tranche 4 Batch 22 (plates 2–9 of 9): Globe Thistle
+    // Veitch's Blue, Hollyhock Chater's Double Pink, Honesty Alba
+    // Variegata / Albiflora / Chedglow, Iceland Poppy Champagne
+    // Bubbles Formula Mix (F1), Larkspur Imperial Choice Mix,
+    // Masterwort Great Masterwort (2026-11-23, Quinn PASS for
+    // plates 2–9; plate 1 False Sunflower 'False Sunflower' held
+    // at a scoped FAIL fix — F-1 stem seam — and ships separately
+    // after Quinn's confirmation).
+    expect(entries).toHaveLength(1022);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
