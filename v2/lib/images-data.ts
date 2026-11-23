@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 951 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 960 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -445,12 +445,21 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/lavatera-pink-regis.webp": "artwork/lavatera-pink-regis.png",
   "/artwork/lavender-ellagance-purple.webp": "artwork/lavender-ellagance-purple.png",
   "/artwork/lavender-ellagance-white.webp": "artwork/lavender-ellagance-white.png",
+  "/artwork/lavender-munstead-type-organic.webp": "artwork/lavender-munstead-type-organic.png",
   "/artwork/lavender-munstead-type.webp": "artwork/lavender-munstead-type.png",
   "/artwork/linaria-northern-lights-mix.webp": "artwork/linaria-northern-lights-mix.png",
+  "/artwork/lisianthus-arena-iii-red.webp": "artwork/lisianthus-arena-iii-red.png",
+  "/artwork/lisianthus-mariachi-pure-white.webp": "artwork/lisianthus-mariachi-pure-white.png",
   "/artwork/lisianthus-rosanne-2-clear-green.webp": "artwork/lisianthus-rosanne-2-clear-green.png",
+  "/artwork/lisianthus-solo-white.webp": "artwork/lisianthus-solo-white.png",
+  "/artwork/lisianthus-viviana-pink.webp": "artwork/lisianthus-viviana-pink.png",
   "/artwork/lisianthus-voyage-2-blue.webp": "artwork/lisianthus-voyage-2-blue.png",
   "/artwork/lisianthus-voyage-2-first-love.webp": "artwork/lisianthus-voyage-2-first-love.png",
+  "/artwork/lisianthus-voyage-2-green-ii.webp": "artwork/lisianthus-voyage-2-green-ii.png",
   "/artwork/lisianthus-voyage-2-lavender.webp": "artwork/lisianthus-voyage-2-lavender.png",
+  "/artwork/lisianthus-voyage-2-pink-improved.webp": "artwork/lisianthus-voyage-2-pink-improved.png",
+  "/artwork/lisianthus-voyage-2-white-improved.webp": "artwork/lisianthus-voyage-2-white-improved.png",
+  "/artwork/lisianthus-voyage-2-yellow-ii.webp": "artwork/lisianthus-voyage-2-yellow-ii.png",
   "/artwork/love-in-a-puff-vine.webp": "artwork/love-in-a-puff-vine.png",
   "/artwork/lupine-javelin-white.webp": "artwork/lupine-javelin-white.png",
   "/artwork/lupine-sunrise.webp": "artwork/lupine-sunrise.png",

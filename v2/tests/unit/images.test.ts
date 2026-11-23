@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 951 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 960 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -210,7 +210,12 @@ describe("lib/images-data (generated)", () => {
     // Early White, Goldenrod Golden Baby, Hollyhock Chater's Double
     // Red / Chater's Double Yellow, Lavender Ellagance White /
     // Munstead-Type (2026-11-23, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(951);
+    // +9 for Tranche 4 Batch 15: Lavender Munstead-Type Organic,
+    // Lisianthus Arena III Red / Mariachi Pure White / Solo White /
+    // Viviana Pink / Voyage 2 Green II / Voyage 2 Pink Improved /
+    // Voyage 2 White Improved / Voyage 2 Yellow II (2026-11-23,
+    // Quinn PASS WITH NOTES).
+    expect(entries).toHaveLength(960);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
