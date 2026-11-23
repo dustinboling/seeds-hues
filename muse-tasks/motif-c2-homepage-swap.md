@@ -1,3 +1,7 @@
+# ⛔ DO NOT DISPATCH — ART REJECTED BY DUSTIN 2026-11-22 16:09 PT
+
+The love-in-a-puff C2 art this brief ships was rejected by Dustin on sight (the center pod cluster reads wrong to him — see PROGRAM.md's MOTIF row). A revision is commissioned (pods redistributed along the vine, no central cluster; the tag does NOT come back). This brief is superseded and must not be dispatched in this form; a new swap brief follows the revision's Quinn delta gate AND Dustin's own eyeball. The staged asset `v2/public/theme/divider-home.webp` is inert (nothing references it) and will be replaced by the revised master in due course.
+
 # Homepage motif swap — C2 Vine & Pods replaces the stem at the hero→browse break
 
 Authorized by Dustin: he picked direction C (Twine & Tag) on 2026-11-22, then revised it on the same call — the twine becomes a vine bearing seed pods at the dried, ready-to-harvest stage. Elena's rework (love-in-a-puff primary) passed Quinn's DELTA design gate (PASS WITH NOTES, `motif-homepage-2026-11-22/c2-vine-and-pods/QA-GATE-delta.md`); Mina's aspect ◆ values are in `motif-homepage-2026-11-22/c2-vine-and-pods/PLACEMENT-ADDENDUM-C2.md`. Per Dustin's sequencing ruling ("We'll wait"), the stem stays live until this swap ships — removal and replacement land together in this one build.
