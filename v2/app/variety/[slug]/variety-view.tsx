@@ -86,8 +86,10 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
     notFound();
   }
   const { catalog } = await getServices();
+  // "More varieties" rail (§5.2.6): the crop's six by the availability order (ordering
+  // change only — the rail carries no control).
   const siblings = (
-    await catalog.listVarieties({ filters: { plant: [v.plant.slug] }, page: { offset: 0, limit: 7 } })
+    await catalog.listVarieties({ filters: { plant: [v.plant.slug] }, sort: "availability", page: { offset: 0, limit: 7 } })
   ).items.filter((s) => s.slug !== v.slug).slice(0, 6);
 
   const common = shortCommonName(v.plant.commonName);

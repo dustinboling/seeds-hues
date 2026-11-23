@@ -63,6 +63,7 @@ const state = (over: Partial<BrowseFilterState> = {}): BrowseFilterState => ({
   lifeCycle: null,
   hue: [],
   smallFarm: false,
+  sort: "name",
   ...over,
 });
 
@@ -93,7 +94,7 @@ describe("readBrowseFilters (page query → state)", () => {
       { season: "cool", method: "trays", life_cycle: "perennial", color_family: "peach,pink", small_farm: "true" },
       "multi",
     );
-    expect(s).toEqual({ season: "cool", method: "trays", lifeCycle: "perennial", hue: ["pink", "peach"], smallFarm: true });
+    expect(s).toEqual({ season: "cool", method: "trays", lifeCycle: "perennial", hue: ["pink", "peach"], smallFarm: true, sort: "name" });
   });
 
   it("reads a single hue in single mode (the /search rule — comma lists are All)", () => {

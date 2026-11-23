@@ -451,7 +451,7 @@ async function main() {
     } while (cursor);
     const stray = shown.filter((s) => !listed.has(s));
     assert(stray.length === 0, `cards without listings: ${stray.join(", ")}`);
-    const filteredCount = countOf(only, /(\d+) variet(?:y|ies) match\./);
+    const filteredCount = countOf(only, /(\d+) variet(?:y|ies) match,/);
     const unfilteredCount = countOf(all, /(\d+) variet(?:y|ies) cataloged/);
     assert(filteredCount < unfilteredCount, `filtered ${filteredCount} not < unfiltered ${unfilteredCount}`);
     const hasHref = sellersChips(all).get("Has sellers") ?? "";
@@ -1195,7 +1195,7 @@ async function main() {
   // Homepage motif swap (C3, 2026-11-22, approved by Dustin): the home hero break now
   // renders the C3 vine-and-pods motif (HomeMotifDivider) — the thin-stem rule appears
   // nowhere at the break, and motif B appears nowhere at all.
-  await check("home: C3 motif divider once in the page content, between the hero and Browse by crop; no stem rule at the break, no motif B", async () => {
+  await check("home: C3 motif divider once in the page content, between the hero and Recently restocked; no stem rule at the break, no motif B", async () => {
     const h = await html("/");
     const main = mainHtml(h);
     assert(!main.includes('data-testid="motif-b"'), "motif B in home <main>");
@@ -1204,7 +1204,13 @@ async function main() {
     const at = main.indexOf('data-testid="home-motif"');
     assert(at >= 0, "no C3 motif divider in home <main>");
     assert(main.indexOf('data-testid="home-motif"', at + 1) < 0, "more than one C3 motif divider in home <main>");
-    assert(main.indexOf('id="hero-title"') < at && at < main.indexOf('id="crops-title"'), "motif divider is not between the hero and Browse by crop");
+    // Tranche 3.4 §5.1: Recently restocked moved above Browse by crop.
+    assert(
+      main.indexOf('id="hero-title"') < at &&
+        at < main.indexOf('id="recent-title"') &&
+        main.indexOf('id="recent-title"') < main.indexOf('id="crops-title"'),
+      "motif divider is not between the hero and Recently restocked",
+    );
     assert(main.includes("divider-home.webp"), "no divider-home motif image in home <main>");
     assert((main.match(/data-testid="pod-divider"/g) ?? []).length === 2, "home <main> has other than two pod dividers");
     const outside = noScripts(h).replace(/<main\b[^>]*>[\s\S]*<\/main>/, " ");

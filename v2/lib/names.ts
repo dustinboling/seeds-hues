@@ -68,6 +68,87 @@ export function slugify(s: string, max = 80): string {
   return foldText(s).replace(/ /g, "-").slice(0, max).replace(/-+$/g, "");
 }
 
+/**
+ * Damerau-Levenshtein distance (unrestricted: adjacent transpositions plus inserts, deletes
+ * and substitutions — a transposition counts as 1). Powers did-you-mean (§5.3.4).
+ */
+export function damerauLevenshtein(a: string, b: string): number {
+  const aChars = [...a];
+  const bChars = [...b];
+  const aLen = aChars.length;
+  const bLen = bChars.length;
+  if (aLen === 0) return bLen;
+  if (bLen === 0) return aLen;
+  const INF = aLen + bLen;
+  const da = new Map<string, number>();
+  const d: number[][] = Array.from({ length: aLen + 2 }, () => new Array<number>(bLen + 2).fill(0));
+  d[0]![0] = INF;
+  for (let i = 0; i <= aLen; i++) {
+    d[i + 1]![0] = INF;
+    d[i + 1]![1] = i;
+  }
+  for (let j = 0; j <= bLen; j++) {
+    d[0]![j + 1] = INF;
+    d[1]![j + 1] = j;
+  }
+  for (let i = 1; i <= aLen; i++) {
+    let db = 0;
+    for (let j = 1; j <= bLen; j++) {
+      const i1 = da.get(bChars[j - 1]!) ?? 0;
+      const j1 = db;
+      const cost = aChars[i - 1] === bChars[j - 1] ? 0 : 1;
+      if (cost === 0) db = j;
+      d[i + 1]![j + 1] = Math.min(
+        d[i]![j]! + cost, // substitution
+        d[i + 1]![j]! + 1, // insertion
+        d[i]![j + 1]! + 1, // deletion
+        d[i1]![j1]! + (i - i1 - 1) + 1 + (j - j1 - 1), // transposition
+      );
+    }
+    da.set(aChars[i - 1]!, i);
+  }
+  return d[aLen + 1]![bLen + 1]!;
+}
+
+/** A did-you-mean candidate: a variety or crop name, with seller presence for tie-breaking. */
+export interface DidYouMeanCandidate {
+  name: string;
+  hasSellers: boolean;
+}
+
+/**
+ * The did-you-mean pick (§5.3.4 — the whole rule): names sharing the query's first letter
+ * with edit distance ≤ 2 (a transposition counts as 1), the closest wins, ties break to the
+ * name with sellers, then alphabetical. An exact match is not a correction — distance 0
+ * never suggests. At most one suggestion; null when nothing qualifies.
+ */
+export function pickDidYouMean(query: string, candidates: DidYouMeanCandidate[]): string | null {
+  const q = foldText(query);
+  if (!q) return null;
+  const first = [...q][0]!;
+  let best: string | null = null;
+  let bestDist = 0;
+  let bestSellers = false;
+  for (const c of candidates) {
+    const folded = foldText(c.name);
+    if (!folded.startsWith(first)) continue;
+    const dist = damerauLevenshtein(q, folded);
+    if (dist < 1 || dist > 2) continue;
+    const lower = c.name.toLowerCase();
+    if (
+      best === null ||
+      dist < bestDist ||
+      (dist === bestDist && c.hasSellers && !bestSellers) ||
+      (dist === bestDist && c.hasSellers === bestSellers && (lower < best.toLowerCase() || (lower === best.toLowerCase() && c.name < best)))
+    ) {
+      best = c.name;
+      bestDist = dist;
+      bestSellers = c.hasSellers;
+    }
+  }
+  return best;
+}
+
 /** Host without a leading "www.". */
 export function hostOf(url: string): string | null {
   try {

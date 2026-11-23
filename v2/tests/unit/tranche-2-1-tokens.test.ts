@@ -257,6 +257,7 @@ describe("2.1-B — arbitrary-value lint", () => {
     // (The SmallFarmBadge exemption lived here until item 2.2 tokenized those four
     // literals as component tokens; the exemption is gone with the literals.)
     { pattern: /^border-b-\[3px\]$/, reason: "GuideTabs active-tab indicator; fits no §2.1.5 row, left literal by the value-preserving rule" },
+    { pattern: /^border-l-\[3px\]$/, reason: "SearchBox active-row rule (Tranche 3.4 AD-2); fits no §2.1.5 row, left literal by the value-preserving rule" },
     {
       pattern: /^(\[-webkit-overflow-scrolling:touch\]|\[scrollbar-width:none\]|\[&::-webkit-scrollbar\]|has-\[:(checked|focus-visible)\])$/,
       reason: "CSS property setting or state query, not a design value",

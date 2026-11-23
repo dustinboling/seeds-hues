@@ -61,7 +61,7 @@ describe("Swatch", () => {
 });
 
 describe("Hue filter Mixed chip", () => {
-  const state: BrowseFilterState = { season: null, method: null, lifeCycle: null, hue: ["mix"], smallFarm: false };
+  const state: BrowseFilterState = { season: null, method: null, lifeCycle: null, hue: ["mix"], smallFarm: false, sort: "name" };
 
   it("draws the same shared gradient definition the variety page uses", () => {
     const html = renderToStaticMarkup(createElement(BrowseFilters, { basePath: "/variety", state, groups: ["hue"] }));

@@ -2,9 +2,9 @@
 
 /**
  * The crop-detail browse block, interactive part (Tranche 3.1b-2): filter chips with
- * per-option counts (Sellers, multi-select Hue with swatch dots, Series), the applied row
- * with removers + Clear all, the result-count line (a persistent live region), the variety
- * grid (or the preserved empty states), and pagination. Rendered by the server page with
+ * per-option counts (Sellers, multi-select Hue with swatch dots, Series), the Sort control,
+ * the applied row with removers + Clear all, the result-count line (a persistent live
+ * region), the variety grid (or the preserved empty states), and pagination. Rendered by the server page with
  * the initial browse snapshot; after hydration every filter change applies IN PLACE through
  * the shared `useInPlaceBrowse` hook — local state, one JSON fetch, no document reload, no
  * Next router navigation, no scroll, no page-view beacon — keeping the URL shareable
@@ -16,8 +16,9 @@ import Link from "next/link";
 import { CropDetailFilterButtons, CropDetailFilters, cropDetailGroups } from "@/components/crop/CropDetailFilters";
 import { InPlaceAppliedRow, useInPlaceBrowse, type InPlaceConfig } from "@/components/ui/InPlaceBrowse";
 import { Pagination } from "@/components/ui/Pagination";
+import { SortChips } from "@/components/ui/SortChips";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
-import { browsePageFromSearch } from "@/lib/browse";
+import { browsePageFromSearch, type BrowseSortParam } from "@/lib/browse";
 import {
   clearCropDetailFilters,
   cropCountStateFor,
@@ -114,6 +115,12 @@ export function CropDetailBrowse({
       ) : (
         <CropDetailFilters basePath={basePath} state={committed.state} counts={committed.counts} hues={hues} series={series} />
       )}
+      <SortChips
+        sort={hydrated ? shown.sort : committed.state.sort}
+        hrefFor={(sort: BrowseSortParam) => cropDetailHref(basePath, { ...committed.state, sort })}
+        onSelect={(sort: BrowseSortParam) => select((s) => (s.sort === sort ? s : { ...s, sort }))}
+        hydrated={hydrated}
+      />
       <InPlaceAppliedRow config={config} browse={browse} />
       {/* Persistent live region: text updates, never remounts — exactly one announcement per commit. */}
       <p id="crop-results-count" className="mt-4 text-muted" aria-live="polite" aria-atomic="true">

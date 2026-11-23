@@ -38,12 +38,13 @@ const load = cache(
     rawHue: string | string[] | undefined,
     rawSeries: string | string[] | undefined,
     rawHasSellers: string | string[] | undefined,
+    rawSort: string | string[] | undefined,
   ) => {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return null;
     const { catalog } = await getServices();
     return catalog.browseCrop(slug, {
       page: pageWindow(page),
-      state: readCropDetailFilters({ color_family: rawHue, series: rawSeries, has_sellers: rawHasSellers }),
+      state: readCropDetailFilters({ color_family: rawHue, series: rawSeries, has_sellers: rawHasSellers, sort: rawSort }),
     });
   },
 );
@@ -52,7 +53,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
   const f = readCropDetailFilters(sp);
-  const r = await load(slug, page, sp.color_family, sp.series, sp.has_sellers);
+  const r = await load(slug, page, sp.color_family, sp.series, sp.has_sellers, sp.sort);
   if (!r) return { title: "Crop not found", robots: { index: false, follow: true } };
   const c = r.crop;
   const common = shortCommonName(c.commonName);
@@ -76,7 +77,7 @@ export default async function CropPage({ params, searchParams }: Props) {
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
   const f = readCropDetailFilters(sp);
-  const r = await load(slug, page, sp.color_family, sp.series, sp.has_sellers);
+  const r = await load(slug, page, sp.color_family, sp.series, sp.has_sellers, sp.sort);
   if (!r) notFound();
   const { total } = r;
   if (total > 0) assertPageInRange(page, total);
@@ -103,7 +104,7 @@ function CropContent({ r, page, f }: { r: BrowseCropResult; page: number; f: Cro
     total,
     page,
   };
-  const navKey = [page, f.hue.join(","), f.series, f.hasSellers].join("|");
+  const navKey = [page, f.hue.join(","), f.series, f.hasSellers, f.sort].join("|");
   const crumbs = [
     { name: "Home", href: "/" },
     { name: "Crops", href: "/crop" },

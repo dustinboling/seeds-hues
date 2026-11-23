@@ -16,7 +16,8 @@ import Link from "next/link";
 import { CropCardImage } from "@/components/crop/CropCardImage";
 import { InPlaceAppliedRow, InPlaceFilters, browseInPlaceConfig, useInPlaceBrowse } from "@/components/ui/InPlaceBrowse";
 import { clearAllFilters, cropBrowseCountLine, hasActiveFilters, type BrowseFilterGroup, type BrowseFilterState } from "@/lib/browse";
-import { shortCommonName } from "@/lib/format";
+import { HOME_CROP_CAP } from "@/lib/config";
+import { plural, shortCommonName } from "@/lib/format";
 import { browsePayloadCore, isRecord, type InPlaceSnapshot } from "@/lib/in-place";
 import { EMPTY_CROP_BROWSE } from "@/lib/small-farm";
 import type { CropListItem } from "@/lib/validators";
@@ -41,6 +42,22 @@ function readPayload(json: unknown): ReturnType<typeof browsePayloadCore<CropLis
   return browsePayloadCore(json, isCropListItem);
 }
 
+/**
+ * The home grid's resting order (Tranche 3.4 §5.1): varieties-with-sellers descending, then
+ * name ascending, slug breaking the last tie — deterministic, from the coverage numbers the
+ * items already carry (the same data the page's coverage line sums). Applied at rest only;
+ * a filtered grid keeps the payload's A–Z order.
+ */
+export function homeCropOrder(items: CropListItem[]): CropListItem[] {
+  const lower = (c: CropListItem): string => c.commonName.toLowerCase();
+  return [...items].sort(
+    (a, b) =>
+      b.varietiesWithSellers - a.varietiesWithSellers ||
+      (lower(a) < lower(b) ? -1 : lower(a) > lower(b) ? 1 : 0) ||
+      (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0),
+  );
+}
+
 export function HomeBrowse({ initial }: { initial: HomeBrowseInitial }) {
   const config = browseInPlaceConfig<CropListItem>({
     basePath: BASE_PATH,
@@ -53,6 +70,11 @@ export function HomeBrowse({ initial }: { initial: HomeBrowseInitial }) {
   });
   const browse = useInPlaceBrowse(initial, config);
   const { hydrated, committed, pending, select } = browse;
+  // The resting cap (Tranche 3.4 §5.1): at rest the grid shows the top HOME_CROP_CAP crops
+  // in the resting order with a "see all crops" closing line; an active filter lifts the
+  // cap — every match shows, and the count line above states the filtered total.
+  const resting = !hasActiveFilters(committed.state);
+  const shown = resting ? homeCropOrder(committed.items).slice(0, HOME_CROP_CAP) : committed.items;
 
   return (
     <>
@@ -64,29 +86,36 @@ export function HomeBrowse({ initial }: { initial: HomeBrowseInitial }) {
       <InPlaceAppliedRow config={config} browse={browse} />
       <div aria-busy={pending === null ? undefined : true}>
         {committed.total > 0 ? (
-          <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-            {committed.items.map((c) => (
-              <li key={c.slug} className="h-full">
-                {/* Vintage seed packet, revised 2026-11-16 at the owner's direction: the crop
-                    illustration as packet art on top, the crop name centred at the BOTTOM in a
-                    fixed-height zone, and NO seed-house imprint line. No counts — the owner
-                    asked for the variety/seller count lines off the homepage cards. Every card
-                    is the same height: full-height link, fixed-aspect art, fixed name zone. */}
-                <Link
-                  href={`/crop/${c.slug}`}
-                  className="card card-hover packet tap flex h-full flex-col items-center p-4 text-center no-underline"
-                >
-                  <span className="block w-full">
-                    <CropCardImage media={c.media} commonName={c.commonName} />
-                  </span>
-                  <span aria-hidden="true" className="divider-stem-mini mt-1" />
-                  <span className="flex h-[3.5rem] items-center justify-center">
-                    <span className="line-clamp-2 font-display text-lg font-semibold leading-snug text-ink">{shortCommonName(c.commonName)}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+              {shown.map((c) => (
+                <li key={c.slug} className="h-full">
+                  {/* Vintage seed packet, revised 2026-11-16 at the owner's direction: the crop
+                      illustration as packet art on top, the crop name centred at the BOTTOM in a
+                      fixed-height zone, and NO seed-house imprint line. No counts — the owner
+                      asked for the variety/seller count lines off the homepage cards. Every card
+                      is the same height: full-height link, fixed-aspect art, fixed name zone. */}
+                  <Link
+                    href={`/crop/${c.slug}`}
+                    className="card card-hover packet tap flex h-full flex-col items-center p-4 text-center no-underline"
+                  >
+                    <span className="block w-full">
+                      <CropCardImage media={c.media} commonName={c.commonName} />
+                    </span>
+                    <span aria-hidden="true" className="divider-stem-mini mt-1" />
+                    <span className="flex h-[3.5rem] items-center justify-center">
+                      <span className="line-clamp-2 font-display text-lg font-semibold leading-snug text-ink">{shortCommonName(c.commonName)}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {resting ? (
+              <p className="mt-3 text-muted" data-testid="home-crop-cap">
+                Showing {shown.length} of {plural(committed.total, "crop")} — <Link href="/crop">see all crops</Link>
+              </p>
+            ) : null}
+          </>
         ) : (
           // Filtered-empty state (ux-spec §3.5, B-12) — announced first by the count line's
           // zero above; the applied row stays visible above for recovery.

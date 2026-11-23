@@ -4,7 +4,8 @@
  * The /search results block, interactive part (Tranche 3.1b): the results heading (the
  * page's persistent live region), filter chips with per-option counts, the applied row
  * with removers + Clear all (Clear All keeps q), and the grouped results (or the
- * zero-results state). Rendered by the server page with the initial browse snapshot; after
+ * zero-results state with its did-you-mean suggestion, when one qualifies). Rendered by the
+ * server page with the initial browse snapshot; after
  * hydration every filter change applies IN PLACE through the shared `useInPlaceBrowse`
  * hook — local state, one JSON fetch, no document reload, no Next router navigation, no
  * scroll, no page-view beacon — keeping the URL shareable through the History API. The
@@ -62,7 +63,16 @@ function readPayload(json: unknown): InPlacePayloadCore<SearchResult> | null {
   return { items: groups.flat(), total: json.total, counts: json.counts };
 }
 
-export function SearchBrowse({ initial, q }: { initial: SearchBrowseInitial; q: string }) {
+export function SearchBrowse({
+  initial,
+  q,
+  suggestion,
+}: {
+  initial: SearchBrowseInitial;
+  q: string;
+  /** Did-you-mean (§5.3.4): the zero-results state's single near-match, or null. */
+  suggestion: { name: string; href: string } | null;
+}) {
   const config = browseInPlaceConfig<SearchResult>({
     basePath: BASE_PATH,
     apiPath: API_PATH,
@@ -107,6 +117,15 @@ export function SearchBrowse({ initial, q }: { initial: SearchBrowseInitial; q: 
               Nothing matches “{q}”. Check the spelling or try fewer words — or{" "}
               <Link href="/report?type=correct">tell us about a variety or seller we’re missing</Link>.
             </p>
+            {suggestion ? (
+              <p className="mt-2 text-muted" data-testid="did-you-mean">
+                Did you mean{" "}
+                <Link href={suggestion.href}>
+                  <strong>{suggestion.name}</strong>
+                </Link>
+                ?
+              </p>
+            ) : null}
           </>
         ) : (
           groups.map((g) => (

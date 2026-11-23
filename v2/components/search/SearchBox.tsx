@@ -8,6 +8,11 @@ import { SearchIcon } from "@/components/layout/icons";
 /**
  * Search widget (R6): a plain GET form to /search (works without JavaScript) enhanced into an
  * ARIA 1.2 combobox with autocomplete from /api/v1/search (300 ms debounce, top 10).
+ *
+ * The panel opens ONLY in response to the visitor's own input in this box during this mount
+ * (§5.3.1): typing (once the field's value differs from its mount value) or ArrowDown with
+ * results present. The mount value is submitted text, not typed text — no fetch and no open
+ * occurs on mount, and focus alone never opens the panel.
  */
 export function SearchBox({
   defaultValue = "",
@@ -30,8 +35,22 @@ export function SearchBox({
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  // The mount value (submitted text, e.g. the /search page's defaultValue): fetching and
+  // opening happen only once the field's value differs from it — never on mount.
+  const mountValue = useRef(defaultValue);
 
   useEffect(() => {
+    if (q === mountValue.current) {
+      // Pristine (mount, or typed back to the mount value): no fetch, no open. The sets are
+      // no-ops on mount (already the initial state) and a true reset after typing.
+      abortRef.current?.abort();
+      setResults([]);
+      setOpen(false);
+      setActive(-1);
+      setLoading(false);
+      setStatus("");
+      return;
+    }
     const term = q.trim();
     if (term.length < 2) return; // R12: two typed characters search
     const t = window.setTimeout(async () => {
@@ -50,10 +69,12 @@ export function SearchBox({
         setResults(r);
         setActive(-1);
         setOpen(true);
-        setStatus(r.length === 0 ? "No suggestions. Press Enter to search." : `${r.length} suggestion${r.length === 1 ? "" : "s"} available.`);
+        setStatus(r.length === 0 ? "No suggestions — press Enter to search." : `${r.length} suggestion${r.length === 1 ? "" : "s"} available.`);
       } catch (e) {
         if ((e as Error).name !== "AbortError") {
           setResults([]);
+          setActive(-1);
+          setOpen(true);
           setStatus("Suggestions unavailable. Press Enter to search.");
         }
       } finally {
@@ -92,6 +113,12 @@ export function SearchBox({
       ? "h-14 text-lg pl-11 pr-28"
       : "h-12 text-base pl-10 pr-24";
 
+  // The visible empty/failure row (§5.3.3): when a typed query's panel is open with no
+  // suggestions, the panel shows the status text as one non-interactive message row — never
+  // an option — aria-hidden (the sr-only status line announces the identical text: one
+  // message, announced once).
+  const notice = open && results.length === 0 && status !== "" ? status : null;
+
   return (
     <form role="search" action="/search" method="get" className="relative w-full" aria-label={label}>
       <label htmlFor={`${id}-input`} className="sr-only">
@@ -123,7 +150,10 @@ export function SearchBox({
         }}
         onKeyDown={onKeyDown}
         onBlur={() => window.setTimeout(() => setOpen(false), 150)}
-        onFocus={() => results.length && setOpen(true)}
+        // Focus alone never opens the panel: it may only reopen results the visitor's own
+        // typing produced in this mount (a pristine field — q still the mount value — reopens
+        // nothing, even with cached results).
+        onFocus={() => q !== mountValue.current && results.length > 0 && setOpen(true)}
         role="combobox"
         aria-expanded={open && results.length > 0}
         aria-controls={listId}
@@ -144,30 +174,39 @@ export function SearchBox({
         id={listId}
         role="listbox"
         aria-label="Suggestions"
-        hidden={!open || results.length === 0}
+        hidden={!open || (results.length === 0 && notice === null)}
         className="absolute inset-x-0 top-full z-30 mt-1 max-h-[60vh] overflow-auto rounded-search border border-line-strong bg-surface p-1 shadow-card"
       >
-        {results.map((r, i) => (
-          <li
-            key={`${r.type}-${r.slug}`}
-            id={`${id}-opt-${i}`}
-            role="option"
-            aria-selected={i === active}
-            className={`cursor-pointer rounded-inner px-3 py-2 ${i === active ? "bg-leaf-50" : ""}`}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              setOpen(false);
-              router.push(r.href);
-            }}
-            onMouseEnter={() => setActive(i)}
-          >
-            <span className="block font-medium text-ink">{r.title}</span>
-            <span className="block text-sm text-muted">
-              {r.subtitle}
-              {r.matchedAlias ? ` · also sold as “${r.matchedAlias}”` : ""}
-            </span>
+        {notice !== null ? (
+          <li aria-hidden="true" className="px-3 py-2 text-muted">
+            {notice}
           </li>
-        ))}
+        ) : (
+          results.map((r, i) => (
+            <li
+              key={`${r.type}-${r.slug}`}
+              id={`${id}-opt-${i}`}
+              role="option"
+              aria-selected={i === active}
+              // The active mark (AD-2): a 3 px left rule in full-strength leaf on the one
+              // shared hover/keyboard state — the wash stays as a redundant channel. Inactive
+              // rows reserve the width transparently, so activation never shifts the row.
+              className={`cursor-pointer rounded-inner border-l-[3px] px-3 py-2 ${i === active ? "border-l-leaf bg-leaf-50" : "border-l-transparent"}`}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setOpen(false);
+                router.push(r.href);
+              }}
+              onMouseEnter={() => setActive(i)}
+            >
+              <span className="block font-medium text-ink">{r.title}</span>
+              <span className="block text-sm text-muted">
+                {r.subtitle}
+                {r.matchedAlias ? ` · also sold as “${r.matchedAlias}”` : ""}
+              </span>
+            </li>
+          ))
+        )}
       </ul>
       {loading ? <span className="sr-only">Loading suggestions</span> : null}
     </form>
