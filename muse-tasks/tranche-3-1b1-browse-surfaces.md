@@ -57,3 +57,17 @@ Run `npx eslint .` in `v2/` immediately after writing each new file, and the ful
 ## PR body hygiene
 
 Provenance (this brief + the SPEC sections), Build accounting (verify summary + diff census), the payload field enumeration (T-C), and a Gate record section for Quinn's verdict.
+
+## Addendum — re-dispatch under the repair-loop flow (2026-11-22, coordinator #17)
+
+This brief's first run (45128133178) also failed the gate — a **fifth failure class**, different from the four fenced above: the builder's home rebuild **broke shipped, gate-proven behavior**, and the suite caught it. The five failures, verbatim from that run's gate output — treat each as a fence for this re-dispatch:
+
+1. `motif-divider.test.ts` — "home hero break: the C3 motif divider sits between the hero and Browse by crop." The shipped homepage hero→browse break (Item MOTIF, PR #48) must survive your home work exactly: the `data-testid="home-motif"` divider stays between the hero and Browse by crop.
+2. `tranche-1-4.test.ts` — the home hero line and the Recent list's friendly dates (Tranche 1.4's shipped behavior) must render exactly as today.
+3. `tranche-2-3-chips.test.ts` — the chip-filter / chip-removable census: **SSR removable chips render as links, not buttons** (Tranche 2.3's shipped form). The in-place enhancement must not change the server-rendered element type of removable chips.
+4. `TypeError: catalog.browseCrops is not a function` — the generalized machinery must expose the browse API the home/crop surfaces consume (`browseCrops` on the catalog service) under the names the existing code and tests call.
+5. A missing `divider-stem-mini mt-1` class assertion — the shipped class composition on the wordmark/packet-card mini stem is pinned by test; do not drop it while touching nearby markup.
+
+General rule these five teach: **before restructuring a shipped surface, run its existing test files and note what they pin; the pins are the surface's shipped contract.** Your change register (T-B) already says a rendered difference outside B-1/B-2/B-5-clauses/B-11/B-12/B-13 is a defect — these failures were exactly that, caught by the surfaces' own tests. Run the three named test files against your finished home work specifically, not just the full suite at the end.
+
+Flow note: the workflow now pushes a `muse/wip-<run_id>` branch before its gate (CI repair loop, shipped f8fee49, Quinn PASS WITH NOTES e66f577), so a red gate no longer discards this build — a repair dispatch can continue it. That is a safety net, not a license: the finish discipline above stands unchanged — end your turn with `npm run verify` green in full, and **do not commit your work yourself** (leave it uncommitted in the tree; the workflow's steps handle branching and commits).
