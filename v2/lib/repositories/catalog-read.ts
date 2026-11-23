@@ -25,7 +25,7 @@ import {
   sql,
   type SQL,
 } from "drizzle-orm";
-import { alias } from "drizzle-orm/sqlite-core";
+import { alias, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 import type { Db } from "@/lib/db/client";
 import { lifeCycleMatches } from "@/lib/life-cycle";
 import type { LifeCycleParam } from "@/lib/validators";
@@ -138,10 +138,13 @@ export const VARIETY_SORTS = [
 export type VarietySort = (typeof VARIETY_SORTS)[number];
 
 /**
- * The browse-only availability sort (Tranche 3.4 §5.2.2): varieties with in-stock listings
- * first, then varieties with listings, then varieties with none; within a tier, more
- * listings first, then name ascending. Deliberately NOT in VARIETY_SORTS — /api/v1 keeps
- * its shipped vocabulary (§5.2.1: the sort control ships on /variety + crop detail only).
+ * The browse-only availability sort (Tranche 3.4 §5.2.2, within-tier key amended by the
+ * 2026-11-23 coordinator ruling under PR #57's B-1 drive): varieties with in-stock
+ * listings first, then varieties with listings, then varieties with none; within a tier,
+ * more distinct sellers first (the count the cards display and the "Most sellers first"
+ * label names), tiebreak in-stock listings, then listings, then name ascending.
+ * Deliberately NOT in VARIETY_SORTS — /api/v1 keeps its shipped vocabulary (§5.2.1: the
+ * sort control ships on /variety + crop detail only).
  */
 export type VarietyBrowseSort = VarietySort | "availability";
 
@@ -253,6 +256,8 @@ function sortOrder(sort: VarietyBrowseSort, ls: ReturnType<typeof listingStatsSq
       return [
         sql`coalesce(${ls.inStockCount}, 0) > 0 DESC`,
         sql`coalesce(${ls.listingCount}, 0) > 0 DESC`,
+        sql`coalesce(${ls.sellerCount}, 0) DESC`,
+        sql`coalesce(${ls.inStockCount}, 0) DESC`,
         sql`coalesce(${ls.listingCount}, 0) DESC`,
         ...tail,
       ];
@@ -269,8 +274,11 @@ function sortOrder(sort: VarietyBrowseSort, ls: ReturnType<typeof listingStatsSq
   }
 }
 
-/** Mirror of sortOrder() for rows already fetched (used only by the ids chunking below). */
-function summaryComparator(sort: VarietyBrowseSort): (a: VarietySummaryRow, b: VarietySummaryRow) => number {
+/**
+ * Mirror of sortOrder() for rows already fetched (used by the ids chunking below; exported
+ * as the test seam for the availability key — the unit suite pins the tiebreak chain here).
+ */
+export function summaryComparator(sort: VarietyBrowseSort): (a: VarietySummaryRow, b: VarietySummaryRow) => number {
   const nameAsc = (a: VarietySummaryRow, b: VarietySummaryRow) =>
     a.varietyName.toLowerCase().localeCompare(b.varietyName.toLowerCase()) || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0);
   const checked = (dir: 1 | -1) => (a: VarietySummaryRow, b: VarietySummaryRow) => {
@@ -287,7 +295,14 @@ function summaryComparator(sort: VarietyBrowseSort): (a: VarietySummaryRow, b: V
     case "name":
       return nameAsc;
     case "availability":
-      return (a, b) => tier(a) - tier(b) || (b.listingCount ?? 0) - (a.listingCount ?? 0) || nameAsc(a, b);
+      return (
+        (a, b) =>
+          tier(a) - tier(b) ||
+          (b.sellerCount ?? 0) - (a.sellerCount ?? 0) ||
+          (b.inStockCount ?? 0) - (a.inStockCount ?? 0) ||
+          (b.listingCount ?? 0) - (a.listingCount ?? 0) ||
+          nameAsc(a, b)
+      );
     case "-name":
       return (a, b) => -nameAsc(a, b);
     case "listing_count":
@@ -392,6 +407,78 @@ export async function countVarietyRows(db: Db, filters: VarietyFilters): Promise
     .leftJoin(ls, eq(ls.varietyId, varieties.id))
     .where(where);
   return totalRow?.n ?? 0;
+}
+
+/**
+ * Grouped variety counts (B-1 latency consolidation): COUNT(*) per distinct value of one
+ * column over a filter set. The identical joins + varietyWhere() as countVarietyRows —
+ * same FROM/WHERE, grouped SELECT — so grouped cells and plain totals partition the same
+ * set and can never disagree. One query answers every option cell of a single-valued
+ * group (season, hue, life cycle) instead of one plain total per chip.
+ */
+async function countVarietyGroups(db: Db, filters: VarietyFilters, key: AnySQLiteColumn): Promise<{ key: string | null; n: number }[]> {
+  const ls = listingStatsSq(db);
+  const where = varietyWhere(db, filters, ls, filters.lifeCycle?.length ? await plantLifeCycleIn(db, filters.lifeCycle) : undefined);
+  const rows = await db
+    .select({ key, n: count() })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .innerJoin(categories, eq(categories.id, varieties.categoryId))
+    .leftJoin(subcategories, eq(subcategories.id, varieties.subcategoryId))
+    .leftJoin(series, eq(series.id, varieties.seriesId))
+    .leftJoin(ls, eq(ls.varietyId, varieties.id))
+    .where(where)
+    .groupBy(key);
+  return rows.map((r) => ({ key: (r.key ?? null) as string | null, n: Number(r.n) }));
+}
+
+/** Season option cells: per-class counts over the season-cleared, others-held set. */
+export async function countVarietySeasonCells(db: Db, filters: VarietyFilters): Promise<Map<string, number>> {
+  const rows = await countVarietyGroups(db, filters, plants.seasonClass);
+  return new Map(rows.filter((r) => r.key !== null).map((r) => [r.key as string, r.n]));
+}
+
+/**
+ * Hue option cells: per-family counts over the hue-cleared, others-held set. The caller
+ * toggle-sums them (PB-2): the family's column is single-valued per variety, so a hue
+ * set's total is its member cells' sum.
+ */
+export async function countVarietyHueCells(db: Db, filters: VarietyFilters): Promise<Map<string, number>> {
+  const rows = await countVarietyGroups(db, filters, varieties.colorFamily);
+  return new Map(rows.filter((r) => r.key !== null).map((r) => [r.key as string, r.n]));
+}
+
+/**
+ * Life-cycle option cells: per-stored-value counts over the life-cycle-cleared,
+ * others-held set. The caller buckets them (a stored value can sit in several buckets);
+ * NULLs are dropped — unclassified crops never match, exactly as the IN-query form.
+ */
+export async function countVarietyLifeCycleCells(db: Db, filters: VarietyFilters): Promise<Map<string, number>> {
+  const rows = await countVarietyGroups(db, filters, plants.lifeCycle);
+  return new Map(rows.filter((r) => r.key !== null).map((r) => [r.key as string, r.n]));
+}
+
+/**
+ * Sowing-method option cells (B-1): one conditional-aggregation query over the
+ * method-cleared, others-held set. A crop can carry both methods, so the two cells
+ * overlap and no GROUP BY partitions them — the two CASE sums count each side.
+ */
+export async function countVarietyMethodCells(db: Db, filters: VarietyFilters): Promise<{ direct: number; trays: number }> {
+  const ls = listingStatsSq(db);
+  const where = varietyWhere(db, filters, ls, filters.lifeCycle?.length ? await plantLifeCycleIn(db, filters.lifeCycle) : undefined);
+  const [row] = await db
+    .select({
+      direct: sql<number>`coalesce(sum(CASE WHEN ${plantHasMethod(["direct_sow"])} THEN 1 ELSE 0 END), 0)`,
+      trays: sql<number>`coalesce(sum(CASE WHEN ${plantHasMethod(["transplant"])} THEN 1 ELSE 0 END), 0)`,
+    })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .innerJoin(categories, eq(categories.id, varieties.categoryId))
+    .leftJoin(subcategories, eq(subcategories.id, varieties.subcategoryId))
+    .leftJoin(series, eq(series.id, varieties.seriesId))
+    .leftJoin(ls, eq(ls.varietyId, varieties.id))
+    .where(where);
+  return { direct: Number(row?.direct ?? 0), trays: Number(row?.trays ?? 0) };
 }
 
 /** Distinct colour families in use for a crop (crop-page filter options). */
