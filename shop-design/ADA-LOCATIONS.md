@@ -2,7 +2,7 @@
 
 **Seat:** Ada, Accessibility — owner of the WCAG 2.2 AA floor. **Date:** 2026-11-22.
 **Subject:** The Locations delta — Nadia's `shop-design/SPEC-LOCATIONS.md` §6.3 floors, against Wren's ruled strings in `shop-design/COPY-LOCATIONS.md` (heading `{name}'s locations`; kind labels `Physical address` / `Warehouse address` / `Mailing address`; primary marker `Primary`; no intro line).
-**Method:** floors taken from SPEC-LOCATIONS §6.3 in full, read with §§3–5 (area-not-tab ruling, placement, contents, graceful absence) and the base SPEC's page structure (header `<article aria-labelledby="seller-title">`, `<h1>` = seller name; About headed "About this seller"; the catalog section's `<h2>` `"{name}'s shop"`). No part of this delta has been built, so no ruling below claims a rendered, screen-reader, forced-colors, or zoom proof — those are Quinn's delta-gate checks (SPEC-LOCATIONS §10, SH-20, as mapped in §8 below), and the conformance sentence at the end says exactly that.
+**Method:** floors taken from SPEC-LOCATIONS §6.3 in full, read with §§3–5 (area-not-tab ruling, placement, contents, graceful absence) and the base SPEC's page structure (header `<article aria-labelledby="seller-title">`, `<h1>` = seller name; About headed "About this seller"; the catalog section's `<h2>` `"{name}'s shop"`). No part of this delta has been built, so no ruling below claims a rendered, screen-reader, forced-colors, or zoom proof — those are Quinn's delta-gate checks (SPEC-LOCATIONS §10, SH-27, as mapped in §8 below), and the conformance sentence at the end says exactly that.
 **Conformance language:** these rulings are engineering evidence that the design, as specified and as prescribed here, meets the WCAG 2.2 AA criteria named. Built to WCAG 2.2 AA, not formally certified.
 
 **Disposition in one line: every floor in §6.3 is CONFIRMED. No floor fails as designed. No string, placement, or composition value in Nadia's or Wren's work changes; the prescriptions below are build obligations that make the confirmed floors true in code, stated exactly so Quinn can check them.**
@@ -48,7 +48,7 @@ Entries form a real list (SPEC-LOCATIONS §6.3 floor). Prescribed structure, whi
 - **`<ul>` / `<li>`, not a `<div>` stack and not a definition list** (1.3.1). The list element is what makes the set and its count perceivable non-visually ("list, 3 items" is information a screen reader gives for free and a `<div>` stack never gives). A `<dl>` is wrong here: the entries are not term/definition pairs — kind and primary status are labels *of* the entry, and the address is the entry, not a definition of the kind.
 - **Order in the DOM is §5.2's order** — primary first, then physical, warehouse, mailing, then state, then city — and DOM order, visual order, and reading order are the same order (1.3.2). No CSS reordering (`order`, reversed flow) may make the seen sequence differ from the heard sequence.
 - **Each `<li>` is one location, whole.** Kind label, primary marker (where present), and all of that location's address lines live inside the same `<li>`, so the label is programmatically associated with the address it classifies by containment — a screen-reader user who lands on an address has already passed its kind inside the same item, and cannot meet a bare address whose kind lives in a neighbouring element.
-- **No list styling may remove the semantics.** If the visual design suppresses bullets, it does so with CSS that preserves the list role; in particular the build must not rely on `list-style: none` alone in a way that drops list semantics in VoiceOver — the shipped site's list patterns govern, and Quinn's screen-reader pass (SH-20) verifies the list is announced as a list with the correct count.
+- **No list styling may remove the semantics.** If the visual design suppresses bullets, it does so with CSS that preserves the list role; in particular the build must not rely on `list-style: none` alone in a way that drops list semantics in VoiceOver — the shipped site's list patterns govern, and Quinn's screen-reader pass (SH-27) verifies the list is announced as a list with the correct count.
 
 ## L-A4 — Primary marker and kind labels as text: **CONFIRMED**
 
@@ -82,7 +82,7 @@ No motion, no flashing content, no timed content, no form, no error state, and n
 
 ## §8 — Gate inputs for Quinn (delta gate; consume verbatim)
 
-These restate SPEC-LOCATIONS SH-20's accessibility inputs in checkable form; they extend, and do not replace, SH-15…SH-19:
+These restate SPEC-LOCATIONS SH-27's accessibility inputs in checkable form; they extend, and do not replace, SH-22…SH-26:
 
 - **LOC-A1 (no tab semantics):** rendered DOM of a two-location shop contains no `tablist`/`tab`/`tabpanel` role, no `aria-selected`/`aria-expanded` attached to the section, no button or link inside the section, and no element with a non-negative `tabindex` inside it. Any hit is a FAIL.
 - **LOC-A2 (heading order):** heading outline of a shop with the area reads H1 → H2 `{name}'s locations` → H2 "About this seller" → H2 `{name}'s shop`, in DOM order; the `<section>`'s computed accessible name equals the Locations heading text. A shop without the area has no Locations heading and no empty section element.

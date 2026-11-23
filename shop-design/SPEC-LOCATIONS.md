@@ -129,12 +129,12 @@ The base SPEC's §11 pattern applies: these are decisions the build needs Dustin
 
 Base SPEC §13 stands; these close the scope gap Quinn was told to expect. Test shops: Plant Good Seed (primary + mailing) plus fixtures for the matrix rows.
 
-- **SH-15 (area presence matrix):** fixtures with (a) primary only → no area, page identical to base; (b) primary + one qualifying additional → area present with both entries; (c) primary + one kind-undetermined additional → no area; (d) primary + two additionals of different kinds → area, §5.2 order. No absence copy in any row.
-- **SH-16 (one-primary invariance):** on the Plant Good Seed fixture, the header Location entry, state link target, seller-index card, and rendered schema name Chimacum, WA only; "Ojai" appears nowhere on the page except inside the Locations area, and nowhere else in the directory.
-- **SH-17 (preservation):** with the area present, drive filter/search/sort/pagination per SH-4/SH-7: the area's rendered content is byte-identical before and after every state change, and it never gains URL state.
-- **SH-18 (granularity & provenance):** every rendered address line matches its sweep-dataset source verbatim; a city/state-only fixture renders no invented street line; the TRF-LA fixture renders **no** Scarsdale entry.
-- **SH-19 (separate stores):** on a two-record fixture for one operator, each shop page renders only its own record's locations; no cross-listing appears in either area.
-- **SH-20 (semantics floor inputs for Ada/Mina):** heading order and list structure per §6.3; primary marker perceivable with colour removed; at 320px / 200% text the area reflows without horizontal scroll; state-outline/link rendering matches Mina's §7 delta ruling exactly — no more, no fewer.
+- **SH-22 (area presence matrix):** fixtures with (a) primary only → no area, page identical to base; (b) primary + one qualifying additional → area present with both entries; (c) primary + one kind-undetermined additional → no area; (d) primary + two additionals of different kinds → area, §5.2 order. No absence copy in any row.
+- **SH-23 (one-primary invariance):** on the Plant Good Seed fixture, the header Location entry, state link target, seller-index card, and rendered schema name Chimacum, WA only; "Ojai" appears nowhere on the page except inside the Locations area, and nowhere else in the directory.
+- **SH-24 (preservation):** with the area present, drive filter/search/sort/pagination per SH-4/SH-7: the area's rendered content is byte-identical before and after every state change, and it never gains URL state.
+- **SH-25 (granularity & provenance):** every rendered address line matches its sweep-dataset source verbatim; a city/state-only fixture renders no invented street line; the TRF-LA fixture renders **no** Scarsdale entry.
+- **SH-26 (separate stores):** on a two-record fixture for one operator, each shop page renders only its own record's locations; no cross-listing appears in either area.
+- **SH-27 (semantics floor inputs for Ada/Mina):** heading order and list structure per §6.3; primary marker perceivable with colour removed; at 320px / 200% text the area reflows without horizontal scroll; state-outline/link rendering matches Mina's §7 delta ruling exactly — no more, no fewer.
 
 ## 11. Difference register — against the base SPEC
 
@@ -147,7 +147,7 @@ Base SPEC §13 stands; these close the scope gap Quinn was told to expect. Test 
 | L-5 | §3.3 preservation rule extended by name to the Locations area (§4.3) | Extends §3.3 |
 | L-6 | New surface flagged for Mina's Item SI delta; interim text-only position (§7) | Adds to §9A's surface list |
 | L-7 | New payload/data contents (location set with kind + primary flag + provenance) and five build flags for Dustin (§9) | Extends §11 |
-| L-8 | New acceptance checks SH-15…SH-20 (§10) | Extends §13 |
+| L-8 | New acceptance checks SH-22…SH-27 (§10; renumbered from SH-15…SH-20 by Quinn's delta gate, QA-GATE-delta.md §4) | Extends §13 |
 | L-9 | Contact block unchanged: no per-location channels, no relocation (§§4.1, 5.1.2) | §3.5 confirmed, not amended |
 
 **No other difference.** Header composition (§3.2), catalog composition (§3.3), filters/search/sort (§§5–7), thresholds (§8), states (§9), URL/history/no-JS (§10), and the S-1…S-12 register all stand exactly as delivered; Quinn's base gate findings are unaffected except where L-4/L-5 touch the text she is checking, and this register is the list she checks them against.

@@ -140,7 +140,7 @@ Per Quinn's base gate (§10 of `QA-GATE-design.md`): this area is the one new re
 - [x] Hierarchy: squint test — H1 → shop H2 remain the page's beats; the Locations H2 reads at About's rank (§3). Grayscale test — kind and primary survive on words and weight with color removed (§4.1)
 - [x] Item SI ruled from the placement spec's own logic, confirming Nadia's recommendation with reasons (§5)
 - [x] Ada's floors consumed as composition obligations: real list structure (L-A3), real DOM text for both facts (L-A4), plain-text addresses (L-A5), reflow / resize / override growth (L-A6)
-- [ ] **Deliberately not checked:** rendered verification. No build exists; Quinn's delta gate owns the rendered drives (SPEC-LOCATIONS SH-15…SH-20, with Ada's LOC-A1…LOC-A6 as the semantics half). Every rendered claim above is a specification to be verified there.
+- [ ] **Deliberately not checked:** rendered verification. No build exists; Quinn's delta gate owns the rendered drives (SPEC-LOCATIONS SH-22…SH-27, with Ada's LOC-A1…LOC-A6 as the semantics half). Every rendered claim above is a specification to be verified there.
 
 ---
 
