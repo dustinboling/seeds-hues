@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 915 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 924 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -191,7 +191,12 @@ describe("lib/images-data (generated)", () => {
     // Crane White, Goldenrod Canada Goldenrod, Hollyhock Chater's Double
     // Salmon / Chater's Double White, Honesty, Lisianthus Rosanne 2 Clear
     // Green / Voyage 2 Blue (2026-11-22, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(915);
+    // +9 for Tranche 4 Batch 11: Lisianthus Voyage 2 First Love /
+    // Voyage 2 Lavender, Milkweed Pleurisy Root / Soulmate, Mullein
+    // Violetta, Nigella Miss Jekyll Double Mix, Paper Daisy Pierrot
+    // White, Perennial Baby's Breath Snowflake, Sunflower Better Off
+    // Red (2026-11-22, Quinn PASS WITH NOTES).
+    expect(entries).toHaveLength(924);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
