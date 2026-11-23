@@ -13,6 +13,8 @@ export function HomeMotifDivider() {
   return (
     <figure aria-hidden="true" data-testid="home-motif" className="divider-home mb-8 mt-10">
       {/* A plain <img>: sizing is done by the image CDN's transformations, so next/image adds nothing here. */}
+      {/* No className: .divider-home img provides display/width/height, and a display
+          utility would sit in the utilities layer and beat the forced-colors hide rule. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl("/theme/divider-home.webp", { width: 1440 })}
@@ -23,7 +25,6 @@ export function HomeMotifDivider() {
         height={365}
         loading="lazy"
         decoding="async"
-        className="block h-auto w-full"
       />
     </figure>
   );
