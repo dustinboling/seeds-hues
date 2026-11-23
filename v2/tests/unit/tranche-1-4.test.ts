@@ -28,6 +28,7 @@ import {
   zeroSellerSentence,
 } from "@/lib/zero-seller";
 import type {
+  BrowseCounts,
   CoverageItem,
   CropDetail,
   CropListItem,
@@ -81,7 +82,9 @@ const { ImportedRatingPanel } = await import("@/components/seller/ImportedRating
 store.services = fakeServices({
   catalog: {
     counts: async () => fake.counts,
-    listCrops: async () => fake.crops,
+    // Tranche 3.1b-1: home renders from the browse payload (items + total + counts),
+    // the identical contract GET /api/browse/crops serves the in-place layer.
+    browseCrops: async () => ({ ...fake.crops, page: 1, pages: 1, counts: zeroBrowseCounts() }),
     coverage: async () => fake.coverage,
     recent: async () => fake.recent,
     getVariety: async () => fake.variety,
@@ -173,6 +176,35 @@ function variety(listings: PublicListing[]): VarietyDetail {
     listings,
     media: [],
   };
+}
+
+/** Zeroed per-option counts for the home browse fake (chip counts render, nothing narrows). */
+function zeroBrowseCounts(): BrowseCounts {
+  const counts: BrowseCounts = {
+    season: { all: 0, options: { cool: 0, warm: 0 } },
+    method: { all: 0, options: { direct: 0, trays: 0 } },
+    lifeCycle: { all: 0, options: { annual: 0, biennial: 0, perennial: 0 } },
+    hue: {
+      all: 0,
+      options: {
+        white: 0,
+        blush: 0,
+        pink: 0,
+        peach: 0,
+        orange: 0,
+        yellow: 0,
+        red: 0,
+        burgundy: 0,
+        purple: 0,
+        blue: 0,
+        green: 0,
+        chocolate: 0,
+        mix: 0,
+      },
+    },
+    smallFarm: { all: 0, on: 0 },
+  };
+  return counts;
 }
 
 function cropListItem(): CropListItem {

@@ -175,7 +175,9 @@ describe("Fix 2 — line-strong token (source)", () => {
 });
 
 describe("Fix 3 — home filter-result count live region (source)", () => {
-  const page = readFileSync(join(ROOT, "app/page.tsx"), "utf8");
+  // Tranche 3.1b-1: the count line renders from the home browse component the in-place
+  // layer hydrates (unconditional, committed-driven) — the pin follows the markup there.
+  const page = readFileSync(join(ROOT, "components/home/HomeBrowse.tsx"), "utf8");
 
   it('carries aria-live="polite" and aria-atomic="true", with no other change', () => {
     expect(page).toContain('<p className="mt-3 text-muted" data-testid="filter-result" aria-live="polite" aria-atomic="true">');

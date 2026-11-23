@@ -897,6 +897,8 @@ export interface PlantFilters {
   season?: SeasonClass;
   /** Only crops having ANY of these sowing methods (unclassified crops never match). */
   methods?: SowingMethod[];
+  /** Only crops in ANY of these life-cycle buckets (crops without a life cycle never match). */
+  lifeCycle?: LifeCycleParam[];
 }
 
 /** Season + method conditions on `plants` (shared by crop lists and crop/series search). */
@@ -904,15 +906,19 @@ function plantFilterConds(f: PlantFilters): (SQL | undefined)[] {
   return [f.season ? eq(plants.seasonClass, f.season) : undefined, f.methods?.length ? plantHasMethod(f.methods) : undefined];
 }
 
-/** Crop-list filters: season + method, plus the life-cycle buckets (crop lists only). */
-export interface PlantListFilters extends PlantFilters {
-  /** Only crops in ANY of these life-cycle buckets (crops without a life cycle never match). */
-  lifeCycle?: LifeCycleParam[];
+/** The life-cycle condition for a plant query (async: resolves the buckets first). */
+async function plantLifeCycleCond(db: Db, buckets: LifeCycleParam[] | undefined): Promise<SQL | undefined> {
+  return buckets?.length ? plantLifeCycleIn(db, buckets) : undefined;
 }
 
+/**
+ * Crop-list filters (kept as the name listPlantRows and the crop services take — the same
+ * season + method + life-cycle vocabulary the crop/series search rows share since 3.1b).
+ */
+export type PlantListFilters = PlantFilters;
+
 export async function listPlantRows(db: Db, page: Page, filters: PlantListFilters = {}) {
-  const lifeCycle = filters.lifeCycle?.length ? await plantLifeCycleIn(db, filters.lifeCycle) : undefined;
-  const where = and(isNull(plants.deletedAt), ...plantFilterConds(filters), lifeCycle);
+  const where = and(isNull(plants.deletedAt), ...plantFilterConds(filters), await plantLifeCycleCond(db, filters.lifeCycle));
   const rows = await db
     .select(plantSelect)
     .from(plants)
@@ -1012,7 +1018,14 @@ export async function searchPlantRows(db: Db, pattern: string, limit: number, fi
   return db
     .select({ slug: plants.slug, commonName: plants.commonName, latinName: plants.latinName })
     .from(plants)
-    .where(and(isNull(plants.deletedAt), ...plantFilterConds(filters), sql`(lower(${plants.commonName}) LIKE ${pattern} OR lower(${plants.latinName}) LIKE ${pattern})`))
+    .where(
+      and(
+        isNull(plants.deletedAt),
+        ...plantFilterConds(filters),
+        await plantLifeCycleCond(db, filters.lifeCycle),
+        sql`(lower(${plants.commonName}) LIKE ${pattern} OR lower(${plants.latinName}) LIKE ${pattern})`,
+      ),
+    )
     .orderBy(sql`lower(${plants.commonName})`)
     .limit(limit);
 }
@@ -1022,9 +1035,27 @@ export async function searchSeriesRows(db: Db, pattern: string, limit: number, f
     .select({ slug: series.slug, name: series.name, commonName: plants.commonName })
     .from(series)
     .innerJoin(plants, eq(plants.id, series.plantId))
-    .where(and(isNull(series.deletedAt), ...plantFilterConds(filters), sql`lower(${series.name}) LIKE ${pattern}`))
+    .where(
+      and(
+        isNull(series.deletedAt),
+        ...plantFilterConds(filters),
+        await plantLifeCycleCond(db, filters.lifeCycle),
+        sql`lower(${series.name}) LIKE ${pattern}`,
+      ),
+    )
     .orderBy(sql`lower(${series.name})`)
     .limit(limit);
+}
+
+/**
+ * Lean crop count for the per-option counts matrix (Tranche 3.1b): the same WHERE as
+ * listPlantRows, counted only — no rows, no coverage — so counts and results can never
+ * disagree. Mirrors countVarietyRows for the crop surfaces.
+ */
+export async function countPlantRows(db: Db, filters: PlantListFilters = {}): Promise<number> {
+  const where = and(isNull(plants.deletedAt), ...plantFilterConds(filters), await plantLifeCycleCond(db, filters.lifeCycle));
+  const [t] = await db.select({ n: count() }).from(plants).where(where);
+  return t?.n ?? 0;
 }
 
 export async function searchSellerRows(db: Db, pattern: string, limit: number) {

@@ -31,14 +31,27 @@ export function SwatchDot({ family }: { family: ColorFamily }) {
  * The per-option count inside a chip — shared with the hydrated buttons so the two can never
  * drift. Sighted readers see the parenthesized numeral; assistive tech gets the numeral plus
  * this surface's unit (§2.4.2: "12 varieties"), generalizing the shipped StateFilter pattern.
- * The visible parens are aria-hidden so the accessible name reads exactly "7 varieties".
+ * The visible parens are aria-hidden so the accessible name reads exactly "7 varieties" (or
+ * "7 crops", "7 results" — the unit is per surface, so crops are never announced as varieties).
  */
-export function ChipCount({ counts, group, value }: { counts: BrowseCounts; group: BrowseFilterGroup; value: string | null }) {
+export function ChipCount({
+  counts,
+  group,
+  value,
+  unit = "varieties",
+}: {
+  counts: BrowseCounts;
+  group: BrowseFilterGroup;
+  value: string | null;
+  unit?: string;
+}) {
   const n = countFor(counts, group, value);
   return (
     <span className="text-muted tabular-nums">
       <span aria-hidden="true">({n})</span>
-      <span className="sr-only">{n} varieties</span>
+      <span className="sr-only">
+        {n} {unit}
+      </span>
     </span>
   );
 }
@@ -54,9 +67,10 @@ export function ChipCount({ counts, group, value }: { counts: BrowseCounts; grou
  * buttons also scroll the row.
  *
  * Hue mode (Tranche 3.1a, PB-2): "multi" on /variety — independent toggles, "All" clearing the
- * set; "single" everywhere else, today's behavior exactly. Counts: when provided (/variety
- * only), every chip carries its per-option count in parentheses — a 0-count option renders its
- * 0 and stays operable.
+ * set; "single" everywhere else, today's behavior exactly. Counts: when provided, every chip
+ * carries its per-option count in parentheses — a 0-count option renders its 0 and stays
+ * operable. The count unit is per surface ("varieties", "crops", "results"), so the sr-only
+ * form always names what the surface lists.
  */
 export function BrowseFilters({
   basePath,
@@ -65,6 +79,7 @@ export function BrowseFilters({
   params = {},
   hueMode = "single",
   counts = null,
+  unit = "varieties",
 }: {
   basePath: string;
   state: BrowseFilterState;
@@ -72,6 +87,7 @@ export function BrowseFilters({
   params?: Record<string, string>;
   hueMode?: HueMode;
   counts?: BrowseCounts | null;
+  unit?: string;
 }) {
   return (
     <nav aria-label="Filters" className="mt-4 flex flex-col gap-3">
@@ -92,7 +108,7 @@ export function BrowseFilters({
                 {counts ? (
                   <>
                     {" "}
-                    <ChipCount counts={counts} group={g} value={o.value} />
+                    <ChipCount counts={counts} group={g} value={o.value} unit={unit} />
                   </>
                 ) : null}
               </Link>

@@ -10,6 +10,12 @@ export const THEME_COLOR = "#F8F1E1";
 export const BACKGROUND_COLOR = "#F8F1E1";
 export const PAGE_SIZE = 24;
 /**
+ * The crop browse window (home "Browse by crop", the /crop index, GET /api/browse/crops):
+ * the whole catalog on one page. Must cover the catalog (124 crops, Nov 2026) — one home
+ * so the surfaces and the endpoint can never disagree on the window.
+ */
+export const CROP_BROWSE_LIMIT = 500;
+/**
  * Contact for seller corrections / removal requests and crawler opt-outs (the /report form is the
  * primary route). No address is recorded in
  * the project sources, so none is invented: set NEXT_PUBLIC_CONTACT_EMAIL at build time to publish

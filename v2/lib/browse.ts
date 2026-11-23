@@ -16,7 +16,7 @@ import {
   SMALL_FARM_PARAM,
   parseSmallFarmParam,
 } from "@/lib/small-farm";
-import type { VarietyFilters } from "@/lib/repositories/catalog-read";
+import type { PlantListFilters, VarietyFilters } from "@/lib/repositories/catalog-read";
 import type { BrowseCounts, SeasonClass, SowingMethod } from "@/lib/validators";
 
 /* ── Vocabulary (moved verbatim from lib/validators, which re-exports it) ── */
@@ -330,20 +330,72 @@ export function readBrowseFilters(
 }
 
 /**
- * Client-side mirror of readBrowseFilters: reads the filter state back from a live
- * `location.search` string (a leading "?" is tolerated). The hydrated layer's popstate
- * handler re-syncs through this, so Back/Forward apply the same rule as first load.
+ * Next searchParams → filter state for a surface rendering a subset of the groups (Tranche
+ * 3.1b): only the listed groups are parsed — every other group stays at its resting value.
+ * A hand-crafted ?color_family= on a surface with no Hue group is ignored (never a phantom
+ * remover), exactly as those surfaces always parsed. The surface's page, its API route and
+ * its popstate re-sync share this, so the three can never disagree on what a URL means.
  */
-export function browseFiltersFromSearch(search: string, hueMode: HueMode): BrowseFilterState {
+export function readBrowseFiltersForGroups(
+  sp: Record<string, string | string[] | undefined>,
+  groups: BrowseFilterGroup[],
+  hueMode: HueMode,
+): BrowseFilterState {
+  const hue =
+    hueMode === "multi" ? parseHueParam(sp.color_family) : parseHueParamSingle(sp.color_family);
+  return {
+    season: groups.includes("season") ? parseSeasonParam(sp.season) : null,
+    method: groups.includes("method") ? parseMethodParam(sp.method) : null,
+    lifeCycle: groups.includes("lifeCycle") ? parseLifeCycleParam(sp.life_cycle) : null,
+    hue: groups.includes("hue") ? (hue === null ? [] : Array.isArray(hue) ? hue : [hue]) : [],
+    smallFarm: groups.includes("smallFarm") ? parseSmallFarmParam(sp.small_farm) : false,
+  };
+}
+
+/**
+ * ?q= for /search (moved from the page so the page and /api/browse/search share it):
+ * trimmed, capped at 100 characters — the service normalises further, identically for both.
+ */
+export function parseSearchQueryParam(raw: RawParam): string {
+  const v = Array.isArray(raw) ? raw[0] : raw;
+  return (v ?? "").trim().slice(0, 100);
+}
+
+/** A live `location.search` string as a Next-searchParams-shaped record (repeats stay arrays). */
+function searchToRecord(search: string): Record<string, string | string[] | undefined> {
   const q = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
   const raw = (key: string): RawParam => {
     const all = q.getAll(key);
     return all.length > 1 ? all : (all[0] as string | undefined);
   };
-  return readBrowseFilters(
-    { season: raw("season"), method: raw("method"), life_cycle: raw("life_cycle"), color_family: raw("color_family"), small_farm: raw("small_farm") },
-    hueMode,
-  );
+  return {
+    season: raw("season"),
+    method: raw("method"),
+    life_cycle: raw("life_cycle"),
+    color_family: raw("color_family"),
+    small_farm: raw("small_farm"),
+  };
+}
+
+/**
+ * Client-side mirror of readBrowseFilters: reads the filter state back from a live
+ * `location.search` string (a leading "?" is tolerated). The hydrated layer's popstate
+ * handler re-syncs through this, so Back/Forward apply the same rule as first load.
+ */
+export function browseFiltersFromSearch(search: string, hueMode: HueMode): BrowseFilterState {
+  return readBrowseFilters(searchToRecord(search), hueMode);
+}
+
+/**
+ * Client-side mirror of readBrowseFiltersForGroups: the popstate re-sync for surfaces
+ * rendering a subset of the groups — Back/Forward parse exactly what first load parses.
+ */
+export function scopedBrowseFiltersFromSearch(
+  search: string,
+  groups: BrowseFilterGroup[],
+  hueMode: HueMode,
+): BrowseFilterState {
+  return readBrowseFiltersForGroups(searchToRecord(search), groups, hueMode);
 }
 
 /** Client-side forgiving ?page= mirror for the popstate page-mismatch check (missing/garbage → 1). */
@@ -372,6 +424,25 @@ export function activeFilterLabels(state: BrowseFilterState): string[] {
  */
 export function browseCountLine(state: BrowseFilterState, total: number, page: number, pages: number): string {
   return `${[plural(total, "variety", "varieties"), ...activeFilterLabels(state)].join(" · ")}, alphabetical.${pages > 1 ? ` Page ${page} of ${pages}.` : ""}`;
+}
+
+/**
+ * The home "Browse by crop" count line (Tranche 3.1b): unconditional, resting on the bare
+ * crop total ("124 crops"). The server floor and the hydrated swap share this builder, so
+ * first paint and every in-place update word the line identically.
+ */
+export function cropBrowseCountLine(state: BrowseFilterState, total: number): string {
+  return [plural(total, "crop"), ...activeFilterLabels(state)].join(" · ");
+}
+
+/**
+ * The /crop index count line (Tranche 3.1b): the page's shipped phrasing, resting on
+ * "N crops in the directory, alphabetical." — shared by first paint and in-place updates.
+ */
+export function cropIndexCountLine(state: BrowseFilterState, total: number): string {
+  return hasActiveFilters(state)
+    ? `${[plural(total, "crop"), ...activeFilterLabels(state)].join(" · ")}, alphabetical.`
+    : `${plural(total, "crop")} in the directory, alphabetical.`;
 }
 
 export interface BrowseOption {
@@ -481,6 +552,20 @@ export function varietyFiltersFromBrowse(state: BrowseFilterState): VarietyFilte
 }
 
 /**
+ * Browse state → the repository's PlantListFilters (Tranche 3.1b): the crop surfaces'
+ * season + method (+ life cycle where rendered). Hue and Sellers are variety-level groups
+ * with no plant meaning — a crop state never carries them (scoped parsing), so mapping
+ * them would be inventing semantics; they are deliberately unmapped.
+ */
+export function cropFiltersFromBrowse(state: BrowseFilterState): PlantListFilters {
+  return {
+    season: state.season ? SEASON_PARAMS[state.season] : undefined,
+    methods: state.method ? [METHOD_PARAMS[state.method]] : undefined,
+    lifeCycle: state.lifeCycle ? [state.lifeCycle] : undefined,
+  };
+}
+
+/**
  * One count query: the repository filters whose total is the chip's count. option null is the
  * group's "All" chip; otherwise the option's URL value ("true" for the sellers on-chip).
  */
@@ -510,6 +595,57 @@ export function countFor(counts: BrowseCounts, group: BrowseFilterGroup, value: 
 }
 
 /**
+ * One chip's count as the filter state to total (Tranche 3.1b): the §2.4 matrix over states
+ * instead of repository filters, so every surface maps each state through its own total
+ * query (varieties, crops, search). Option null is the group's "All" chip; otherwise the
+ * option's URL value ("true" for the sellers on-chip).
+ */
+export interface BrowseCountState {
+  group: BrowseFilterGroup;
+  option: string | null;
+  state: BrowseFilterState;
+}
+
+/**
+ * The state a chip's count totals: "All" clears its group, others held; a single-select
+ * option assigns (overwriting — clearing first is the same transition); a multi-select hue
+ * family toggles from its current state (PB-2). Shared by the matrix and the hydrated tap
+ * path, so counts and taps can never disagree on what an option means.
+ */
+export function countStateFor(
+  state: BrowseFilterState,
+  group: BrowseFilterGroup,
+  option: string | null,
+  hueMode: HueMode,
+): BrowseFilterState {
+  if (option === null) return clearGroup(state, group);
+  if (group === "hue" && hueMode === "multi") return toggleHue(state, option as ColorFamily);
+  return withGroup(state, group, option);
+}
+
+/**
+ * The per-option count matrix for a filter state, as states: every rendered chip's count is
+ * the surface's total under the mapped state. Groups emit in the given order, "All" first
+ * per group. Zero-count options keep their 0 and stay operable — the matrix never drops an
+ * option.
+ */
+export function browseCountStates(
+  state: BrowseFilterState,
+  groups: BrowseFilterGroup[],
+  hueMode: HueMode,
+): BrowseCountState[] {
+  const out: BrowseCountState[] = [];
+  for (const g of groups) {
+    out.push({ group: g, option: null, state: countStateFor(state, g, null, hueMode) });
+    for (const o of BROWSE_OPTIONS[g].options) {
+      if (o.value === null) continue;
+      out.push({ group: g, option: o.value, state: countStateFor(state, g, o.value, hueMode) });
+    }
+  }
+  return out;
+}
+
+/**
  * The per-option count matrix for a filter state — every chip's count as repository filters,
  * each counted by the same total query behind the results, so counts and results can never
  * disagree. Single-select option o of group G: the total with G = o, every other group held;
@@ -518,18 +654,9 @@ export function countFor(counts: BrowseCounts, group: BrowseFilterGroup, value: 
  * keep their 0 and stay operable — the matrix never drops an option.
  */
 export function browseCountQueries(state: BrowseFilterState): BrowseCountQuery[] {
-  const out: BrowseCountQuery[] = [];
-  for (const g of ["season", "method", "lifeCycle", "smallFarm"] as const) {
-    const base = clearGroup(state, g);
-    out.push({ group: g, option: null, filters: varietyFiltersFromBrowse(base) });
-    for (const o of BROWSE_OPTIONS[g].options) {
-      if (o.value === null) continue;
-      out.push({ group: g, option: o.value, filters: varietyFiltersFromBrowse(withGroup(base, g, o.value)) });
-    }
-  }
-  out.push({ group: "hue", option: null, filters: varietyFiltersFromBrowse(clearGroup(state, "hue")) });
-  for (const f of COLOR_FAMILIES) {
-    out.push({ group: "hue", option: f, filters: varietyFiltersFromBrowse(toggleHue(state, f)) });
-  }
-  return out;
+  return browseCountStates(state, ["season", "method", "lifeCycle", "smallFarm", "hue"], "multi").map((q) => ({
+    group: q.group,
+    option: q.option,
+    filters: varietyFiltersFromBrowse(q.state),
+  }));
 }

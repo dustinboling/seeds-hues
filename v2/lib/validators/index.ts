@@ -498,6 +498,47 @@ export const SearchResponseSchema = z
   })
   .meta({ id: "SearchResponse" });
 
+/**
+ * GET /api/browse/crops payload (Tranche 3.1b): the crop window plus the per-option counts
+ * describing it. The home page and the /crop index (first paint) and every in-place update
+ * consume this identical contract, so SSR and in-place can never disagree. No prices
+ * anywhere (R1): counts, paging, and CropListItem, which itself carries no price field.
+ */
+export const BrowseCropsPayloadSchema = z
+  .object({
+    items: z.array(CropListItemSchema),
+    total: z.number().int().nonnegative(),
+    page: z.number().int().positive(),
+    pages: z.number().int().positive(),
+    counts: BrowseCountsSchema,
+  })
+  .meta({ id: "BrowseCropsPayload" });
+
+export type BrowseCropsPayload = z.infer<typeof BrowseCropsPayloadSchema>;
+
+/**
+ * GET /api/browse/search payload (Tranche 3.1b): the grouped results for the query under
+ * the active filters, the grouped total, and the per-option counts describing it. The
+ * /search page (first paint) and every in-place update consume this identical contract, so
+ * SSR and in-place can never disagree. No prices anywhere (R1): counts and SearchResult,
+ * which itself carries no price field. The query echoes nothing — the client never changes
+ * it in place (a new query is a navigation), so there is nothing to confirm.
+ */
+export const BrowseSearchPayloadSchema = z
+  .object({
+    crops: z.array(SearchResultSchema),
+    series: z.array(SearchResultSchema),
+    varieties: z.array(SearchResultSchema),
+    sellers: z.array(SearchResultSchema),
+    total: z.number().int().nonnegative(),
+    page: z.number().int().positive(),
+    pages: z.number().int().positive(),
+    counts: BrowseCountsSchema,
+  })
+  .meta({ id: "BrowseSearchPayload" });
+
+export type BrowseSearchPayload = z.infer<typeof BrowseSearchPayloadSchema>;
+
 // ─── Sync (canonical §3 "Bulk sync for native apps"; snake_case, new in the delta) ─────────
 
 const SyncCropSchema = z
