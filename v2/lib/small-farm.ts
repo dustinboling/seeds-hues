@@ -29,6 +29,13 @@ export const SMALL_FARM_EMPTY_BROWSE = "No varieties sold by small farms match t
 /** ux §3.5 generic empty state (small-farm filter off, other filters emptied the list). */
 export const EMPTY_BROWSE = "No varieties match.";
 
+/**
+ * SLOT EMPTY-CROP-BROWSE (ux §3.5, Tranche 3.1b B-12): home "Browse by crop" and the /crop
+ * index, filters emptied the list. The crop parallel of EMPTY_BROWSE — same slot, same
+ * constraints, "Clear filters" beside it when filters are active.
+ */
+export const EMPTY_CROP_BROWSE = "No crops match.";
+
 /** SLOT EMPTY-VARIETY (ux §4.3): variety page, ?small_farm=true, no badged seller lists it. */
 export function smallFarmEmptyVariety(varietyName: string): string {
   return `No seller with the Small farm badge lists ${varietyName} yet.`;

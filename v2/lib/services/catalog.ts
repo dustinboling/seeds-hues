@@ -33,13 +33,20 @@ import { zeroSellerSentence } from "@/lib/zero-seller";
 import { stateByCode } from "@/lib/data/states";
 import { totalPages } from "@/lib/paging";
 import {
+  BROWSE_OPTIONS,
   browseCountQueries,
+  browseCountStates,
+  cropFiltersFromBrowse,
   varietyFiltersFromBrowse,
   type BrowseCountQuery,
+  type BrowseCountState,
+  type BrowseFilterGroup,
   type BrowseFilterState,
 } from "@/lib/browse";
 import {
   BrowseCountsSchema,
+  BrowseCropsPayloadSchema,
+  BrowseSearchPayloadSchema,
   BrowseVarietiesPayloadSchema,
   CatalogVersionSchema,
   CategoryDetailSchema,
@@ -58,6 +65,8 @@ import {
   VarietyListItemSchema,
   VarietySummarySchema,
   type BrowseCounts,
+  type BrowseCropsPayload,
+  type BrowseSearchPayload,
   type BrowseVarietiesPayload,
   type CatalogVersion,
   type Category,
@@ -66,6 +75,7 @@ import {
   type CropDetail,
   type CropListItem,
   type GrowerGuide,
+  type LifeCycleParam,
   type Media,
   type PacketSize,
   type PlantRef,
@@ -357,8 +367,47 @@ interface SearchOptions {
   season?: SeasonClass;
   /** Only crops / series / varieties whose crop has ANY of these sowing methods (sellers are unaffected). */
   methods?: SowingMethod[];
+  /** Only crops / series / varieties whose crop is in ANY of these life-cycle buckets (sellers are unaffected). */
+  lifeCycle?: LifeCycleParam[];
   /** Only varieties of these colour families (variety-level: crops, series and sellers are unaffected). */
   colorFamily?: string[];
+}
+
+/** The /search page's result cap (also the browse-search payload's): 50 varieties, 5 per other group. */
+const SEARCH_BROWSE_LIMIT = 50;
+
+/** Crop / series / seller search rows → SearchResult (shared by search and browseSearch). */
+function cropSearchResults(rows: Awaited<ReturnType<typeof repo.searchPlantRows>>): SearchResult[] {
+  return rows.map((p) => ({
+    type: "crop",
+    slug: p.slug,
+    title: proseCommonName(p.commonName),
+    subtitle: p.latinName ? `${p.latinName} · crop` : "crop",
+    href: `/crop/${p.slug}`,
+    matchedAlias: null,
+  }));
+}
+
+function seriesSearchResults(rows: Awaited<ReturnType<typeof repo.searchSeriesRows>>): SearchResult[] {
+  return rows.map((s) => ({
+    type: "series",
+    slug: s.slug,
+    title: `${s.name} series`,
+    subtitle: `${proseCommonName(s.commonName)} · series`,
+    href: `/series/${s.slug}`,
+    matchedAlias: null,
+  }));
+}
+
+function sellerSearchResults(rows: Awaited<ReturnType<typeof repo.searchSellerRows>>): SearchResult[] {
+  return rows.map((s) => ({
+    type: "seller",
+    slug: s.slug,
+    title: s.name,
+    subtitle: s.location ? `${s.location} · seller` : "seller",
+    href: `/seller/${s.slug}`,
+    matchedAlias: null,
+  }));
 }
 
 /**
@@ -386,6 +435,46 @@ function assembleBrowseCounts(queries: BrowseCountQuery[], totals: number[]): Br
       lifeCycle: g("lifeCycle"),
       hue: g("hue"),
       smallFarm: { all: sellers.all, on },
+    },
+    "browse counts",
+  );
+}
+
+/**
+ * Count-query totals → BrowseCounts for a surface rendering a subset of the groups
+ * (Tranche 3.1b). Queried groups stay strict (a missing cell is a matrix defect, never a
+ * silent 0); groups the surface does not render carry their honest All — the result total,
+ * since the group is always cleared — and fail-closed 0 options. No chip reads those
+ * cells; if one ever did, the 0 renders and stays operable per the zero-count rule.
+ */
+function assemblePartialBrowseCounts(queries: BrowseCountState[], totals: number[], total: number): BrowseCounts {
+  const queried = new Set(queries.map((q) => q.group));
+  const cells = new Map<string, number>();
+  queries.forEach((q, i) => {
+    const t = totals[i];
+    if (t === undefined) throw new Error(`browse counts: missing total for ${q.group}:${q.option ?? "all"}`);
+    cells.set(`${q.group}:${q.option ?? "all"}`, t);
+  });
+  const cell = (group: BrowseFilterGroup, option: string | null): number => {
+    const hit = cells.get(`${group}:${option ?? "all"}`);
+    if (hit !== undefined) return hit;
+    if (queried.has(group)) throw new Error(`browse counts: ${group}:${option ?? "all"} missing from the count matrix`);
+    return option === null ? total : 0;
+  };
+  const group = (name: BrowseFilterGroup) => ({
+    all: cell(name, null),
+    options: Object.fromEntries(
+      BROWSE_OPTIONS[name].options.filter((o) => o.value !== null).map((o) => [o.value, cell(name, o.value)]),
+    ),
+  });
+  return parse(
+    BrowseCountsSchema,
+    {
+      season: group("season"),
+      method: group("method"),
+      lifeCycle: group("lifeCycle"),
+      hue: group("hue"),
+      smallFarm: { all: cell("smallFarm", null), on: cell("smallFarm", "true") },
     },
     "browse counts",
   );
@@ -451,6 +540,50 @@ export function createCatalogService(db: Db) {
       },
       "crop",
     );
+  }
+
+  /** Crop windows with media (one batched media query) — shared by listCrops and browseCrops. */
+  async function cropListItems(page: Page, opts: PlantListFilters = {}): Promise<Paged<CropListItem>> {
+    const { rows, total } = await repo.listPlantRows(db, page, {
+      season: opts.season,
+      methods: opts.methods,
+      lifeCycle: opts.lifeCycle,
+    });
+    const mediaByPlant = await repo.listMediaForPlants(db, rows.map((r) => r.id));
+    return { items: await Promise.all(rows.map((r) => cropListItem(r, mediaByPlant.get(r.id) ?? []))), total };
+  }
+
+  /**
+   * FTS variety matches → filtered, ranked variety results (shared by search and
+   * browseSearch): exact → prefix → full text, has-listings first on ties. matchCount is the
+   * untruncated ranked length (the logged search total's variety slice); varieties is the
+   * rendered group, capped at lim.
+   */
+  async function varietySearchResults(
+    matches: VarietyMatch[],
+    filters: VarietyFilters,
+    lim: number,
+  ): Promise<{ varieties: SearchResult[]; matchCount: number }> {
+    if (!matches.length) return { varieties: [], matchCount: 0 };
+    const found = await baseSummaries(
+      { ...filters, ids: matches.map((m) => m.varietyId) },
+      "name",
+      { offset: 0, limit: matches.length },
+    );
+    const byId = new Map(found.ids.map((id, i) => [id, found.items[i]!]));
+    const ranked = matches
+      .map((m, order) => ({ m, order, v: byId.get(m.varietyId) }))
+      .filter((x): x is { m: VarietyMatch; order: number; v: VarietySummary } => Boolean(x.v))
+      .sort((a, b) => a.m.tier - b.m.tier || Number(b.v.listingCount > 0) - Number(a.v.listingCount > 0) || a.order - b.order);
+    const varieties: SearchResult[] = ranked.slice(0, lim).map(({ m, v }) => ({
+      type: "variety",
+      slug: v.slug,
+      title: v.varietyName,
+      subtitle: `${proseCommonName(v.plant.commonName)} · ${v.sellerCount === 0 ? "no seller listing yet" : `${v.sellerCount} seller${v.sellerCount === 1 ? "" : "s"}`}`,
+      href: `/variety/${v.slug}`,
+      matchedAlias: m.matchedAlias,
+    }));
+    return { varieties, matchCount: ranked.length };
   }
 
   /**
@@ -611,9 +744,33 @@ export function createCatalogService(db: Db) {
     },
 
     async listCrops(page: Page, opts: PlantListFilters = {}): Promise<Paged<CropListItem>> {
-      const { rows, total } = await repo.listPlantRows(db, page, { season: opts.season, methods: opts.methods, lifeCycle: opts.lifeCycle });
-      const mediaByPlant = await repo.listMediaForPlants(db, rows.map((r) => r.id));
-      return { items: await Promise.all(rows.map((r) => cropListItem(r, mediaByPlant.get(r.id) ?? []))), total };
+      return cropListItems(page, opts);
+    },
+
+    /**
+     * The crop browse payload (Tranche 3.1b): the crop window plus the per-option counts
+     * describing them, from the same query behind the results. The home page and the /crop
+     * index (first paint) and GET /api/browse/crops share this — first paint and every
+     * in-place update consume the identical contract. Resting order is Name A–Z, the whole
+     * catalog on one window (PB-1: the sort control is Item 3.4).
+     */
+    async browseCrops(opts: { filters: BrowseFilterState; page: Page }): Promise<BrowseCropsPayload> {
+      const queries = browseCountStates(opts.filters, ["season", "method"], "single");
+      const [{ items, total }, totals] = await Promise.all([
+        cropListItems(opts.page, cropFiltersFromBrowse(opts.filters)),
+        Promise.all(queries.map((q) => repo.countPlantRows(db, cropFiltersFromBrowse(q.state)))),
+      ]);
+      return parse(
+        BrowseCropsPayloadSchema,
+        {
+          items,
+          total,
+          page: Math.floor(opts.page.offset / opts.page.limit) + 1,
+          pages: totalPages(total, opts.page.limit),
+          counts: assemblePartialBrowseCounts(queries, totals, total),
+        },
+        "browse crops payload",
+      );
     },
 
     async getCrop(
@@ -697,67 +854,93 @@ export function createCatalogService(db: Db) {
         return parse(SearchResponseSchema, empty, "search");
       }
       const pattern = likePattern(query);
-      const plantFilters: PlantFilters = { season: opts.season, methods: opts.methods };
+      const plantFilters: PlantFilters = { season: opts.season, methods: opts.methods, lifeCycle: opts.lifeCycle };
       const [plantRows, seriesRows, matches, sellerRows] = await Promise.all([
         types.has("crop") ? repo.searchPlantRows(db, pattern, Math.min(5, lim), plantFilters) : Promise.resolve([]),
         types.has("series") ? repo.searchSeriesRows(db, pattern, Math.min(5, lim), plantFilters) : Promise.resolve([]),
         types.has("variety") ? searchVarieties(db, query, { limit: 100 }) : Promise.resolve([] as VarietyMatch[]),
         types.has("seller") ? repo.searchSellerRows(db, pattern, Math.min(5, lim)) : Promise.resolve([]),
       ]);
-      const found = matches.length
-        ? await baseSummaries(
-            {
-              ids: matches.map((m) => m.varietyId),
-              season: opts.season ? [opts.season] : undefined,
-              methods: opts.methods,
-              colorFamily: opts.colorFamily,
-            },
-            "name",
-            { offset: 0, limit: matches.length },
-          )
-        : { items: [], ids: [], total: 0 };
-      const byId = new Map(found.ids.map((id, i) => [id, found.items[i]!]));
-      const ranked = matches
-        .map((m, order) => ({ m, order, v: byId.get(m.varietyId) }))
-        .filter((x): x is { m: VarietyMatch; order: number; v: VarietySummary } => Boolean(x.v))
-        .sort((a, b) => a.m.tier - b.m.tier || Number(b.v.listingCount > 0) - Number(a.v.listingCount > 0) || a.order - b.order);
-
-      const varieties: SearchResult[] = ranked.slice(0, lim).map(({ m, v }) => ({
-        type: "variety",
-        slug: v.slug,
-        title: v.varietyName,
-        subtitle: `${proseCommonName(v.plant.commonName)} · ${v.sellerCount === 0 ? "no seller listing yet" : `${v.sellerCount} seller${v.sellerCount === 1 ? "" : "s"}`}`,
-        href: `/variety/${v.slug}`,
-        matchedAlias: m.matchedAlias,
-      }));
-      const crops: SearchResult[] = plantRows.map((p) => ({
-        type: "crop",
-        slug: p.slug,
-        title: proseCommonName(p.commonName),
-        subtitle: p.latinName ? `${p.latinName} · crop` : "crop",
-        href: `/crop/${p.slug}`,
-        matchedAlias: null,
-      }));
-      const series: SearchResult[] = seriesRows.map((s) => ({
-        type: "series",
-        slug: s.slug,
-        title: `${s.name} series`,
-        subtitle: `${proseCommonName(s.commonName)} · series`,
-        href: `/series/${s.slug}`,
-        matchedAlias: null,
-      }));
-      const sellers: SearchResult[] = sellerRows.map((s) => ({
-        type: "seller",
-        slug: s.slug,
-        title: s.name,
-        subtitle: s.location ? `${s.location} · seller` : "seller",
-        href: `/seller/${s.slug}`,
-        matchedAlias: null,
-      }));
-      const results = [...crops, ...series, ...varieties, ...sellers].slice(0, lim);
-      const total = ranked.length + crops.length + series.length + sellers.length;
+      const vr = await varietySearchResults(
+        matches,
+        {
+          season: opts.season ? [opts.season] : undefined,
+          methods: opts.methods,
+          lifeCycle: opts.lifeCycle,
+          colorFamily: opts.colorFamily,
+        },
+        lim,
+      );
+      const crops = cropSearchResults(plantRows);
+      const series = seriesSearchResults(seriesRows);
+      const sellers = sellerSearchResults(sellerRows);
+      const results = [...crops, ...series, ...vr.varieties, ...sellers].slice(0, lim);
+      const total = vr.matchCount + crops.length + series.length + sellers.length;
       if (opts.logClient) await logSearch(query, total, opts.logClient);
-      return parse(SearchResponseSchema, { query, results, varieties, series, crops, sellers }, "search");
+      return parse(SearchResponseSchema, { query, results, varieties: vr.varieties, series, crops, sellers }, "search");
+    },
+
+    /**
+     * The /search browse payload (Tranche 3.1b): the grouped results for the query under the
+     * active filters, the grouped total, and the per-option counts describing it. The FTS
+     * matches compute once, then filter per count state; sellers never filter (constant
+     * across the matrix); hue moves only the variety slice (variety-level); season, method
+     * and life cycle move varieties, crops and series (plant-level). The /search page and
+     * GET /api/browse/search share this. Never logs: the page view already logged the query
+     * — refinements are silent, like every in-place change.
+     */
+    async browseSearch(q: string, opts: { filters: BrowseFilterState }): Promise<BrowseSearchPayload> {
+      const query = normaliseQuery(q);
+      const lim = SEARCH_BROWSE_LIMIT;
+      if ([...query.replace(/[%_\\]/g, "")].length < MIN_QUERY_CHARS) {
+        return parse(
+          BrowseSearchPayloadSchema,
+          {
+            crops: [],
+            series: [],
+            varieties: [],
+            sellers: [],
+            total: 0,
+            page: 1,
+            pages: 1,
+            counts: assemblePartialBrowseCounts([], [], 0),
+          },
+          "browse search payload",
+        );
+      }
+      const pattern = likePattern(query);
+      const matches = await searchVarieties(db, query, { limit: 100 });
+      const sellers = sellerSearchResults(await repo.searchSellerRows(db, pattern, Math.min(5, lim)));
+      const groupsFor = async (s: BrowseFilterState) => {
+        const pf = cropFiltersFromBrowse(s);
+        const [plantRows, seriesRows, vr] = await Promise.all([
+          repo.searchPlantRows(db, pattern, Math.min(5, lim), pf),
+          repo.searchSeriesRows(db, pattern, Math.min(5, lim), pf),
+          varietySearchResults(matches, varietyFiltersFromBrowse(s), lim),
+        ]);
+        const crops = cropSearchResults(plantRows);
+        const series = seriesSearchResults(seriesRows);
+        return { crops, series, varieties: vr.varieties, total: crops.length + series.length + vr.varieties.length + sellers.length };
+      };
+      const countQueries = browseCountStates(opts.filters, ["season", "method", "lifeCycle", "hue"], "single");
+      const [main, totals] = await Promise.all([
+        groupsFor(opts.filters),
+        Promise.all(countQueries.map((c) => groupsFor(c.state).then((g) => g.total))),
+      ]);
+      return parse(
+        BrowseSearchPayloadSchema,
+        {
+          crops: main.crops,
+          series: main.series,
+          varieties: main.varieties,
+          sellers,
+          total: main.total,
+          page: 1,
+          pages: 1,
+          counts: assemblePartialBrowseCounts(countQueries, totals, main.total),
+        },
+        "browse search payload",
+      );
     },
 
     async catalogVersion(siteUrl: string): Promise<CatalogVersion> {
