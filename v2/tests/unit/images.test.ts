@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 906 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 915 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -187,7 +187,11 @@ describe("lib/images-data (generated)", () => {
     // Echinacea Feeling Pink / Mellow Yellows / Paradiso Super Duper,
     // Eryngium Blaukappe / Blue Hobbit, Flowering Kale Crane Pink
     // (2026-11-22, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(906);
+    // +9 for Tranche 4 Batch 10: Flowering Kale Crane Red / Crane Rose /
+    // Crane White, Goldenrod Canada Goldenrod, Hollyhock Chater's Double
+    // Salmon / Chater's Double White, Honesty, Lisianthus Rosanne 2 Clear
+    // Green / Voyage 2 Blue (2026-11-22, Quinn PASS WITH NOTES).
+    expect(entries).toHaveLength(915);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
