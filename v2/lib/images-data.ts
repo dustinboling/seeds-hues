@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1032 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1041 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -647,7 +647,16 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/ranunculus-elegance-giallo-21-10.webp": "artwork/ranunculus-elegance-giallo-21-10.png",
   "/artwork/ranunculus-elegance-hot-pink-25-00.webp": "artwork/ranunculus-elegance-hot-pink-25-00.png",
   "/artwork/ranunculus-elegance-hot-pink-95-08.webp": "artwork/ranunculus-elegance-hot-pink-95-08.png",
+  "/artwork/ranunculus-elegance-pastello-102-14.webp": "artwork/ranunculus-elegance-pastello-102-14.png",
+  "/artwork/ranunculus-elegance-rosa-chiaro-2p10.webp": "artwork/ranunculus-elegance-rosa-chiaro-2p10.png",
+  "/artwork/ranunculus-elegance-rosso-154-10.webp": "artwork/ranunculus-elegance-rosso-154-10.png",
+  "/artwork/ranunculus-elegance-salmone-06.webp": "artwork/ranunculus-elegance-salmone-06.png",
   "/artwork/ranunculus-mach-mix.webp": "artwork/ranunculus-mach-mix.png",
+  "/artwork/ranunculus-mach-orange.webp": "artwork/ranunculus-mach-orange.png",
+  "/artwork/ranunculus-mach-pink.webp": "artwork/ranunculus-mach-pink.png",
+  "/artwork/ranunculus-mach-purple.webp": "artwork/ranunculus-mach-purple.png",
+  "/artwork/ranunculus-mach-red.webp": "artwork/ranunculus-mach-red.png",
+  "/artwork/ranunculus-mach-rose.webp": "artwork/ranunculus-mach-rose.png",
   "/artwork/ranunculus-magic-mix.webp": "artwork/ranunculus-magic-mix.png",
   "/artwork/ranunculus-sprinkles-mix.webp": "artwork/ranunculus-sprinkles-mix.png",
   "/artwork/red-leaf-hibiscus-mahogany-splendor.webp": "artwork/red-leaf-hibiscus-mahogany-splendor.png",

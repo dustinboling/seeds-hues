@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 1032 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 1041 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -259,7 +259,13 @@ describe("lib/images-data (generated)", () => {
     // Everlastings, Ranunculus Elegance Bianco 59-99 / Clementine
     // 1A16 / Giallo 21-10 / Hot Pink 25-00 / Hot Pink 95-08
     // (2026-11-23, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(1032);
+    // +9 for Tranche 4 Batch 24: Ranunculus Elegance Pastello
+    // 102-14 / Rosa Chiaro 2P10 / Rosso 154-10 / Salmone 06,
+    // Maché Orange / Pink / Purple / Red / Rose (2026-11-23,
+    // Quinn gate FAIL scoped to F-1, cured: six plates by
+    // corrected declaration + lead ruling, plates 1 and 3
+    // repaired; confirmation re-gate CONFIRMED).
+    expect(entries).toHaveLength(1041);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
