@@ -152,6 +152,8 @@ export interface BrowseInPlaceConfig<P> extends InPlaceConfig<BrowseFilterState,
  * The browse-surface config factory: one call per surface, wiring the generic contract to
  * the lib/browse vocabulary. `isForeignSearch` extends popstate ownership past the filter
  * state (a popped URL whose carried params differ — q on /search — is a true navigation).
+ * `withSort` is the sorted surface's (/variety): its popstate re-sync parses ?sort= like
+ * its first load does, so Back/Forward across sort changes re-sync in place.
  */
 export function browseInPlaceConfig<P>(opts: {
   basePath: string;
@@ -163,6 +165,7 @@ export function browseInPlaceConfig<P>(opts: {
   failureMessage: string;
   readPayload: (json: unknown) => InPlacePayloadCore<P> | null;
   isForeignSearch?: (search: string) => boolean;
+  withSort?: boolean;
 }): BrowseInPlaceConfig<P> {
   const params = opts.params ?? {};
   return {
@@ -175,7 +178,9 @@ export function browseInPlaceConfig<P>(opts: {
     failureMessage: opts.failureMessage,
     readPayload: opts.readPayload,
     readSearch: (search) =>
-      opts.isForeignSearch?.(search) ? null : scopedBrowseFiltersFromSearch(search, opts.groups, opts.hueMode),
+      opts.isForeignSearch?.(search)
+        ? null
+        : scopedBrowseFiltersFromSearch(search, opts.groups, opts.hueMode, opts.withSort ?? false),
     pageOfSearch: browsePageFromSearch,
     equalStates: equalBrowseFilters,
     hasActive: hasActiveFilters,

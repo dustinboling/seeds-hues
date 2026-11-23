@@ -16,7 +16,7 @@ import {
   SMALL_FARM_PARAM,
   parseSmallFarmParam,
 } from "@/lib/small-farm";
-import type { PlantListFilters, VarietyFilters } from "@/lib/repositories/catalog-read";
+import type { PlantListFilters, VarietyBrowseSort, VarietyFilters } from "@/lib/repositories/catalog-read";
 import type { BrowseCounts, SeasonClass, SowingMethod } from "@/lib/validators";
 
 /* ── Vocabulary (moved verbatim from lib/validators, which re-exports it) ── */
@@ -111,6 +111,9 @@ export const COLOR_FAMILY_LABELS: Record<ColorFamily, string> = {
  * The active browse filters. Season, method and life cycle are single-select (null = "All");
  * Hue is multi-select (PB-2: any set of families, OR within — [] = "All"); smallFarm is a
  * boolean toggle. Single-select surfaces (every surface but /variety) hold at most one hue.
+ * Sort rides the same state (Tranche 3.4 §5.2) but is NOT a filter group: it has no counts
+ * column, no remover, and never shows the applied row — only the two sorted surfaces parse
+ * it, every other surface holds it at its resting value.
  */
 export interface BrowseFilterState {
   season: SeasonParam | null;
@@ -122,9 +125,11 @@ export interface BrowseFilterState {
    * seller carrying the Small farm badge. Shown on /variety only; every other surface passes false.
    */
   smallFarm: boolean;
+  /** The list order (?sort=): resting "name" (PB-1) — parsed on the sorted surfaces only. */
+  sort: BrowseSortParam;
 }
 
-export type BrowseFilterGroup = keyof BrowseFilterState;
+export type BrowseFilterGroup = "season" | "method" | "lifeCycle" | "hue" | "smallFarm";
 
 /** Query-param name per group (the same names /api/v1 uses). */
 export const BROWSE_PARAM: Record<BrowseFilterGroup, string> = {
@@ -138,9 +143,42 @@ export const BROWSE_PARAM: Record<BrowseFilterGroup, string> = {
 /** Hue selection mode: /variety is multi (PB-2); every other surface stays single. */
 export type HueMode = "single" | "multi";
 
-/** No filters active. */
+/* ── Sort (Tranche 3.4 §5.2 — the PB-1 fallback: absent ?sort= is Name A–Z) ── */
+
+/** The sort control's exactly three options, in display order (?sort= vocabulary + labels). */
+export const BROWSE_SORT_OPTIONS = [
+  { value: "availability", label: "Most sellers first" },
+  { value: "name", label: "Name A–Z" },
+  { value: "recent", label: "Recently checked" },
+] as const;
+export type BrowseSortParam = (typeof BROWSE_SORT_OPTIONS)[number]["value"];
+
+/** The count line's ordering phrase per sort ("…, most sellers first." / "…, alphabetical." / …). */
+export const BROWSE_SORT_PHRASE: Record<BrowseSortParam, string> = {
+  availability: "most sellers first",
+  name: "alphabetical",
+  recent: "most recently checked first",
+};
+
+/** ?sort= → the repository's sort key ("recent" is the existing -recently_checked). */
+export const BROWSE_SORT_REPO: Record<BrowseSortParam, VarietyBrowseSort> = {
+  availability: "availability",
+  name: "name",
+  recent: "-recently_checked",
+};
+
+/**
+ * ?sort= for the sorted surfaces: "availability" | "name" | "recent", anything else (absent,
+ * garbage, a repeat's first miss) is "name" — forgiving like every filter parse, never a 404.
+ */
+export function parseSortParam(raw: RawParam): BrowseSortParam {
+  const v = Array.isArray(raw) ? raw[0] : raw;
+  return v === "availability" || v === "name" || v === "recent" ? v : "name";
+}
+
+/** No filters active (the resting state — Clear all returns the list to Name A–Z too). */
 export function clearAllFilters(): BrowseFilterState {
-  return { season: null, method: null, lifeCycle: null, hue: [], smallFarm: false };
+  return { season: null, method: null, lifeCycle: null, hue: [], smallFarm: false, sort: "name" };
 }
 
 /** True when the group narrows the list (non-All for singles, non-empty for hue, on for sellers). */
@@ -210,6 +248,7 @@ export function equalBrowseFilters(a: BrowseFilterState, b: BrowseFilterState): 
     a.method === b.method &&
     a.lifeCycle === b.lifeCycle &&
     a.smallFarm === b.smallFarm &&
+    a.sort === b.sort &&
     a.hue.length === b.hue.length &&
     a.hue.every((h) => b.hue.includes(h))
   );
@@ -217,7 +256,10 @@ export function equalBrowseFilters(a: BrowseFilterState, b: BrowseFilterState): 
 
 /* ── URL ── */
 
-/** The filter params to carry on links (e.g. pagination) — only the active groups. */
+/**
+ * The filter params to carry on links (e.g. pagination) — only the active groups, plus a
+ * non-resting ?sort= (resting "name" serializes to the absent param, PB-1's fallback meaning).
+ */
 export function filterParams(state: BrowseFilterState): Record<string, string> {
   const out: Record<string, string> = {};
   if (state.season) out[BROWSE_PARAM.season] = state.season;
@@ -225,6 +267,7 @@ export function filterParams(state: BrowseFilterState): Record<string, string> {
   if (state.lifeCycle) out[BROWSE_PARAM.lifeCycle] = state.lifeCycle;
   if (state.hue.length) out[BROWSE_PARAM.hue] = state.hue.join(",");
   if (state.smallFarm) out[BROWSE_PARAM.smallFarm] = "true";
+  if (state.sort !== "name") out.sort = state.sort;
   return out;
 }
 
@@ -314,7 +357,10 @@ export function parseHueParamSingle(raw: RawParam): ColorFamily | null {
   return v !== undefined && (COLOR_FAMILIES as readonly string[]).includes(v) ? (v as ColorFamily) : null;
 }
 
-/** Next searchParams → filter state. The /variety page and /api/browse/varieties share this. */
+/**
+ * Next searchParams → filter state. The /variety page and /api/browse/varieties share this
+ * (the full parse — /variety is the sorted surface in this state family, so ?sort= parses).
+ */
 export function readBrowseFilters(
   sp: Record<string, string | string[] | undefined>,
   hueMode: HueMode,
@@ -326,6 +372,7 @@ export function readBrowseFilters(
     lifeCycle: parseLifeCycleParam(sp.life_cycle),
     hue: hue === null ? [] : Array.isArray(hue) ? hue : [hue],
     smallFarm: parseSmallFarmParam(sp.small_farm),
+    sort: parseSortParam(sp.sort),
   };
 }
 
@@ -340,6 +387,7 @@ export function readBrowseFiltersForGroups(
   sp: Record<string, string | string[] | undefined>,
   groups: BrowseFilterGroup[],
   hueMode: HueMode,
+  withSort = false,
 ): BrowseFilterState {
   const hue =
     hueMode === "multi" ? parseHueParam(sp.color_family) : parseHueParamSingle(sp.color_family);
@@ -349,6 +397,9 @@ export function readBrowseFiltersForGroups(
     lifeCycle: groups.includes("lifeCycle") ? parseLifeCycleParam(sp.life_cycle) : null,
     hue: groups.includes("hue") ? (hue === null ? [] : Array.isArray(hue) ? hue : [hue]) : [],
     smallFarm: groups.includes("smallFarm") ? parseSmallFarmParam(sp.small_farm) : false,
+    // withSort is the /variety popstate re-sync only: every other scoped surface holds sort
+    // at rest, so a hand-crafted ?sort= there is ignored like an unlisted group's param.
+    sort: withSort ? parseSortParam(sp.sort) : "name",
   };
 }
 
@@ -374,6 +425,7 @@ function searchToRecord(search: string): Record<string, string | string[] | unde
     life_cycle: raw("life_cycle"),
     color_family: raw("color_family"),
     small_farm: raw("small_farm"),
+    sort: raw("sort"),
   };
 }
 
@@ -389,13 +441,15 @@ export function browseFiltersFromSearch(search: string, hueMode: HueMode): Brows
 /**
  * Client-side mirror of readBrowseFiltersForGroups: the popstate re-sync for surfaces
  * rendering a subset of the groups — Back/Forward parse exactly what first load parses.
+ * withSort is the /variety surface's (its first load is the full, sort-parsing read).
  */
 export function scopedBrowseFiltersFromSearch(
   search: string,
   groups: BrowseFilterGroup[],
   hueMode: HueMode,
+  withSort = false,
 ): BrowseFilterState {
-  return readBrowseFiltersForGroups(searchToRecord(search), groups, hueMode);
+  return readBrowseFiltersForGroups(searchToRecord(search), groups, hueMode, withSort);
 }
 
 /** Client-side forgiving ?page= mirror for the popstate page-mismatch check (missing/garbage → 1). */
@@ -421,9 +475,11 @@ export function activeFilterLabels(state: BrowseFilterState): string[] {
  * The /variety result-count line. The server page and the hydrated swap share this builder, so
  * first paint and every in-place update word the line identically (the live region's text is
  * the announcement — it changes exactly once per committed change, in step with the rows).
+ * The ordering phrase follows the active sort — and never claims "alphabetical" under
+ * another order.
  */
 export function browseCountLine(state: BrowseFilterState, total: number, page: number, pages: number): string {
-  return `${[plural(total, "variety", "varieties"), ...activeFilterLabels(state)].join(" · ")}, alphabetical.${pages > 1 ? ` Page ${page} of ${pages}.` : ""}`;
+  return `${[plural(total, "variety", "varieties"), ...activeFilterLabels(state)].join(" · ")}, ${BROWSE_SORT_PHRASE[state.sort]}.${pages > 1 ? ` Page ${page} of ${pages}.` : ""}`;
 }
 
 /**

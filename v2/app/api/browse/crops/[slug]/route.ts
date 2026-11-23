@@ -1,10 +1,11 @@
 /**
  * GET /api/browse/crops/[slug] — the crop-detail in-place payload (Tranche 3.1b-2): the
  * varieties window plus the per-option counts describing it. Same query vocabulary as the
- * crop page (?color_family= ?series= ?has_sellers= ?page=) and the same service call that
- * page renders with, so first paint and every in-place update consume the identical
- * contract. Internal (noindex, no-store); the hydrated layer's fetch failures surface the
- * §2.5.6 path (prior results stand, one error line).
+ * crop page (?color_family= ?series= ?has_sellers= ?sort= ?page=) and the same service call
+ * that page renders with, so first paint and every in-place update consume the identical
+ * contract (?sort= included — the sort commits in place like a filter). Internal
+ * (noindex, no-store); the hydrated layer's fetch failures surface the §2.5.6 path (prior
+ * results stand, one error line).
  */
 import { getServices } from "@/lib/services/context";
 import { getRuntimeEnv } from "@/lib/api/runtime-env";
@@ -32,7 +33,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
   }
   try {
     const { slug } = await ctx.params;
-    const sp = browseSearchParamsRecord(new URL(req.url), ["color_family", "series", "has_sellers", "page"]);
+    const sp = browseSearchParamsRecord(new URL(req.url), ["color_family", "series", "has_sellers", "sort", "page"]);
     const page = strictBrowsePage(sp.page);
     // Garbage ?page=, pages past the end and unknown slugs are 404s, like the page's own guard.
     // Filter values stay forgiving (unknowns ignored, never a 404) — the page's parse rule.

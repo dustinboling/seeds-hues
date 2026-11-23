@@ -105,14 +105,16 @@ describe("Motif B retirement (2026-11-21)", () => {
     }
   });
 
-  it("home hero break: the C3 motif divider sits between the hero and Browse by crop (no stem rule)", () => {
+  it("home hero break: the C3 motif divider sits between the hero and Recently restocked (no stem rule)", () => {
     const src = readFileSync(join(process.cwd(), "app/page.tsx"), "utf8");
     const at = src.indexOf("<HomeMotifDivider />");
     expect(at).toBeGreaterThanOrEqual(0);
-    // Exactly one hero-break divider, ordered between the two sections.
+    // Exactly one hero-break divider, ordered between the two sections (Tranche 3.4 §5.1:
+    // Recently restocked moved above Browse by crop).
     expect(src.indexOf("<HomeMotifDivider />", at + 1)).toBe(-1);
     expect(src.indexOf('id="hero-title"')).toBeLessThan(at);
-    expect(at).toBeLessThan(src.indexOf('id="crops-title"'));
+    expect(at).toBeLessThan(src.indexOf('id="recent-title"'));
+    expect(src.indexOf('id="recent-title"')).toBeLessThan(src.indexOf('id="crops-title"'));
     // The stem rule is gone from the break — but the crop packet cards below keep
     // their mini rules (a different class), and the footer stem is untouched.
     // Tranche 3.1b-1: the packet cards render from the home browse component the

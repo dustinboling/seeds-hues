@@ -37,6 +37,8 @@ export default async function SearchPage({ searchParams }: Props) {
   // logs once (client web/search-page); the browse endpoint never sets logClient, so
   // in-place refinements stay silent.
   const payload = q ? await catalog.browseSearch(q, { filters, logClient: "web/search-page" }) : null;
+  // Did-you-mean (§5.3.4): computed only when the result set is empty — never otherwise.
+  const suggestion = q && payload && payload.total === 0 ? await catalog.suggestCorrection(q) : null;
   const initial: SearchBrowseInitial | null = payload
     ? {
         state: filters,
@@ -83,7 +85,7 @@ export default async function SearchPage({ searchParams }: Props) {
       ) : initial ? (
         <>
         <section id="search-results" className="mt-8" aria-labelledby="results-title">
-          <SearchBrowse initial={initial} q={q} />
+          <SearchBrowse initial={initial} q={q} suggestion={suggestion} />
         </section>
         <ResultsScrollClamp targetId="results-title" regionId="search-results" navKey={navKey} />
         </>

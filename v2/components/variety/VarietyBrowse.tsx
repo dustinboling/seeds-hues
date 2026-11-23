@@ -2,8 +2,9 @@
 
 /**
  * The /variety browse block, interactive part (Tranche 3.1a; 3.1b rides the shared in-place
- * machinery): filter chips with per-option counts, the applied row with removers + Clear
- * all, the result-count line, the results grid (or zero-results state), and pagination.
+ * machinery): filter chips with per-option counts, the Sort control, the applied row with
+ * removers + Clear all, the result-count line, the results grid (or zero-results state), and
+ * pagination.
  * Rendered by the server page with the initial browse snapshot; after hydration every
  * filter change applies IN PLACE — local state, one JSON fetch, no document reload, no Next
  * router navigation, no scroll, no page-view beacon — and keeps the URL shareable through
@@ -15,14 +16,17 @@
 import Link from "next/link";
 import { InPlaceAppliedRow, InPlaceFilters, browseInPlaceConfig, useInPlaceBrowse } from "@/components/ui/InPlaceBrowse";
 import { Pagination } from "@/components/ui/Pagination";
+import { SortChips } from "@/components/ui/SortChips";
 import { VarietyGrid } from "@/components/variety/VarietyCard";
 import {
   browseCountLine,
+  browseHref,
   clearAllFilters,
   filterParams,
   hasActiveFilters,
   type BrowseFilterGroup,
   type BrowseFilterState,
+  type BrowseSortParam,
 } from "@/lib/browse";
 import { browsePayloadCore, isRecord, type InPlaceSnapshot } from "@/lib/in-place";
 import { totalPages } from "@/lib/paging";
@@ -59,9 +63,10 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
     unit: "varieties",
     failureMessage: FAILURE_MESSAGE,
     readPayload,
+    withSort: true,
   });
   const browse = useInPlaceBrowse(initial, config);
-  const { hydrated, committed, pending, select } = browse;
+  const { hydrated, committed, pending, shown, select } = browse;
   const pages = totalPages(committed.total);
 
   return (
@@ -71,6 +76,12 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
         {browseCountLine(committed.state, committed.total, committed.page, pages)}
       </p>
       <InPlaceFilters config={config} browse={browse} />
+      <SortChips
+        sort={hydrated ? shown.sort : committed.state.sort}
+        hrefFor={(sort: BrowseSortParam) => browseHref(BASE_PATH, { ...committed.state, sort })}
+        onSelect={(sort: BrowseSortParam) => select((s) => (s.sort === sort ? s : { ...s, sort }))}
+        hydrated={hydrated}
+      />
       <InPlaceAppliedRow config={config} browse={browse} />
       {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
           flight, so assistive tech hears an update coming instead of a stale list stated as

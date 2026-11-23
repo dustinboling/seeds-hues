@@ -70,7 +70,7 @@ function VarietiesContent({ page, initial }: { page: number; initial: VarietyBro
   const filters = initial.state;
   // Every filter group joins navKey, so ResultsScrollClamp fires on each list navigation (ux-spec §3.4.2).
   // In-place changes never re-render this server tree, so the clamp cannot fire for them.
-  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue.join(","), filters.smallFarm].join("|");
+  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue.join(","), filters.smallFarm, filters.sort].join("|");
   const crumbs = [
     { name: "Home", href: "/" },
     { name: "Varieties", href: "/variety" },

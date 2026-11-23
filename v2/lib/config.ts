@@ -16,6 +16,12 @@ export const PAGE_SIZE = 24;
  */
 export const CROP_BROWSE_LIMIT = 500;
 /**
+ * The home "Browse by crop" resting cap (Tranche 3.4 §5.1): at rest the grid shows the top
+ * 12 crops by varieties-with-sellers (then name) with a "see all crops" line; the cap lifts
+ * under an active home filter. The /crop index is uncapped — this is the home grid's only.
+ */
+export const HOME_CROP_CAP = 12;
+/**
  * Contact for seller corrections / removal requests and crawler opt-outs (the /report form is the
  * primary route). No address is recorded in
  * the project sources, so none is invented: set NEXT_PUBLIC_CONTACT_EMAIL at build time to publish

@@ -82,21 +82,8 @@ export default async function HomePage({ searchParams }: Props) {
           </p>
         </div>
       </section>
-      {/* C3 — Vine & Pods, Revised (love-in-a-puff) motif for this major break (hero → browse). */}
+      {/* C3 — Vine & Pods, Revised (love-in-a-puff) motif for this major break (hero → recent). */}
       <HomeMotifDivider />
-
-      <section aria-labelledby="crops-title" className="py-6">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="crops-title" className="text-2xl font-semibold">
-            Browse by crop
-          </h2>
-          <Link href="/crop" className="tap inline-flex items-center text-sm font-medium">
-            All crops
-          </Link>
-        </div>
-        <HomeBrowse initial={initial} />
-      </section>
-      <PodDivider bundle="/ornaments/bundle-cosmos.webp" className="my-2" />
 
       <section aria-labelledby="recent-title" className="py-6">
         <h2 id="recent-title" className="text-2xl font-semibold">
@@ -122,6 +109,19 @@ export default async function HomePage({ searchParams }: Props) {
             ))}
           </ul>
         )}
+      </section>
+      <PodDivider bundle="/ornaments/bundle-cosmos.webp" className="my-2" />
+
+      <section aria-labelledby="crops-title" className="py-6">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id="crops-title" className="text-2xl font-semibold">
+            Browse by crop
+          </h2>
+          <Link href="/crop" className="tap inline-flex items-center text-sm font-medium">
+            All crops
+          </Link>
+        </div>
+        <HomeBrowse initial={initial} />
       </section>
       <PodDivider bundle="/ornaments/bundle-sunflower.webp" className="my-2" />
 

@@ -137,6 +137,14 @@ export const VARIETY_SORTS = [
 ] as const;
 export type VarietySort = (typeof VARIETY_SORTS)[number];
 
+/**
+ * The browse-only availability sort (Tranche 3.4 §5.2.2): varieties with in-stock listings
+ * first, then varieties with listings, then varieties with none; within a tier, more
+ * listings first, then name ascending. Deliberately NOT in VARIETY_SORTS — /api/v1 keeps
+ * its shipped vocabulary (§5.2.1: the sort control ships on /variety + crop detail only).
+ */
+export type VarietyBrowseSort = VarietySort | "availability";
+
 export interface Page {
   offset: number;
   limit: number;
@@ -236,11 +244,18 @@ export interface VarietySummaryRow {
   lastChecked: string | null;
 }
 
-function sortOrder(sort: VarietySort, ls: ReturnType<typeof listingStatsSq>): SQL[] {
+function sortOrder(sort: VarietyBrowseSort, ls: ReturnType<typeof listingStatsSq>): SQL[] {
   const tail = [sql`${lowerName} ASC`, sql`${varieties.slug} ASC`];
   switch (sort) {
     case "name":
       return tail;
+    case "availability":
+      return [
+        sql`coalesce(${ls.inStockCount}, 0) > 0 DESC`,
+        sql`coalesce(${ls.listingCount}, 0) > 0 DESC`,
+        sql`coalesce(${ls.listingCount}, 0) DESC`,
+        ...tail,
+      ];
     case "-name":
       return [sql`${lowerName} DESC`, sql`${varieties.slug} DESC`];
     case "listing_count":
@@ -255,7 +270,7 @@ function sortOrder(sort: VarietySort, ls: ReturnType<typeof listingStatsSq>): SQ
 }
 
 /** Mirror of sortOrder() for rows already fetched (used only by the ids chunking below). */
-function summaryComparator(sort: VarietySort): (a: VarietySummaryRow, b: VarietySummaryRow) => number {
+function summaryComparator(sort: VarietyBrowseSort): (a: VarietySummaryRow, b: VarietySummaryRow) => number {
   const nameAsc = (a: VarietySummaryRow, b: VarietySummaryRow) =>
     a.varietyName.toLowerCase().localeCompare(b.varietyName.toLowerCase()) || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0);
   const checked = (dir: 1 | -1) => (a: VarietySummaryRow, b: VarietySummaryRow) => {
@@ -266,9 +281,13 @@ function summaryComparator(sort: VarietySort): (a: VarietySummaryRow, b: Variety
     if (a.lastChecked !== b.lastChecked) return (a.lastChecked! < b.lastChecked! ? -1 : 1) * dir;
     return nameAsc(a, b);
   };
+  // Availability tier: in-stock listings first, then any listings, then none.
+  const tier = (r: VarietySummaryRow): number => ((r.inStockCount ?? 0) > 0 ? 0 : (r.listingCount ?? 0) > 0 ? 1 : 2);
   switch (sort) {
     case "name":
       return nameAsc;
+    case "availability":
+      return (a, b) => tier(a) - tier(b) || (b.listingCount ?? 0) - (a.listingCount ?? 0) || nameAsc(a, b);
     case "-name":
       return (a, b) => -nameAsc(a, b);
     case "listing_count":
@@ -285,7 +304,7 @@ function summaryComparator(sort: VarietySort): (a: VarietySummaryRow, b: Variety
 export async function listVarietySummaryRows(
   db: Db,
   filters: VarietyFilters,
-  sort: VarietySort,
+  sort: VarietyBrowseSort,
   page: Page,
 ): Promise<{ rows: VarietySummaryRow[]; total: number }> {
   // Bound-parameter discipline (V20): D1 caps a statement at 100 bound parameters, and the
@@ -1065,6 +1084,45 @@ export async function searchSellerRows(db: Db, pattern: string, limit: number) {
     .where(and(visibleSeller, sql`lower(${sellers.name}) LIKE ${pattern}`))
     .orderBy(sql`lower(${sellers.name})`)
     .limit(limit);
+}
+
+/** A did-you-mean corpus row: a variety or crop name, with seller presence (§5.3.4). */
+export interface NameCandidateRow {
+  name: string;
+  hasSellers: boolean;
+}
+
+/**
+ * Variety + crop names starting with the letter (case-insensitive), each with seller
+ * presence — the did-you-mean corpus (§5.3.4). Active varieties only; a name shared by a
+ * variety and a crop merges (seller presence ORs — the suggestion links one search either way).
+ */
+export async function varietyCropNamesByLetter(db: Db, letter: string): Promise<NameCandidateRow[]> {
+  // Exact first-character comparison (not LIKE): the query's first character is user input
+  // and must never act as a wildcard.
+  const first = letter.toLowerCase();
+  const ls = listingStatsSq(db);
+  const [vRows, pRows] = await Promise.all([
+    db
+      .select({ name: varieties.varietyName, listingCount: ls.listingCount })
+      .from(varieties)
+      .leftJoin(ls, eq(ls.varietyId, varieties.id))
+      .where(and(activeVariety, sql`lower(substr(${varieties.varietyName}, 1, 1)) = ${first}`)),
+    db
+      .select({ id: plants.id, name: plants.commonName })
+      .from(plants)
+      .where(and(isNull(plants.deletedAt), sql`lower(substr(${plants.commonName}, 1, 1)) = ${first}`)),
+  ]);
+  const cov = await coverageByPlant(db, pRows.map((p) => p.id));
+  const out = new Map<string, NameCandidateRow>();
+  const add = (name: string, hasSellers: boolean): void => {
+    const prev = out.get(name.toLowerCase());
+    if (prev) prev.hasSellers = prev.hasSellers || hasSellers;
+    else out.set(name.toLowerCase(), { name, hasSellers });
+  };
+  for (const r of vRows) add(r.name, (r.listingCount ?? 0) > 0);
+  for (const r of pRows) add(r.name, (cov.get(r.id)?.withSellers ?? 0) > 0);
+  return [...out.values()];
 }
 
 // ─── Sitemap / llms.txt ─────────────────────────────────────────────────────

@@ -15,7 +15,14 @@
  * lib/format (plural) and lib/legacy (slug) — pure data and string helpers. The Zod-inferred
  * counts type comes back as `import type` (erased at build).
  */
-import { COLOR_FAMILIES, COLOR_FAMILY_LABELS, type ColorFamily } from "@/lib/browse";
+import {
+  BROWSE_SORT_PHRASE,
+  COLOR_FAMILIES,
+  COLOR_FAMILY_LABELS,
+  parseSortParam,
+  type BrowseSortParam,
+  type ColorFamily,
+} from "@/lib/browse";
 import { plural } from "@/lib/format";
 import { legacySlug } from "@/lib/legacy";
 import type { VarietyFilters } from "@/lib/repositories/catalog-read";
@@ -42,11 +49,17 @@ export function cropHuesForFamilies(families: string[]): CropHue[] {
   return CROP_HUE_ORDER.filter((f) => set.has(f));
 }
 
-/** The crop page's active filters. Hue is multi-select (PB-2: any set, OR within — [] = All). */
+/**
+ * The crop page's active filters. Hue is multi-select (PB-2: any set, OR within — [] = All).
+ * Sort rides the same state (Tranche 3.4 §5.2) but is NOT a filter group: it has no counts
+ * column, no remover, and never shows the applied row.
+ */
 export interface CropDetailFilterState {
   hue: CropHue[];
   series: string | null;
   hasSellers: boolean | null;
+  /** The list order (?sort=): resting "name" (PB-1). */
+  sort: BrowseSortParam;
 }
 
 export type CropDetailGroup = "sellers" | "hue" | "series";
@@ -71,9 +84,9 @@ export const CROP_DETAIL_PARAM: Record<CropDetailGroup, string> = {
 /** Sellers option labels (the shipped chip words). */
 export const CROP_SELLERS_LABELS = { has: "Has sellers", none: "No seller yet" } as const;
 
-/** No filters active. */
+/** No filters active (the resting state — Clear all returns the list to Name A–Z too). */
 export function clearCropDetailFilters(): CropDetailFilterState {
-  return { hue: [], series: null, hasSellers: null };
+  return { hue: [], series: null, hasSellers: null, sort: "name" };
 }
 
 /** True when the group narrows the list. */
@@ -128,6 +141,7 @@ export function equalCropDetailFilters(a: CropDetailFilterState, b: CropDetailFi
   return (
     a.series === b.series &&
     a.hasSellers === b.hasSellers &&
+    a.sort === b.sort &&
     a.hue.length === b.hue.length &&
     a.hue.every((h) => b.hue.includes(h))
   );
@@ -135,12 +149,16 @@ export function equalCropDetailFilters(a: CropDetailFilterState, b: CropDetailFi
 
 /* ── URL ── */
 
-/** The filter params to carry on links (e.g. pagination) — only the active groups. */
+/**
+ * The filter params to carry on links (e.g. pagination) — only the active groups, plus a
+ * non-resting ?sort= (resting "name" serializes to the absent param, PB-1's fallback meaning).
+ */
 export function cropFilterParams(state: CropDetailFilterState): Record<string, string> {
   const out: Record<string, string> = {};
   if (state.hue.length) out[CROP_DETAIL_PARAM.hue] = state.hue.join(",");
   if (state.series) out[CROP_DETAIL_PARAM.series] = state.series;
   if (state.hasSellers !== null) out[CROP_DETAIL_PARAM.sellers] = String(state.hasSellers);
+  if (state.sort !== "name") out.sort = state.sort;
   return out;
 }
 
@@ -208,12 +226,16 @@ export function parseCropHasSellersParam(raw: RawParam): boolean | null {
   return null;
 }
 
-/** Next searchParams → filter state. The crop page and /api/browse/crops/[slug] share this. */
+/**
+ * Next searchParams → filter state. The crop page and /api/browse/crops/[slug] share this
+ * (the crop page is a sorted surface, so ?sort= parses — forgiving, never a 404).
+ */
 export function readCropDetailFilters(sp: Record<string, string | string[] | undefined>): CropDetailFilterState {
   return {
     hue: parseCropHueParam(sp.color_family),
     series: parseCropSeriesParam(sp.series),
     hasSellers: parseCropHasSellersParam(sp.has_sellers),
+    sort: parseSortParam(sp.sort),
   };
 }
 
@@ -224,7 +246,7 @@ function searchToRecord(search: string): Record<string, string | string[] | unde
     const all = q.getAll(key);
     return all.length > 1 ? all : (all[0] as string | undefined);
   };
-  return { color_family: raw("color_family"), series: raw("series"), has_sellers: raw("has_sellers") };
+  return { color_family: raw("color_family"), series: raw("series"), has_sellers: raw("has_sellers"), sort: raw("sort") };
 }
 
 /**
@@ -239,12 +261,14 @@ export function cropDetailFiltersFromSearch(search: string): CropDetailFilterSta
 /* ── Labels, count line, removers ── */
 
 /**
- * The crop-detail result-count line (the shipped phrasing, preserved): the filtered match
- * count when narrowed, the page echo when paged — otherwise empty (the element stays, the
- * live region never remounts). The server page and the hydrated swap share this builder.
+ * The crop-detail result-count line: the match count ("N varieties match" when narrowed, the
+ * bare "N varieties" at rest), the ordering phrase (Tranche 3.4 §5.2 — following the active
+ * sort, never "alphabetical" under another order), and the page echo when paged. The server
+ * page and the hydrated swap share this builder (the element stays, the live region never
+ * remounts).
  */
 export function cropDetailCountLine(state: CropDetailFilterState, total: number, page: number, pages: number): string {
-  return `${hasActiveCropFilters(state) ? `${plural(total, "variety", "varieties")} match. ` : ""}${pages > 1 ? `Page ${page} of ${pages}.` : ""}`;
+  return `${plural(total, "variety", "varieties")}${hasActiveCropFilters(state) ? " match" : ""}, ${BROWSE_SORT_PHRASE[state.sort]}.${pages > 1 ? ` Page ${page} of ${pages}.` : ""}`;
 }
 
 /**

@@ -1,10 +1,11 @@
 /**
  * GET /api/browse/varieties — the /variety in-place payload (Tranche 3.1a): the page of
  * results plus the per-option counts describing them. Same query vocabulary as the page
- * (?season= ?method= ?life_cycle= ?color_family= (comma list) ?small_farm= ?page=) and the
+ * (?season= ?method= ?life_cycle= ?color_family= (comma list) ?small_farm= ?sort= ?page=) and the
  * same service call the server page renders with, so first paint and every in-place update
- * consume the identical contract. Internal (noindex, no-store); the hydrated layer's fetch
- * failures surface the §2.5.6 path (prior results stand, one error line).
+ * consume the identical contract (?sort= included — the sort commits in place like a filter).
+ * Internal (noindex, no-store); the hydrated layer's fetch failures surface the §2.5.6 path
+ * (prior results stand, one error line).
  */
 import { getServices } from "@/lib/services/context";
 import { getRuntimeEnv } from "@/lib/api/runtime-env";
@@ -20,7 +21,7 @@ const NO_INDEX = { "X-Robots-Tag": "noindex" };
 /** The page's query vocabulary as a Next-searchParams-shaped record (repeats stay arrays). */
 function searchParamsRecord(url: URL): Record<string, string | string[] | undefined> {
   const out: Record<string, string | string[] | undefined> = {};
-  for (const key of ["season", "method", "life_cycle", "color_family", "small_farm", "page"]) {
+  for (const key of ["season", "method", "life_cycle", "color_family", "small_farm", "sort", "page"]) {
     const all = url.searchParams.getAll(key);
     if (all.length === 1) out[key] = all[0];
     else if (all.length > 1) out[key] = all;

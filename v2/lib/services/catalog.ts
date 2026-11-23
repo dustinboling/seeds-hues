@@ -18,8 +18,8 @@ import type {
   PublicListingRow,
   SeasonClass,
   SowingMethod,
+  VarietyBrowseSort,
   VarietyFilters,
-  VarietySort,
 } from "@/lib/repositories/catalog-read";
 import { SOWING_METHODS } from "@/lib/db/schema";
 import { latestPublish } from "@/lib/repositories/catalog-write";
@@ -28,12 +28,13 @@ import { MIN_QUERY_CHARS, normaliseQuery, searchVarieties, type VarietyMatch } f
 import { catalogSeq } from "@/lib/repositories/seq";
 import { SITE_URL } from "@/lib/config";
 import { formatFriendlyDate } from "@/lib/format";
-import { foldText } from "@/lib/names";
+import { foldText, pickDidYouMean } from "@/lib/names";
 import { zeroSellerSentence } from "@/lib/zero-seller";
 import { stateByCode } from "@/lib/data/states";
 import { totalPages } from "@/lib/paging";
 import {
   BROWSE_OPTIONS,
+  BROWSE_SORT_REPO,
   browseCountQueries,
   browseCountStates,
   cropFiltersFromBrowse,
@@ -420,37 +421,102 @@ interface SearchOptions {
 const SEARCH_BROWSE_LIMIT = 50;
 
 /** Crop / series / seller search rows → SearchResult (shared by search and browseSearch). */
-function cropSearchResults(rows: Awaited<ReturnType<typeof repo.searchPlantRows>>): SearchResult[] {
-  return rows.map((p) => ({
+type PlantSearchRow = Awaited<ReturnType<typeof repo.searchPlantRows>>[number];
+type SeriesSearchRow = Awaited<ReturnType<typeof repo.searchSeriesRows>>[number];
+type SellerSearchRow = Awaited<ReturnType<typeof repo.searchSellerRows>>[number];
+
+function cropSearchResult(p: PlantSearchRow): SearchResult {
+  return {
     type: "crop",
     slug: p.slug,
     title: proseCommonName(p.commonName),
     subtitle: p.latinName ? `${p.latinName} · crop` : "crop",
     href: `/crop/${p.slug}`,
     matchedAlias: null,
-  }));
+  };
 }
 
-function seriesSearchResults(rows: Awaited<ReturnType<typeof repo.searchSeriesRows>>): SearchResult[] {
-  return rows.map((s) => ({
+function cropSearchResults(rows: PlantSearchRow[]): SearchResult[] {
+  return rows.map(cropSearchResult);
+}
+
+function seriesSearchResult(s: SeriesSearchRow): SearchResult {
+  return {
     type: "series",
     slug: s.slug,
     title: `${s.name} series`,
     subtitle: `${proseCommonName(s.commonName)} · series`,
     href: `/series/${s.slug}`,
     matchedAlias: null,
-  }));
+  };
 }
 
-function sellerSearchResults(rows: Awaited<ReturnType<typeof repo.searchSellerRows>>): SearchResult[] {
-  return rows.map((s) => ({
+function seriesSearchResults(rows: SeriesSearchRow[]): SearchResult[] {
+  return rows.map(seriesSearchResult);
+}
+
+function sellerSearchResult(s: SellerSearchRow): SearchResult {
+  return {
     type: "seller",
     slug: s.slug,
     title: s.name,
     subtitle: s.location ? `${s.location} · seller` : "seller",
     href: `/seller/${s.slug}`,
     matchedAlias: null,
-  }));
+  };
+}
+
+function sellerSearchResults(rows: SellerSearchRow[]): SearchResult[] {
+  return rows.map(sellerSearchResult);
+}
+
+/**
+ * One name against the lowered query (§5.3.2): exact (1); a prefix of the name or of a word
+ * of it (2 — the varieties' tier-1 test: `starts`/`wordStarts` in lib/repositories/fts.ts);
+ * anything else that matches (3).
+ */
+function nameMatchClass(name: string, loweredQuery: string): 1 | 2 | 3 {
+  const n = name.toLowerCase();
+  if (n === loweredQuery) return 1;
+  if (n.startsWith(loweredQuery) || n.split(/\s+/).some((w) => w.startsWith(loweredQuery))) return 2;
+  return 3;
+}
+
+/** The best class over a row's names (a crop matches through its common or its Latin name). */
+function bestNameMatchClass(names: (string | null)[], loweredQuery: string): 1 | 2 | 3 {
+  let best: 1 | 2 | 3 = 3;
+  for (const name of names) {
+    if (name === null) continue;
+    const c = nameMatchClass(name, loweredQuery);
+    if (c < best) best = c;
+  }
+  return best;
+}
+
+/**
+ * The autocomplete's combined list (§5.3.2): match class first, type second. Varieties carry
+ * their FTS tier (exact → prefix → full text, tier + 1 = class); crops, series and sellers
+ * classify by the same test on their names. Within a class, varieties first (keeping their
+ * tier order and has-listings tiebreak), then crops, series, sellers, each alphabetical —
+ * the sort is stable, so every group's incoming order survives. The grouped layout does NOT
+ * change: this governs the flat `results` list only.
+ */
+function rankAutocompleteResults(
+  query: string,
+  varietyEntries: { result: SearchResult; tier: VarietyMatch["tier"] }[],
+  plantRows: PlantSearchRow[],
+  seriesRows: SeriesSearchRow[],
+  sellerRows: SellerSearchRow[],
+): SearchResult[] {
+  const q = query.toLowerCase();
+  const classed: { result: SearchResult; cls: 1 | 2 | 3; type: number }[] = [
+    ...varietyEntries.map((e) => ({ result: e.result, cls: ((e.tier + 1) as 1 | 2 | 3), type: 0 })),
+    ...plantRows.map((p) => ({ result: cropSearchResult(p), cls: bestNameMatchClass([p.commonName, p.latinName], q), type: 1 })),
+    ...seriesRows.map((s) => ({ result: seriesSearchResult(s), cls: bestNameMatchClass([s.name], q), type: 2 })),
+    ...sellerRows.map((s) => ({ result: sellerSearchResult(s), cls: bestNameMatchClass([s.name], q), type: 3 })),
+  ];
+  classed.sort((a, b) => a.cls - b.cls || a.type - b.type);
+  return classed.map((c) => c.result);
 }
 
 /**
@@ -559,13 +625,13 @@ export function createCatalogService(db: Db) {
    * Variety summaries without media. Used directly only where list media is never shown: search
    * (maps to SearchResult) and getVariety (fetches its own media). Everything else uses summaries().
    */
-  async function baseSummaries(filters: VarietyFilters, sort: VarietySort, page: Page): Promise<Paged<VarietySummary> & { ids: number[] }> {
+  async function baseSummaries(filters: VarietyFilters, sort: VarietyBrowseSort, page: Page): Promise<Paged<VarietySummary> & { ids: number[] }> {
     const { rows, total } = await repo.listVarietySummaryRows(db, filters, sort, page);
     return { items: rows.map(summaryFrom), ids: rows.map((r) => r.id), total };
   }
 
   /** List items: the page's summaries plus each variety's media (one batched media query). */
-  async function summaries(filters: VarietyFilters, sort: VarietySort, page: Page): Promise<Paged<VarietyListItem> & { ids: number[] }> {
+  async function summaries(filters: VarietyFilters, sort: VarietyBrowseSort, page: Page): Promise<Paged<VarietyListItem> & { ids: number[] }> {
     const { items, ids, total } = await baseSummaries(filters, sort, page);
     const mediaByVariety = await repo.listMediaForVarieties(db, ids);
     return {
@@ -630,15 +696,16 @@ export function createCatalogService(db: Db) {
   /**
    * FTS variety matches → filtered, ranked variety results (shared by search and
    * browseSearch): exact → prefix → full text, has-listings first on ties. matchCount is the
-   * untruncated ranked length (the logged search total's variety slice); varieties is the
-   * rendered group, capped at lim.
+   * untruncated ranked length (the logged search total's variety slice); entries is the
+   * rendered group, capped at lim, each carrying its FTS tier for the autocomplete's
+   * match-class ranking (§5.3.2 — the grouped layout reads only the results).
    */
   async function varietySearchResults(
     matches: VarietyMatch[],
     filters: VarietyFilters,
     lim: number,
-  ): Promise<{ varieties: SearchResult[]; matchCount: number }> {
-    if (!matches.length) return { varieties: [], matchCount: 0 };
+  ): Promise<{ entries: { result: SearchResult; tier: VarietyMatch["tier"] }[]; matchCount: number }> {
+    if (!matches.length) return { entries: [], matchCount: 0 };
     const found = await baseSummaries(
       { ...filters, ids: matches.map((m) => m.varietyId) },
       "name",
@@ -649,15 +716,18 @@ export function createCatalogService(db: Db) {
       .map((m, order) => ({ m, order, v: byId.get(m.varietyId) }))
       .filter((x): x is { m: VarietyMatch; order: number; v: VarietySummary } => Boolean(x.v))
       .sort((a, b) => a.m.tier - b.m.tier || Number(b.v.listingCount > 0) - Number(a.v.listingCount > 0) || a.order - b.order);
-    const varieties: SearchResult[] = ranked.slice(0, lim).map(({ m, v }) => ({
-      type: "variety",
-      slug: v.slug,
-      title: v.varietyName,
-      subtitle: `${proseCommonName(v.plant.commonName)} · ${v.sellerCount === 0 ? "no seller listing yet" : `${v.sellerCount} seller${v.sellerCount === 1 ? "" : "s"}`}`,
-      href: `/variety/${v.slug}`,
-      matchedAlias: m.matchedAlias,
+    const entries: { result: SearchResult; tier: VarietyMatch["tier"] }[] = ranked.slice(0, lim).map(({ m, v }) => ({
+      result: {
+        type: "variety",
+        slug: v.slug,
+        title: v.varietyName,
+        subtitle: `${proseCommonName(v.plant.commonName)} · ${v.sellerCount === 0 ? "no seller listing yet" : `${v.sellerCount} seller${v.sellerCount === 1 ? "" : "s"}`}`,
+        href: `/variety/${v.slug}`,
+        matchedAlias: m.matchedAlias,
+      },
+      tier: m.tier,
     }));
-    return { varieties, matchCount: ranked.length };
+    return { entries, matchCount: ranked.length };
   }
 
   /**
@@ -676,7 +746,7 @@ export function createCatalogService(db: Db) {
   }
 
   return {
-    async listVarieties(opts: { filters?: VarietyFilters; sort?: VarietySort; page: Page }): Promise<Paged<VarietyListItem>> {
+    async listVarieties(opts: { filters?: VarietyFilters; sort?: VarietyBrowseSort; page: Page }): Promise<Paged<VarietyListItem>> {
       const { items, total } = await summaries(opts.filters ?? {}, opts.sort ?? "name", opts.page);
       return { items, total };
     },
@@ -685,13 +755,14 @@ export function createCatalogService(db: Db) {
      * The /variety browse payload (Tranche 3.1a): the page of results plus the per-option
      * counts describing them, from the same query behind the results. The server page and
      * GET /api/browse/varieties share this — first paint and every in-place update consume
-     * the identical contract. Resting order is Name A–Z (PB-1: the sort control is Item 3.4).
+     * the identical contract. The order follows the state's ?sort= (resting Name A–Z, PB-1);
+     * the counts matrix is order-independent, so it never changes with the sort.
      */
     async browseVarieties(opts: { filters: BrowseFilterState; page: Page }): Promise<BrowseVarietiesPayload> {
       const vf = varietyFiltersFromBrowse(opts.filters);
       const queries = browseCountQueries(opts.filters);
       const [{ items, total }, totals] = await Promise.all([
-        summaries(vf, "name", opts.page),
+        summaries(vf, BROWSE_SORT_REPO[opts.filters.sort], opts.page),
         Promise.all(queries.map((q) => repo.countVarietyRows(db, q.filters))),
       ]);
       return parse(
@@ -857,7 +928,7 @@ export function createCatalogService(db: Db) {
      * describing them, from the same query behind the results. The home page and the /crop
      * index (first paint) and GET /api/browse/crops share this — first paint and every
      * in-place update consume the identical contract. Resting order is Name A–Z, the whole
-     * catalog on one window (PB-1: the sort control is Item 3.4).
+     * catalog on one window (no sort control on the crop surfaces — §5.2.1, a decision).
      */
     async browseCrops(opts: { filters: BrowseFilterState; page: Page }): Promise<BrowseCropsPayload> {
       const queries = browseCountStates(opts.filters, ["season", "method"], "single");
@@ -880,7 +951,7 @@ export function createCatalogService(db: Db) {
 
     async getCrop(
       slug: string,
-      opts: { page: Page; filters?: Pick<VarietyFilters, "colorFamily" | "series" | "hasListings">; sort?: VarietySort },
+      opts: { page: Page; filters?: Pick<VarietyFilters, "colorFamily" | "series" | "hasListings">; sort?: VarietyBrowseSort },
     ): Promise<{ crop: CropDetail; total: number; colorFamilies: string[] } | null> {
       const p = await repo.plantRow(db, slug);
       if (!p) return null;
@@ -908,14 +979,15 @@ export function createCatalogService(db: Db) {
      * window is the page's items) plus the per-option counts describing them, each counted
      * by the same total query behind the results, so counts and results can never disagree.
      * The crop-detail server page (first paint) and GET /api/browse/crops/[slug] share this
-     * — first paint and every in-place update consume the identical contract. Resting order
-     * is Name A–Z (PB-1: the sort control is Item 3.4).
+     * — first paint and every in-place update consume the identical contract. The order
+     * follows the state's ?sort= (resting Name A–Z, PB-1); the counts matrix is
+     * order-independent, so it never changes with the sort.
      */
     async browseCrop(slug: string, opts: { state: CropDetailFilterState; page: Page }): Promise<BrowseCropResult | null> {
       const p = await repo.plantRow(db, slug);
       if (!p) return null;
       const [s, seriesRows, colorFamilies, mediaRows] = await Promise.all([
-        summaries({ ...cropVarietyFiltersFromState(opts.state), plant: [slug] }, "name", opts.page),
+        summaries({ ...cropVarietyFiltersFromState(opts.state), plant: [slug] }, BROWSE_SORT_REPO[opts.state.sort], opts.page),
         repo.seriesForPlant(db, p.id),
         repo.colorFamiliesForPlant(db, slug),
         repo.listMediaForPlant(db, p.id),
@@ -991,7 +1063,8 @@ export function createCatalogService(db: Db) {
 
     /**
      * Search (R12). Any query of ≥ 2 characters searches; varieties rank exact → prefix → full
-     * text with has-listings first on ties. Logs one search_events row when `logClient` is set.
+     * text with has-listings first on ties. The flat `results` list (autocomplete) ranks by
+     * match class first, type second (§5.3.2). Logs one search_events row when `logClient` is set.
      */
     async search(q: string, opts: SearchOptions = {}): Promise<SearchResponse> {
       const query = normaliseQuery(q);
@@ -1020,13 +1093,14 @@ export function createCatalogService(db: Db) {
         },
         lim,
       );
+      const varieties = vr.entries.map((e) => e.result);
       const crops = cropSearchResults(plantRows);
       const series = seriesSearchResults(seriesRows);
       const sellers = sellerSearchResults(sellerRows);
-      const results = [...crops, ...series, ...vr.varieties, ...sellers].slice(0, lim);
+      const results = rankAutocompleteResults(query, vr.entries, plantRows, seriesRows, sellerRows).slice(0, lim);
       const total = vr.matchCount + crops.length + series.length + sellers.length;
       if (opts.logClient) await logSearch(query, total, opts.logClient);
-      return parse(SearchResponseSchema, { query, results, varieties: vr.varieties, series, crops, sellers }, "search");
+      return parse(SearchResponseSchema, { query, results, varieties, series, crops, sellers }, "search");
     },
 
     /**
@@ -1072,7 +1146,8 @@ export function createCatalogService(db: Db) {
         ]);
         const crops = cropSearchResults(plantRows);
         const series = seriesSearchResults(seriesRows);
-        return { crops, series, varieties: vr.varieties, total: crops.length + series.length + vr.varieties.length + sellers.length };
+        const varieties = vr.entries.map((e) => e.result);
+        return { crops, series, varieties, total: crops.length + series.length + varieties.length + sellers.length };
       };
       const countQueries = browseCountStates(opts.filters, ["season", "method", "lifeCycle", "hue"], "single");
       const [main, totals] = await Promise.all([
@@ -1094,6 +1169,21 @@ export function createCatalogService(db: Db) {
         },
         "browse search payload",
       );
+    },
+
+    /**
+     * Did-you-mean (§5.3.4): the /search zero-results state's single near-match suggestion —
+     * the closest variety/crop name sharing the query's first letter (edit distance ≤ 2, a
+     * transposition counting as 1), ties to the name with sellers, then alphabetical. Null
+     * when nothing qualifies. Called only when the result set is empty (the page gates it);
+     * never consulted by the autocomplete.
+     */
+    async suggestCorrection(q: string): Promise<{ name: string; href: string } | null> {
+      const query = normaliseQuery(q);
+      if (!query) return null;
+      const first = [...query.toLowerCase()][0]!;
+      const name = pickDidYouMean(query, await repo.varietyCropNamesByLetter(db, first));
+      return name === null ? null : { name, href: `/search?q=${encodeURIComponent(name)}` };
     },
 
     async catalogVersion(siteUrl: string): Promise<CatalogVersion> {
