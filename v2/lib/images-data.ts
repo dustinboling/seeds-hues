@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 933 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 942 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -25,6 +25,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/balloon-flower-astra-light-pink.webp": "artwork/balloon-flower-astra-light-pink.png",
   "/artwork/balloon-flower-astra-mix.webp": "artwork/balloon-flower-astra-mix.png",
   "/artwork/balloon-flower-astra-pink.webp": "artwork/balloon-flower-astra-pink.png",
+  "/artwork/balloon-flower-astra-white.webp": "artwork/balloon-flower-astra-white.png",
   "/artwork/basil-aromatto.webp": "artwork/basil-aromatto.png",
   "/artwork/basil-cinnamon.webp": "artwork/basil-cinnamon.png",
   "/artwork/basil-dark-opal.webp": "artwork/basil-dark-opal.png",
@@ -109,6 +110,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/coleus-chocolate-covered-cherry.webp": "artwork/coleus-chocolate-covered-cherry.png",
   "/artwork/coleus-kong-red.webp": "artwork/coleus-kong-red.png",
   "/artwork/coleus-kong-rose.webp": "artwork/coleus-kong-rose.png",
+  "/artwork/coleus-wizard-golden.webp": "artwork/coleus-wizard-golden.png",
   "/artwork/coleus-wizard-rose.webp": "artwork/coleus-wizard-rose.png",
   "/artwork/coleus-wizard-scarlet.webp": "artwork/coleus-wizard-scarlet.png",
   "/artwork/coleus-wizard-velvet-red.webp": "artwork/coleus-wizard-velvet-red.png",
@@ -119,6 +121,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/cornflower-classic-fantastic.webp": "artwork/cornflower-classic-fantastic.png",
   "/artwork/cornflower-classic-magic.webp": "artwork/cornflower-classic-magic.png",
   "/artwork/cornflower-classic-romantic.webp": "artwork/cornflower-classic-romantic.png",
+  "/artwork/cornflower-frosty-mix.webp": "artwork/cornflower-frosty-mix.png",
   "/artwork/cosmos-apricot-lemonade.webp": "artwork/cosmos-apricot-lemonade.png",
   "/artwork/cosmos-apricotta.webp": "artwork/cosmos-apricotta.png",
   "/artwork/cosmos-brownie.webp": "artwork/cosmos-brownie.png",
@@ -327,9 +330,13 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/cup-and-saucer-vine-purple.webp": "artwork/cup-and-saucer-vine-purple.png",
   "/artwork/dahlia-seed-bees-choice.webp": "artwork/dahlia-seed-bees-choice.png",
   "/artwork/dahlia-seed-cancan-girls.webp": "artwork/dahlia-seed-cancan-girls.png",
+  "/artwork/dahlia-seed-collarette.webp": "artwork/dahlia-seed-collarette.png",
   "/artwork/dahlia-seed-petite-florets.webp": "artwork/dahlia-seed-petite-florets.png",
   "/artwork/dahlia-shooting-stars.webp": "artwork/dahlia-shooting-stars.webp",
+  "/artwork/delphinium-belladonna-mix.webp": "artwork/delphinium-belladonna-mix.png",
   "/artwork/delphinium-bellamosum.webp": "artwork/delphinium-bellamosum.png",
+  "/artwork/delphinium-blue-donna.webp": "artwork/delphinium-blue-donna.png",
+  "/artwork/delphinium-candle-lavender-shades.webp": "artwork/delphinium-candle-lavender-shades.png",
   "/artwork/delphinium-casablanca.webp": "artwork/delphinium-casablanca.png",
   "/artwork/delphinium-cliveden-beauty.webp": "artwork/delphinium-cliveden-beauty.png",
   "/artwork/delphinium-guardian-lavender.webp": "artwork/delphinium-guardian-lavender.png",
@@ -347,8 +354,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/echinacea-mellow-yellows.webp": "artwork/echinacea-mellow-yellows.png",
   "/artwork/echinacea-paradiso-super-duper.webp": "artwork/echinacea-paradiso-super-duper.png",
   "/artwork/echinacea-paradiso-tall-mix.webp": "artwork/echinacea-paradiso-tall-mix.png",
+  "/artwork/echinacea-paradiso-yellow.webp": "artwork/echinacea-paradiso-yellow.png",
   "/artwork/echinacea-powwow-white.webp": "artwork/echinacea-powwow-white.png",
   "/artwork/echinacea-powwow-wild-berry.webp": "artwork/echinacea-powwow-wild-berry.png",
+  "/artwork/echinacea-primadonna-deep-rose.webp": "artwork/echinacea-primadonna-deep-rose.png",
   "/artwork/echinacea-white-swan.webp": "artwork/echinacea-white-swan.png",
   "/artwork/eryngium-blaukappe.webp": "artwork/eryngium-blaukappe.png",
   "/artwork/eryngium-blue-glitter.webp": "artwork/eryngium-blue-glitter.png",
