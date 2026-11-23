@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 842 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 851 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -154,7 +154,11 @@ describe("lib/images-data (generated)", () => {
     // +9 for Tranche 4 batch 1: Snapdragon Maryland Appleblossom / Bright Yellow /
     // Dark Orange / Flamingo / Ivory White / Lavender / Mix / Orange and Swamp
     // Milkweed White (2026-11-22, Quinn PASS WITH NOTES).
-    expect(entries).toHaveLength(842);
+    // +9 for Tranche 4 batch 2: Swamp Milkweed, Snapdragon Orange Wonder,
+    // Verbena Vanity, Echinacea PowWow Wild Berry / White Swan / PowWow White,
+    // Eryngium Blue Glitter, Lavender Ellagance Purple, Snapdragon Rocket Mix
+    // (2026-11-22, Quinn PASS WITH NOTES).
+    expect(entries).toHaveLength(851);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);

@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 842 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 851 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -312,6 +312,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/dill-bouquet.webp": "artwork/dill-bouquet.png",
   "/artwork/dusty-miller-new-look.webp": "artwork/dusty-miller-new-look.png",
   "/artwork/dusty-miller-silver-dust.webp": "artwork/dusty-miller-silver-dust.png",
+  "/artwork/echinacea-powwow-white.webp": "artwork/echinacea-powwow-white.png",
+  "/artwork/echinacea-powwow-wild-berry.webp": "artwork/echinacea-powwow-wild-berry.png",
+  "/artwork/echinacea-white-swan.webp": "artwork/echinacea-white-swan.png",
+  "/artwork/eryngium-blue-glitter.webp": "artwork/eryngium-blue-glitter.png",
   "/artwork/eucalyptus-baby-blue.webp": "artwork/eucalyptus-baby-blue.png",
   "/artwork/eucalyptus-nichols-willow.webp": "artwork/eucalyptus-nichols-willow.png",
   "/artwork/eucalyptus-round-leaved-mallee.webp": "artwork/eucalyptus-round-leaved-mallee.png",
@@ -373,6 +377,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/larkspur-summer-skies-mix.webp": "artwork/larkspur-summer-skies-mix.png",
   "/artwork/larkspur-white-cloud.webp": "artwork/larkspur-white-cloud.png",
   "/artwork/lavatera-pink-regis.webp": "artwork/lavatera-pink-regis.png",
+  "/artwork/lavender-ellagance-purple.webp": "artwork/lavender-ellagance-purple.png",
   "/artwork/linaria-northern-lights-mix.webp": "artwork/linaria-northern-lights-mix.png",
   "/artwork/love-in-a-puff-vine.webp": "artwork/love-in-a-puff-vine.png",
   "/artwork/lupine-javelin-white.webp": "artwork/lupine-javelin-white.png",
@@ -396,6 +401,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/mignonette-garden-mignonette.webp": "artwork/mignonette-garden-mignonette.png",
   "/artwork/mignonette-white-mignonette.webp": "artwork/mignonette-white-mignonette.png",
   "/artwork/milkweed-swamp-milkweed-white.webp": "artwork/milkweed-swamp-milkweed-white.png",
+  "/artwork/milkweed-swamp-milkweed.webp": "artwork/milkweed-swamp-milkweed.png",
   "/artwork/nasturtium-caribbean-crush.webp": "artwork/nasturtium-caribbean-crush.png",
   "/artwork/nasturtium-cherry-rose-jewel.webp": "artwork/nasturtium-cherry-rose-jewel.png",
   "/artwork/nasturtium-gleam-salmon.webp": "artwork/nasturtium-gleam-salmon.png",
@@ -554,12 +560,14 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-maryland-orange.webp": "artwork/snapdragon-maryland-orange.png",
   "/artwork/snapdragon-monaco-orange.webp": "artwork/snapdragon-monaco-orange.png",
   "/artwork/snapdragon-opus-early-bronze.webp": "artwork/snapdragon-opus-early-bronze.png",
+  "/artwork/snapdragon-orange-wonder.webp": "artwork/snapdragon-orange-wonder.png",
   "/artwork/snapdragon-potomac-appleblossom.webp": "artwork/snapdragon-potomac-appleblossom.png",
   "/artwork/snapdragon-potomac-dark-pink.webp": "artwork/snapdragon-potomac-dark-pink.png",
   "/artwork/snapdragon-potomac-lavender.webp": "artwork/snapdragon-potomac-lavender.png",
   "/artwork/snapdragon-potomac-red.webp": "artwork/snapdragon-potomac-red.png",
   "/artwork/snapdragon-potomac-white.webp": "artwork/snapdragon-potomac-white.png",
   "/artwork/snapdragon-potomac-yellow.webp": "artwork/snapdragon-potomac-yellow.png",
+  "/artwork/snapdragon-rocket-mix.webp": "artwork/snapdragon-rocket-mix.png",
   "/artwork/snapdragon-sherbet-toned-chantilly-mix.webp": "artwork/snapdragon-sherbet-toned-chantilly-mix-v2.png",
   "/artwork/soapwort-beauty-pink.webp": "artwork/soapwort-beauty-pink.png",
   "/artwork/soapwort-graciella-white.webp": "artwork/soapwort-graciella-white.png",
@@ -739,6 +747,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/tomato-rapunzel.webp": "artwork/tomato-rapunzel.png",
   "/artwork/tomato-red-currant.webp": "artwork/tomato-red-currant.png",
   "/artwork/tomato-sunpeach.webp": "artwork/tomato-sunpeach.png",
+  "/artwork/verbena-vanity.webp": "artwork/verbena-vanity.png",
   "/artwork/viola-brush-strokes.webp": "artwork/viola-brush-strokes.png",
   "/artwork/viola-gem-apricot-antique.webp": "artwork/viola-gem-apricot-antique.png",
   "/artwork/viola-gem-heavenly-blue.webp": "artwork/viola-gem-heavenly-blue.png",
