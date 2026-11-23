@@ -1,61 +1,104 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { CODE_TTL_MINUTES } from "@/lib/accounts";
 import { callApi, deliveryNote } from "./api";
+import { codeFailure } from "./account-errors";
+import { FieldErrorLine, FieldSummary, focusFailureTarget, syncFilledClass } from "@/components/ui/field-states";
 
 /**
  * Enter a one-time 6-digit code (email or alert number) + "Send a new code". These codes only
  * prove an address/number — they are never used to sign in.
+ *
+ * Field-state set member (Tranche 3.3, FIELD-STATES-DESIGN.md §8.5): W-2 association
+ * (aria-invalid + hint-first-error-second describedby, Ada Ruling 5), the lifetime hint in
+ * every context, spaced-paste acceptance (no length cap or pattern truncates before the strip),
+ * and mapped copy (COPY-3-3 §3.3) keyed by error code.
  */
 export function CodeEntry(props: { channel: "email" | "phone"; idPrefix: string; initialNote?: string | null; onVerified: () => void; compact?: boolean }) {
-  const [state, setState] = useState<{ busy: boolean; error: string | null; note: string | null }>({ busy: false, error: null, note: props.initialNote ?? null });
+  const [state, setState] = useState<{ busy: "verify" | "resend" | null; fieldError: string | null; formError: string | null; note: string | null }>({
+    busy: null,
+    fieldError: null,
+    formError: null,
+    note: props.initialNote ?? null,
+  });
+  const summaryRef = useRef<HTMLDivElement | null>(null);
   const base = props.channel === "email" ? "/api/v1/account/email" : "/api/v1/account/alert-phone";
   const id = `${props.idPrefix}-code`;
+  const hintId = `${id}-hint`;
+  const errorId = `${id}-error`;
+
+  // Failed attempts move focus to the summary (form-level) or the code field — refs only.
+  useEffect(() => {
+    if (state.fieldError === null && state.formError === null) return;
+    focusFailureTarget(
+      summaryRef.current,
+      state.fieldError === null ? [] : [{ fieldId: id, message: state.fieldError }],
+      state.formError,
+    );
+  }, [state.fieldError, state.formError, id]);
 
   async function verify(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const code = String(new FormData(e.currentTarget).get("code") ?? "").replace(/\s/g, "");
-    setState((s) => ({ ...s, busy: true, error: null }));
+    setState((s) => ({ ...s, busy: "verify", fieldError: null, formError: null }));
     const r = await callApi(`${base}/verify`, { code });
     if (r.ok) {
-      setState({ busy: false, error: null, note: null });
+      setState({ busy: null, fieldError: null, formError: null, note: null });
       props.onVerified();
       return;
     }
-    setState((s) => ({ ...s, busy: false, error: r.message }));
+    const mapped = codeFailure(r.status, r.code, r.message);
+    setState((s) => ({ ...s, busy: null, fieldError: mapped.fields[0]?.message ?? null, formError: mapped.form }));
   }
 
   async function resend() {
-    setState((s) => ({ ...s, busy: true, error: null }));
+    setState((s) => ({ ...s, busy: "resend", fieldError: null, formError: null }));
     const r = await callApi<{ delivery: string | null }>(`${base}/resend`, {});
-    if (r.ok) setState({ busy: false, error: null, note: deliveryNote(r.data.delivery, props.channel) ?? "Already verified." });
-    else setState((s) => ({ ...s, busy: false, error: r.message }));
+    if (r.ok) setState({ busy: null, fieldError: null, formError: null, note: deliveryNote(r.data.delivery, props.channel) ?? "Already verified." });
+    else {
+      const mapped = codeFailure(r.status, r.code, r.message);
+      setState((s) => ({ ...s, busy: null, fieldError: mapped.fields[0]?.message ?? null, formError: mapped.form }));
+    }
   }
 
   return (
-    <form onSubmit={verify} className="flex flex-col gap-2" aria-label={props.channel === "email" ? "Verify your email" : "Verify your alert number"}>
+    <form onSubmit={verify} aria-busy={state.busy !== null || undefined} className="flex flex-col gap-2" aria-label={props.channel === "email" ? "Verify your email" : "Verify your alert number"}>
+      {state.formError ? <FieldSummary heading={state.formError} entries={[]} summaryRef={summaryRef} /> : null}
       {state.note ? (
         <p role="status" className="text-sm">
           {state.note}
         </p>
       ) : null}
-      <label htmlFor={id} className="text-sm font-semibold">
-        {props.channel === "email" ? "6-digit code from your email" : "6-digit code from the text"}
-      </label>
-      <div className="flex flex-wrap items-center gap-2">
-        <input id={id} name="code" required inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} className="field max-w-[9rem] font-mono tracking-[0.2em]" />
-        <button type="submit" className="btn btn-primary" disabled={state.busy}>
-          Verify
-        </button>
-        <button type="button" className="btn btn-secondary" onClick={resend} disabled={state.busy}>
-          Send a new code
-        </button>
+      <div className="flex flex-col gap-1">
+        <label htmlFor={id} className="text-sm font-semibold">
+          {props.channel === "email" ? "6-digit code from your email" : "6-digit code from the text"}
+        </label>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            id={id}
+            name="code"
+            required
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            aria-invalid={state.fieldError ? true : undefined}
+            aria-describedby={state.fieldError ? `${hintId} ${errorId}` : hintId}
+            onBlur={syncFilledClass}
+            onChange={syncFilledClass}
+            className="field max-w-[11rem] font-mono tracking-[0.2em]"
+          />
+          <button type="submit" className="btn btn-primary" disabled={state.busy !== null}>
+            {state.busy === "verify" ? "Verifying…" : "Verify"}
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={resend} disabled={state.busy !== null}>
+            Send a new code
+          </button>
+        </div>
+        <span id={hintId} className="field-hint text-sm">
+          It works for {CODE_TTL_MINUTES} minutes.
+        </span>
+        {state.fieldError ? <FieldErrorLine id={errorId} message={state.fieldError} /> : null}
       </div>
-      {state.error ? (
-        <p role="alert" className="text-sm font-medium text-warn">
-          {state.error}
-        </p>
-      ) : null}
     </form>
   );
 }

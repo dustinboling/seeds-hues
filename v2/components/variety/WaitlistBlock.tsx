@@ -254,11 +254,11 @@ export function WaitlistBlock({ varietySlug, varietyName }: { varietySlug: strin
           <Link href="/account">Text alerts and settings</Link>
         </div>
       ) : (
-        <form onSubmit={createAndJoin} className="flex flex-col gap-4" aria-label={`Join the waiting list for ${varietyName}`}>
+        <form onSubmit={createAndJoin} aria-busy={busy || undefined} className="flex flex-col gap-4" aria-label={`Join the waiting list for ${varietyName}`}>
           <p className="text-sm">
             Joining creates a free Seed Directory account. Already have one? <Link href="/account">Sign in</Link>, then come back.
           </p>
-          <SignupFields idPrefix="waitlist" smsOptIn />
+          <SignupFields idPrefix="waitlist" smsOptIn variant="rows" />
           <Turnstile siteKey={status.turnstile_site_key} onToken={setToken} resetKey={reset} action="waitlist-join" />
           <div>
             <button type="submit" className="btn btn-primary" disabled={busy}>

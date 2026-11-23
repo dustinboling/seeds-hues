@@ -98,3 +98,30 @@ export const ChipRemoveIcon = ({ className = "" }: { className?: string }) => (
     <path d="M18 6 6 18" />
   </svg>
 );
+/**
+ * Field error mark (Tranche 3.3, FIELD-STATES-DESIGN.md §5.5): a warning triangle holding an
+ * exclamation — the same subject the admin error line carries, drawn in this family's hand
+ * (24px grid, 20px live area, stroke 1.8, currentColor, no fill). A redundant channel beside
+ * the message text, always aria-hidden. The caller sizes it (the set renders it at 16px via
+ * size-4). Fallback (the ProtectionIcon precedent): if this glyph fails the family check at
+ * the gate, the set ships without it — each usage is a single removable line.
+ */
+export const FieldErrorIcon = ({ className = "" }: { className?: string }) => (
+  <svg {...base} className={className}>
+    <path d="M12 4.2 20.4 19.4H3.6L12 4.2Z" />
+    <path d="M12 9.6v4.2" />
+    <path d="M12 16.9v0.3" />
+  </svg>
+);
+/**
+ * Field success mark (Tranche 3.3, FIELD-STATES-DESIGN.md §6): a check inside a circle outline,
+ * drawn to the family rules. Not the Protection seal (shield + check): that glyph belongs to a
+ * legal claim and is never reused as a generic check. The caller sizes it (the set renders it
+ * at 20px via size-5). Same fallback as FieldErrorIcon: each usage is one removable line.
+ */
+export const FieldSuccessIcon = ({ className = "" }: { className?: string }) => (
+  <svg {...base} className={className}>
+    <circle cx="12" cy="12" r="8.4" />
+    <path d="m8.4 12.3 2.5 2.5 4.9-5.4" />
+  </svg>
+);

@@ -180,6 +180,79 @@ describe("2.1-A — token sync (tokens.json vs @theme)", () => {
   });
 });
 
+describe("3.3 — field-state token group (FIELD-STATES-DESIGN.md §4)", () => {
+  const tokens = JSON.parse(readFileSync(join(ROOT, "design-tokens/tokens.json"), "utf8")) as Record<string, unknown>;
+
+  /** DTCG §4 rows that alias shipped tokens (every color aliases the reference palette). */
+  const EXPECTED_ALIASES: Record<string, string> = {
+    "component.field.border.resting": "{color.line-strong}",
+    "component.field.border.filled": "{color.ink-soft}",
+    "component.field.border.error": "{color.warn}",
+    "component.field.border.disabled": "{color.line}",
+    "component.field.background.resting": "{color.surface}",
+    "component.field.background.disabled": "{color.paper}",
+    "component.field.text.resting": "{color.ink}",
+    "component.field.text.disabled": "{color.muted}",
+    "component.field.hint.color": "{color.muted}",
+    "component.field.placeholder.color": "{color.muted}",
+    "component.field.accent": "{color.leaf}",
+    "component.field.error.color": "{color.warn}",
+    "component.field.summary.background": "{color.warn-50}",
+    "component.field.summary.border": "{color.line-strong}",
+    "component.field.summary.radius": "{radius.control}",
+    "component.field.summary.padding": "{space.16}",
+    "component.field.summary.heading.color": "{color.warn}",
+    "component.field.success.icon.color": "{color.leaf}",
+    "component.field.option.hover.border": "{color.leaf-600}",
+    "component.field.option.selected.border": "{color.leaf}",
+    "component.field.option.selected.background": "{color.leaf-50}",
+    "component.field.option.selected.text": "{color.leaf}",
+  };
+  /** DTCG §4 rows that are dimension literals (the design names no reference token for them). */
+  const EXPECTED_LITERALS: Record<string, string> = {
+    "component.field.error.icon-size": "16px",
+    "component.field.error.gap": "6px",
+    "component.field.success.icon-size": "20px",
+    "component.code-entry.width": "176px",
+  };
+
+  function tokenAt(path: string): { value: unknown; cssVariable: unknown; reason: unknown } {
+    let node: unknown = tokens;
+    for (const key of path.split(".")) {
+      if (typeof node !== "object" || node === null || !(key in node)) throw new Error(`tokens.json has no ${path}`);
+      node = (node as Record<string, unknown>)[key];
+    }
+    const record = node as Record<string, unknown>;
+    const seeds = ((record["$extensions"] as Record<string, unknown> | undefined)?.["seeds-hues"] ?? {}) as Record<string, unknown>;
+    return { value: record["$value"], cssVariable: seeds["cssVariable"], reason: seeds["reason"] };
+  }
+
+  it("defines the component.field group and component.code-entry.width at the designed values", () => {
+    for (const [path, value] of Object.entries({ ...EXPECTED_ALIASES, ...EXPECTED_LITERALS })) {
+      expect(tokenAt(path).value, path).toBe(value);
+    }
+  });
+
+  it("keeps the whole group documentation-only (the design adds no @theme variables)", () => {
+    for (const path of [...Object.keys(EXPECTED_ALIASES), ...Object.keys(EXPECTED_LITERALS)]) {
+      const token = tokenAt(path);
+      expect(token.cssVariable, `${path} must not claim an @theme variable`).toBeNull();
+      expect(typeof token.reason, `${path} must state its consumption`).toBe("string");
+    }
+  });
+
+  it("introduces no new reference color: every field color aliases the shipped palette", () => {
+    for (const [path, value] of Object.entries(EXPECTED_ALIASES)) {
+      expect(value, path).toMatch(/^\{(color|radius|space)\./);
+    }
+    // ...and the reference palette itself is untouched by the group (spot: the aliased targets).
+    const color = tokens["color"] as Record<string, { $value: string }>;
+    for (const target of ["line-strong", "ink-soft", "warn", "line", "surface", "paper", "ink", "muted", "leaf", "warn-50", "leaf-600", "leaf-50"]) {
+      expect(typeof color[target]?.$value, `palette target ${target}`).toBe("string");
+    }
+  });
+});
+
 describe("2.1-B — arbitrary-value lint", () => {
   const files = WALK_ROOTS.flatMap((root) => walk(root));
   const contents = new Map<string, string>(files.map((f): [string, string] => [f, readFileSync(join(ROOT, f), "utf8")]));
