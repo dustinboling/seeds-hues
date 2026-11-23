@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1022 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1023 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -387,6 +387,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/euphorbia.webp": "artwork/euphorbia.png",
   "/artwork/false-indigo-blue-wild-indigo.webp": "artwork/false-indigo-blue-wild-indigo.png",
   "/artwork/false-sunflower-bleeding-hearts.webp": "artwork/false-sunflower-bleeding-hearts.png",
+  "/artwork/false-sunflower-false-sunflower.webp": "artwork/false-sunflower-false-sunflower.png",
   "/artwork/false-sunflower-summer-sun.webp": "artwork/false-sunflower-summer-sun.png",
   "/artwork/feverfew-magic-lime-green.webp": "artwork/feverfew-magic-lime-green.png",
   "/artwork/feverfew-tetra-white.webp": "artwork/feverfew-tetra-white.png",
