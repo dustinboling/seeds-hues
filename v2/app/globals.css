@@ -57,6 +57,7 @@
   --spacing-listing-status: 9px;
   --spacing-caption-offset: 5px;
   --size-target: 44px;
+  --size-divider-home: 640px;
   --border-visit: 1.5px;
   --badge-small-farm-standard-gap: 5px;
   --badge-small-farm-standard-padding-block: 2px;
@@ -493,6 +494,22 @@
   .prose-plain li + li {
     margin-top: 0.25rem;
   }
+  /*
+   * Homepage hero→browse break: the C3 vine-and-pods motif (HomeMotifDivider). Capped at
+   * the size.divider-home token (640px) and centred; the img fills the box with its
+   * intrinsic 2400/365 aspect reserving the height, so there is no layout shift.
+   * Decorative: hidden in forced-colors mode by the unlayered kill-switch at the end of
+   * this file (see the note there — it must stay unlayered, not move back in here).
+   */
+  .divider-home {
+    width: min(100%, var(--size-divider-home));
+    margin-inline: auto;
+  }
+  .divider-home img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
   /* The one botanical motif: a thin stem with two leaves (/theme/divider-stem.svg). Decorative. */
   .divider-stem {
     display: block;
@@ -637,6 +654,20 @@
   body:has(.admin-root) > header,
   body:has(.admin-root) > footer,
   body:has(.admin-root) > nav {
+    display: none;
+  }
+}
+
+/*
+ * Forced-colors kill-switch for the homepage motif (HomeMotifDivider). UNLAYERED on
+ * purpose: unlayered author CSS beats every @layer, so this hides the motif even if a
+ * display utility (utilities layer) ever lands on the img again — a components-layer
+ * rule lost that fight once (2026-11-22 gate: the img computed display:block under
+ * forced-colors). Do not move this into @layer components. The img carries no display
+ * utility today; the .divider-home img rule above provides display/width/height.
+ */
+@media (forced-colors: active) {
+  .divider-home img {
     display: none;
   }
 }

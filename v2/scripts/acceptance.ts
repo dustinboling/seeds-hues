@@ -1192,18 +1192,20 @@ async function main() {
     assert(slot, "no footer-stem slot before the <footer>");
     assert(slot.includes("divider-stem"), "footer slot without the divider-stem rule");
   });
-  // Divider motif B was retired 2026-11-21 at Dustin's direction: the home hero break now
-  // uses the site's standard thin-stem divider rule, and the motif appears nowhere at all.
-  await check("home: thin-stem divider once in the page content, between the hero and Browse by crop; no motif B", async () => {
+  // Homepage motif swap (C3, 2026-11-22, approved by Dustin): the home hero break now
+  // renders the C3 vine-and-pods motif (HomeMotifDivider) — the thin-stem rule appears
+  // nowhere at the break, and motif B appears nowhere at all.
+  await check("home: C3 motif divider once in the page content, between the hero and Browse by crop; no stem rule at the break, no motif B", async () => {
     const h = await html("/");
     const main = mainHtml(h);
     assert(!main.includes('data-testid="motif-b"'), "motif B in home <main>");
     assert(!main.includes(MOTIF_B_KEY), "motif B image in home <main>");
-    const stem = '<div aria-hidden="true" class="divider-stem mb-8 mt-10"></div>';
-    const at = main.indexOf(stem);
-    assert(at >= 0, "no thin-stem divider in home <main>");
-    assert(main.indexOf(stem, at + 1) < 0, "more than one thin-stem divider in home <main>");
-    assert(main.indexOf('id="hero-title"') < at && at < main.indexOf('id="crops-title"'), "stem divider is not between the hero and Browse by crop");
+    assert(!main.includes("divider-stem mb-8 mt-10"), "thin-stem divider still at the home break");
+    const at = main.indexOf('data-testid="home-motif"');
+    assert(at >= 0, "no C3 motif divider in home <main>");
+    assert(main.indexOf('data-testid="home-motif"', at + 1) < 0, "more than one C3 motif divider in home <main>");
+    assert(main.indexOf('id="hero-title"') < at && at < main.indexOf('id="crops-title"'), "motif divider is not between the hero and Browse by crop");
+    assert(main.includes("divider-home.webp"), "no divider-home motif image in home <main>");
     assert((main.match(/data-testid="pod-divider"/g) ?? []).length === 2, "home <main> has other than two pod dividers");
     const outside = noScripts(h).replace(/<main\b[^>]*>[\s\S]*<\/main>/, " ");
     assert(!outside.includes('data-testid="motif-b"') && !outside.includes(MOTIF_B_KEY), "motif B outside home <main>");
