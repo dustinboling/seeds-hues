@@ -488,6 +488,28 @@ the invariant is that no price is ever a *value* CSN handles.
 
 ## 4. Cache storage + the 24-hour rule
 
+> **RULING NOTE — 2026-11-22 (Dustin, Decision 1; read before §§4.1–4.2, 8, and
+> the appendix).** Dustin ruled: "Use Nadia's — after a failed check, the link
+> stays available to retry." This adopts Nadia's model over the attempt-keyed
+> model this document was reconciled to at Quinn's design gate. The
+> freshness/eligibility window therefore keys on the last **successful**
+> check: only a successful check starts the 24-hour clock. A failed attempt
+> stamps no window and removes no eligibility — after a failure the listing
+> is immediately eligible again, subject to the rest of the conjunction.
+> Amended SPEC §3.1 states the single governing conjunction (observation
+> ≥24h old or absent **and** last successful check ≥24h old or absent **and**
+> checkable **and** not block-listed **and** not in flight). Where this
+> document's attempt-keyed passages — §§4.1–4.2 (the "`attempted_at` is the
+> 24h clock" line, the §4.2 window test, and the "attempt-based, not
+> success-based" passage), §8 Q1 (answered by this ruling; its
+> confirm-attempt-based recommendation is ruled against), and the appendix
+> decision summary's cache row — conflict with this note, **this note and
+> SPEC §3.1 govern for the build**; those passages stand unrewritten as the
+> record of the superseded reading. The operative translation of this
+> document's `state`/`outcome` vocabulary into SPEC's UI states is the build
+> brief's UI-state ↔ API-state mapping table (gate amendment A4), not §1.2's
+> definitions read alone.
+
 ### 4.1 Where the cache lives
 
 One new table, 1:1 with listings (additive migration; design only here):
