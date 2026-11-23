@@ -75,3 +75,18 @@ The second dispatch (run 45117989214, which carried Addendum 1) **also failed th
 1. Run `npx eslint .` in `v2/` **immediately after writing each new file** (the hook, the component changes), not once at the end — both dead runs wrote lint errors early and met them only at the gate.
 2. Before finishing, run the full `npm run verify` and **iterate until it exits 0**. Do not end your turn while verify is red for any reason, including a single unused symbol. If a fix uncovers a further error, fix that too — the loop is the job.
 3. Leave no unused imports, types, or variables anywhere in the change set.
+
+## Addendum 3 — third re-dispatch after run 45120161154 (2026-11-22, coordinator #16)
+
+Run 45120161154 (with Addenda 1–2) **failed the verify gate a third time — again no PR.** Lint is now clean (both earlier traps are fixed). The gate died at **typecheck, with exactly five errors, all inside the build's own new test files** — no production file was flagged:
+
+- `tests/contract/browse-spread.test.ts(184,91)`: TS2554 — Expected 1 arguments, but got 2.
+- `tests/integration/browse-spread-counts.test.ts(133,11)`: TS2322 — `string | undefined` is not assignable to the season enum (`"cool_season_hardy_annual" | "warm_season_tender_annual" | undefined`).
+- `tests/integration/browse-spread-counts.test.ts(134,11)`: TS2322 — `string[] | undefined` is not assignable to `("direct_sow" | "transplant")[] | undefined`.
+- `tests/integration/browse-spread-counts.test.ts(190,41)` and `(191,42)`: TS2345 — a filter object with `lifeCycle: readonly ["perennial"]` is not assignable to `PlantFilters & { lifeCycle?: ("annual" | "biennial" | "perennial")[] | undefined }` (readonly tuple vs mutable array, and un-typed sibling fields).
+
+The pattern across three runs is consistent: the build's production code reaches the gate in good shape, but the run ends before its own verify is green — each time in a different place. The traps above share one cause: **test fixtures written as loose object literals instead of the app's own types.** In the tests for this build:
+
+1. Type every filter/fixture object with the app's exported types (e.g. `PlantFilters` and the browse state types) at the point of declaration — never pass raw `{ season: string | undefined, ... }` literals into typed functions. Where a literal is unavoidable, use `as const` for enum arrays and drop `readonly` where the parameter type is mutable.
+2. Match callee arity exactly (the TS2554 above is a helper called with an argument its signature doesn't take — fix the call or the signature, deliberately).
+3. Run `npm run verify` **after writing each test file**, not only at the end, and iterate until it exits 0 before doing anything else. Three runs of this brief have now been discarded by the gate; a fourth discarded run is the outcome this addendum exists to prevent. Ending your turn with verify red — in any file, tests included — is ending the run as a failure.
