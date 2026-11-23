@@ -28,6 +28,7 @@ import { MIN_QUERY_CHARS, normaliseQuery, searchVarieties, type VarietyMatch } f
 import { catalogSeq } from "@/lib/repositories/seq";
 import { SITE_URL } from "@/lib/config";
 import { formatFriendlyDate } from "@/lib/format";
+import { lifeCycleMatches } from "@/lib/life-cycle";
 import { foldText, pickDidYouMean } from "@/lib/names";
 import { zeroSellerSentence } from "@/lib/zero-seller";
 import { stateByCode } from "@/lib/data/states";
@@ -35,6 +36,7 @@ import { totalPages } from "@/lib/paging";
 import {
   BROWSE_OPTIONS,
   BROWSE_SORT_REPO,
+  SEASON_PARAMS,
   browseCountQueries,
   browseCountStates,
   cropFiltersFromBrowse,
@@ -43,6 +45,9 @@ import {
   type BrowseCountState,
   type BrowseFilterGroup,
   type BrowseFilterState,
+  type ColorFamily,
+  type MethodParam,
+  type SeasonParam,
 } from "@/lib/browse";
 import {
   cropCountStates,
@@ -550,6 +555,85 @@ function assembleBrowseCounts(queries: BrowseCountQuery[], totals: number[]): Br
 }
 
 /**
+ * The /variety counts matrix, consolidated (B-1 latency fix): the unit-pinned
+ * browseCountQueries matrix still defines every cell's filter set, but a group's option
+ * cells are answered by ONE grouped query over the group's All set instead of one plain
+ * total per chip — 10 queries instead of 26 (the per-count life-cycle DISTINCT fan-out
+ * drops with them). Grouped sums partition the same FROM/WHERE the plain totals scan, so
+ * the numbers are identical by construction; the browse-counts integration suite pins them.
+ */
+async function browseVarietyCounts(db: Db, filters: BrowseFilterState): Promise<BrowseCounts> {
+  const queries = browseCountQueries(filters);
+  const filtersOf = (group: BrowseFilterGroup, option: string | null): VarietyFilters => {
+    const q = queries.find((x) => x.group === group && x.option === option);
+    if (!q) throw new Error(`browse counts: ${group}:${option ?? "all"} missing from the count matrix`);
+    return q.filters;
+  };
+  const [
+    seasonAll,
+    seasonCells,
+    methodAll,
+    methodCells,
+    lifeAll,
+    lifeCells,
+    hueAll,
+    hueCells,
+    smallAll,
+    smallOn,
+  ] = await Promise.all([
+    repo.countVarietyRows(db, filtersOf("season", null)),
+    repo.countVarietySeasonCells(db, filtersOf("season", null)),
+    repo.countVarietyRows(db, filtersOf("method", null)),
+    repo.countVarietyMethodCells(db, filtersOf("method", null)),
+    repo.countVarietyRows(db, filtersOf("lifeCycle", null)),
+    repo.countVarietyLifeCycleCells(db, filtersOf("lifeCycle", null)),
+    repo.countVarietyRows(db, filtersOf("hue", null)),
+    repo.countVarietyHueCells(db, filtersOf("hue", null)),
+    repo.countVarietyRows(db, filtersOf("smallFarm", null)),
+    repo.countVarietyRows(db, filtersOf("smallFarm", "true")),
+  ]);
+  const allOf: Record<BrowseFilterGroup, number> = {
+    season: seasonAll,
+    method: methodAll,
+    lifeCycle: lifeAll,
+    hue: hueAll,
+    smallFarm: smallAll,
+  };
+  const totals = queries.map((q) => {
+    if (q.option === null) return allOf[q.group];
+    switch (q.group) {
+      case "season":
+        return seasonCells.get(SEASON_PARAMS[q.option as SeasonParam]) ?? 0;
+      case "method":
+        return methodCells[q.option as MethodParam];
+      case "lifeCycle": {
+        const bucket = q.option as LifeCycleParam;
+        let n = 0;
+        for (const [stored, c] of lifeCells) if (lifeCycleMatches(stored, [bucket])) n += c;
+        return n;
+      }
+      case "hue": {
+        // Toggle semantics (PB-2), summed: the count if the family left/joined the current
+        // set — the column is single-valued per variety, so a non-empty set's total is its
+        // member cells' sum. Exactly the sets toggleHue builds for the plain-count form;
+        // the toggle to the EMPTY set clears the group, so it reads the All cell.
+        const set = new Set(filters.hue);
+        const f = q.option as ColorFamily;
+        if (set.has(f)) set.delete(f);
+        else set.add(f);
+        if (set.size === 0) return hueAll;
+        let n = 0;
+        for (const g of set) n += hueCells.get(g) ?? 0;
+        return n;
+      }
+      case "smallFarm":
+        return smallOn;
+    }
+  });
+  return assembleBrowseCounts(queries, totals);
+}
+
+/**
  * Count-query totals → BrowseCounts for a surface rendering a subset of the groups
  * (Tranche 3.1b). Queried groups stay strict (a missing cell is a matrix defect, never a
  * silent 0); groups the surface does not render carry their honest All — the result total,
@@ -760,10 +844,9 @@ export function createCatalogService(db: Db) {
      */
     async browseVarieties(opts: { filters: BrowseFilterState; page: Page }): Promise<BrowseVarietiesPayload> {
       const vf = varietyFiltersFromBrowse(opts.filters);
-      const queries = browseCountQueries(opts.filters);
-      const [{ items, total }, totals] = await Promise.all([
+      const [{ items, total }, counts] = await Promise.all([
         summaries(vf, BROWSE_SORT_REPO[opts.filters.sort], opts.page),
-        Promise.all(queries.map((q) => repo.countVarietyRows(db, q.filters))),
+        browseVarietyCounts(db, opts.filters),
       ]);
       return parse(
         BrowseVarietiesPayloadSchema,
@@ -772,7 +855,7 @@ export function createCatalogService(db: Db) {
           total,
           page: Math.floor(opts.page.offset / opts.page.limit) + 1,
           pages: totalPages(total, opts.page.limit),
-          counts: assembleBrowseCounts(queries, totals),
+          counts,
         },
         "browse varieties payload",
       );
