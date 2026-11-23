@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 924 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 933 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -40,10 +40,12 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/breadseed-poppy-pink-peony.webp": "artwork/breadseed-poppy-pink-peony.png",
   "/artwork/breadseed-poppy-rattle-poppy.webp": "artwork/breadseed-poppy-rattle-poppy.png",
   "/artwork/breadseed-poppy-white-frills.webp": "artwork/breadseed-poppy-white-frills.png",
+  "/artwork/breadseed-poppy.webp": "artwork/breadseed-poppy.png",
   "/artwork/bupleurum-griffithi.webp": "artwork/bupleurum-griffithi.png",
   "/artwork/calendula-bronze-beauty.webp": "artwork/calendula-bronze-beauty.png",
   "/artwork/calendula-greenheart-orange.webp": "artwork/calendula-greenheart-orange.png",
   "/artwork/calendula-ivory-princess.webp": "artwork/calendula-ivory-princess.png",
+  "/artwork/calendula-pacific-beauty-mix.webp": "artwork/calendula-pacific-beauty-mix.png",
   "/artwork/calendula-pink-surprise.webp": "artwork/calendula-pink-surprise.png",
   "/artwork/calendula-zeolights.webp": "artwork/calendula-zeolights-v2.png",
   "/artwork/california-poppy-cream-swirl.webp": "artwork/california-poppy-cream-swirl.png",
@@ -794,6 +796,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-solstice-light-blue.webp": "artwork/sweet-pea-solstice-light-blue.png",
   "/artwork/sweet-pea-solstice-opal.webp": "artwork/sweet-pea-solstice-opal.png",
   "/artwork/sweet-pea-solstice-rose.webp": "artwork/sweet-pea-solstice-rose.png",
+  "/artwork/sweet-pea-spring-sunshine-burgundy.webp": "artwork/sweet-pea-spring-sunshine-burgundy.png",
   "/artwork/sweet-pea-spring-sunshine-champagne.webp": "artwork/sweet-pea-spring-sunshine-champagne.png",
   "/artwork/sweet-pea-strawberry-fields.webp": "artwork/sweet-pea-strawberry-fields.png",
   "/artwork/sweet-pea-suzy-z.webp": "artwork/sweet-pea-suzy-z.png",
@@ -818,6 +821,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/tomato-rapunzel.webp": "artwork/tomato-rapunzel.png",
   "/artwork/tomato-red-currant.webp": "artwork/tomato-red-currant.png",
   "/artwork/tomato-sunpeach.webp": "artwork/tomato-sunpeach.png",
+  "/artwork/trachelium-lake-michigan-blue.webp": "artwork/trachelium-lake-michigan-blue.png",
+  "/artwork/trachelium-lake-michigan-purple.webp": "artwork/trachelium-lake-michigan-purple.png",
+  "/artwork/trachelium-lake-michigan-violet.webp": "artwork/trachelium-lake-michigan-violet.png",
+  "/artwork/trachelium-lake-michigan-white.webp": "artwork/trachelium-lake-michigan-white.png",
   "/artwork/verbena-vanity.webp": "artwork/verbena-vanity.png",
   "/artwork/verbena-verbena-bonariensis.webp": "artwork/verbena-verbena-bonariensis.png",
   "/artwork/viola-brush-strokes.webp": "artwork/viola-brush-strokes.png",
@@ -825,6 +832,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/viola-gem-heavenly-blue.webp": "artwork/viola-gem-heavenly-blue.png",
   "/artwork/viola-gem-pink-antique.webp": "artwork/viola-gem-pink-antique.png",
   "/artwork/viola-tiger-eye.webp": "artwork/viola-tiger-eye.png",
+  "/artwork/virginia-stock.webp": "artwork/virginia-stock.png",
   "/artwork/winged-everlasting.webp": "artwork/winged-everlasting.png",
   "/artwork/xeranthemum.webp": "artwork/xeranthemum.png",
   "/artwork/yarrow-summer-berries.webp": "artwork/yarrow-summer-berries.png",
@@ -849,6 +857,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/zinnia-day-glow-mix.webp": "artwork/zinnia-day-glow-mix.png",
   "/artwork/zinnia-desert-sunset-mix.webp": "artwork/zinnia-desert-sunset-mix.png",
   "/artwork/zinnia-dreamin.webp": "artwork/zinnia-dreamin.png",
+  "/artwork/zinnia-gift.webp": "artwork/zinnia-gift.png",
   "/artwork/zinnia-golden-hour.webp": "artwork/zinnia-golden-hour.png",
   "/artwork/zinnia-isabellina-creamy-yellow.webp": "artwork/zinnia-isabellina-creamy-yellow.png",
   "/artwork/zinnia-lilliput-mix.webp": "artwork/zinnia-lilliput-mix.png",
