@@ -64,7 +64,7 @@ document scroller. All values below are CSS pixels of scroll travel unless state
 
 | Trigger | Condition (all must hold) |
 |---|---|
-| **HIDE** | state = VISIBLE · `y > topZone` (§1.3) · `downRun ≥ 24` · focus conditions in §5 permit · dwell (§1.4) expired |
+| **HIDE** | state = VISIBLE · `y > topZone` (§1.3) · `downRun ≥ 24` · focus conditions in §5 permit · dwell (§1.4) expired · no active press on any tab or the plate (§1.8, A-H8) |
 | **SHOW** | state = HIDDEN · `upRun ≥ 12` · dwell expired — or any forcing event in §1.3/§1.6/§5 |
 
 - **24 down / 12 up is deliberately asymmetric.** Hiding must be a *decision* the
@@ -98,9 +98,9 @@ travel distance. One measured quantity drives all three.)
 
 ### 1.4 Dwell — no flip-flopping across a transition
 
-After any flip, the opposite flip cannot fire for **150 ms** (the house motion token —
-Mina's transition duration; if her form pass changes the duration, the dwell equals
-it, never less) **unless** the opposing run reaches **twice** its threshold
+After any flip, the opposite flip cannot fire for **220 ms** (Mina's longer
+transition duration — her show transit, 220 ms, governs over her 180 ms hide
+transit; the dwell equals the transition duration, never less) **unless** the opposing run reaches **twice** its threshold
 (48 down / 24 up) inside the dwell — a hard yank always wins immediately. Runs keep
 accumulating during the dwell; only firing is deferred.
 
@@ -154,6 +154,20 @@ A finger scroll and a teleport must not be read the same way:
   into view): governed by the focus contract, §5.3 — a **500 ms grace window** after
   any `focusin` during which HIDE cannot fire. Runs may accumulate; firing waits.
 
+### 1.8 Press suppression — no hide under a resting finger (A-H8 / AH8)
+
+**No hide may begin during an active press on any tab or the plate.** While a
+pointer is down on any part of the bar — flank tab or plate — HIDE initiation is
+suppressed: a transition that starts under a resting press moves the pressed
+target out from under the finger mid-gesture, and the tap then either lands on
+page content the user never aimed at or cancels against a target that left. The
+press either completes as a tap on a stationary bar, or the hide waits for
+release — and after release the downward run re-earns its threshold from there
+(the run does not carry over from under the press). Scroll-driven transits with
+no press in progress are unaffected. (Mina, `HIDE-BEHAVIOR-UI.md` §7.2, stated
+as a constraint on this trigger spec; Ada adopted it as floor condition A-H8,
+assertion AH8.)
+
 ---
 
 ## 2. The plate mid-hide — one rigid unit, full clearance
@@ -193,17 +207,26 @@ wrap inside their own slot and the band grows in height; clearance tracks the gr
 band, and the driven-focus proof runs at 200 % as well as 100 %. Hide mechanics
 under the grown band:
 
-- **What grows:** labels at 24 px wrap to two lines; the band grows by up to one
-  label line (line-height 1 → **+24 px**), band 64 → up to **88 px**. The plate does
-  not grow (56 px disc, 20 px rise — Mina's geometry is text-independent). New
-  obstruction: `O = safe-area + 88 + 20 = safe-area + 108`.
+- **What grows:** labels at 24 px wrap to two lines; in the expected two-line
+  case the band grows by one label line (line-height 1 → **+24 px**), band 64 →
+  **88 px**. **That +24 px / 88 px figure is an expectation, not a cap:** there
+  is no ceiling on the grown band. Under SC 1.4.12 text-spacing overrides
+  (Ada A-H9) or a third label line, the measured band height **H** can exceed
+  88 px, and clearance follows the measured-H formula — clearance =
+  **H + 28 px + safe-area** (equivalently `O + 8`, §2) — past 88 wherever the
+  measured H lands. The plate does not grow (56 px disc, 20 px rise — Mina's
+  geometry is text-independent). At the expected grown band (H = 88), the
+  obstruction is `O = safe-area + 88 + 20 = safe-area + 108`.
 - **Everything derived from `O` follows automatically, by formula, not by a second
-  set of constants:** travel `T = O + 2` (safe-area + 110), top zone `O + 16`
-  (safe-area + 124), clearance `O + 8` (safe-area + 116). The build must measure the
-  rendered obstruction (the same dynamic measure Quinn's §4 condition 3 already
-  requires for clearance) and feed all four values from it. A hard-coded 84/86/92
-  anywhere in the hide path is a defect under this spec.
-- **Thresholds do not change.** 24 down / 12 up / dead zone 2 / dwell 150 ms measure
+  set of constants:** at the expected grown band, travel `T = O + 2`
+  (safe-area + 110), top zone `O + 16` (safe-area + 124), clearance `O + 8`
+  (safe-area + 116) — worked values for H = 88, not constants to build to; the
+  formula governs at every measured H, past 88 included. The build must measure
+  the rendered obstruction (the same dynamic measure Quinn's §4 condition 3
+  already requires for clearance) and feed all four values from it. A hard-coded
+  84/86/92 — or 88/108/116 — anywhere in the hide path is a defect under this
+  spec.
+- **Thresholds do not change.** 24 down / 12 up / dead zone 2 / dwell 220 ms measure
   the *finger's intent*, not the bar's geometry; a taller bar is a reason the
   reclaim is worth more, not a reason the intent test should move.
 - **Runtime growth while hidden:** if the band's measured height changes while the
@@ -222,7 +245,14 @@ under the grown band:
 ## 4. Reduced motion
 
 - The site's global `prefers-reduced-motion` rule already collapses transitions to
-  0.01 ms; this behavior **inherits it and adds nothing**. Under reduced motion the
+  0.01 ms; this behavior **inherits it for a CSS-transition implementation — and
+  that inheritance is not the whole condition (Ada A-H4 / AH4)**. Any part of
+  the transit driven by script — WAAPI, `requestAnimationFrame`, or a JS easing
+  loop — is **not** reached by the CSS rule and carries **its own**
+  `matchMedia('(prefers-reduced-motion: reduce)')` gate, swapping instantly
+  when the preference is set; the instant swap is **gate-verified** either way
+  (computed duration ≤ 0.01 ms / single-frame outcome under the emulated
+  preference). Under reduced motion the
   hide and show still happen — the behavior is functional (it returns reading room;
   Dustin ordered the behavior, not an animation) — but as **instant cuts**: state
   flips with no slide. Thresholds, runs, zones, and the focus contract are
@@ -265,12 +295,12 @@ there, the visual state ends.
 - **`focusin` on any descendant of the `nav` forces SHOW, immediately and
   unconditionally** — ahead of zones, runs, dwell, and every other rule in §1. The
   state class is removed synchronously in the `focusin` handler; the return then
-  animates on Mina's token (150 ms) at full motion, instantly under reduced motion.
+  animates on Mina's token (220 ms) at full motion, instantly under reduced motion.
 - Focus is **never moved, redirected, or dropped** by a show or a hide. The focused
   tab keeps focus through the return; at rest its full 3 px focus ring is visible,
   plate ring included (the plate's focus render is already a build-gate item,
   Quinn F3).
-- **Open point handed to Ada (§8 Q-A1):** during the ≤150 ms return transit, the
+- **Open point handed to Ada (§8 Q-A1):** during the ≤220 ms return transit, the
   focused tab is part-way up from below the viewport edge. My spec accepts the
   animated return (state correct synchronously, ring fully visible at rest); if
   Ada rules the transit itself an SC 2.4.11/2.4.7 exposure, the fallback written
