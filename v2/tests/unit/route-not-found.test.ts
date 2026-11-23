@@ -19,7 +19,7 @@ import { join } from "node:path";
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { CropDetail, SellerDetail } from "@/lib/validators";
+import type { CropDetail, CropDetailCounts, SellerDetail } from "@/lib/validators";
 
 /** What next/navigation's notFound() throws (its message and digest). */
 const NOT_FOUND_DIGEST = "NEXT_HTTP_ERROR_FALLBACK;404";
@@ -40,11 +40,29 @@ const { default: SellerPage, generateMetadata: sellerMetadata } = await import("
 const { default: CropPage, generateMetadata: cropMetadata } = await import("@/app/crop/[slug]/page");
 const { default: StatePage } = await import("@/app/state/[slug]/page");
 
+/** Zeroed crop-detail counts in the schema's shape (chips render, nothing narrows). */
+const ZERO_CROP_COUNTS: CropDetailCounts = {
+  sellers: { all: 0, has: 0, none: 0 },
+  hue: { all: 0, options: {} },
+  series: { all: 0, options: {} },
+};
+
 store.services = fakeServices({
   catalog: {
     getSeller: async () => fake.seller,
     getCrop: async () => fake.crop,
     listSellerStates: async () => fake.states,
+    // Tranche 3.1b-2: the crop page renders from the browse payload (items + total + counts),
+    // the identical contract GET /api/browse/crops/[slug] serves the in-place layer.
+    browseCrop: async () =>
+      fake.crop === null
+        ? null
+        : {
+            ...(fake.crop as { crop: CropDetail; total: number; colorFamilies: string[] }),
+            page: 1,
+            pages: 1,
+            counts: ZERO_CROP_COUNTS,
+          },
   },
 });
 
