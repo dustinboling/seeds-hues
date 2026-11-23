@@ -85,14 +85,15 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
         hydrated={hydrated}
       />
       <InPlaceAppliedRow config={config} browse={browse} />
-      {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
-          flight, so assistive tech hears an update coming instead of a stale list stated as
-          current. Cleared on settle — the attribute is absent then, so settled markup is
-          byte-identical with or without this line. D-B1-2: past ~1s in flight the region
-          also dims (an owned opacity utility — no new color, no spinner, no skeleton). */}
+      {/* Pending indication (§2.5.3 as amended 2026-11-23): busy while a filter change
+          is in flight, so assistive tech hears an update coming instead of a stale list
+          stated as current. Cleared on settle — the attribute is absent then, so settled
+          markup is byte-identical with or without this line. Past ~200ms in flight the
+          region also shows the pending cue (a leaf hairline + wash from the token layer —
+          no new color, no spinner, no skeleton). */}
       <div
         id="variety-results"
-        className={pendingCue ? "mt-6 opacity-50" : "mt-6"}
+        className={pendingCue ? "mt-6 browse-pending" : "mt-6"}
         aria-busy={pending === null ? undefined : true}
       >
         {committed.total > 0 ? (

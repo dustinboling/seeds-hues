@@ -45,8 +45,9 @@
  *   row's Clear all when the row persists, else the first group's "All" chip.
  * - Every commit syncs document.title to the title the server renders for the committed
  *   state (B-1 item 3) — once, in step with the visible swap — on the surfaces whose
- *   title varies with state (/variety, /seller, crop detail). A commit still in flight ~1s
- *   after the tap shows the quiet pending cue until the swap (D-B1-2).
+ *   title varies with state (/variety, /seller, crop detail). A commit still in flight
+ *   ~200ms after the tap shows the pending cue until the swap (SPEC §2.5.3 as amended
+ *   2026-11-23: perceptible by ~0.4s).
  *
  * The hook is generic over the filter-state type S (BrowseFilterState on the 3.1b
  * surfaces; part 2's surfaces bring their own state plus their own presentational bits),
@@ -247,9 +248,11 @@ export interface InPlaceBrowse<S, P, C = BrowseCounts> {
   shown: S;
   failed: boolean;
   /**
-   * D-B1-2 (registered deviation): true once a commit has been in flight ~1s — the
-   * results region shows the quiet pending cue until the swap. Cleared synchronously with
-   * every settle, so the cue never survives onto swapped results.
+   * True once a commit has been in flight ~200ms — the results region shows the
+   * pending cue until the swap (SPEC §2.5.3 as amended 2026-11-23: perceptible by
+   * ~0.4s; the ~200ms appearance delay keeps instant updates from flashing it).
+   * Cleared synchronously with every settle, so the cue never survives onto
+   * swapped results.
    */
   pendingCue: boolean;
   select: (compute: (current: S) => S, focus?: InPlaceFocusTarget | null) => void;
@@ -273,14 +276,15 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
   // follow this; results, counts, pagination and the count line follow `committed` only.
   const [pending, setPending] = useState<S | null>(null);
   const [failed, setFailed] = useState(false);
-  // D-B1-2 (registered deviation): the visible quiet pending cue. The timer arms when a
+  // The visible pending cue (SPEC §2.5.3 as amended 2026-11-23). The timer arms when a
   // commit starts and restarts when a newer tap supersedes it (pending identity changes);
-  // every settle path clears the cue synchronously with the swap. Removal: delete this
-  // state + the effect below + the return field and revert the surfaces' className lines.
+  // every settle path clears the cue synchronously with the swap. The ~200ms appearance
+  // delay keeps instant updates from flashing the cue; slower updates show it well
+  // before the ~0.4s perceptibility bound.
   const [pendingCue, setPendingCue] = useState(false);
   useEffect(() => {
     if (pending === null) return;
-    const t = setTimeout(() => setPendingCue(true), 1000);
+    const t = setTimeout(() => setPendingCue(true), 200);
     return () => clearTimeout(t);
   }, [pending]);
   // Last-selection-wins: every fetch takes an id; only the latest id may settle.

@@ -84,8 +84,8 @@ export function HomeBrowse({ initial }: { initial: HomeBrowseInitial }) {
       </p>
       <InPlaceFilters config={config} browse={browse} />
       <InPlaceAppliedRow config={config} browse={browse} />
-      {/* D-B1-2: past ~1s in flight the region dims (an owned opacity utility). */}
-      <div className={pendingCue ? "opacity-50" : undefined} aria-busy={pending === null ? undefined : true}>
+      {/* Pending cue (§2.5.3 as amended 2026-11-23): past ~200ms in flight the region carries the leaf hairline + wash. */}
+      <div className={pendingCue ? "browse-pending" : undefined} aria-busy={pending === null ? undefined : true}>
         {committed.total > 0 ? (
           <>
             <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
