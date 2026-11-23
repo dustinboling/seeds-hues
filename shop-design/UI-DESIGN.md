@@ -442,7 +442,7 @@ Every line of words this design needs, enumerated. **This design finalizes no wo
 
 | ID | Slot | Where | Obligation (the contract the words must meet) | Status |
 |---|---|---|---|---|
-| CS-01 | Website button label | Contact block, primary button | shows the host (visible destination before the click, Nadia §3.5.1); label as ruled in COPY §1 | **New ruling needed (OQ-2)** — rules with CS-02/CS-03 as one set |
+| CS-01 | Website button label | Contact block, primary button | shows the host (visible destination before the click, Nadia §3.5.1); label as ruled in COPY §1 | **Ruled — COPY §1 (OQ-2 closed)** — rules with CS-02/CS-03 as one set |
 | CS-02 | Phone row label | Contact block, phone row | Names the channel as the seller's customer service (the concept is fixed; the words are Wren's); composes with the visible number as one link whose purpose is determinable from the row (Nadia §3.5.2) | New |
 | CS-03 | Email row label | Contact block, email row | Same obligation as CS-02, for the address; same wording family as CS-02 (the two labels must read as a set) | New |
 | CS-04 | Phone/email absence lines | Contact block | **No words.** No absence line, summary line, or "contact unavailable" copy is designed or permitted at any coverage level (Nadia §3.5.3, argued there) | **Closed** |
