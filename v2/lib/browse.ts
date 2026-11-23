@@ -176,9 +176,12 @@ export function parseSortParam(raw: RawParam): BrowseSortParam {
   return v === "availability" || v === "name" || v === "recent" ? v : "name";
 }
 
-/** No filters active (the resting state — Clear all returns the list to Name A–Z too). */
-export function clearAllFilters(): BrowseFilterState {
-  return { season: null, method: null, lifeCycle: null, hue: [], smallFarm: false, sort: "name" };
+/**
+ * Clear all: every filter group to All — the shopper's sort survives (SPEC §2.6: sort is
+ * an ordering, not a filter group, so resetting groups never re-orders the list).
+ */
+export function clearAllFilters(state: BrowseFilterState): BrowseFilterState {
+  return { season: null, method: null, lifeCycle: null, hue: [], smallFarm: false, sort: state.sort };
 }
 
 /** True when the group narrows the list (non-All for singles, non-empty for hue, on for sellers). */

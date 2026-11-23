@@ -7,7 +7,8 @@
  * zero-results recovery with focus, stable keys (no chip remounts), soft-navigation paging
  * adopting the delivered server snapshot (N-D1), and the in-flight aria-busy on the results
  * region (F6). Fetch is stubbed per test; expected strings pin the shipped wording while
- * every total and count derives from the test's own fake payloads.
+ * every total and count derives from the test's own fake payloads. The F-4 follow-up pins
+ * Clear All keeping the active sort in place (entry, fetch, count-line phrase).
  *
  * Non-vacuity: fails on pre-build code — VarietyBrowse does not exist there (and Hue is
  * single-select with no counts, no applied row, and no /api/browse/varieties to fetch).
@@ -28,7 +29,6 @@ import {
   LIFE_CYCLE_PARAMS,
   METHOD_PARAMS,
   SEASON_PARAMS,
-  clearAllFilters,
   type BrowseFilterState,
 } from "@/lib/browse";
 import { totalPages } from "@/lib/paging";
@@ -38,6 +38,11 @@ import type { BrowseCounts, BrowseVarietiesPayload, VarietyListItem } from "@/li
 function need<T>(el: T | null | undefined, what: string): T {
   if (el === null || el === undefined) throw new Error(`variety-browse test: missing ${what}`);
   return el;
+}
+
+/** The resting filter state (Clear All's target at the resting sort). */
+function resting(): BrowseFilterState {
+  return { season: null, method: null, lifeCycle: null, hue: [], smallFarm: false, sort: "name" };
 }
 
 function item(i: number): VarietyListItem {
@@ -81,7 +86,7 @@ function fakeCounts(seed: number): BrowseCounts {
 }
 
 function makeInitial(over: Partial<VarietyBrowseInitial> = {}): VarietyBrowseInitial {
-  return { state: clearAllFilters(), counts: fakeCounts(7), items: [item(0), item(1)], total: 49, page: 1, ...over };
+  return { state: resting(), counts: fakeCounts(7), items: [item(0), item(1)], total: 49, page: 1, ...over };
 }
 
 function makePayload(over: Partial<VarietyBrowseInitial> = {}): BrowseVarietiesPayload {
@@ -146,7 +151,7 @@ describe("server floor (no-JS: every chip a working link)", () => {
   it("renders links with aria-current and counts — and no buttons at all", () => {
     const counts = fakeCounts(7);
     counts.method.options.trays = 0;
-    const h = floor(makeInitial({ state: { ...clearAllFilters(), season: "cool" }, counts }));
+    const h = floor(makeInitial({ state: { ...resting(), season: "cool" }, counts }));
     expect(h).toContain('aria-current="true"');
     expect(h).not.toContain("aria-pressed");
     expect(h).not.toContain("<button");
@@ -156,7 +161,7 @@ describe("server floor (no-JS: every chip a working link)", () => {
   });
 
   it("renders the applied row as working links (one remover per hue, Clear all to the bare path)", () => {
-    const s: BrowseFilterState = { ...clearAllFilters(), season: "cool", hue: ["pink", "peach"] };
+    const s: BrowseFilterState = { ...resting(), season: "cool", hue: ["pink", "peach"] };
     const h = floor(makeInitial({ state: s }));
     expect(h).toContain("Applied filters");
     expect(h).toContain('aria-label="Remove the Season filter, Cool Season Hardy Annuals"');
@@ -182,7 +187,7 @@ describe("server floor (no-JS: every chip a working link)", () => {
   });
 
   it("renders the zero-results state inside the results region with a Clear link", () => {
-    const h = floor(makeInitial({ state: { ...clearAllFilters(), season: "cool" }, items: [], total: 0 }));
+    const h = floor(makeInitial({ state: { ...resting(), season: "cool" }, items: [], total: 0 }));
     expect(h).toContain('id="variety-results"');
     expect(h).toContain("No varieties match.");
     expect(h).toContain('href="/variety">Clear filters</a>');
@@ -193,7 +198,7 @@ describe("server floor (no-JS: every chip a working link)", () => {
 describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
   it("swaps links for toggle buttons; pressed matches state; counts show", () => {
     const counts = fakeCounts(7);
-    render(createElement(VarietyBrowse, { initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] }, counts }) }));
+    render(createElement(VarietyBrowse, { initial: makeInitial({ state: { ...resting(), hue: ["pink"] }, counts }) }));
     expect(filtersGroup()).toBeTruthy();
     expect(screen.queryByRole("navigation", { name: "Filters" })).toBeNull();
     expect(chip("Hue", `Pink ${counts.hue.options.pink} varieties`).getAttribute("aria-pressed")).toBe("true");
@@ -202,7 +207,7 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
   });
 
   it("a tap commits in place: optimistic press, one fetch, one entry, swapped rows — no remounts", async () => {
-    const next = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 });
+    const next = makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 });
     const d = deferred<Response>();
     fetchImpl = () => d.promise;
     const push = pushSpyOn();
@@ -244,16 +249,16 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
   });
 
   it("hue toggles on and off; All clears the set", async () => {
-    const s1 = makePayload({ state: { ...clearAllFilters(), hue: ["pink", "peach"] }, items: [item(3)], total: 9 });
+    const s1 = makePayload({ state: { ...resting(), hue: ["pink", "peach"] }, items: [item(3)], total: 9 });
     fetchImpl = async () => jsonResponse(s1);
     const push = pushSpyOn();
-    const before = makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] } });
+    const before = makeInitial({ state: { ...resting(), hue: ["pink"] } });
     render(createElement(VarietyBrowse, { initial: before }));
     fireEvent.click(chip("Hue", `Peach ${before.counts.hue.options.peach} varieties`));
     await waitFor(() => expect(countLine().textContent).toBe("9 varieties · Pink · Peach, alphabetical."));
     expect(push.mock.calls[0]?.[2]).toBe("/variety?color_family=pink%2Cpeach");
 
-    const s2 = makePayload({ state: clearAllFilters(), items: [item(0)], total: 49 });
+    const s2 = makePayload({ state: resting(), items: [item(0)], total: 49 });
     fetchImpl = async () => jsonResponse(s2);
     fireEvent.click(chip("Hue", `All ${s1.counts.hue.all} varieties`));
     await waitFor(() => expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3."));
@@ -264,9 +269,9 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
 
 describe("fetch discipline (last selection wins)", () => {
   it("rapid two-group taps settle on the last: stale success discarded, one entry", async () => {
-    const first = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 });
+    const first = makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 });
     const last = makePayload({
-      state: { ...clearAllFilters(), season: "cool", method: "direct" },
+      state: { ...resting(), season: "cool", method: "direct" },
       items: [item(9)],
       total: 5,
     });
@@ -305,7 +310,7 @@ describe("Back/Forward (in place; pages stay true navigation)", () => {
   };
 
   it("restores the popped filter state in place (fetch, no entry)", async () => {
-    const filtered = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 });
+    const filtered = makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 });
     fetchImpl = async () => jsonResponse(filtered);
     const push = pushSpyOn();
     const before = makeInitial();
@@ -383,7 +388,7 @@ describe("failure path (§2.5.6: prior stands, control reverts, one alert)", () 
     expect(chip("Season", `All ${before.counts.season.all} varieties`).getAttribute("aria-pressed")).toBe("true");
 
     // The next successful change clears the alert and commits.
-    const next = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 });
+    const next = makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 });
     fetchImpl = async () => jsonResponse(next);
     fireEvent.click(chip("Season", coolName));
     await waitFor(() => expect(screen.queryAllByRole("alert")).toHaveLength(0));
@@ -403,7 +408,7 @@ describe("failure path (§2.5.6: prior stands, control reverts, one alert)", () 
 
 describe("applied row + Clear all (in place)", () => {
   it("carries one remover per hue with Remove names and the drawn glyph", () => {
-    const s: BrowseFilterState = { ...clearAllFilters(), hue: ["pink", "peach"] };
+    const s: BrowseFilterState = { ...resting(), hue: ["pink", "peach"] };
     render(createElement(VarietyBrowse, { initial: makeInitial({ state: s }) }));
     const row = screen.getByRole("group", { name: "Applied filters" });
     const pink = within(row).getByRole("button", { name: "Remove the Hue filter, Pink" });
@@ -415,10 +420,10 @@ describe("applied row + Clear all (in place)", () => {
   });
 
   it("a remover clears just its entry in one entry; focus moves to Clear all while the row persists", async () => {
-    const next = makePayload({ state: { ...clearAllFilters(), hue: ["pink"] }, items: [item(4)], total: 11 });
+    const next = makePayload({ state: { ...resting(), hue: ["pink"] }, items: [item(4)], total: 11 });
     fetchImpl = async () => jsonResponse(next);
     const push = pushSpyOn();
-    render(createElement(VarietyBrowse, { initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink", "peach"] } }) }));
+    render(createElement(VarietyBrowse, { initial: makeInitial({ state: { ...resting(), hue: ["pink", "peach"] } }) }));
     fireEvent.click(screen.getByRole("button", { name: "Remove the Hue filter, Peach" }));
     await waitFor(() => expect(countLine().textContent).toBe("11 varieties · Pink, alphabetical."));
     expect(push.mock.calls[0]?.[2]).toBe("/variety?color_family=pink");
@@ -431,7 +436,7 @@ describe("applied row + Clear all (in place)", () => {
     const next = makePayload({ items: [item(0)], total: 49 });
     fetchImpl = async () => jsonResponse(next);
     const push = pushSpyOn();
-    const s: BrowseFilterState = { ...clearAllFilters(), season: "cool", hue: ["pink"] };
+    const s: BrowseFilterState = { ...resting(), season: "cool", hue: ["pink"] };
     render(createElement(VarietyBrowse, { initial: makeInitial({ state: s, items: [item(7)], total: 12 }) }));
     const announcements: string[] = [];
     const observer = new MutationObserver(() => announcements.push(countLine().textContent ?? ""));
@@ -447,11 +452,26 @@ describe("applied row + Clear all (in place)", () => {
     expect(announcements).toHaveLength(1);
     expect(document.activeElement).toBe(chip("Season", `All ${next.counts.season.all} varieties`));
   });
+
+  it("Clear all under an active sort keeps the order: one entry, one fetch, the true phrase", async () => {
+    const next = makePayload({ items: [item(0)], total: 49 });
+    fetchImpl = async () => jsonResponse(next);
+    const push = pushSpyOn();
+    const s: BrowseFilterState = { ...resting(), season: "cool", hue: ["pink"], sort: "availability" };
+    render(createElement(VarietyBrowse, { initial: makeInitial({ state: s, items: [item(7)], total: 12 }) }));
+    fireEvent.click(screen.getByRole("button", { name: "Clear all filters" }));
+    await waitFor(() => expect(countLine().textContent).toBe("49 varieties, most sellers first. Page 1 of 3."));
+    expect(fetchUrls()).toEqual(["/api/browse/varieties?sort=availability"]);
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push.mock.calls[0]?.[2]).toBe("/variety?sort=availability");
+    expect(screen.queryByRole("group", { name: "Applied filters" })).toBeNull();
+    expect(document.activeElement).toBe(chip("Season", `All ${next.counts.season.all} varieties`));
+  });
 });
 
 describe("zero results (recovery + focus)", () => {
   it("empties inside the results region with the row visible; Clear filters recovers in place", async () => {
-    const empty = makePayload({ state: { ...clearAllFilters(), hue: ["chocolate"] }, items: [], total: 0 });
+    const empty = makePayload({ state: { ...resting(), hue: ["chocolate"] }, items: [], total: 0 });
     fetchImpl = async () => jsonResponse(empty);
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
@@ -474,7 +494,7 @@ describe("zero results (recovery + focus)", () => {
 
 describe("pagination (the layer never intercepts page turns)", () => {
   it("carries the committed filters and is never intercepted", async () => {
-    const next = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 49 });
+    const next = makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 49 });
     fetchImpl = async () => jsonResponse(next);
     render(createElement(VarietyBrowse, { initial: makeInitial() }));
     const before = makeInitial();
@@ -532,7 +552,7 @@ describe("soft-navigation paging (N-D1: the delivered server snapshot commits)",
     expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 2 of 3.");
     // The stale filter response lands afterwards: discarded whole — the adopted page stands.
     d.resolve(
-      jsonResponse(makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 })),
+      jsonResponse(makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 })),
     );
     await act(async () => {
       await d.promise;
@@ -551,7 +571,7 @@ describe("soft-navigation paging (N-D1: the delivered server snapshot commits)",
   it("filtering after an adopted page commits from the adopted state (page resets, URL agrees)", async () => {
     const push = pushSpyOn();
     const page2 = makeInitial({
-      state: { ...clearAllFilters(), season: "cool" },
+      state: { ...resting(), season: "cool" },
       items: [item(30)],
       total: 30,
       page: 2,
@@ -562,7 +582,7 @@ describe("soft-navigation paging (N-D1: the delivered server snapshot commits)",
     expect(countLine().textContent).toBe("30 varieties · Cool Season Hardy Annuals, alphabetical. Page 2 of 2.");
     // A chip tap now composes onto the ADOPTED filters (not the stale page-1 state).
     const next = makePayload({
-      state: { ...clearAllFilters(), season: "cool", method: "direct" },
+      state: { ...resting(), season: "cool", method: "direct" },
       items: [item(7)],
       total: 12,
     });
@@ -578,7 +598,7 @@ describe("soft-navigation paging (N-D1: the delivered server snapshot commits)",
   });
 
   it("pages a filtered set in both directions (adoption carries the committed filters)", async () => {
-    const filtered = makePayload({ state: { ...clearAllFilters(), hue: ["pink"] }, items: [item(7)], total: 49 });
+    const filtered = makePayload({ state: { ...resting(), hue: ["pink"] }, items: [item(7)], total: 49 });
     fetchImpl = async () => jsonResponse(filtered);
     const before = makeInitial();
     const { rerender } = render(createElement(VarietyBrowse, { initial: before }));
@@ -588,7 +608,7 @@ describe("soft-navigation paging (N-D1: the delivered server snapshot commits)",
     window.history.replaceState({}, "", "/variety?color_family=pink&page=2");
     rerender(
       createElement(VarietyBrowse, {
-        initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] }, items: [item(40)], total: 98, page: 2 }),
+        initial: makeInitial({ state: { ...resting(), hue: ["pink"] }, items: [item(40)], total: 98, page: 2 }),
       }),
     );
     expect(countLine().textContent).toBe("98 varieties · Pink, alphabetical. Page 2 of 5.");
@@ -597,7 +617,7 @@ describe("soft-navigation paging (N-D1: the delivered server snapshot commits)",
     window.history.replaceState({}, "", "/variety?color_family=pink");
     rerender(
       createElement(VarietyBrowse, {
-        initial: makeInitial({ state: { ...clearAllFilters(), hue: ["pink"] }, items: [item(7)], total: 98, page: 1 }),
+        initial: makeInitial({ state: { ...resting(), hue: ["pink"] }, items: [item(7)], total: 98, page: 1 }),
       }),
     );
     expect(countLine().textContent).toBe("98 varieties · Pink, alphabetical. Page 1 of 5.");
@@ -607,7 +627,7 @@ describe("soft-navigation paging (N-D1: the delivered server snapshot commits)",
 
 describe("pending indication (F6: aria-busy on the results region during flight)", () => {
   it("marks the results region busy in flight and clears it on settle (settled markup unchanged)", async () => {
-    const next = makePayload({ state: { ...clearAllFilters(), season: "cool" }, items: [item(7)], total: 12 });
+    const next = makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 });
     const d = deferred<Response>();
     fetchImpl = () => d.promise;
     const before = makeInitial();

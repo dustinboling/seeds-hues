@@ -126,8 +126,8 @@ export interface InPlaceConfig<S, P, C = BrowseCounts> {
   equalStates: (a: S, b: S) => boolean;
   /** True when at least one group narrows the list. */
   hasActive: (state: S) => boolean;
-  /** Nothing active (Clear All's target). */
-  clearAll: () => S;
+  /** Clear All's target from a state: every group to All, the state's sort surviving. */
+  clearAll: (state: S) => S;
   /** The applied row's removers for a state, in group order. */
   removersFor: (state: S) => InPlaceRemover<S>[];
   /** Shareable URL for a state (page dropped, extras kept). */
@@ -529,11 +529,11 @@ export function InPlaceAppliedRow<S, P, C = BrowseCounts>({
       ) : null}
       {removers.length > 0 && showClearAll ? (
         hydrated ? (
-          <button ref={clearAllRef} type="button" className="chip-filter" onClick={() => select(() => config.clearAll(), "first-all")}>
+          <button ref={clearAllRef} type="button" className="chip-filter" onClick={() => select((s) => config.clearAll(s), "first-all")}>
             Clear all filters
           </button>
         ) : (
-          <Link href={config.hrefFor(config.clearAll())} scroll={false} className="chip-filter">
+          <Link href={config.hrefFor(config.clearAll(shown))} scroll={false} className="chip-filter">
             Clear all filters
           </Link>
         )

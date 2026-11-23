@@ -16,7 +16,6 @@ import { countVarietyRows } from "@/lib/repositories/catalog-read";
 import {
   COLOR_FAMILIES,
   browseCountQueries,
-  clearAllFilters,
   varietyFiltersFromBrowse,
   type BrowseFilterState,
 } from "@/lib/browse";
@@ -33,7 +32,15 @@ afterAll(async () => {
 });
 
 const svc = () => createServices(t.db).catalog;
-const state = (over: Partial<BrowseFilterState> = {}): BrowseFilterState => ({ ...clearAllFilters(), ...over });
+const state = (over: Partial<BrowseFilterState> = {}): BrowseFilterState => ({
+  season: null,
+  method: null,
+  lifeCycle: null,
+  hue: [],
+  smallFarm: false,
+  sort: "name",
+  ...over,
+});
 
 /** The count matrix's totals re-derived by independent fresh queries (never the payload's). */
 async function freshTotals(s: BrowseFilterState): Promise<Map<string, number>> {

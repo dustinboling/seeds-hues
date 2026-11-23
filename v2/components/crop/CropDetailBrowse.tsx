@@ -137,11 +137,11 @@ export function CropDetailBrowse({
             {zeroSellerSentence(proseCommonName(commonName))} Join a waiting list on any variety page and we will let you know when a
             seller lists one.{" "}
             {hydrated ? (
-              <button type="button" className="link-button" onClick={() => select(() => clearCropDetailFilters(), "first-all")}>
+              <button type="button" className="link-button" onClick={() => select((s) => clearCropDetailFilters(s), "first-all")}>
                 Clear filters
               </button>
             ) : (
-              <Link href={basePath} scroll={false}>
+              <Link href={cropDetailHref(basePath, clearCropDetailFilters(committed.state))} scroll={false}>
                 Clear filters
               </Link>
             )}
@@ -151,11 +151,11 @@ export function CropDetailBrowse({
           <p className="text-muted">
             No varieties match.{" "}
             {hydrated ? (
-              <button type="button" className="link-button" onClick={() => select(() => clearCropDetailFilters(), "first-all")}>
+              <button type="button" className="link-button" onClick={() => select((s) => clearCropDetailFilters(s), "first-all")}>
                 Clear filters
               </button>
             ) : (
-              <Link href={basePath} scroll={false}>
+              <Link href={cropDetailHref(basePath, clearCropDetailFilters(committed.state))} scroll={false}>
                 Clear filters
               </Link>
             )}

@@ -9,8 +9,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createTestD1, type TestD1 } from "../helpers/d1";
 import { createServices } from "@/lib/services";
-import { clearAllFilters } from "@/lib/browse";
-import { clearCropDetailFilters } from "@/lib/crop-detail";
+import type { BrowseFilterState } from "@/lib/browse";
+import type { CropDetailFilterState } from "@/lib/crop-detail";
 import { pageWindow } from "@/lib/paging";
 import type { VarietyListItem } from "@/lib/validators";
 
@@ -23,6 +23,21 @@ afterAll(async () => {
 });
 
 const svc = () => createServices(t.db).catalog;
+
+const browseState = (sort: BrowseFilterState["sort"]): BrowseFilterState => ({
+  season: null,
+  method: null,
+  lifeCycle: null,
+  hue: [],
+  smallFarm: false,
+  sort,
+});
+const cropState = (sort: CropDetailFilterState["sort"]): CropDetailFilterState => ({
+  hue: [],
+  series: null,
+  hasSellers: null,
+  sort,
+});
 
 /** Availability tier (§5.2.2): in-stock listings, then any listings, then none. */
 function tierOf(v: Pick<VarietyListItem, "inStockCount" | "listingCount">): number {
@@ -51,7 +66,7 @@ function expectTierOrder(items: VarietyListItem[]): void {
 
 describe("availability sort (§5.2.2): the tier property on both surfaces", () => {
   it("/variety: page 1 holds every higher-tier variety; the whole set is tier-ordered", async () => {
-    const filters = { ...clearAllFilters(), sort: "availability" as const };
+    const filters = browseState("availability");
     const full = await svc().browseVarieties({ filters, page: pageWindow(1, 1000) });
     expect(full.total).toBeGreaterThan(24);
     expectTierOrder(full.items);
@@ -69,7 +84,7 @@ describe("availability sort (§5.2.2): the tier property on both surfaces", () =
   });
 
   it("crop detail (sweet-pea): page 1 holds every higher-tier variety; the set is tier-ordered", async () => {
-    const state = { ...clearCropDetailFilters(), sort: "availability" as const };
+    const state = cropState("availability");
     const full = (await svc().browseCrop("sweet-pea", { state, page: pageWindow(1, 1000) }))!;
     expectTierOrder(full.crop.varieties);
     const page1 = (await svc().browseCrop("sweet-pea", { state, page: pageWindow(1) }))!;
@@ -81,10 +96,10 @@ describe("availability sort (§5.2.2): the tier property on both surfaces", () =
   });
 
   it("?sort=name orders A–Z; ?sort=recent orders by last check, nulls last", async () => {
-    const byName = await svc().browseVarieties({ filters: { ...clearAllFilters(), sort: "name" }, page: pageWindow(1, 1000) });
+    const byName = await svc().browseVarieties({ filters: browseState("name"), page: pageWindow(1, 1000) });
     const names = byName.items.map((v) => v.varietyName.toLowerCase());
     expect([...names].sort()).toEqual(names);
-    const byRecent = await svc().browseVarieties({ filters: { ...clearAllFilters(), sort: "recent" }, page: pageWindow(1, 1000) });
+    const byRecent = await svc().browseVarieties({ filters: browseState("recent"), page: pageWindow(1, 1000) });
     const checked = byRecent.items.map((v) => v.lastCheckedAt);
     const firstNull = checked.findIndex((d) => d === null);
     expect(firstNull).toBeGreaterThan(-1);
