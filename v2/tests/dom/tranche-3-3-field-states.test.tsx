@@ -292,7 +292,7 @@ describe("3.3 — account panel: inline field errors and the delete rerouting", 
     const alerts: AlertItem[] = [{ variety: { slug: "sunset", name: "Sunset", crop: "Zinnia" }, joined_at: "2026-01-01", notified_at: null, status: { state: "waiting", channels: ["email"] } }];
     render(<AccountPanel user={PANEL_USER} alerts={alerts} />);
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: {} }), { status: 200 })));
-    fireEvent.click(screen.getByRole("button", { name: "Leave list for Sunset" }));
+    fireEvent.click(screen.getByRole("button", { name: /Leave list\s*for Sunset/ }));
     const note = await screen.findByRole("status");
     expect(note.textContent).toBe("You’ve left the waiting list for Sunset.");
     expect(note.closest("form")).toBeNull();

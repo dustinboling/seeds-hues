@@ -24,7 +24,7 @@ describe("3.3 — shared error line and summary box", () => {
       { fieldId: "create-name", message: "Enter your name." },
       { fieldId: "create-zip", message: "Enter your ZIP code as 5 digits." },
     ];
-    const html = renderToStaticMarkup(createElement(FieldSummary, { heading: "Some fields need attention before creating your account.", entries, summaryRef: createRef() }));
+    const html = renderToStaticMarkup(createElement(FieldSummary, { heading: "Some fields need attention before creating your account.", entries, summaryRef: createRef<HTMLDivElement>() }));
     expect(html).toContain('class="field-summary"');
     expect(html).toContain('role="alert"');
     expect(html).toContain('tabindex="-1"');
@@ -33,7 +33,7 @@ describe("3.3 — shared error line and summary box", () => {
     expect(html).toContain('<a href="#create-zip" class="underline">Enter your ZIP code as 5 digits.</a>');
 
     const single = renderToStaticMarkup(
-      createElement(FieldSummary, { heading: "We couldn't sign you in. Please check the form and try again.", entries: [], summaryRef: createRef() }),
+      createElement(FieldSummary, { heading: "We couldn't sign you in. Please check the form and try again.", entries: [], summaryRef: createRef<HTMLDivElement>() }),
     );
     // Content B: the message itself as the heading, no entry list.
     expect(single).toContain("We couldn&#x27;t sign you in. Please check the form and try again.");

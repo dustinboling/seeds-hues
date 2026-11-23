@@ -62,7 +62,7 @@ describe("AddYourFarmForm field-state errors", () => {
     expect(website.getAttribute("aria-describedby")).toBe("website-hint website-error");
     // A single error has no summary box; focus goes to the field.
     expect(screen.queryByRole("alert")).toBeNull();
-    expect(document.activeElement).toBe(website);
+    await waitFor(() => expect(document.activeElement).toBe(website));
     // Uncontrolled input is preserved on failure.
     expect(website.value).toBe("www.myfarm.com");
   });
@@ -74,7 +74,7 @@ describe("AddYourFarmForm field-state errors", () => {
     const line = await screen.findByText("Enter a valid email address.");
     expect(line.closest("p")?.id).toBe("contact_email-error");
     expect(screen.queryByRole("alert")).toBeNull();
-    expect(document.activeElement).toBe(document.getElementById("contact_email"));
+    await waitFor(() => expect(document.activeElement).toBe(document.getElementById("contact_email")));
   });
 
   it("multi-field failure renders every field's message at once, with a matching summary", async () => {
@@ -97,7 +97,7 @@ describe("AddYourFarmForm field-state errors", () => {
       expect(document.getElementById(errorId!)?.textContent).toBe(entry.textContent);
     }
     expect(document.getElementById("farm_name-error")?.textContent).toBe("Enter your farm’s name.");
-    expect(document.activeElement).toBe(summary);
+    await waitFor(() => expect(document.activeElement).toBe(summary));
   });
 
   it("5xx renders the plain server-error line in a form-level box", async () => {
@@ -106,7 +106,7 @@ describe("AddYourFarmForm field-state errors", () => {
     fireEvent.submit(form);
     const summary = await screen.findByRole("alert");
     expect(summary.textContent).toBe("Something went wrong on our side. Please try again in a few minutes.");
-    expect(document.activeElement).toBe(summary);
+    await waitFor(() => expect(document.activeElement).toBe(summary));
   });
 
   it("network failure renders the plain connection line in a form-level box", async () => {
@@ -136,8 +136,8 @@ describe("AddYourFarmForm field-state errors", () => {
     const form = renderForm();
     mockFailure(400, "validation_error", "about: tell us a little about the farm; varieties: list at least one variety");
     fireEvent.submit(form);
-    expect((await screen.findByText("Tell us a little about your farm (at least 10 characters, at most 2,000).")).closest("p")?.id).toBe("about-error");
-    expect(screen.getByText("List at least one variety you want listed.").closest("p")?.id).toBe("varieties-error");
+    expect((await screen.findByText("Tell us a little about your farm (at least 10 characters, at most 2,000).", { selector: "p.field-error span" })).closest("p")?.id).toBe("about-error");
+    expect(screen.getByText("List at least one variety you want listed.", { selector: "p.field-error span" }).closest("p")?.id).toBe("varieties-error");
     cleanup();
 
     const form2 = renderForm();
