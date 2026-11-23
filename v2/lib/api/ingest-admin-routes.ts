@@ -16,6 +16,7 @@ import {
   regionForLocation,
   ListingRemoveBodySchema,
   VarietyColorBodySchema,
+  VarietyDescriptionBodySchema,
 } from "@/lib/services/admin";
 import { LeaseBodySchema, ObservationsBodySchema, SellerCandidateBodySchema, SourceBodySchema } from "@/lib/services/ingest";
 import { ApproveFarmSchema, FarmOwnerSchema } from "@/lib/services/farms";
@@ -248,6 +249,21 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       const ref = params.id ?? "";
       if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "variety not found");
       const r = await services.admin.varietyColorUpdate(ref, parseBody(VarietyColorBodySchema, body));
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // The variety description write (decision 28): a string sets, null clears to NULL,
+    // through the shared varietyDescriptionUpdate funnel, beside the color route.
+    method: "POST",
+    pattern: "varieties/:id/description",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "variety not found");
+      const r = await services.admin.varietyDescriptionUpdate(ref, parseBody(VarietyDescriptionBodySchema, body));
       return { data: r.data, revalidate: r.revalidate };
     },
   },
