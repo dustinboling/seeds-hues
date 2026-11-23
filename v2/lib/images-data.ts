@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 969 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 978 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -642,10 +642,16 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-chantilly-deep-orange.webp": "artwork/snapdragon-chantilly-deep-orange.png",
   "/artwork/snapdragon-chantilly-light-pink.webp": "artwork/snapdragon-chantilly-light-pink.png",
   "/artwork/snapdragon-chantilly-light-salmon.webp": "artwork/snapdragon-chantilly-light-salmon.png",
+  "/artwork/snapdragon-chantilly-pink.webp": "artwork/snapdragon-chantilly-pink.png",
+  "/artwork/snapdragon-chantilly-purple.webp": "artwork/snapdragon-chantilly-purple.png",
+  "/artwork/snapdragon-chantilly-velvet.webp": "artwork/snapdragon-chantilly-velvet.png",
+  "/artwork/snapdragon-chantilly-white.webp": "artwork/snapdragon-chantilly-white.png",
+  "/artwork/snapdragon-chantilly-yellow.webp": "artwork/snapdragon-chantilly-yellow.png",
   "/artwork/snapdragon-costa-apricot.webp": "artwork/snapdragon-costa-apricot.png",
   "/artwork/snapdragon-costa-silver.webp": "artwork/snapdragon-costa-silver.png",
   "/artwork/snapdragon-costa-summer-lavender.webp": "artwork/snapdragon-costa-summer-lavender.png",
   "/artwork/snapdragon-costa-summer-orange.webp": "artwork/snapdragon-costa-summer-orange.png",
+  "/artwork/snapdragon-defiant-mix.webp": "artwork/snapdragon-defiant-mix.png",
   "/artwork/snapdragon-madame-butterfly-bronze.webp": "artwork/snapdragon-madame-butterfly-bronze.png",
   "/artwork/snapdragon-madame-butterfly-dark-red.webp": "artwork/snapdragon-madame-butterfly-dark-red.png",
   "/artwork/snapdragon-madame-butterfly-mix.webp": "artwork/snapdragon-madame-butterfly-mix.png",
@@ -664,6 +670,9 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-opus-early-bronze.webp": "artwork/snapdragon-opus-early-bronze.png",
   "/artwork/snapdragon-orange-wonder.webp": "artwork/snapdragon-orange-wonder.png",
   "/artwork/snapdragon-potomac-appleblossom.webp": "artwork/snapdragon-potomac-appleblossom.png",
+  "/artwork/snapdragon-potomac-cherry-rose.webp": "artwork/snapdragon-potomac-cherry-rose.png",
+  "/artwork/snapdragon-potomac-crimson.webp": "artwork/snapdragon-potomac-crimson.png",
+  "/artwork/snapdragon-potomac-dark-orange.webp": "artwork/snapdragon-potomac-dark-orange.png",
   "/artwork/snapdragon-potomac-dark-pink.webp": "artwork/snapdragon-potomac-dark-pink.png",
   "/artwork/snapdragon-potomac-lavender.webp": "artwork/snapdragon-potomac-lavender.png",
   "/artwork/snapdragon-potomac-red.webp": "artwork/snapdragon-potomac-red.png",
