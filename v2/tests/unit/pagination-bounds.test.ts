@@ -40,14 +40,18 @@ import {
   type BrowseFilterState,
 } from "@/lib/browse";
 import type { Page, VarietyFilters } from "@/lib/repositories/catalog-read";
-import type { Paged } from "@/lib/services/catalog";
+import type { BrowseCropResult, BrowseSellersResult, Paged } from "@/lib/services/catalog";
+import type { CropDetailFilterState } from "@/lib/crop-detail";
+import type { SellerBrowseState } from "@/lib/seller-browse";
 import type {
   BrowseCounts,
   BrowseVarietiesPayload,
   CropDetail,
+  CropDetailCounts,
   PublicListing,
   SellerDetail,
   SellerListItem,
+  SellerState,
   VarietyListItem,
 } from "@/lib/validators";
 
@@ -252,6 +256,35 @@ function cropResult(page: Page): { crop: CropDetail; total: number; colorFamilie
   };
 }
 
+/** Zeroed crop-detail counts in the schema's shape (chips render, nothing narrows). */
+function zeroCropDetailCounts(): CropDetailCounts {
+  return { sellers: { all: 0, has: 0, none: 0 }, hue: { all: 0, options: {} }, series: { all: 0, options: {} } };
+}
+
+/** The /seller fake serves the browse payload through the same swappable totals. */
+async function fakeBrowseSellers(opts: { state: SellerBrowseState; page: Page }): Promise<BrowseSellersResult> {
+  const r = await fakeListSellers(opts.page, opts.state.state ? { region: [opts.state.state] } : undefined);
+  const states = fake.states as SellerState[];
+  return {
+    ...r,
+    page: Math.floor(opts.page.offset / opts.page.limit) + 1,
+    pages: totalPages(r.total, opts.page.limit),
+    counts: { all: r.total, options: Object.fromEntries(states.map((s) => [s.code, s.sellerCount])) },
+    states,
+  };
+}
+
+/** The /crop/[slug] fake serves the browse payload through the same swappable totals. */
+async function fakeBrowseCrop(_slug: string, opts: { state: CropDetailFilterState; page: Page }): Promise<BrowseCropResult> {
+  const r = cropResult(opts.page);
+  return {
+    ...r,
+    page: Math.floor(opts.page.offset / opts.page.limit) + 1,
+    pages: totalPages(r.total, opts.page.limit),
+    counts: zeroCropDetailCounts(),
+  };
+}
+
 store.services = fakeServices({
   catalog: {
     listVarieties: (opts: VarietyQuery) => listVarietiesImpl(opts),
@@ -260,6 +293,10 @@ store.services = fakeServices({
     listSellerStates: async () => fake.states,
     getSeller: async () => fake.seller,
     getCrop: async (_slug: string, opts: { page: Page }) => cropResult(opts.page),
+    // Tranche 3.1b-2: the seller + crop pages render from the browse payload (items + total
+    // + counts), the identical contract their /api/browse routes serve the in-place layer.
+    browseSellers: (opts: { state: SellerBrowseState; page: Page }) => fakeBrowseSellers(opts),
+    browseCrop: (_slug: string, opts: { state: CropDetailFilterState; page: Page }) => fakeBrowseCrop(_slug, opts),
   },
 });
 
