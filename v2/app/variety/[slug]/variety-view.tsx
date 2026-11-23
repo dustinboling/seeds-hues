@@ -154,9 +154,13 @@ export async function VarietyView({ slug, smallFarmOnly }: { slug: string; small
             <h1 id="variety-title" className="mt-1 text-3xl font-semibold text-leaf md:text-4xl">
               {v.varietyName} <span className="block text-xl font-normal text-ink md:text-2xl">{common} seeds</span>
             </h1>
-            <p className="mt-2 text-lg font-medium" data-testid="answer">
-              {v.answer}
-            </p>
+            {/* Dustin 2026-11-22: the seller-list sentence under the H1 is removed. The
+                element renders only for zero-seller varieties, whose sentence names no sellers. */}
+            {v.listings.length === 0 ? (
+              <p className="mt-2 text-lg font-medium" data-testid="answer">
+                {v.answer}
+              </p>
+            ) : null}
           </div>
         </header>
 
