@@ -31,6 +31,7 @@ import type {
   BrowseCounts,
   CoverageItem,
   CropDetail,
+  CropDetailCounts,
   CropListItem,
   PublicListing,
   RecentItem,
@@ -91,6 +92,17 @@ store.services = fakeServices({
     listVarieties: async () => fake.varieties,
     getCrop: async () => fake.crop,
     getSeller: async () => fake.seller,
+    // Tranche 3.1b-2: the crop page renders from the browse payload (items + total + counts),
+    // the identical contract GET /api/browse/crops/[slug] serves the in-place layer.
+    browseCrop: async () =>
+      fake.crop === null
+        ? null
+        : {
+            ...(fake.crop as { crop: CropDetail; total: number; colorFamilies: string[] }),
+            page: 1,
+            pages: 1,
+            counts: zeroCropDetailCounts(),
+          },
   },
 });
 
@@ -205,6 +217,11 @@ function zeroBrowseCounts(): BrowseCounts {
     smallFarm: { all: 0, on: 0 },
   };
   return counts;
+}
+
+/** Zeroed crop-detail counts in the schema's shape (chips render, nothing narrows). */
+function zeroCropDetailCounts(): CropDetailCounts {
+  return { sellers: { all: 0, has: 0, none: 0 }, hue: { all: 0, options: {} }, series: { all: 0, options: {} } };
 }
 
 function cropListItem(): CropListItem {

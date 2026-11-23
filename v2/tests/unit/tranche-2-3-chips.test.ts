@@ -478,17 +478,27 @@ describe("2.3 — ChipRemoveIcon (SPEC §4.4 family rules)", () => {
   });
 });
 
-describe("2.3-E — crop rows (R-5: class-only migration, true not page)", () => {
+describe("2.3-E — crop rows (3.1b-2: shared machinery, true not page)", () => {
+  // Tranche 3.1b-2 rebuilt the crop page onto the shared in-place machinery — the governing
+  // brief (muse-tasks/tranche-3-1b2-crop-seller.md) orders "the hand-rolled filter rows are
+  // deleted, not restyled". The page renders CropDetailBrowse; the chip class and the
+  // announced state live in the shared filter block now, and this pin moved with them.
   const CROP_PAGE = "app/crop/[slug]/page.tsx";
+  const CROP_FILTERS = "components/crop/CropDetailFilters.tsx";
+
+  it("renders the shared browse component (the hand-rolled rows are gone)", () => {
+    const src = readSource(CROP_PAGE);
+    expect(src, "the crop page left the shared machinery").toContain("<CropDetailBrowse");
+    expect(src, "a hand-rolled chip renderer returned").not.toContain("const chip = (label: string");
+  });
 
   it("carries chip-filter with aria-current true on the active option", () => {
-    const src = readSource(CROP_PAGE);
+    const src = readSource(CROP_FILTERS);
     expect(src, "the crop chip renderer lost its filter class").toContain('className="chip-filter"');
-    expect(src, "the crop rows still announce page").not.toContain('aria-current={active ? "page"');
     expect(src, "the crop rows still announce page").not.toContain('aria-current="page"');
     expect(src, "the crop rows lost their current marker").toContain('aria-current={active ? "true" : undefined}');
     expect(src, "selected utilities survive beside the class").not.toContain("border-leaf bg-leaf-50");
-    expect(src, "the rows were rebuilt instead of migrated").toContain("const chip = (label: string, next: CropFilters, active: boolean) => (");
+    expect(src, "the hydrated buttons lost their pressed marker").toContain("aria-pressed={isCropOptionActive(state, g, o.value)}");
   });
 });
 

@@ -32,6 +32,16 @@ export function cropHueLabel(family: CropHue): string {
   return family === "unknown" ? "Unknown" : COLOR_FAMILY_LABELS[family];
 }
 
+/**
+ * A crop's distinct color families (repository strings) as its rendered hue options: kept in
+ * canonical order, values outside the vocabulary dropped (they could never be selected — the
+ * parser ignores them — so rendering them would be a dead chip).
+ */
+export function cropHuesForFamilies(families: string[]): CropHue[] {
+  const set = new Set(families);
+  return CROP_HUE_ORDER.filter((f) => set.has(f));
+}
+
 /** The crop page's active filters. Hue is multi-select (PB-2: any set, OR within — [] = All). */
 export interface CropDetailFilterState {
   hue: CropHue[];

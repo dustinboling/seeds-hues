@@ -44,6 +44,14 @@ import {
   type BrowseFilterState,
 } from "@/lib/browse";
 import {
+  cropCountStates,
+  cropHuesForFamilies,
+  cropVarietyFiltersFromState,
+  type CropCountState,
+  type CropDetailFilterState,
+} from "@/lib/crop-detail";
+import type { SellerBrowseState } from "@/lib/seller-browse";
+import {
   BrowseCountsSchema,
   BrowseCropsPayloadSchema,
   BrowseSearchPayloadSchema,
@@ -52,11 +60,13 @@ import {
   CategoryDetailSchema,
   CategorySchema,
   CoverageItemSchema,
+  CropDetailCountsSchema,
   CropDetailSchema,
   CropListItemSchema,
   PublicListingSchema,
   RecentItemSchema,
   SearchResponseSchema,
+  SellerBrowseCountsSchema,
   SellerDetailSchema,
   SellerListItemSchema,
   SellerStateSchema,
@@ -73,6 +83,7 @@ import {
   type CategoryDetail,
   type CoverageItem,
   type CropDetail,
+  type CropDetailCounts,
   type CropListItem,
   type GrowerGuide,
   type LifeCycleParam,
@@ -87,6 +98,7 @@ import {
   type SearchType,
   type SellerDetail,
   type ImportedRating,
+  type SellerBrowseCounts,
   type SellerListItem,
   type SellerState,
   type SeriesDetail,
@@ -101,6 +113,37 @@ import { sellerCounts } from "@/lib/seller-counts";
 export interface Paged<T> {
   items: T[];
   total: number;
+}
+
+/**
+ * The crop-detail browse result (Tranche 3.1b-2): the crop page's crop (its varieties window
+ * is the page's items) plus the per-option counts describing them. The crop-detail server
+ * page (first paint) and GET /api/browse/crops/[slug] share this — the route serves the
+ * BrowseCropPayload slice (items/total/page/pages/counts), so SSR and in-place can never
+ * disagree.
+ */
+export interface BrowseCropResult {
+  crop: CropDetail;
+  total: number;
+  colorFamilies: string[];
+  page: number;
+  pages: number;
+  counts: CropDetailCounts;
+}
+
+/**
+ * The seller browse result (Tranche 3.1b-2): the sellers window plus the per-option counts
+ * describing it and the rendered cloud options. The /seller server page (first paint) and
+ * GET /api/browse/sellers share this — the route serves the BrowseSellersPayload slice
+ * (items/total/page/pages/counts), so SSR and in-place can never disagree.
+ */
+export interface BrowseSellersResult {
+  items: SellerListItem[];
+  total: number;
+  page: number;
+  pages: number;
+  counts: SellerBrowseCounts;
+  states: SellerState[];
 }
 
 /**
@@ -480,6 +523,37 @@ function assemblePartialBrowseCounts(queries: BrowseCountState[], totals: number
   );
 }
 
+/**
+ * Crop-detail count-query totals → CropDetailCounts (Tranche 3.1b-2). Every queried cell is
+ * strict (a missing cell is a matrix defect, never a silent 0); the hue/series option keys
+ * are the matrix's own rendered options, so the counts and the chips share one option list.
+ * Zero counts are kept: a 0-count option renders its 0 and stays operable.
+ */
+function assembleCropDetailCounts(queries: CropCountState[], totals: number[]): CropDetailCounts {
+  const cells = new Map<string, number>();
+  queries.forEach((q, i) => {
+    const t = totals[i];
+    if (t === undefined) throw new Error(`crop-detail counts: missing total for ${q.group}:${q.option ?? "all"}`);
+    cells.set(`${q.group}:${q.option ?? "all"}`, t);
+  });
+  const cell = (group: CropCountState["group"], option: string | null): number => {
+    const hit = cells.get(`${group}:${option ?? "all"}`);
+    if (hit === undefined) throw new Error(`crop-detail counts: ${group}:${option ?? "all"} missing from the count matrix`);
+    return hit;
+  };
+  const options = (group: CropCountState["group"]): Record<string, number> =>
+    Object.fromEntries(queries.filter((q) => q.group === group && q.option !== null).map((q) => [q.option, cell(group, q.option)]));
+  return parse(
+    CropDetailCountsSchema,
+    {
+      sellers: { all: cell("sellers", null), has: cell("sellers", "true"), none: cell("sellers", "false") },
+      hue: { all: cell("hue", null), options: options("hue") },
+      series: { all: cell("series", null), options: options("series") },
+    },
+    "crop-detail counts",
+  );
+}
+
 export function createCatalogService(db: Db) {
   /**
    * Variety summaries without media. Used directly only where list media is never shown: search
@@ -699,6 +773,37 @@ export function createCatalogService(db: Db) {
 
     listSellerStates: sellerStates,
 
+    /**
+     * The seller browse result (Tranche 3.1b-2): the sellers window plus the per-option
+     * counts describing it and the rendered cloud options. The /seller server page (first
+     * paint) and GET /api/browse/sellers share this — first paint and every in-place update
+     * consume the identical contract. The counts are the cloud's own numbers (the All-states
+     * total plus each state chip's seller count, from the same sellerStates() the cloud
+     * renders), so the chips and the payload can never disagree.
+     */
+    async browseSellers(opts: { state: SellerBrowseState; page: Page }): Promise<BrowseSellersResult> {
+      const states = await sellerStates();
+      const { rows, total } = await repo.listSellerRows(db, opts.page, opts.state.state ? { region: [opts.state.state] } : {});
+      const items = rows.map((r) =>
+        parse(SellerListItemSchema, { ...sellerBase(r), varietyCount: r.varietyCount ?? 0 }, "seller list item"),
+      );
+      return {
+        items,
+        total,
+        page: Math.floor(opts.page.offset / opts.page.limit) + 1,
+        pages: totalPages(total, opts.page.limit),
+        counts: parse(
+          SellerBrowseCountsSchema,
+          {
+            all: states.reduce((n, s) => n + s.sellerCount, 0),
+            options: Object.fromEntries(states.map((s) => [s.code, s.sellerCount])),
+          },
+          "seller browse counts",
+        ),
+        states,
+      };
+    },
+
     async getSeller(slug: string): Promise<SellerDetail | null> {
       const r = await repo.sellerRow(db, slug);
       if (!r) return null;
@@ -796,6 +901,50 @@ export function createCatalogService(db: Db) {
         varieties: s.items,
       };
       return { crop: parse(CropDetailSchema, crop, "crop detail"), total: s.total, colorFamilies };
+    },
+
+    /**
+     * The crop-detail browse result (Tranche 3.1b-2): the crop page's crop (its varieties
+     * window is the page's items) plus the per-option counts describing them, each counted
+     * by the same total query behind the results, so counts and results can never disagree.
+     * The crop-detail server page (first paint) and GET /api/browse/crops/[slug] share this
+     * — first paint and every in-place update consume the identical contract. Resting order
+     * is Name A–Z (PB-1: the sort control is Item 3.4).
+     */
+    async browseCrop(slug: string, opts: { state: CropDetailFilterState; page: Page }): Promise<BrowseCropResult | null> {
+      const p = await repo.plantRow(db, slug);
+      if (!p) return null;
+      const [s, seriesRows, colorFamilies, mediaRows] = await Promise.all([
+        summaries({ ...cropVarietyFiltersFromState(opts.state), plant: [slug] }, "name", opts.page),
+        repo.seriesForPlant(db, p.id),
+        repo.colorFamiliesForPlant(db, slug),
+        repo.listMediaForPlant(db, p.id),
+      ]);
+      const queries = cropCountStates(opts.state, {
+        hues: cropHuesForFamilies(colorFamilies),
+        series: seriesRows.map((r) => r.slug),
+      });
+      const totals = await Promise.all(
+        queries.map((q) => repo.countVarietyRows(db, { ...cropVarietyFiltersFromState(q.state), plant: [slug] })),
+      );
+      const crop: CropDetail = {
+        ...(await cropListItem(p, mediaRows)),
+        description: p.description,
+        sowingNotes: p.sowingNotes,
+        life_cycle: p.lifeCycle,
+        hardiness: p.hardiness,
+        grower_guide: growerGuideOf(p.growerGuide),
+        series: seriesRows,
+        varieties: s.items,
+      };
+      return {
+        crop: parse(CropDetailSchema, crop, "crop detail"),
+        total: s.total,
+        colorFamilies,
+        page: Math.floor(opts.page.offset / opts.page.limit) + 1,
+        pages: totalPages(s.total, opts.page.limit),
+        counts: assembleCropDetailCounts(queries, totals),
+      };
     },
 
     async getSeries(slug: string): Promise<SeriesDetail | null> {

@@ -3,27 +3,25 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { Pagination } from "@/components/ui/Pagination";
 import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
-import { VarietyGrid } from "@/components/variety/VarietyCard";
+import { CropDetailBrowse, type CropDetailBrowseInitial } from "@/components/crop/CropDetailBrowse";
 import { VarietyHeroImage } from "@/components/variety/VarietyHeroImage";
 import { GrowerGuide } from "@/components/crop/GrowerGuide";
 import { PodDivider } from "@/components/ui/PodDivider";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
+import type { BrowseCropResult } from "@/lib/services/catalog";
 import { mediaOgImage, ogImage, pageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
-import { assertPageInRange, pageTitleSuffix, pageWindow, parsePage, totalPages } from "@/lib/paging";
-import { legacySlug } from "@/lib/legacy";
-import { formatFriendlyDate, plural, shortCommonName, titleCaseTag } from "@/lib/format";
+import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage } from "@/lib/paging";
+import { formatFriendlyDate, plural, shortCommonName } from "@/lib/format";
 import { proseCommonName } from "@/lib/services/template";
-import { zeroSellerSentence } from "@/lib/zero-seller";
 import { PAGE_SIZE } from "@/lib/config";
 import { SEASON_LABELS, SOWING_METHOD_LABELS } from "@/lib/validators";
 import { growerGuideTabs, lifeCycleFact } from "@/lib/grower-guide";
 import { podArtForPlant } from "@/lib/data/pod-ornaments";
 import { imageUrl } from "@/lib/images";
-import type { CropDetail } from "@/lib/validators";
+import { cropHuesForFamilies, hasActiveCropFilters, readCropDetailFilters, type CropDetailFilterState } from "@/lib/crop-detail";
 import { CropSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
@@ -33,52 +31,28 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-/** Crop filters (canonical story 4): color_family, series, has_sellers — via query params. */
-interface CropFilters {
-  color: string | null;
-  series: string | null;
-  hasSellers: boolean | null;
-}
-
-function readFilters(sp: Record<string, string | string[] | undefined>): CropFilters {
-  const one = (k: string) => (Array.isArray(sp[k]) ? sp[k][0] : sp[k]);
-  const color = one("color_family");
-  const hs = one("has_sellers");
-  if (color !== undefined && !/^[a-z_-]{1,40}$/.test(color)) notFound();
-  if (hs !== undefined && hs !== "true" && hs !== "false") notFound();
-  return { color: color ?? null, series: legacySlug(sp.series), hasSellers: hs === undefined ? null : hs === "true" };
-}
-
-function href(slug: string, f: CropFilters, page = 1): string {
-  const p = new URLSearchParams();
-  if (f.color) p.set("color_family", f.color);
-  if (f.series) p.set("series", f.series);
-  if (f.hasSellers !== null) p.set("has_sellers", String(f.hasSellers));
-  if (page > 1) p.set("page", String(page));
-  const qs = p.toString();
-  return `/crop/${slug}${qs ? `?${qs}` : ""}`;
-}
-
-const filtered = (f: CropFilters) => Boolean(f.color || f.series || f.hasSellers !== null);
-
-const load = cache(async (slug: string, page: number, color: string | null, seriesSlug: string | null, hasSellers: boolean | null) => {
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return null;
-  const { catalog } = await getServices();
-  return catalog.getCrop(slug, {
-    page: pageWindow(page),
-    filters: {
-      colorFamily: color ? [color] : undefined,
-      series: seriesSlug ? [seriesSlug] : undefined,
-      hasListings: hasSellers ?? undefined,
-    },
-  });
-});
+const load = cache(
+  async (
+    slug: string,
+    page: number,
+    rawHue: string | string[] | undefined,
+    rawSeries: string | string[] | undefined,
+    rawHasSellers: string | string[] | undefined,
+  ) => {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return null;
+    const { catalog } = await getServices();
+    return catalog.browseCrop(slug, {
+      page: pageWindow(page),
+      state: readCropDetailFilters({ color_family: rawHue, series: rawSeries, has_sellers: rawHasSellers }),
+    });
+  },
+);
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
-  const f = readFilters(sp);
-  const r = await load(slug, page, f.color, f.series, f.hasSellers);
+  const f = readCropDetailFilters(sp);
+  const r = await load(slug, page, sp.color_family, sp.series, sp.has_sellers);
   if (!r) return { title: "Crop not found", robots: { index: false, follow: true } };
   const c = r.crop;
   const common = shortCommonName(c.commonName);
@@ -87,21 +61,22 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     title: `${common} Seeds${c.latinName ? ` (${c.latinName})` : ""} — ${plural(c.varietyCount, "Variety", "Varieties")}, ${c.varietiesWithSellers} With Sellers${pageTitleSuffix(page)}`,
     description: `${plural(c.varietyCount, "variety", "varieties")} of ${proseCommonName(c.commonName)}${c.latinName ? ` (${c.latinName})` : ""} cataloged; ${c.varietiesWithSellers} sold by sellers in the directory.${lastUpdatedFriendly ? ` Last updated ${lastUpdatedFriendly}.` : ""}`,
     // Filtered views are crawlable but not indexed; the canonical is the unfiltered crop page.
-    path: filtered(f) ? `/crop/${c.slug}` : href(c.slug, f, page),
-    noindex: filtered(f),
+    path: hasActiveCropFilters(f) ? `/crop/${c.slug}` : pagePath(`/crop/${c.slug}`, page),
+    noindex: hasActiveCropFilters(f),
     og: c.media[0] ? mediaOgImage(c.media[0].url, `${common} seeds`) : ogImage("crop", c.slug, `${common} seeds`),
   });
 }
 
 export default async function CropPage({ params, searchParams }: Props) {
-  // Soft-404 fix: every notFound() below (bad filters, unknown slug, page past the end)
-  // resolves BEFORE anything streams (this segment has no loading.tsx), so unknown slugs
-  // answer a true 404. The skeleton lives on as the inner Suspense fallback — the page's
-  // single loading announcement.
+  // Soft-404 fix: every notFound() below (unknown slug, page past the end) resolves BEFORE
+  // anything streams (this segment has no loading.tsx), so unknown slugs answer a true 404.
+  // The skeleton lives on as the inner Suspense fallback — the page's single loading
+  // announcement. Filter values stay forgiving (unknowns ignored, never a 404) like every
+  // other browse surface.
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
-  const f = readFilters(sp);
-  const r = await load(slug, page, f.color, f.series, f.hasSellers);
+  const f = readCropDetailFilters(sp);
+  const r = await load(slug, page, sp.color_family, sp.series, sp.has_sellers);
   if (!r) notFound();
   const { total } = r;
   if (total > 0) assertPageInRange(page, total);
@@ -113,24 +88,27 @@ export default async function CropPage({ params, searchParams }: Props) {
   );
 }
 
-function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; colorFamilies: string[] }; page: number; f: CropFilters }) {
-  const { crop: c, total, colorFamilies } = r;
-  const pages = totalPages(total);
+function CropContent({ r, page, f }: { r: BrowseCropResult; page: number; f: CropDetailFilterState }) {
+  const { crop: c, total } = r;
   const common = shortCommonName(c.commonName);
   const lastUpdatedFriendly = formatFriendlyDate(c.lastUpdated);
   const lifeCycle = lifeCycleFact(c.life_cycle, c.hardiness);
   const pod = podArtForPlant(c.slug);
-  const navKey = [page, f.color, f.series, f.hasSellers].join("|");
+  // The browse payload: the varieties window plus the per-option counts describing them —
+  // the identical contract GET /api/browse/crops/[slug] serves the in-place layer.
+  const initial: CropDetailBrowseInitial = {
+    state: f,
+    counts: r.counts,
+    items: c.varieties,
+    total,
+    page,
+  };
+  const navKey = [page, f.hue.join(","), f.series, f.hasSellers].join("|");
   const crumbs = [
     { name: "Home", href: "/" },
     { name: "Crops", href: "/crop" },
     { name: common, href: `/crop/${c.slug}` },
   ];
-  const chip = (label: string, next: CropFilters, active: boolean) => (
-    <Link href={href(c.slug, next)} scroll={false} className="chip-filter" aria-current={active ? "true" : undefined}>
-      {label}
-    </Link>
-  );
 
   return (
     <>
@@ -198,56 +176,15 @@ function CropContent({ r, page, f }: { r: { crop: CropDetail; total: number; col
         </section>
       ) : null}
 
-      <nav aria-label={`Filter ${common} varieties`} className="mt-6 flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold">Sellers:</span>
-          {chip("All", { ...f, hasSellers: null }, f.hasSellers === null)}
-          {chip("Has sellers", { ...f, hasSellers: true }, f.hasSellers === true)}
-          {chip("No seller yet", { ...f, hasSellers: false }, f.hasSellers === false)}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold">Hue:</span>
-          {chip("All", { ...f, color: null }, f.color === null)}
-          {colorFamilies.map((cf) => (
-            <span key={cf}>{chip(cf === "unknown" ? "Unknown" : titleCaseTag(cf), { ...f, color: cf }, f.color === cf)}</span>
-          ))}
-        </div>
-        {c.series.length ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-semibold">Series:</span>
-            {chip("All", { ...f, series: null }, f.series === null)}
-            {c.series.map((s) => (
-              <span key={s.slug}>{chip(s.name, { ...f, series: s.slug }, f.series === s.slug)}</span>
-            ))}
-          </div>
-        ) : null}
-      </nav>
-
-      <p id="crop-results-count" className="mt-4 text-muted" aria-live="polite" aria-atomic="true">
-        {filtered(f) ? `${plural(total, "variety", "varieties")} match. ` : ""}
-        {pages > 1 ? `Page ${page} of ${pages}.` : ""}
-      </p>
-      <div id="crop-variety-results" className="mt-3">
-        {c.varieties.length ? (
-          <VarietyGrid items={c.varieties} />
-        ) : f.hasSellers === true && c.varietiesWithSellers === 0 ? (
-          <p className="text-muted">
-            {zeroSellerSentence(proseCommonName(c.commonName))} Join a waiting list on any variety page and we will let you know when a seller lists one.{" "}
-            <Link href={`/crop/${c.slug}`}>Clear filters</Link>.
-          </p>
-        ) : (
-          <p className="text-muted">
-            No varieties match. <Link href={`/crop/${c.slug}`}>Clear filters</Link>.
-          </p>
-        )}
-      </div>
-      <Pagination
-        basePath={`/crop/${c.slug}`}
-        page={page}
-        totalPages={pages}
-        extra={Object.fromEntries(new URLSearchParams(href(c.slug, f).split("?")[1] ?? ""))}
-        label={`${common} variety pages`}
+      <CropDetailBrowse
+        slug={c.slug}
+        initial={initial}
+        hues={cropHuesForFamilies(r.colorFamilies)}
+        series={c.series}
+        commonName={c.commonName}
+        varietiesWithSellers={c.varietiesWithSellers}
       />
+
       {pod ? <PodDivider bundle={pod.bundle} /> : null}
       <GrowerGuide tabs={growerGuideTabs(c.grower_guide)} cropName={common.toLowerCase()} />
       {c.series.length ? (
