@@ -61,3 +61,17 @@ The first dispatch of this brief (run 45115938520) **failed the workflow's verif
 Fix direction (mechanism is yours, the lint gate is not negotiable): keep handler identities stable WITHOUT touching `.current` during render — e.g. update the mirror inside `useEffect`, or restructure so the handlers close over an effect-maintained ref, or drop the mirror and re-subscribe the popstate listener when its dependencies change. Whatever pattern you choose, `npm run verify` must pass in full.
 
 **Finish discipline, restated with emphasis:** the failed run evidently finished without running the repo's full verify itself — the gate's ESLint step was the first full check the code ever met, and because lint runs first, typecheck and the test suite never ran at all. Before you finish, run `npm run verify` (lint + typecheck + vitest) in `v2/` yourself and fix everything it reports. A run that ends with the gate as its first verification has failed its brief even if the gate passes.
+
+## Addendum 2 — second re-dispatch after run 45117989214 (2026-11-22, coordinator #16)
+
+The second dispatch (run 45117989214, which carried Addendum 1) **also failed the verify gate on a single lint error and produced no PR.** Progress and the new trap, both from the run's logs:
+
+- Addendum 1's fix landed: the refs-during-render error is gone.
+- The gate now dies at `25:31 error 'BrowseFilterGroup' is defined but never used` (@typescript-eslint/no-unused-vars) — one unused type left behind in the new code. Lint runs first, so typecheck and tests never ran. Two consecutive runs of this brief have now each ended on exactly one trivial lint error.
+- The builder's own stream also showed a TypeScript error it hit mid-build: a `concat` overload mismatch between an options array typed `{ value: null; label: string; count: number }` (the "All" option) and `{ value: string; ... }`. Type the option value as `string | null` at the source; do not concatenate disparately-typed option arrays.
+
+**This dispatch runs with a raised step budget. Use it on verification, not on more building:**
+
+1. Run `npx eslint .` in `v2/` **immediately after writing each new file** (the hook, the component changes), not once at the end — both dead runs wrote lint errors early and met them only at the gate.
+2. Before finishing, run the full `npm run verify` and **iterate until it exits 0**. Do not end your turn while verify is red for any reason, including a single unused symbol. If a fix uncovers a further error, fix that too — the loop is the job.
+3. Leave no unused imports, types, or variables anywhere in the change set.
