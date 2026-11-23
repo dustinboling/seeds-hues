@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 978 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 987 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -674,15 +674,21 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-potomac-crimson.webp": "artwork/snapdragon-potomac-crimson.png",
   "/artwork/snapdragon-potomac-dark-orange.webp": "artwork/snapdragon-potomac-dark-orange.png",
   "/artwork/snapdragon-potomac-dark-pink.webp": "artwork/snapdragon-potomac-dark-pink.png",
+  "/artwork/snapdragon-potomac-ivory-white.webp": "artwork/snapdragon-potomac-ivory-white.png",
   "/artwork/snapdragon-potomac-lavender.webp": "artwork/snapdragon-potomac-lavender.png",
+  "/artwork/snapdragon-potomac-mix.webp": "artwork/snapdragon-potomac-mix.png",
+  "/artwork/snapdragon-potomac-pink.webp": "artwork/snapdragon-potomac-pink.png",
   "/artwork/snapdragon-potomac-red.webp": "artwork/snapdragon-potomac-red.png",
+  "/artwork/snapdragon-potomac-royal.webp": "artwork/snapdragon-potomac-royal.png",
   "/artwork/snapdragon-potomac-white.webp": "artwork/snapdragon-potomac-white.png",
   "/artwork/snapdragon-potomac-yellow.webp": "artwork/snapdragon-potomac-yellow.png",
   "/artwork/snapdragon-rembrandt.webp": "artwork/snapdragon-rembrandt.png",
   "/artwork/snapdragon-rocket-mix.webp": "artwork/snapdragon-rocket-mix.png",
   "/artwork/snapdragon-sherbet-toned-chantilly-mix.webp": "artwork/snapdragon-sherbet-toned-chantilly-mix-v2.png",
+  "/artwork/snapdragon-toulon-mix.webp": "artwork/snapdragon-toulon-mix.png",
   "/artwork/soapwort-beauty-pink.webp": "artwork/soapwort-beauty-pink.png",
   "/artwork/soapwort-graciella-white.webp": "artwork/soapwort-graciella-white.png",
+  "/artwork/spike-speedwell-sightseeing.webp": "artwork/spike-speedwell-sightseeing.png",
   "/artwork/states/california.webp": "artwork/states/california.png",
   "/artwork/states/colorado.webp": "artwork/states/colorado.png",
   "/artwork/states/connecticut.webp": "artwork/states/connecticut.png",
@@ -703,6 +709,8 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/statice-pastel-mix.webp": "artwork/statice-pastel-mix.png",
   "/artwork/statice-qis-dark-blue.webp": "artwork/statice-qis-dark-blue.png",
   "/artwork/statice-qis-lavender.webp": "artwork/statice-qis-lavender.png",
+  "/artwork/statice-qis-mix.webp": "artwork/statice-qis-mix.png",
+  "/artwork/statice-qis-rose.webp": "artwork/statice-qis-rose.png",
   "/artwork/statice-qis-white.webp": "artwork/statice-qis-white.png",
   "/artwork/statice-qis-yellow.webp": "artwork/statice-qis-yellow.png",
   "/artwork/statice-rat-tail.webp": "artwork/statice-rat-tail.png",
@@ -723,6 +731,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/strawflower-candy-pink.webp": "artwork/strawflower-candy-pink.png",
   "/artwork/strawflower-copper-red.webp": "artwork/strawflower-copper-red.png",
   "/artwork/strawflower-dragon-fire.webp": "artwork/strawflower-dragon-fire.png",
+  "/artwork/strawflower-firefly.webp": "artwork/strawflower-firefly.png",
   "/artwork/strawflower-frosted-sulphur.webp": "artwork/strawflower-frosted-sulphur.png",
   "/artwork/strawflower-pomegranate.webp": "artwork/strawflower-pomegranate.png",
   "/artwork/strawflower-scarlet.webp": "artwork/strawflower-scarlet.png",
