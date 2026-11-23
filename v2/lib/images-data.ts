@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 897 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 906 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -329,20 +329,28 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/dahlia-shooting-stars.webp": "artwork/dahlia-shooting-stars.webp",
   "/artwork/delphinium-bellamosum.webp": "artwork/delphinium-bellamosum.png",
   "/artwork/delphinium-casablanca.webp": "artwork/delphinium-casablanca.png",
+  "/artwork/delphinium-cliveden-beauty.webp": "artwork/delphinium-cliveden-beauty.png",
   "/artwork/delphinium-guardian-lavender.webp": "artwork/delphinium-guardian-lavender.png",
   "/artwork/delphinium-guardian-white.webp": "artwork/delphinium-guardian-white.png",
+  "/artwork/delphinium-magic-fountains-lilac-pink-white-bee.webp": "artwork/delphinium-magic-fountains-lilac-pink-white-bee.png",
   "/artwork/delphinium-magic-fountains-mix.webp": "artwork/delphinium-magic-fountains-mix.png",
+  "/artwork/delphinium-magic-fountains-pure-white.webp": "artwork/delphinium-magic-fountains-pure-white.png",
   "/artwork/delphinium-magic-fountains-sky-blue-white-bee.webp": "artwork/delphinium-magic-fountains-sky-blue-white-bee.png",
   "/artwork/dill-bouquet.webp": "artwork/dill-bouquet.png",
   "/artwork/dusty-miller-new-look.webp": "artwork/dusty-miller-new-look.png",
   "/artwork/dusty-miller-silver-dust.webp": "artwork/dusty-miller-silver-dust.png",
   "/artwork/echinacea-cheyenne-spirit.webp": "artwork/echinacea-cheyenne-spirit.png",
   "/artwork/echinacea-echinacea-purpurea.webp": "artwork/echinacea-echinacea-purpurea.png",
+  "/artwork/echinacea-feeling-pink.webp": "artwork/echinacea-feeling-pink.png",
+  "/artwork/echinacea-mellow-yellows.webp": "artwork/echinacea-mellow-yellows.png",
+  "/artwork/echinacea-paradiso-super-duper.webp": "artwork/echinacea-paradiso-super-duper.png",
   "/artwork/echinacea-paradiso-tall-mix.webp": "artwork/echinacea-paradiso-tall-mix.png",
   "/artwork/echinacea-powwow-white.webp": "artwork/echinacea-powwow-white.png",
   "/artwork/echinacea-powwow-wild-berry.webp": "artwork/echinacea-powwow-wild-berry.png",
   "/artwork/echinacea-white-swan.webp": "artwork/echinacea-white-swan.png",
+  "/artwork/eryngium-blaukappe.webp": "artwork/eryngium-blaukappe.png",
   "/artwork/eryngium-blue-glitter.webp": "artwork/eryngium-blue-glitter.png",
+  "/artwork/eryngium-blue-hobbit.webp": "artwork/eryngium-blue-hobbit.png",
   "/artwork/eryngium-white-glitter.webp": "artwork/eryngium-white-glitter.png",
   "/artwork/eucalyptus-baby-blue.webp": "artwork/eucalyptus-baby-blue.png",
   "/artwork/eucalyptus-nichols-willow.webp": "artwork/eucalyptus-nichols-willow.png",
@@ -356,6 +364,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/feverfew-vegmo-snowball.webp": "artwork/feverfew-vegmo-snowball.png",
   "/artwork/figwort.webp": "artwork/figwort.png",
   "/artwork/flax-bubble-grass.webp": "artwork/flax-bubble-grass.png",
+  "/artwork/flowering-kale-crane-pink.webp": "artwork/flowering-kale-crane-pink.png",
   "/artwork/flowering-tobacco-bronze-queen.webp": "artwork/flowering-tobacco-bronze-queen.png",
   "/artwork/flowering-tobacco-grandiflora.webp": "artwork/flowering-tobacco-grandiflora.png",
   "/artwork/flowering-tobacco-langsdorffii.webp": "artwork/flowering-tobacco-langsdorffii.png",
