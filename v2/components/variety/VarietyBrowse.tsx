@@ -98,11 +98,11 @@ export function VarietyBrowse({ initial }: { initial: VarietyBrowseInitial }) {
               <>
                 {" "}
                 {hydrated ? (
-                  <button type="button" className="link-button" onClick={() => select(() => clearAllFilters(), "first-all")}>
+                  <button type="button" className="link-button" onClick={() => select((s) => clearAllFilters(s), "first-all")}>
                     Clear filters
                   </button>
                 ) : (
-                  <Link href={BASE_PATH} scroll={false}>
+                  <Link href={browseHref(BASE_PATH, clearAllFilters(committed.state))} scroll={false}>
                     Clear filters
                   </Link>
                 )}

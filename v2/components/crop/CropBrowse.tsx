@@ -14,7 +14,7 @@
 import Link from "next/link";
 import { CropCardImage } from "@/components/crop/CropCardImage";
 import { InPlaceAppliedRow, InPlaceFilters, browseInPlaceConfig, useInPlaceBrowse } from "@/components/ui/InPlaceBrowse";
-import { clearAllFilters, cropIndexCountLine, hasActiveFilters, type BrowseFilterGroup, type BrowseFilterState } from "@/lib/browse";
+import { browseHref, clearAllFilters, cropIndexCountLine, hasActiveFilters, type BrowseFilterGroup, type BrowseFilterState } from "@/lib/browse";
 import { plural } from "@/lib/format";
 import { browsePayloadCore, isRecord, type InPlaceSnapshot } from "@/lib/in-place";
 import { proseCommonName } from "@/lib/services/template";
@@ -91,11 +91,11 @@ export function CropBrowse({ initial }: { initial: CropBrowseInitial }) {
               <>
                 {" "}
                 {hydrated ? (
-                  <button type="button" className="link-button" onClick={() => select(() => clearAllFilters(), "first-all")}>
+                  <button type="button" className="link-button" onClick={() => select((s) => clearAllFilters(s), "first-all")}>
                     Clear filters
                   </button>
                 ) : (
-                  <Link href={BASE_PATH} scroll={false}>
+                  <Link href={browseHref(BASE_PATH, clearAllFilters(committed.state))} scroll={false}>
                     Clear filters
                   </Link>
                 )}

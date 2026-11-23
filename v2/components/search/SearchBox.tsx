@@ -155,7 +155,9 @@ export function SearchBox({
         // nothing, even with cached results).
         onFocus={() => q !== mountValue.current && results.length > 0 && setOpen(true)}
         role="combobox"
-        aria-expanded={open && results.length > 0}
+        // The panel's own visibility (suggestions, notice, or failure row — hidden is
+        // false in all three): the combobox reports expanded whenever it is on screen.
+        aria-expanded={open}
         aria-controls={listId}
         aria-autocomplete="list"
         aria-activedescendant={active >= 0 ? `${id}-opt-${active}` : undefined}

@@ -2,9 +2,12 @@
  * Tranche 3.4 §5.2 — the sort control's model (lib/browse.ts): the ?sort= vocabulary
  * (absent = Name A–Z, the PB-1 fallback), URL encoding, state equality, and the count
  * line's ordering phrases. The crop-detail half lives in crop-detail-filters.test.ts.
+ * The F-4 follow-up pins Clear All keeping the shopper's sort (both non-resting sorts,
+ * plus resting byte-equivalence).
  *
  * Non-vacuity: fails on pre-build code — parseSortParam, BrowseSortParam and the sort
- * phrases do not exist there (and resting states carry no sort).
+ * phrases do not exist there (and resting states carry no sort). The F-4 pins fail on
+ * the shipped PR #57 code too — its Clear All resets the sort to name.
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -21,6 +24,7 @@ import {
   readBrowseFiltersForGroups,
   scopedBrowseFiltersFromSearch,
   type BrowseFilterState,
+  type BrowseSortParam,
 } from "@/lib/browse";
 
 const state = (over: Partial<BrowseFilterState> = {}): BrowseFilterState => ({
@@ -60,7 +64,7 @@ describe("?sort= vocabulary (PB-1 fallback: absent is Name A–Z)", () => {
     expect(readBrowseFilters({ sort: "availability" }, "multi").sort).toBe("availability");
     expect(readBrowseFilters({ sort: "recent" }, "multi").sort).toBe("recent");
     expect(readBrowseFilters({}, "multi").sort).toBe("name");
-    expect(clearAllFilters().sort).toBe("name");
+    expect(clearAllFilters(state()).sort).toBe("name");
   });
 
   it("scoped surfaces ignore ?sort= unless they carry the control", () => {
@@ -90,6 +94,34 @@ describe("sort in URLs and state equality", () => {
     expect(equalBrowseFilters(state(), state())).toBe(true);
     expect(equalBrowseFilters(state(), state({ sort: "availability" }))).toBe(false);
     expect(equalBrowseFilters(state({ sort: "recent" }), state({ sort: "recent" }))).toBe(true);
+  });
+});
+
+describe("Clear All keeps the shopper's sort (F-4: §2.6 — sort is an ordering, not a group)", () => {
+  const filtered = (sort: BrowseSortParam): BrowseFilterState =>
+    state({ season: "cool", method: "direct", lifeCycle: "perennial", hue: ["pink", "peach"], smallFarm: true, sort });
+
+  it("resets every group to All and leaves availability untouched", () => {
+    expect(clearAllFilters(filtered("availability"))).toEqual(state({ sort: "availability" }));
+  });
+
+  it("resets every group to All and leaves recent untouched", () => {
+    expect(clearAllFilters(filtered("recent"))).toEqual(state({ sort: "recent" }));
+  });
+
+  it("at the resting default Clear All is byte-equivalent to the resting state", () => {
+    expect(clearAllFilters(state())).toEqual(state());
+    expect(clearAllFilters(filtered("name"))).toEqual(state());
+  });
+
+  it("a cleared sorted state carries only ?sort= and states the true order", () => {
+    const cleared = clearAllFilters(filtered("availability"));
+    expect(filterParams(cleared)).toEqual({ sort: "availability" });
+    expect(browseHref("/variety", cleared)).toBe("/variety?sort=availability");
+    expect(browseCountLine(cleared, 48, 1, 1)).toBe("48 varieties, most sellers first.");
+    const resting = clearAllFilters(filtered("name"));
+    expect(filterParams(resting)).toEqual({});
+    expect(browseHref("/variety", resting)).toBe("/variety");
   });
 });
 

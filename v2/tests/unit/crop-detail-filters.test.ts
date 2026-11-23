@@ -2,9 +2,12 @@
  * Crop-detail filter model pins (lib/crop-detail.ts): the CropDetailCounts schema mirrors the
  * vocabulary (the pin lib/validators promises), and the ?sort= half of the 3.4 sort control
  * (parse, URL encoding, count-line phrases). Mirrors browse-filters.test.ts's schema pin.
+ * The F-4 follow-up pins Clear All keeping the shopper's sort (both non-resting sorts,
+ * plus resting byte-equivalence).
  *
  * Non-vacuity: fails on pre-build code — this file does not exist there (the validators
- * comment cites it), and CropDetailFilterState carries no sort.
+ * comment cites it), and CropDetailFilterState carries no sort. The F-4 pins fail on the
+ * shipped PR #57 code too — its Clear All resets the sort to name.
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -16,6 +19,7 @@ import {
   cropCountStateFor,
   cropDetailCountLine,
   cropDetailFiltersFromSearch,
+  cropDetailHref,
   cropFilterParams,
   cropHuesForFamilies,
   equalCropDetailFilters,
@@ -65,7 +69,35 @@ describe("crop-detail transitions keep their shipped forms", () => {
     expect(removeCropHue(state({ hue: ["pink"] }), "pink").hue).toEqual([]);
     expect(clearCropGroup(state({ hue: ["pink"], sort: "recent" }), "hue")).toEqual(state({ sort: "recent" }));
     expect(cropCountStateFor(state(), "hue", "pink").hue).toEqual(["pink"]);
-    expect(clearCropDetailFilters()).toEqual(state());
+    expect(clearCropDetailFilters(state({ hue: ["pink"], series: "katz", hasSellers: true }))).toEqual(state());
+  });
+});
+
+describe("Clear All keeps the shopper's sort (F-4: §2.6 — sort is an ordering, not a group)", () => {
+  const filtered = (sort: CropDetailFilterState["sort"]): CropDetailFilterState =>
+    state({ hue: ["pink", "unknown"], series: "katz", hasSellers: true, sort });
+
+  it("resets every group to All and leaves availability untouched", () => {
+    expect(clearCropDetailFilters(filtered("availability"))).toEqual(state({ sort: "availability" }));
+  });
+
+  it("resets every group to All and leaves recent untouched", () => {
+    expect(clearCropDetailFilters(filtered("recent"))).toEqual(state({ sort: "recent" }));
+  });
+
+  it("at the resting default Clear All is byte-equivalent to the resting state", () => {
+    expect(clearCropDetailFilters(state())).toEqual(state());
+    expect(clearCropDetailFilters(filtered("name"))).toEqual(state());
+  });
+
+  it("a cleared sorted state carries only ?sort= and states the true order", () => {
+    const cleared = clearCropDetailFilters(filtered("recent"));
+    expect(cropFilterParams(cleared)).toEqual({ sort: "recent" });
+    expect(cropDetailHref("/crop/stock", cleared)).toBe("/crop/stock?sort=recent");
+    expect(cropDetailCountLine(cleared, 24, 1, 1)).toBe("24 varieties, most recently checked first.");
+    const resting = clearCropDetailFilters(filtered("name"));
+    expect(cropFilterParams(resting)).toEqual({});
+    expect(cropDetailHref("/crop/stock", resting)).toBe("/crop/stock");
   });
 });
 
