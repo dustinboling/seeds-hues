@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { SearchBox } from "@/components/search/SearchBox";
 import { CropCardImage } from "@/components/crop/CropCardImage";
 import { AvailabilityBadge } from "@/components/variety/Availability";
+import { HomeMotifDivider } from "@/components/ui/HomeMotifDivider";
 import { ThemeArt } from "@/components/ui/ThemeArt";
 import { PodDivider } from "@/components/ui/PodDivider";
 import { BrowseFilters, activeFilterLabels, type BrowseFilterState } from "@/components/ui/BrowseFilters";
@@ -81,8 +82,8 @@ export default async function HomePage({ searchParams }: Props) {
           </p>
         </div>
       </section>
-      {/* Thin-stem divider for this major break (hero → browse): the site's standard rule. */}
-      <div aria-hidden="true" className="divider-stem mb-8 mt-10" />
+      {/* C3 — Vine & Pods, Revised (love-in-a-puff) motif for this major break (hero → browse). */}
+      <HomeMotifDivider />
 
       <section aria-labelledby="crops-title" className="py-6">
         <div className="flex items-baseline justify-between gap-4">

@@ -224,6 +224,9 @@ describe("policy guardrails", () => {
       // stored /ornaments/ paths (lib/data/pod-ornaments.ts). The footer has no motif.
       "components/ui/PodDivider.tsx": [/src=\{imageUrl\(bundle, \{ width: 1600 \}\)\}/],
       "app/crop/[slug]/page.tsx": [/src=\{imageUrl\(pod\.motif, \{ width: 480 \}\)\}/],
+      // Homepage motif swap (C3, 2026-11-22): the vine-and-pods break divider, from the
+      // stored /theme/divider-home.webp path via lib/images.
+      "components/ui/HomeMotifDivider.tsx": [/src=\{imageUrl\("\/theme\/divider-home\.webp", \{ width: 1440 \}\)\}/],
       // Divider motif B had an entry here until its 2026-11-21 retirement removed the
       // component outright; an <img> outside this table fails the scan below, as it should.
       // State-plates delta (2026-11-19): the state-flower plate on seller + state pages, from the
@@ -250,6 +253,7 @@ describe("policy guardrails", () => {
       "components/variety/VarietyCardImage.tsx": /imageSrcSet\(m\.url, \[480, 768\]\)/,
       "components/variety/VarietyHeroImage.tsx": /imageSrcSet\(media\.url, \[768, 1120\]\)/,
       "components/ui/ThemeArt.tsx": /srcSet=\{imageUrl\(art\.wide, \{ width: 1600 \}\)\}/,
+      "components/ui/HomeMotifDivider.tsx": /imageSrcSet\("\/theme\/divider-home\.webp", \[720, 1080, 1440\]\)/,
     };
     for (const [file, re] of Object.entries(SRCSET_FILES)) expect(stripComments(read(file)), file).toMatch(re);
     expect(offenders(ui, /\bsrcSet=/, Object.keys(SRCSET_FILES))).toEqual([]);
@@ -281,7 +285,9 @@ describe("policy guardrails", () => {
     // asset-retirement operation, but nothing renders it any more — no runtime file may name
     // the component or the stored path. (The manifest file itself is the one allow-listed hit.)
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
-    expect(offenders(RUNTIME, /MotifDivider|MOTIF_B|motif-divider-b/, ["lib/images-data.ts"])).toEqual([]);
+    // The MotifDivider alternative is word-bound: the retired Motif B component — not the
+    // C3 HomeMotifDivider, whose name contains it as a substring.
+    expect(offenders(RUNTIME, /(?<![A-Za-z0-9_$])MotifDivider(?![A-Za-z0-9_$])|MOTIF_B|motif-divider-b/, ["lib/images-data.ts"])).toEqual([]);
     // The scanner is not vacuous: it still sees the retained manifest entry.
     expect(offenders(["lib/images-data.ts"], /motif-divider-b/, [])).toHaveLength(1);
     // Every state scene and every state-flower outline painting the pages can render is held too.
