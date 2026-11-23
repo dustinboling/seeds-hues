@@ -344,10 +344,12 @@ describe("one canonical zero-seller sentence (Batch 0.2)", () => {
     expect(h).toContain("Know a seller who sells it?");
   });
 
-  it("zero-seller meta title/description derive from the shared constant", () => {
+  it("zero-seller meta title uses the shared constant; description uses the Template C clause", () => {
     const v = variety([]);
     expect(varietyTitle(v)).toContain(ZERO_SELLER_TITLE);
-    expect(varietyDescription(v)).toContain(zeroSellerSentence("Katz Mix"));
+    // Item ANS completion (Dustin 2026-11-23): the meta/OG/Twitter description no longer carries
+    // the on-page zero-seller sentence — it renders Wren's Template C honesty + waitlist clause.
+    expect(varietyDescription(v)).toContain("No US sellers currently list this variety. Join the waitlist.");
     for (const old of RETIRED) {
       expect(varietyTitle(v), old).not.toContain(old);
       expect(varietyDescription(v), old).not.toContain(old);
