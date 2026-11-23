@@ -437,6 +437,109 @@
   textarea.field {
     min-height: 6rem;
   }
+  /*
+   * Public field-state set (Tranche 3.3, FIELD-STATES-DESIGN.md §3–§7). State rules layer
+   * on top of .field's resting values — the resting rule above does not change by a single
+   * computed value (the design's resting-state rule), so there is deliberately no transition
+   * declared here: one would itself be a resting computed-value change.
+   */
+  /* Error: keyed to the accessibility attribute itself, so the visual and programmatic states cannot drift apart. */
+  .field[aria-invalid="true"] {
+    border-color: var(--color-warn);
+  }
+  /* Filled: a content state (ink register), never a validity signal. Always carried with .field, never alone. */
+  .field-filled {
+    border-color: var(--color-ink-soft);
+  }
+  /* Disabled: genuinely unavailable fields only — never a data-bearing field during a submission. */
+  .field:disabled {
+    background: var(--color-paper);
+    border-color: var(--color-line);
+    color: var(--color-muted);
+    cursor: not-allowed;
+  }
+  /* Placeholder: the hint tone — a hint that lives inside the field until typing replaces it. */
+  .field::placeholder {
+    color: var(--color-muted);
+    opacity: 1;
+  }
+  /*
+   * Hint / description slot. Color only: family and size stay whatever the form already renders,
+   * so the migration from the bare spans is computed-identical (the size still comes from the
+   * caller's text-sm utility).
+   */
+  .field-hint {
+    color: var(--color-muted);
+  }
+  /* Inline error line: the admin FieldErrorLine construction, in the public dialect. */
+  .field-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--color-warn);
+  }
+  /* Form-head summary / alert box: one component, two contents (multi-error summary, form-level message). */
+  .field-summary {
+    background: var(--color-warn-50);
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-control);
+    padding: 16px;
+  }
+  /*
+   * Programmatic-focus ring for the summary box and the success heading's tabindex target: the
+   * global ring's values under plain :focus, because a browser's focus-visible heuristic may judge
+   * a scripted focus move as not needing a visible indicator. The heading hook is a data
+   * attribute, not a class — the set creates no class beyond §2.2's table.
+   */
+  .field-summary:focus,
+  [data-field-success-heading]:focus {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  /*
+   * Success panel: names the composition; the card construction comes from the .card class it
+   * always accompanies (ground, border, radius, shadow unchanged — Add Your Farm's shipped geometry).
+   */
+  .field-success {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+  }
+  /* Selectable-card dress for weighty choice groups. Always carried with .card, never alone. */
+  @media (hover: hover) and (pointer: fine) {
+    .field-option:hover {
+      border-color: var(--color-leaf-600);
+      background: var(--color-leaf-50);
+    }
+  }
+  /* Doubled class so the selected dress survives hover, like the pressed chip's. */
+  .field-option.field-option-selected {
+    border-color: var(--color-leaf);
+    background-color: var(--color-leaf-50);
+  }
+  /*
+   * Checked mark in leaf on native radios/checkboxes (PB-B ruling (a)). The rule is global because
+   * it is provably equivalent to a form-scoped one: admin's native radios already carry the
+   * accent-leaf utility (the identical computed value), and every other native radio/checkbox in
+   * the product lives in the §4.3 inventory forms — so admin renders exactly as before.
+   */
+  input:is([type="radio"], [type="checkbox"]) {
+    accent-color: var(--color-leaf);
+  }
+  /*
+   * Busy / disabled submits: the primary loses its letterpress edge; ground and colors hold at
+   * their resting computed values (white on leaf stays 10.60:1). No opacity reduction anywhere.
+   */
+  .btn-primary:disabled {
+    box-shadow: none;
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+  }
   .btn-secondary {
     background: var(--color-surface);
     color: var(--color-leaf);

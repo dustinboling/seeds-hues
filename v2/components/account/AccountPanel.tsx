@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { AlertItem, PublicUser } from "@/lib/services/accounts";
 import { callApi, deliveryNote } from "./api";
+import { alertPhoneFailure, changeEmailFailure, deleteAccountFailure, type MappedFormFailure } from "./account-errors";
+import { FieldErrorLine, FieldSummary, focusFailureTarget, syncFilledClass } from "@/components/ui/field-states";
 import { CodeEntry } from "./CodeEntry";
 import { SMS_CONSENT } from "./SignupFields";
 
@@ -42,6 +44,8 @@ function StatusLine({ s }: { s: AlertItem["status"] }) {
   );
 }
 
+const EMPTY_FAILURE: MappedFormFailure = { fields: [], form: null };
+
 export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: AlertItem[] }) {
   const router = useRouter();
   const refresh = () => router.refresh();
@@ -50,7 +54,30 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [phoneNote, setPhoneNote] = useState<string | null>(null);
   const [emailNote, setEmailNote] = useState<string | null>(null);
+  const [emailFailure, setEmailFailure] = useState<MappedFormFailure>(EMPTY_FAILURE);
+  const [emailDone, setEmailDone] = useState<string | null>(null);
+  const [phoneFailure, setPhoneFailure] = useState<MappedFormFailure>(EMPTY_FAILURE);
+  const [phoneDone, setPhoneDone] = useState<string | null>(null);
+  const [deleteFailure, setDeleteFailure] = useState<MappedFormFailure>(EMPTY_FAILURE);
+  const emailSummaryRef = useRef<HTMLDivElement | null>(null);
+  const phoneSummaryRef = useRef<HTMLDivElement | null>(null);
+  const deleteSummaryRef = useRef<HTMLDivElement | null>(null);
 
+  // Failed sub-form submits move focus to the in-form summary (form-level) or the field.
+  useEffect(() => {
+    if (emailFailure.form === null && emailFailure.fields.length === 0) return;
+    focusFailureTarget(emailSummaryRef.current, emailFailure.fields.map((f) => ({ fieldId: "change-email", message: f.message })), emailFailure.form);
+  }, [emailFailure]);
+  useEffect(() => {
+    if (phoneFailure.form === null && phoneFailure.fields.length === 0) return;
+    focusFailureTarget(phoneSummaryRef.current, phoneFailure.fields.map((f) => ({ fieldId: "alert-phone", message: f.message })), phoneFailure.form);
+  }, [phoneFailure]);
+  useEffect(() => {
+    if (deleteFailure.form === null && deleteFailure.fields.length === 0) return;
+    focusFailureTarget(deleteSummaryRef.current, deleteFailure.fields.map((f) => ({ fieldId: "delete-confirm", message: f.message })), deleteFailure.form);
+  }, [deleteFailure]);
+
+  /** Non-field actions only (leave a list, preferences): the panel-head line keeps their feedback. */
   async function act(path: string, body: unknown, ok?: string, after?: (data: Record<string, unknown>) => void) {
     setBusy(true);
     setMsg(null);
@@ -69,18 +96,35 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
   async function changeEmail(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const email = String(new FormData(e.currentTarget).get("email") ?? "").trim();
-    await act("/api/v1/account/email", { email }, "Email updated — enter the code we sent to the new address.", (d) => setEmailNote(deliveryNote(d.delivery as string | null, "email")));
+    setBusy(true);
+    setEmailFailure(EMPTY_FAILURE);
+    setEmailDone(null);
+    const r = await callApi("/api/v1/account/email", { email });
+    setBusy(false);
+    if (!r.ok) {
+      setEmailFailure(changeEmailFailure(r.status, r.code, r.message));
+      return;
+    }
+    setEmailNote(deliveryNote((r.data as Record<string, unknown>).delivery as string | null, "email"));
+    setEmailDone("Email updated — enter the code we sent to the new address.");
+    refresh();
   }
 
   async function saveTexts(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    await act(
-      "/api/v1/account/alert-phone",
-      { alert_phone: String(f.get("alert_phone") ?? ""), sms_opt_in: f.get("sms_opt_in") === "on" },
-      "Text alert settings saved.",
-      (d) => setPhoneNote(deliveryNote(d.delivery as string | null, "phone")),
-    );
+    setBusy(true);
+    setPhoneFailure(EMPTY_FAILURE);
+    setPhoneDone(null);
+    const r = await callApi("/api/v1/account/alert-phone", { alert_phone: String(f.get("alert_phone") ?? ""), sms_opt_in: f.get("sms_opt_in") === "on" });
+    setBusy(false);
+    if (!r.ok) {
+      setPhoneFailure(alertPhoneFailure(r.status, r.code, r.message));
+      return;
+    }
+    setPhoneNote(deliveryNote((r.data as Record<string, unknown>).delivery as string | null, "phone"));
+    setPhoneDone("Text alert settings saved.");
+    refresh();
   }
 
   async function signOut() {
@@ -94,16 +138,19 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
     e.preventDefault();
     const confirm = String(new FormData(e.currentTarget).get("confirm") ?? "").trim();
     setBusy(true);
+    setDeleteFailure(EMPTY_FAILURE);
     const r = await callApi("/api/v1/account/delete", { confirm });
     setBusy(false);
     if (r.ok) {
       router.push("/account?deleted=1");
       router.refresh();
-    }
-    else setMsg({ kind: "alert", text: confirm === "DELETE" ? r.message : "Type DELETE (in capitals) to confirm." });
+    } else setDeleteFailure(deleteAccountFailure(r.status, r.code, r.message));
   }
 
   const first = user.name.trim().split(/\s+/)[0] ?? "";
+  const emailError = emailFailure.fields[0]?.message ?? null;
+  const phoneError = phoneFailure.fields[0]?.message ?? null;
+  const confirmError = deleteFailure.fields[0]?.message ?? null;
 
   return (
     <div className="flex flex-col gap-8">
@@ -167,17 +214,38 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
               }} />
           </>
         ) : null}
-        <form onSubmit={changeEmail} className="flex flex-col gap-1">
+        <form onSubmit={changeEmail} aria-busy={busy || undefined} className="flex flex-col gap-1">
+          {emailFailure.form ? <FieldSummary heading={emailFailure.form} entries={[]} summaryRef={emailSummaryRef} /> : null}
+          {emailDone ? (
+            <p role="status" className="font-medium">
+              {emailDone}
+            </p>
+          ) : null}
           <label htmlFor="change-email" className="text-sm font-semibold">
             Change email
           </label>
           <div className="flex flex-wrap gap-2">
-            <input id="change-email" name="email" type="email" required maxLength={320} autoComplete="email" className="field max-w-sm" />
+            <input
+              id="change-email"
+              name="email"
+              type="email"
+              required
+              maxLength={320}
+              autoComplete="email"
+              aria-invalid={emailError ? true : undefined}
+              aria-describedby={emailError ? "change-email-hint change-email-error" : "change-email-hint"}
+              onBlur={syncFilledClass}
+              onChange={syncFilledClass}
+              className="field max-w-sm"
+            />
             <button type="submit" className="btn btn-secondary" disabled={busy}>
               Update email
             </button>
           </div>
-          <span className="text-sm text-muted">A new address needs its own 6-digit code before email alerts resume.</span>
+          <span id="change-email-hint" className="field-hint text-sm">
+            A new address needs its own 6-digit code before email alerts resume.
+          </span>
+          {emailError ? <FieldErrorLine id="change-email-error" message={emailError} /> : null}
         </form>
       </section>
 
@@ -192,7 +260,13 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
               : `Texts are held until you confirm ${user.alert_phone_display} with the code we text you.`
             : "Texts are off."}
         </p>
-        <form onSubmit={saveTexts} className="flex flex-col gap-3">
+        <form onSubmit={saveTexts} aria-busy={busy || undefined} className="flex flex-col gap-3">
+          {phoneFailure.form ? <FieldSummary heading={phoneFailure.form} entries={[]} summaryRef={phoneSummaryRef} /> : null}
+          {phoneDone ? (
+            <p role="status" className="font-medium">
+              {phoneDone}
+            </p>
+          ) : null}
           <div className="flex items-start gap-2">
             <input id="sms-opt-in" name="sms_opt_in" type="checkbox" defaultChecked={user.sms_opt_in} className="mt-1 h-5 w-5" aria-describedby="sms-consent" />
             <label htmlFor="sms-opt-in">
@@ -206,8 +280,23 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
             <label htmlFor="alert-phone" className="text-sm font-semibold">
               Alert number
             </label>
-            <input id="alert-phone" name="alert_phone" type="tel" inputMode="tel" maxLength={32} defaultValue={user.alert_phone_display ?? user.phone_display} className="field max-w-xs" />
-            <span className="text-sm text-muted">Starts as your account phone. A new number gets its own one-time code.</span>
+            <input
+              id="alert-phone"
+              name="alert_phone"
+              type="tel"
+              inputMode="tel"
+              maxLength={32}
+              defaultValue={user.alert_phone_display ?? user.phone_display}
+              aria-invalid={phoneError ? true : undefined}
+              aria-describedby={phoneError ? "alert-phone-hint alert-phone-error" : "alert-phone-hint"}
+              onBlur={syncFilledClass}
+              onChange={syncFilledClass}
+              className="field max-w-xs"
+            />
+            <span id="alert-phone-hint" className="field-hint text-sm">
+              Starts as your account phone. A new number gets its own one-time code.
+            </span>
+            {phoneError ? <FieldErrorLine id="alert-phone-error" message={phoneError} /> : null}
           </div>
           <div>
             <button type="submit" className="btn btn-secondary" disabled={busy}>
@@ -281,19 +370,30 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
             Sign out
           </button>
           {!confirmDelete ? (
-            <button type="button" className="btn btn-secondary" onClick={() => setConfirmDelete(true)} disabled={busy}>
+            <button type="button" className="btn btn-secondary" onClick={() => { setDeleteFailure(EMPTY_FAILURE); setConfirmDelete(true); }} disabled={busy}>
               Delete my account
             </button>
           ) : null}
         </div>
         {confirmDelete ? (
-          <form onSubmit={deleteAccount} className="card flex flex-col gap-2 p-4" aria-label="Confirm account deletion">
+          <form onSubmit={deleteAccount} aria-busy={busy || undefined} className="card flex flex-col gap-2 p-4" aria-label="Confirm account deletion">
+            {deleteFailure.form ? <FieldSummary heading={deleteFailure.form} entries={[]} summaryRef={deleteSummaryRef} /> : null}
             <p>This permanently deletes your account, your waiting lists and any queued alerts. It can’t be undone.</p>
             <label htmlFor="delete-confirm" className="text-sm font-semibold">
               Type DELETE to confirm
             </label>
             <div className="flex flex-wrap gap-2">
-              <input id="delete-confirm" name="confirm" required autoComplete="off" className="field max-w-[12rem]" />
+              <input
+                id="delete-confirm"
+                name="confirm"
+                required
+                autoComplete="off"
+                aria-invalid={confirmError ? true : undefined}
+                aria-describedby={confirmError ? "delete-confirm-error" : undefined}
+                onBlur={syncFilledClass}
+                onChange={syncFilledClass}
+                className="field max-w-[12rem]"
+              />
               <button type="submit" className="btn btn-primary" disabled={busy}>
                 Delete my account
               </button>
@@ -301,6 +401,7 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
                 Cancel
               </button>
             </div>
+            {confirmError ? <FieldErrorLine id="delete-confirm-error" message={confirmError} /> : null}
           </form>
         ) : null}
       </section>

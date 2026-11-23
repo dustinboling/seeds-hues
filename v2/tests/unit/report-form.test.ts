@@ -36,9 +36,9 @@ describe("ReportForm human check", () => {
     expect(src).toMatch(/setReset\(\(n\) => n \+ 1\)/);
     // Never read from FormData (the field is empty until the widget completes), never send without a token.
     expect(src).not.toMatch(/cf-turnstile-response/);
-    expect(src).toMatch(/if \(props\.siteKey && !token\) \{\s*setState\(\{ status: "error", message: REPORT_TURNSTILE_PENDING \}\);\s*return;/);
+    expect(src).toMatch(/if \(props\.siteKey && !token\) \{\s*setFailure\(\{ fields: \[\], form: REPORT_TURNSTILE_PENDING \}\);\s*return;/);
     // API failures go through the human-copy mapper, never the raw detail.
-    expect(src).toMatch(/message: reportErrorMessage\(r\.status, r\.code, r\.message\)/);
+    expect(src).toMatch(/setFailure\(reportFailure\(r\.status, r\.code, r\.message\)\)/);
     expect(src).not.toMatch(/\.detail\b/);
   });
 });
