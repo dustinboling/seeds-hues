@@ -45,11 +45,14 @@
  *   row's Clear all when the row persists, else the first group's "All" chip.
  *
  * The hook is generic over the filter-state type S (BrowseFilterState on the 3.1b
- * surfaces; part 2's surfaces bring their own state plus their own presentational bits)
- * and the result-item type P. `browseInPlaceConfig` builds the config for the
- * BrowseFilterState surfaces; `InPlaceFilters` / `InPlaceAppliedRow` are their shared
- * presentational blocks. The snapshot shape itself lives in lib/in-place.ts — the one
- * access convention (`snapshot.total`, `snapshot.items`, `snapshot.counts`, direct).
+ * surfaces; part 2's surfaces bring their own state plus their own presentational bits),
+ * the result-item type P, and the counts type C (BrowseCounts on the 3.1b surfaces; part
+ * 2's surfaces bring their own — defaults keep every existing consumer identical).
+ * `browseInPlaceConfig` builds the config for the BrowseFilterState surfaces;
+ * `InPlaceFilters` is their shared filter block; `InPlaceAppliedRow` is shared by every
+ * surface (its `showClearAll` prop carries the §2.6.2 single-group exception). The snapshot
+ * shape itself lives in lib/in-place.ts — the one access convention (`snapshot.total`,
+ * `snapshot.items`, `snapshot.counts`, direct).
  */
 
 import Link from "next/link";
@@ -83,6 +86,7 @@ import {
   type HueMode,
 } from "@/lib/browse";
 import type { InPlacePayloadCore, InPlaceSnapshot } from "@/lib/in-place";
+import type { BrowseCounts } from "@/lib/validators";
 
 /** Where an unmounting action hands focus: the row's Clear all if the row survives, else the first All. */
 export type InPlaceFocusTarget = "first-all" | "clear-all";
@@ -99,8 +103,11 @@ export interface InPlaceRemover<S> {
  * The surface-generic in-place contract: everything the hook needs that varies per surface.
  * State transitions, equality, URL encoding and payload narrowing are callbacks, so a
  * surface with its own state type (part 2) drives the identical discipline unmodified.
+ * Generic over the counts type C (BrowseCounts on the 3.1b surfaces; part 2's surfaces
+ * bring their own — the default keeps every existing consumer's shape identical).
+ * Surface-generic: no surface's vocabulary appears here.
  */
-export interface InPlaceConfig<S, P> {
+export interface InPlaceConfig<S, P, C = BrowseCounts> {
   /** Route path of the surface (history entries + popstate ownership). */
   basePath: string;
   /** Payload endpoint path (fetch). */
@@ -110,7 +117,7 @@ export interface InPlaceConfig<S, P> {
   /** The failure line's wording (each surface's shipped copy). */
   failureMessage: string;
   /** Strict payload narrowing: the commit core, or null for the failure path. */
-  readPayload: (json: unknown) => InPlacePayloadCore<P> | null;
+  readPayload: (json: unknown) => InPlacePayloadCore<P, C> | null;
   /** URL → filter state, or null when the URL is not this layer's (true navigation). */
   readSearch: (search: string) => S | null;
   /** ?page= from a live search string (missing/garbage → 1). */
@@ -121,8 +128,6 @@ export interface InPlaceConfig<S, P> {
   hasActive: (state: S) => boolean;
   /** Nothing active (Clear All's target). */
   clearAll: () => S;
-  /** The state a chip tap moves to (All clears; single assigns; multi hue toggles). */
-  optionState: (shown: S, group: BrowseFilterGroup, value: string | null) => S;
   /** The applied row's removers for a state, in group order. */
   removersFor: (state: S) => InPlaceRemover<S>[];
   /** Shareable URL for a state (page dropped, extras kept). */
@@ -134,11 +139,13 @@ export interface InPlaceConfig<S, P> {
 }
 
 /** The browse-surface config: the generic contract plus the chips' groups, hue mode and count unit. */
-export interface BrowseInPlaceConfig<P> extends InPlaceConfig<BrowseFilterState, P> {
+export interface BrowseInPlaceConfig<P> extends InPlaceConfig<BrowseFilterState, P, BrowseCounts> {
   groups: BrowseFilterGroup[];
   hueMode: HueMode;
   /** Count-unit word for the sr-only count ("varieties", "crops", "results"). */
   unit: string;
+  /** The state a chip tap moves to (All clears; single assigns; multi hue toggles). */
+  optionState: (shown: BrowseFilterState, group: BrowseFilterGroup, value: string | null) => BrowseFilterState;
 }
 
 /**
@@ -213,9 +220,9 @@ function useHydrated(): boolean {
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /** What the hook hands its surface: committed + optimistic state, the commit action, focus refs. */
-export interface InPlaceBrowse<S, P> {
+export interface InPlaceBrowse<S, P, C = BrowseCounts> {
   hydrated: boolean;
-  committed: InPlaceSnapshot<S, P>;
+  committed: InPlaceSnapshot<S, P, C>;
   pending: S | null;
   /** The state the controls show: optimistic while a change is in flight, else committed. */
   shown: S;
@@ -229,11 +236,14 @@ export interface InPlaceBrowse<S, P> {
  * The in-place commit discipline, surface-generic. The comments below are the 3.1a
  * rationale, unchanged — generalizing the layer moved the code, not the reasoning.
  */
-export function useInPlaceBrowse<S, P>(initial: InPlaceSnapshot<S, P>, config: InPlaceConfig<S, P>): InPlaceBrowse<S, P> {
+export function useInPlaceBrowse<S, P, C = BrowseCounts>(
+  initial: InPlaceSnapshot<S, P, C>,
+  config: InPlaceConfig<S, P, C>,
+): InPlaceBrowse<S, P, C> {
   const hydrated = useHydrated();
   // Last server-confirmed snapshot: results, counts and URL all reflect this. First paint is
   // already server-correct, so there is deliberately no mount reconciliation here.
-  const [committed, setCommitted] = useState<InPlaceSnapshot<S, P>>(initial);
+  const [committed, setCommitted] = useState<InPlaceSnapshot<S, P, C>>(initial);
   // Optimistic filter state awaiting its fetch (null when settled). Chips and the applied row
   // follow this; results, counts, pagination and the count line follow `committed` only.
   const [pending, setPending] = useState<S | null>(null);
@@ -244,7 +254,7 @@ export function useInPlaceBrowse<S, P>(initial: InPlaceSnapshot<S, P>, config: I
   // Latest intent (mirrors pending, or committed when settled). A ref — not the pending
   // state — so two taps inside one frame still base the second on the first.
   const intentRef = useRef<S>(initial.state);
-  const committedRef = useRef<InPlaceSnapshot<S, P>>(initial);
+  const committedRef = useRef<InPlaceSnapshot<S, P, C>>(initial);
   const focusRef = useRef<InPlaceFocusTarget | null>(null);
   const firstAllRef = useRef<HTMLButtonElement | null>(null);
   const clearAllRef = useRef<HTMLButtonElement | null>(null);
@@ -263,7 +273,7 @@ export function useInPlaceBrowse<S, P>(initial: InPlaceSnapshot<S, P>, config: I
   // API only), so `initial` keeps its identity through them and this never fires for them.
   // Render-time derived state (React's sanctioned previous-render pattern): state only — the
   // mirrors re-base in the layout effect below, and every effect body stays setState-free.
-  const [lastInitial, setLastInitial] = useState<InPlaceSnapshot<S, P>>(initial);
+  const [lastInitial, setLastInitial] = useState<InPlaceSnapshot<S, P, C>>(initial);
   if (lastInitial !== initial) {
     setLastInitial(initial);
     setCommitted(initial);
@@ -307,7 +317,7 @@ export function useInPlaceBrowse<S, P>(initial: InPlaceSnapshot<S, P>, config: I
       const core = configRef.current.readPayload(json);
       if (!core) throw new Error("browse payload failed its shape check");
       if (id !== requestRef.current) return;
-      const snapshot: InPlaceSnapshot<S, P> = {
+      const snapshot: InPlaceSnapshot<S, P, C> = {
         state: next,
         counts: core.counts,
         items: core.items,
@@ -462,13 +472,18 @@ export function InPlaceFilters<P>({
  * The applied row: one remover per active group (one per hue family under multi-select),
  * Clear all, and the failure line's slot. Absent when nothing is active — unless the
  * failure line needs its slot. Server floor: working links; hydrated: buttons.
+ * `showClearAll` (default true) omits the Clear All control when false — the §2.6.2
+ * bounded exception for single-group surfaces whose All chip remains the reset.
+ * Surface-generic: a boolean prop, no surface branch.
  */
-export function InPlaceAppliedRow<S, P>({
+export function InPlaceAppliedRow<S, P, C = BrowseCounts>({
   config,
   browse,
+  showClearAll = true,
 }: {
-  config: InPlaceConfig<S, P>;
-  browse: InPlaceBrowse<S, P>;
+  config: InPlaceConfig<S, P, C>;
+  browse: InPlaceBrowse<S, P, C>;
+  showClearAll?: boolean;
 }) {
   const { shown, hydrated, failed, select, clearAllRef } = browse;
   const removers: InPlaceRemover<S>[] = config.removersFor(shown);
@@ -507,7 +522,7 @@ export function InPlaceAppliedRow<S, P>({
           ))}
         </ul>
       ) : null}
-      {removers.length > 0 ? (
+      {removers.length > 0 && showClearAll ? (
         hydrated ? (
           <button ref={clearAllRef} type="button" className="chip-filter" onClick={() => select(() => config.clearAll(), "first-all")}>
             Clear all filters

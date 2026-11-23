@@ -17,22 +17,28 @@ import type { BrowseCounts } from "@/lib/validators";
  * identical shape per surface, so SSR and in-place can never disagree.
  *
  * S is the surface's filter-state type (BrowseFilterState on the 3.1b surfaces; part 2's
- * surfaces bring their own), P the surface's result-item type. `page` is the rendered page —
- * always 1 on surfaces without pagination; a filter change resets it to 1 everywhere.
+ * surfaces bring their own), P the surface's result-item type, C the surface's counts type
+ * (BrowseCounts on the 3.1b surfaces; part 2's surfaces bring their own — the default keeps
+ * every existing consumer's shape identical). `page` is the rendered page — always 1 on
+ * surfaces without pagination; a filter change resets it to 1 everywhere.
  */
-export interface InPlaceSnapshot<S, P> {
+export interface InPlaceSnapshot<S, P, C = BrowseCounts> {
   state: S;
-  counts: BrowseCounts;
+  counts: C;
   items: P[];
   total: number;
   page: number;
 }
 
-/** The narrowed core of an in-place payload: what a commit swaps in (page is always reset to 1). */
-export interface InPlacePayloadCore<P> {
+/**
+ * The narrowed core of an in-place payload: what a commit swaps in (page is always reset
+ * to 1). Generic over the counts type for part 2's surfaces; the default keeps every
+ * existing consumer's shape identical.
+ */
+export interface InPlacePayloadCore<P, C = BrowseCounts> {
   items: P[];
   total: number;
-  counts: BrowseCounts;
+  counts: C;
 }
 
 /** Strict narrowing for unknown JSON: objects only. */
@@ -58,16 +64,31 @@ export function isBrowseCountsPayload(value: unknown): value is BrowseCounts {
 }
 
 /**
- * Strict narrowing for an in-place payload body: a non-negative total, positive page/pages
- * echoes, the counts matrix, and an items array every element of which passes the surface's
+ * Strict narrowing for an in-place payload body, generic over the counts type (Tranche
+ * 3.1b-2): a non-negative total, positive page/pages echoes, the counts matrix per the
+ * surface's counts guard, and an items array every element of which passes the surface's
  * item guard. Returns the commit core, or null — the caller takes the §2.5.6 failure path.
+ * Surface-generic: no surface's vocabulary appears here; each surface passes its own guards.
  */
-export function browsePayloadCore<P>(json: unknown, isItem: (value: unknown) => value is P): InPlacePayloadCore<P> | null {
+export function inPlacePayloadCore<P, C>(
+  json: unknown,
+  isItem: (value: unknown) => value is P,
+  isCounts: (value: unknown) => value is C,
+): InPlacePayloadCore<P, C> | null {
   if (!isRecord(json)) return null;
   if (!Array.isArray(json.items) || !json.items.every(isItem)) return null;
   if (typeof json.total !== "number" || !Number.isInteger(json.total) || json.total < 0) return null;
   if (typeof json.page !== "number" || !Number.isInteger(json.page) || json.page < 1) return null;
   if (typeof json.pages !== "number" || !Number.isInteger(json.pages) || json.pages < 1) return null;
-  if (!isBrowseCountsPayload(json.counts)) return null;
+  if (!isCounts(json.counts)) return null;
   return { items: json.items, total: json.total, counts: json.counts };
+}
+
+/**
+ * Strict narrowing for an in-place payload body: a non-negative total, positive page/pages
+ * echoes, the counts matrix, and an items array every element of which passes the surface's
+ * item guard. Returns the commit core, or null — the caller takes the §2.5.6 failure path.
+ */
+export function browsePayloadCore<P>(json: unknown, isItem: (value: unknown) => value is P): InPlacePayloadCore<P> | null {
+  return inPlacePayloadCore(json, isItem, isBrowseCountsPayload);
 }

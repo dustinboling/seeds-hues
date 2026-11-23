@@ -539,6 +539,80 @@ export const BrowseSearchPayloadSchema = z
 
 export type BrowseSearchPayload = z.infer<typeof BrowseSearchPayloadSchema>;
 
+/**
+ * Per-option counts for the crop-detail browse filters (Tranche 3.1b-2): every chip's count
+ * under the current state — each group's "All" with that group cleared, each option with that
+ * option applied (hue: toggled from its current state, PB-2), every other group held. Zero
+ * counts are kept: a 0-count option renders its 0 and stays operable. Sellers is the fixed
+ * tri-state (All / Has sellers / No seller yet); hue and series are dynamic per crop (the
+ * crop's color families incl. "unknown", its series slugs) — hence records, not fixed keys.
+ * Option keys mirror the lib/crop-detail.ts vocabulary (pinned by tests/unit/crop-detail-filters.test.ts).
+ */
+export const CropDetailCountsSchema = z
+  .object({
+    sellers: z.object({ all: nonnegInt, has: nonnegInt, none: nonnegInt }),
+    hue: z.object({ all: nonnegInt, options: z.record(z.string(), nonnegInt) }),
+    series: z.object({ all: nonnegInt, options: z.record(z.string(), nonnegInt) }),
+  })
+  .meta({
+    id: "CropDetailCounts",
+    description: "Per-option result counts for the crop-detail browse filters, from the same query behind the results.",
+  });
+
+export type CropDetailCounts = z.infer<typeof CropDetailCountsSchema>;
+
+/**
+ * GET /api/browse/crops/[slug] payload (Tranche 3.1b-2): the page of varieties plus the
+ * per-option counts describing them. The crop-detail server page (first paint) and every
+ * in-place update consume this identical contract, so SSR and in-place can never disagree.
+ * No prices anywhere (R1): counts, paging, and VarietyListItem, which itself carries no price field.
+ */
+export const BrowseCropPayloadSchema = z
+  .object({
+    items: z.array(VarietyListItemSchema),
+    total: z.number().int().nonnegative(),
+    page: z.number().int().positive(),
+    pages: z.number().int().positive(),
+    counts: CropDetailCountsSchema,
+  })
+  .meta({ id: "BrowseCropPayload" });
+
+export type BrowseCropPayload = z.infer<typeof BrowseCropPayloadSchema>;
+
+/**
+ * Per-option counts for the seller State cloud (Tranche 3.1b-2): the All-states total plus
+ * each state chip's seller count. Single group, single-select — every option's count is the
+ * total with that option applied (others held: none), so the matrix is static per catalog
+ * state, served atomically with the results per §2.5.6. Keys are USPS codes (the states that
+ * have sellers, from catalog.listSellerStates()).
+ */
+export const SellerBrowseCountsSchema = z
+  .object({ all: nonnegInt, options: z.record(z.string(), nonnegInt) })
+  .meta({
+    id: "SellerBrowseCounts",
+    description: "Per-option seller counts for the /seller State cloud, from the same query behind the results.",
+  });
+
+export type SellerBrowseCounts = z.infer<typeof SellerBrowseCountsSchema>;
+
+/**
+ * GET /api/browse/sellers payload (Tranche 3.1b-2): the page of sellers plus the per-option
+ * counts describing them. The /seller server page (first paint) and every in-place update
+ * consume this identical contract, so SSR and in-place can never disagree. No prices anywhere
+ * (R1): counts, paging, and SellerListItem, which itself carries no price field.
+ */
+export const BrowseSellersPayloadSchema = z
+  .object({
+    items: z.array(SellerListItemSchema),
+    total: z.number().int().nonnegative(),
+    page: z.number().int().positive(),
+    pages: z.number().int().positive(),
+    counts: SellerBrowseCountsSchema,
+  })
+  .meta({ id: "BrowseSellersPayload" });
+
+export type BrowseSellersPayload = z.infer<typeof BrowseSellersPayloadSchema>;
+
 // ─── Sync (canonical §3 "Bulk sync for native apps"; snake_case, new in the delta) ─────────
 
 const SyncCropSchema = z
