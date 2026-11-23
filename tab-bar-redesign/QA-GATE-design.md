@@ -435,3 +435,62 @@ deferred and not dropped; A5/A6 are verified respected in the source. Conditions
 F1–F4 and the §6 assertion list travel with whichever direction is picked.
 
 — Quinn, Quality Assurance · 2026-11-22
+
+---
+
+## SPOT-CHECK — F1/F2/F4 cure (Quinn, 2026-11-22) — RELEASE
+
+**Scope:** narrow confirmation of the cure only (per the gate's §3 dispositions) — not a
+re-gate. Population: strips 12/13/15 v1+v2, strip 14 (unchanged control), frames 02/03/
+10/11 v2, sheet 20 v2, `frames-source-pres-2026-11-22.html`, `PRESENTATION.md`.
+Method: my own sampling — exact-colour pixel counts (Pillow, file-pixel space) plus
+y/x band localisation; maker's counts were not taken on trust. Evaluator: single
+(Quinn). Severity/evidence/coverage/verdict kept separate, as in the gate.
+
+**1. F1 — CURED (evidence: measured).** Exact `leaf-50` rgb(227,234,216) counts,
+whole strip, v1 → v2: **D1 735 → 3,669; hybrid 0 → 2,712; D3 0 → 3,003** — identical
+to the maker's reported figures, reproduced independently. Control strip 14 (D2,
+not re-rendered): 11,610 across four wells (2,916 / 2,862 / 2,916 / 2,916 by row) —
+one full well ≈ 2,900 px, confirming the benchmark. Localisation puts each new well
+in the pressed row, in the pressed slot: D1 Sellers (x 260–325, y 359–414; 2,934 px),
+hybrid Account (x 338–403, y 344–399; 2,712 px), D3 Crops (x 104–169, y 292–347;
+3,003 px). Source cause confirmed fixed: `pressedflank` now sits on the tab element
+(source line 135), where the rule `.tab.pressedflank .well` (line 57) matches it.
+Visual read of all three v2 strips agrees: a full flank well behind the right tab,
+colour only, target unmoved; the hybrid's badge is pixel-identical v1 → v2 in every
+row (petal 1,176 px both; pressed-row badge band unchanged at x 375–390, y 344–359)
+— unmoved; D1's plate halo is the identical cluster in v1 and v2 (735 px,
+x 183–246, y 464–527) — intact.
+
+**2. F4 — CURED (evidence: directly observed).** Sheet 20 read at native size
+(24 px and 20 px crops, nearest-neighbour enlargement) and in situ (frames 02/10 v2,
+Crops slot): the rebuilt `g-pod` carries a flat lid, a neck step, a plump body and a
+tapered centre seam. First read at both sizes is a capped seed pod — kin to the
+medallion's lidded pod — not a numeral "0" and not a pill. The v1 glyph, cropped
+from frame 02 v1 for comparison, is the plain slit oval the gate faulted; the
+construction change is the whole difference. No other glyph changed.
+
+**3. F2 — CURED (evidence: directly observed, source-traced).** `PRESENTATION.md`
+now claims only what the source models: the badge bullet states the source does not
+model the count in the Account name; the pressed bullet scopes `aria-current` to the
+flank links and names the three channels as the build's requirement; the explicit
+semantics note states the plate cell is a `<div>` — not a link, no `aria-current` —
+and that the plate link + `aria-current` and the count-bearing Account name are
+build-gate assertions. Verified against the source: plate cell is a `<div>`
+(line 139, no `aria-current`); badge is `aria-hidden` (line 125); `aria-current`
+is emitted on flank links only (line 135). They remain on the §6 build-gate list,
+unchanged. No residual overclaim found in the corrected text.
+
+**4. No ruled treatment moved (evidence: measured + source-read).** Source `:root`
+verbatim: `line-strong` #91825C, `leaf-50` #E3EAD8, `petal` #8E2A52, `--pressed`
+rgb(211,221,203) with the srgb mix space named. Pixel counts for `line-strong` are
+identical v1 → v2 in all three re-rendered strips (2,691 / 2,224 / 1,950); petal
+identical in strip 13. All cure re-renders carry fresh `-v2` filenames.
+
+**Verdict: RELEASE.** The pick package (PRESENTATION.md + frames, with the v2
+strips, v2 D1/D3 frames, v2 320 px strip and sheet 20 swapped in) is released to
+Dustin. F1 and F2 are closed; F4 is closed. Everything carried to the build gate
+in §6 stands exactly as recorded there — this spot-check discharges the
+presentation-side conditions only.
+
+— Quinn, Quality Assurance · 2026-11-22
