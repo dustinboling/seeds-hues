@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1023 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1032 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -505,6 +505,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/marigold-tangerine-gem.webp": "artwork/marigold-tangerine-gem.png",
   "/artwork/marigold-tiger-eyes.webp": "artwork/marigold-tiger-eyes.png",
   "/artwork/masterwort-great-masterwort.webp": "artwork/masterwort-great-masterwort.png",
+  "/artwork/masterwort-rosensinfonie.webp": "artwork/masterwort-rosensinfonie.png",
   "/artwork/mignonette-garden-mignonette.webp": "artwork/mignonette-garden-mignonette.png",
   "/artwork/mignonette-white-mignonette.webp": "artwork/mignonette-white-mignonette.png",
   "/artwork/milkweed-milkmaid.webp": "artwork/milkweed-milkmaid.png",
@@ -607,7 +608,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/pansy-nature-antique-shades.webp": "artwork/pansy-nature-antique-shades.png",
   "/artwork/pansy-panola-pink-shades.webp": "artwork/pansy-panola-pink-shades.png",
   "/artwork/pansy-rococo-frill-mix.webp": "artwork/pansy-rococo-frill-mix.png",
+  "/artwork/paper-daisy-acroclinium-double-mix.webp": "artwork/paper-daisy-acroclinium-double-mix.png",
   "/artwork/paper-daisy-pierrot-white.webp": "artwork/paper-daisy-pierrot-white.png",
+  "/artwork/paper-daisy-pierrot.webp": "artwork/paper-daisy-pierrot.png",
+  "/artwork/paper-daisy-pink-and-white-everlastings.webp": "artwork/paper-daisy-pink-and-white-everlastings.png",
   "/artwork/pea-amethyst-beauty.webp": "artwork/pea-amethyst-beauty.png",
   "/artwork/pea-blue-podded-blauwschokkers.webp": "artwork/pea-blue-podded-blauwschokkers.png",
   "/artwork/pea-blushing-beauty.webp": "artwork/pea-blushing-beauty.png",
@@ -638,6 +642,11 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/queen-annes-lace-green-mist.webp": "artwork/queen-annes-lace-green-mist.png",
   "/artwork/queen-annes-lace-queen-of-africa.webp": "artwork/queen-annes-lace-queen-of-africa.png",
   "/artwork/quinoa-red-head.webp": "artwork/quinoa-red-head.png",
+  "/artwork/ranunculus-elegance-bianco-59-99.webp": "artwork/ranunculus-elegance-bianco-59-99.png",
+  "/artwork/ranunculus-elegance-clementine-1a16.webp": "artwork/ranunculus-elegance-clementine-1a16.png",
+  "/artwork/ranunculus-elegance-giallo-21-10.webp": "artwork/ranunculus-elegance-giallo-21-10.png",
+  "/artwork/ranunculus-elegance-hot-pink-25-00.webp": "artwork/ranunculus-elegance-hot-pink-25-00.png",
+  "/artwork/ranunculus-elegance-hot-pink-95-08.webp": "artwork/ranunculus-elegance-hot-pink-95-08.png",
   "/artwork/ranunculus-mach-mix.webp": "artwork/ranunculus-mach-mix.png",
   "/artwork/ranunculus-magic-mix.webp": "artwork/ranunculus-magic-mix.png",
   "/artwork/ranunculus-sprinkles-mix.webp": "artwork/ranunculus-sprinkles-mix.png",

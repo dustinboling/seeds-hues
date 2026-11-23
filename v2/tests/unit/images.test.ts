@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 1023 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 1032 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -254,7 +254,12 @@ describe("lib/images-data (generated)", () => {
     // Sunflower' plate 1 (2026-11-23, Quinn confirmation re-gate
     // CONFIRMED — F-1 closed; stem continuous through the 60–85%
     // band, one clean declared end at ≈96% down-frame).
-    expect(entries).toHaveLength(1023);
+    // +9 for Tranche 4 Batch 23: Masterwort Rosensinfonie, Paper
+    // Daisy Acroclinium Double Mix / Pierrot / Pink & White
+    // Everlastings, Ranunculus Elegance Bianco 59-99 / Clementine
+    // 1A16 / Giallo 21-10 / Hot Pink 25-00 / Hot Pink 95-08
+    // (2026-11-23, Quinn PASS WITH NOTES).
+    expect(entries).toHaveLength(1032);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
