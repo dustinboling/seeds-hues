@@ -1,10 +1,13 @@
 /**
  * Tranche 3.4 — server-rendered surfaces (no-JS floors): the home cap lifts under a filter,
  * ?sort= server-renders in the service's order with the sort links floor on both surfaces,
- * and the sibling rail queries the availability order.
+ * and the sibling rail queries the availability order. The F-4 follow-up pins Clear All
+ * keeping the active sort on both sorted surfaces' floors (applied row + empty state),
+ * with the unsorted home floor unchanged.
  *
  * Non-vacuity: fails on pre-build code — no home cap exists to lift, no sort links render
- * on either surface, and listVarieties is called without a sort.
+ * on either surface, and listVarieties is called without a sort. The F-4 pins fail on the
+ * shipped PR #57 code too — its Clear All links drop the sort.
  */
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -242,6 +245,75 @@ describe("sort no-JS floor (§5.2): ?sort= server-renders with working sort link
     expect(h).toMatch(/<a[^>]*data-sort="name"[^>]*href="\/crop\/stock"/);
     expect(h).toMatch(/aria-current="true"[^>]*data-sort="recent"/);
     expect(h).not.toContain("alphabetical.");
+  });
+});
+
+function stockCrop(varieties: VarietyListItem[]): CropDetail {
+  return {
+    ...plant,
+    sowing_methods: [],
+    category: { slug: "flowers", name: "Flowers" },
+    varietyCount: varieties.length,
+    varietiesWithSellers: 1,
+    lastUpdated: "2026-11-20",
+    media: [],
+    description: null,
+    sowingNotes: null,
+    life_cycle: null,
+    hardiness: null,
+    grower_guide: null,
+    series: [],
+    varieties,
+  };
+}
+
+describe("Clear All keeps the sort on the no-JS floor (F-4 follow-up)", () => {
+  it("/variety with a filter + sort=availability links Clear all to the sorted bare list", async () => {
+    fake.varieties = { items: [varietyItem("a", "Alison")], total: 1 };
+    const h = renderToStaticMarkup(
+      (await VarietiesPage({ searchParams: Promise.resolve({ season: "cool", sort: "availability" }) })) as ReactElement,
+    );
+    expect(h).toContain("1 variety · Cool Season Hardy Annuals, most sellers first.");
+    expect(h).toMatch(/<a[^>]*href="\/variety\?sort=availability"[^>]*>Clear all filters<\/a>/);
+  });
+
+  it("a crop page with a filter + sort=recent links Clear all to the sorted bare list", async () => {
+    fake.crop = { crop: stockCrop([varietyItem("a", "Alison")]), total: 1, colorFamilies: [] };
+    const h = renderToStaticMarkup(
+      (await CropPage({
+        params: Promise.resolve({ slug: "stock" }),
+        searchParams: Promise.resolve({ color_family: "pink", sort: "recent" }),
+      })) as ReactElement,
+    );
+    expect(h).toContain("1 variety match, most recently checked first.");
+    expect(h).toMatch(/<a[^>]*href="\/crop\/stock\?sort=recent"[^>]*>Clear all filters<\/a>/);
+  });
+
+  it("/variety zero-results links Clear filters to the sorted bare list", async () => {
+    fake.varieties = { items: [], total: 0 };
+    const h = renderToStaticMarkup(
+      (await VarietiesPage({ searchParams: Promise.resolve({ color_family: "chocolate", sort: "recent" }) })) as ReactElement,
+    );
+    expect(h).toContain("0 varieties · Chocolate, most recently checked first.");
+    expect(h).toMatch(/<a[^>]*href="\/variety\?sort=recent"[^>]*>Clear filters<\/a>/);
+  });
+
+  it("a crop zero-results page links Clear filters to the sorted bare list", async () => {
+    fake.crop = { crop: stockCrop([]), total: 0, colorFamilies: [] };
+    const h = renderToStaticMarkup(
+      (await CropPage({
+        params: Promise.resolve({ slug: "stock" }),
+        searchParams: Promise.resolve({ color_family: "pink", sort: "availability" }),
+      })) as ReactElement,
+    );
+    expect(h).toContain("0 varieties match, most sellers first.");
+    expect(h).toMatch(/<a[^>]*href="\/crop\/stock\?sort=availability"[^>]*>Clear filters<\/a>/);
+  });
+
+  it("home (no sort control) still links Clear filters to the bare path", async () => {
+    fake.crops = { items: [], total: 0 };
+    const h = renderToStaticMarkup((await HomePage({ searchParams: Promise.resolve({ season: "cool" }) })) as ReactElement);
+    expect(h).toMatch(/<a[^>]*href="\/"[^>]*>Clear filters<\/a>/);
   });
 });
 

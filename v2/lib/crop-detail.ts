@@ -84,9 +84,12 @@ export const CROP_DETAIL_PARAM: Record<CropDetailGroup, string> = {
 /** Sellers option labels (the shipped chip words). */
 export const CROP_SELLERS_LABELS = { has: "Has sellers", none: "No seller yet" } as const;
 
-/** No filters active (the resting state — Clear all returns the list to Name A–Z too). */
-export function clearCropDetailFilters(): CropDetailFilterState {
-  return { hue: [], series: null, hasSellers: null, sort: "name" };
+/**
+ * Clear all: every filter group to All — the shopper's sort survives (SPEC §2.6: sort is
+ * an ordering, not a filter group, so resetting groups never re-orders the list).
+ */
+export function clearCropDetailFilters(state: CropDetailFilterState): CropDetailFilterState {
+  return { hue: [], series: null, hasSellers: null, sort: state.sort };
 }
 
 /** True when the group narrows the list. */

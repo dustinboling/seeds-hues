@@ -2,11 +2,13 @@
  * Tranche 3.4 §5.3 — the SearchBox widget (components/search/SearchBox.tsx): no fetch and no
  * open on mount (the mount value is submitted text, not typed text), focus alone never opens
  * the panel, typed empty/failure states render one visible non-interactive message row, and
- * the active row carries the AD-2 leaf rule. Fetch is stubbed per test.
+ * the active row carries the AD-2 leaf rule. Fetch is stubbed per test. The F-5 follow-up
+ * pins aria-expanded tracking the panel in every state (closed, suggestions, notice, failure).
  *
  * Non-vacuity: fails on pre-build code — mounting with a defaultValue fetches and opens,
  * focus reopens unconditionally, empty/failure states stay sr-only, and the active row has
- * no leaf rule.
+ * no leaf rule. The F-5 notice/failure pins fail on the shipped PR #57 code too — its
+ * aria-expanded stays false while the notice listbox is on screen.
  */
 // @vitest-environment jsdom
 import { createElement } from "react";
@@ -155,6 +157,46 @@ describe("visible empty and failure rows (§5.3.3)", () => {
     });
     expect(screen.queryByRole("listbox")).toBe(null);
     expect(screen.getByRole("status").textContent).toBe("");
+  });
+});
+
+describe("combobox expanded state (F-5: aria-expanded tracks the panel)", () => {
+  it("reports collapsed while closed (mount and pristine focus)", async () => {
+    const { input } = box("zinnia");
+    expect(input.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.focus(input);
+    await settle(1000);
+    expect(screen.queryByRole("listbox")).toBe(null);
+    expect(input.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("reports expanded with suggestions", async () => {
+    fetchMock.mockResolvedValue(ok([result()]));
+    const { input } = box("");
+    fireEvent.change(input, { target: { value: "al" } });
+    await settle();
+    expect(screen.queryByRole("listbox")).not.toBe(null);
+    expect(input.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("reports expanded in the zero-suggestion notice state", async () => {
+    fetchMock.mockResolvedValue(ok([]));
+    const { input } = box("");
+    fireEvent.change(input, { target: { value: "zz" } });
+    await settle();
+    expect(screen.queryByRole("listbox")).not.toBe(null);
+    expect(screen.queryAllByRole("option")).toHaveLength(0);
+    expect(input.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("reports expanded in the failure state", async () => {
+    fetchMock.mockRejectedValue(new Error("down"));
+    const { input } = box("");
+    fireEvent.change(input, { target: { value: "zz" } });
+    await settle();
+    expect(screen.queryByRole("listbox")).not.toBe(null);
+    expect(screen.queryAllByRole("option")).toHaveLength(0);
+    expect(input.getAttribute("aria-expanded")).toBe("true");
   });
 });
 

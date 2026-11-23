@@ -100,12 +100,12 @@ describe("readBrowseFilters (page query → state)", () => {
   it("reads a single hue in single mode (the /search rule — comma lists are All)", () => {
     expect(readBrowseFilters({ color_family: "pink" }, "single").hue).toEqual(["pink"]);
     expect(readBrowseFilters({ color_family: "pink,peach" }, "single").hue).toEqual([]);
-    expect(readBrowseFilters({}, "single")).toEqual(clearAllFilters());
+    expect(readBrowseFilters({}, "single")).toEqual(state());
   });
 
   it("ignores garbage in every group (forgiving parse, never a 404)", () => {
     expect(readBrowseFilters({ season: "bogus", method: "bogus", life_cycle: "bogus", color_family: "bogus", small_farm: "yes" }, "multi")).toEqual(
-      clearAllFilters(),
+      state(),
     );
   });
 });
@@ -133,12 +133,12 @@ describe("hue transitions (PB-2 multi-select)", () => {
     expect(withGroup(s, "hue", null).hue).toEqual([]);
   });
 
-  it("clearGroup clears one group; clearAllFilters clears everything", () => {
+  it("clearGroup clears one group; clearAllFilters clears every group", () => {
     const s = state({ season: "cool", hue: ["pink", "peach"], smallFarm: true });
     expect(clearGroup(s, "hue")).toEqual({ ...s, hue: [] });
     expect(clearGroup(s, "season").season).toBeNull();
     expect(clearGroup(s, "smallFarm").smallFarm).toBe(false);
-    expect(clearAllFilters()).toEqual(state());
+    expect(clearAllFilters(s)).toEqual(state());
   });
 });
 
@@ -156,7 +156,7 @@ describe("state predicates", () => {
     expect(equalBrowseFilters(state({ hue: ["pink", "peach"] }), state({ hue: ["peach", "pink"] }))).toBe(true);
     expect(equalBrowseFilters(state({ hue: ["pink"] }), state({ hue: ["pink", "peach"] }))).toBe(false);
     expect(equalBrowseFilters(state({ season: "cool" }), state({ season: "warm" }))).toBe(false);
-    expect(equalBrowseFilters(state(), clearAllFilters())).toBe(true);
+    expect(equalBrowseFilters(state(), clearAllFilters(state()))).toBe(true);
   });
 
   it("isOptionActive: single equality, multi membership, All on the empty set", () => {
@@ -331,7 +331,7 @@ describe("BrowseCountsSchema (the counts contract mirrors the vocabulary)", () =
 
   it("rejects a missing option and a negative count", () => {
     const good = Object.fromEntries(
-      browseCountQueries(clearAllFilters()).map((q) => [`${q.group}:${q.option ?? "all"}`, 7]),
+      browseCountQueries(state()).map((q) => [`${q.group}:${q.option ?? "all"}`, 7]),
     );
     const counts: BrowseCounts = {
       season: { all: good["season:all"]!, options: { cool: good["season:cool"]!, warm: good["season:warm"]! } },
