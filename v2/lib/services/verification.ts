@@ -6,8 +6,10 @@
  *  - expires 30 minutes after issue; 5 wrong attempts kill it;
  *  - issuing (resend) invalidates every earlier live code — one live code per user + channel;
  *  - resends are limited to 1/minute and 5/hour per user + channel.
- * BOUNDARY: these codes prove ownership of an address/number once. They are never part of
- * signing in (sign-in is the email + phone pair, with no code).
+ * BOUNDARY: these codes prove ownership of an address/number once. They take part in signing
+ * in only through the two Tranche 3.2 amendments (the waitlist's recognized-contact verify and
+ * the /account phone-less code sign-in, P2 + §11.1) — signIn() itself never touches this
+ * service (guardrail: tests/unit/account-privacy.test.ts).
  */
 import type { Db } from "@/lib/db/client";
 import * as repo from "@/lib/repositories/accounts";

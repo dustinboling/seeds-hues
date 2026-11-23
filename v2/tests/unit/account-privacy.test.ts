@@ -14,7 +14,7 @@ import { SNAPSHOT_ALLOWLIST } from "@/lib/repositories/snapshot-allowlist";
 import * as schema from "@/lib/db/schema";
 
 const read = (f: string) => readFileSync(join(process.cwd(), f), "utf8");
-const ACCOUNT_TABLE_EXPORTS = ["users", "sessions", "authAttempts", "emailVerificationCodes", "phoneVerificationCodes", "farmOwnerAudit", "waitlistEntries", "notificationOutbox", "farmSubmissions", "adminSessions", "adminSigninCodes", "roleAudit", "sellerNotes"] as const;
+const ACCOUNT_TABLE_EXPORTS = ["users", "sessions", "authAttempts", "emailVerificationCodes", "phoneVerificationCodes", "farmOwnerAudit", "waitlistEntries", "waitlistPendingJoins", "notificationOutbox", "farmSubmissions", "adminSessions", "adminSigninCodes", "roleAudit", "sellerNotes"] as const;
 
 describe("account tables are private", () => {
   it("PRIVATE_ACCOUNT_TABLES names every account table in the schema", () => {

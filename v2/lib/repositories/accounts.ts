@@ -15,6 +15,7 @@ import {
   sessions,
   users,
   waitlistEntries,
+  waitlistPendingJoins,
 } from "@/lib/db/schema";
 import { atomic, type AtomicOp } from "./atomic";
 
@@ -180,6 +181,28 @@ export async function codesIssuedSince(db: Db, c: CodeChannel, userId: number, s
   return r?.n ?? 0;
 }
 
+// ─── recognized-contact pending joins (Tranche 3.2, one row per user) ─────────
+
+export type PendingJoinRow = typeof waitlistPendingJoins.$inferSelect;
+
+/** Record (or replace) the variety a recognized-contact code was issued for. */
+export async function upsertPendingJoin(db: Db, row: { userId: number; varietyId: number; phone: string | null; smsOptIn: boolean; createdAt: string }): Promise<void> {
+  await db
+    .insert(waitlistPendingJoins)
+    .values(row)
+    .onConflictDoUpdate({ target: waitlistPendingJoins.userId, set: { varietyId: row.varietyId, phone: row.phone, smsOptIn: row.smsOptIn, createdAt: row.createdAt } });
+}
+
+export async function pendingJoinFor(db: Db, userId: number): Promise<PendingJoinRow | null> {
+  const [r] = await db.select().from(waitlistPendingJoins).where(eq(waitlistPendingJoins.userId, userId)).limit(1);
+  return r ?? null;
+}
+
+/** Consume the pending join (verification completed the join it was recorded for). */
+export async function clearPendingJoin(db: Db, userId: number): Promise<void> {
+  await db.delete(waitlistPendingJoins).where(eq(waitlistPendingJoins.userId, userId));
+}
+
 // ─── farm-owner flag (admin-set only) + audit ───────────────────────────────
 
 export async function setFarmOwner(
@@ -209,15 +232,16 @@ export async function farmOwnerAuditFor(db: Db, userId: number) {
 // ─── deletion ───────────────────────────────────────────────────────────────
 
 /**
- * Delete an account (design §6): user, sessions, verification codes, waiting-list entries and
- * outbox rows go; a farm submission it made stays in the review queue unlinked (user_id NULL);
- * the append-only farm_owner_audit trail is kept.
+ * Delete an account (design §6): user, sessions, verification codes, waiting-list entries,
+ * pending joins and outbox rows go; a farm submission it made stays in the review queue unlinked
+ * (user_id NULL); the append-only farm_owner_audit trail is kept.
  */
 export async function deleteUserCascade(db: Db, userId: number): Promise<void> {
   await atomic(db, [
     db.delete(sessions).where(eq(sessions.userId, userId)) as unknown as AtomicOp,
     db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, userId)) as unknown as AtomicOp,
     db.delete(phoneVerificationCodes).where(eq(phoneVerificationCodes.userId, userId)) as unknown as AtomicOp,
+    db.delete(waitlistPendingJoins).where(eq(waitlistPendingJoins.userId, userId)) as unknown as AtomicOp,
     db.delete(notificationOutbox).where(eq(notificationOutbox.userId, userId)) as unknown as AtomicOp,
     db.delete(waitlistEntries).where(eq(waitlistEntries.userId, userId)) as unknown as AtomicOp,
     db.update(farmSubmissions).set({ userId: null }).where(eq(farmSubmissions.userId, userId)) as unknown as AtomicOp,

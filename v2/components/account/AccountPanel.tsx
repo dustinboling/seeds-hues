@@ -3,11 +3,19 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import type { AlertItem, PublicUser } from "@/lib/services/accounts";
+import { isProfileComplete, type AlertItem, PublicUser } from "@/lib/services/accounts";
 import { callApi, deliveryNote } from "./api";
-import { alertPhoneFailure, changeEmailFailure, deleteAccountFailure, type MappedFormFailure } from "./account-errors";
+import {
+  FINISH_PROFILE_SUMMARY_HEADING,
+  alertPhoneFailure,
+  changeEmailFailure,
+  deleteAccountFailure,
+  profileFailure,
+  type MappedFormFailure,
+} from "./account-errors";
 import { FieldErrorLine, FieldSummary, focusFailureTarget, syncFilledClass } from "@/components/ui/field-states";
 import { CodeEntry } from "./CodeEntry";
+import { FinishProfileFields, profileBody } from "./FinishProfileFields";
 import { SMS_CONSENT } from "./SignupFields";
 
 const CHANNEL_LABEL = { email: "email", sms: "text" } as const;
@@ -59,9 +67,13 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
   const [phoneFailure, setPhoneFailure] = useState<MappedFormFailure>(EMPTY_FAILURE);
   const [phoneDone, setPhoneDone] = useState<string | null>(null);
   const [deleteFailure, setDeleteFailure] = useState<MappedFormFailure>(EMPTY_FAILURE);
+  const [finishDismissed, setFinishDismissed] = useState(false);
+  const [profileFailureState, setProfileFailureState] = useState<MappedFormFailure>(EMPTY_FAILURE);
+  const [profileDone, setProfileDone] = useState<string | null>(null);
   const emailSummaryRef = useRef<HTMLDivElement | null>(null);
   const phoneSummaryRef = useRef<HTMLDivElement | null>(null);
   const deleteSummaryRef = useRef<HTMLDivElement | null>(null);
+  const profileSummaryRef = useRef<HTMLDivElement | null>(null);
 
   // Failed sub-form submits move focus to the in-form summary (form-level) or the field.
   useEffect(() => {
@@ -76,6 +88,13 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
     if (deleteFailure.form === null && deleteFailure.fields.length === 0) return;
     focusFailureTarget(deleteSummaryRef.current, deleteFailure.fields.map((f) => ({ fieldId: "delete-confirm", message: f.message })), deleteFailure.form);
   }, [deleteFailure]);
+  const profileEntries = profileFailureState.fields.map((f) => ({ fieldId: `panel-finish-${f.key}`, message: f.message }));
+  const showProfileSummary = profileFailureState.form !== null || profileEntries.length >= 2;
+  useEffect(() => {
+    if (!showProfileSummary && profileEntries.length === 0) return;
+    focusFailureTarget(profileSummaryRef.current, profileEntries, profileFailureState.form);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- entries/showProfileSummary derive from profileFailureState
+  }, [profileFailureState]);
 
   /** Non-field actions only (leave a list, preferences): the panel-head line keeps their feedback. */
   async function act(path: string, body: unknown, ok?: string, after?: (data: Record<string, unknown>) => void) {
@@ -127,6 +146,21 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
     refresh();
   }
 
+  async function saveProfile(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    setProfileFailureState(EMPTY_FAILURE);
+    setProfileDone(null);
+    const r = await callApi("/api/v1/account/profile", profileBody(new FormData(e.currentTarget)));
+    setBusy(false);
+    if (!r.ok) {
+      setProfileFailureState(profileFailure(r.status, r.code, r.message));
+      return;
+    }
+    setProfileDone("Your account details are saved.");
+    refresh();
+  }
+
   async function signOut() {
     setBusy(true);
     await callApi("/api/v1/account/sign-out", {});
@@ -151,6 +185,7 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
   const emailError = emailFailure.fields[0]?.message ?? null;
   const phoneError = phoneFailure.fields[0]?.message ?? null;
   const confirmError = deleteFailure.fields[0]?.message ?? null;
+  const profileIncomplete = !isProfileComplete(user.name, user.usda_zone);
 
   return (
     <div className="flex flex-col gap-8">
@@ -165,6 +200,35 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
         <p role={msg.kind} className={msg.kind === "alert" ? "font-medium text-warn" : "font-medium"}>
           {msg.text}
         </p>
+      ) : null}
+
+      {profileIncomplete && !finishDismissed ? (
+        <section aria-labelledby="finish-title" className="card flex flex-col gap-3 p-4">
+          <h2 id="finish-title" className="text-xl font-semibold">
+            Finish your account
+          </h2>
+          <p className="text-sm">Want to finish your account? A name and ZIP set your growing zone — you can do this any time, or not at all.</p>
+          <form onSubmit={saveProfile} aria-busy={busy || undefined} className="flex flex-col gap-4">
+            {showProfileSummary ? <FieldSummary heading={profileFailureState.form ?? FINISH_PROFILE_SUMMARY_HEADING} entries={profileEntries} summaryRef={profileSummaryRef} /> : null}
+            {profileDone ? (
+              <p role="status" className="font-medium">
+                {profileDone}
+              </p>
+            ) : null}
+            <FinishProfileFields
+              idPrefix="panel-finish"
+              errors={Object.fromEntries(profileFailureState.fields.map((f) => [f.key, f.message]))}
+            />
+            <div className="flex flex-wrap gap-2">
+              <button type="submit" className="btn btn-secondary" disabled={busy}>
+                Save
+              </button>
+              <button type="button" className="btn btn-secondary" onClick={() => setFinishDismissed(true)}>
+                Not now
+              </button>
+            </div>
+          </form>
+        </section>
       ) : null}
 
       <section aria-labelledby="alerts-title" className="flex flex-col gap-3">
@@ -338,11 +402,11 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
         </h2>
         <dl className="grid grid-cols-1 gap-2 sm:grid-cols-[10rem_1fr]">
           <dt className="text-sm text-muted">Name</dt>
-          <dd>{user.name}</dd>
+          <dd>{user.name === "" ? "Not set yet." : user.name}</dd>
           <dt className="text-sm text-muted">Email</dt>
           <dd>{user.email}</dd>
           <dt className="text-sm text-muted">Phone (sign-in)</dt>
-          <dd>{user.phone_display}</dd>
+          <dd>{user.phone === "" ? "No phone number on this account." : user.phone_display}</dd>
           {user.farm_owner_declared || user.is_farm_owner ? (
             <>
               <dt className="text-sm text-muted">Farm owner</dt>
@@ -358,7 +422,9 @@ export function AccountPanel({ user, alerts }: { user: PublicUser; alerts: Alert
             </>
           ) : null}
         </dl>
-        <p className="text-sm text-muted">Your phone number is half of your sign-in and is never shown publicly.</p>
+        <p className="text-sm text-muted">
+          {user.phone === "" ? "This account has no phone number — you sign in with a code we email you." : "Your phone number is half of your sign-in and is never shown publicly."}
+        </p>
       </section>
 
       <section aria-labelledby="session-title" className="flex flex-col gap-3">

@@ -22,6 +22,17 @@ export async function varietyBySlug(db: Db, slug: string) {
   return r ?? null;
 }
 
+/** The pending join records the variety id; verification resolves it back to the slug. */
+export async function varietyById(db: Db, id: number) {
+  const [r] = await db
+    .select({ id: varieties.id, slug: varieties.slug, name: varieties.varietyName, crop: plants.commonName })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .where(and(eq(varieties.id, id), activeVariety))
+    .limit(1);
+  return r ?? null;
+}
+
 /** Visible listing count per variety (only varieties with ≥ 1 are returned). */
 export async function visibleListingCounts(db: Db, varietyIds: number[] | null): Promise<Map<number, number>> {
   const rows = await db

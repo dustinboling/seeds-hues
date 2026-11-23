@@ -14,12 +14,18 @@
  *    on; anything else (absent, "false", garbage, repeated) is off and is not rewritten — the
  *    forgiving parse of ux-spec §3.2. A direct request for the internal path is redirected (308)
  *    to the public URL, so the internal path is never a second public address for the view.
+ *
+ * 3. /variety/{slug}?waitlist=… — the no-JS waitlist floor state (Tranche 3.2, SPEC §3.4). Same
+ *    mechanism as (2): the public URL is rewritten onto the internal dynamic path
+ *    /variety/{slug}/waitlist, which server-renders the floor state into the block. Any present
+ *    `waitlist` value rewrites (unknown values degrade to the resting floor at parse); a direct
+ *    request for the internal path is redirected (308) to the public URL with its query intact.
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { SMALL_FARM_PARAM, SMALL_FARM_VARIANT_SEGMENT, parseSmallFarmParam, smallFarmVariantPath } from "@/lib/small-farm";
 
-export const config = { matcher: ["/seller/:slug", "/variety/:slug", "/variety/:slug/small-farms"] };
+export const config = { matcher: ["/seller/:slug", "/variety/:slug", "/variety/:slug/small-farms", "/variety/:slug/waitlist"] };
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -34,14 +40,26 @@ export async function middleware(req: NextRequest) {
 function varietyRoute(req: NextRequest, parts: string[]): NextResponse {
   const slug = parts[2] ?? "";
   if (!SLUG.test(slug)) return NextResponse.next();
-  // ["", "variety", slug, "small-farms"]: an outside request for the internal path.
+  // ["", "variety", slug, "small-farms"|"waitlist"]: an outside request for an internal path.
   if (parts.length === 4 && parts[3] === SMALL_FARM_VARIANT_SEGMENT) {
     const url = req.nextUrl.clone();
     url.pathname = `/variety/${slug}`;
     url.searchParams.set(SMALL_FARM_PARAM, "true");
     return NextResponse.redirect(url, 308);
   }
+  if (parts.length === 4 && parts[3] === "waitlist") {
+    const url = req.nextUrl.clone();
+    url.pathname = `/variety/${slug}`;
+    return NextResponse.redirect(url, 308);
+  }
   if (parts.length !== 3) return NextResponse.next();
+  // The waitlist floor rewrite runs first: floor-state URLs only arise on zero-seller pages,
+  // where the seller filter has nothing to narrow.
+  if (req.nextUrl.searchParams.has("waitlist")) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/variety/${slug}/waitlist`;
+    return NextResponse.rewrite(url);
+  }
   const values = req.nextUrl.searchParams.getAll(SMALL_FARM_PARAM);
   if (!parseSmallFarmParam(values.length === 1 ? values[0] : values)) return NextResponse.next();
   const url = req.nextUrl.clone();

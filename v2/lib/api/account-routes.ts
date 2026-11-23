@@ -16,10 +16,15 @@ import {
   CreateAccountSchema,
   DeleteAccountSchema,
   PreferencesSchema,
+  ProfileSchema,
   SignInSchema,
+  UnauthedCodeIssueSchema,
+  UnauthedCodeVerifySchema,
   VarietyRefSchema,
 } from "@/lib/services/accounts";
 import type { UserRow } from "@/lib/repositories/accounts";
+import { ServiceError } from "@/lib/services/ingest";
+import { joinErrorRedirect } from "@/lib/waitlist-floor";
 import { Problem } from "./problem";
 import { clientKey } from "./rate-limit";
 import { parseBody, type RouteSpec, type WriteContext } from "./write-route";
@@ -60,7 +65,8 @@ const authed = (pattern: string, handler: (u: UserRow, ctx: WriteContext) => Pro
 
 export const ACCOUNT_ROUTES: RouteSpec[] = [
   {
-    // Create account (also the signed-out waiting-list join: pass join_variety).
+    // Create account (also the signed-out waiting-list join: pass join_variety). A join for an
+    // existing email is the recognized-contact path: 200 with no session, never a 409.
     method: "POST",
     pattern: "",
     scope: null,
@@ -68,6 +74,7 @@ export const ACCOUNT_ROUTES: RouteSpec[] = [
     handler: async (ctx) => {
       assertSameOrigin(ctx);
       const r = await ctx.services.accounts.create(parseBody(CreateAccountSchema, ctx.body ?? {}), ipOf(ctx.req));
+      if (!r.session) return { data: r.data };
       return { status: 201, data: r.data, headers: cookieFor(r.session.token) };
     },
   },
@@ -103,6 +110,32 @@ export const ACCOUNT_ROUTES: RouteSpec[] = [
       return { data: u ? { signed_in: true, user: ctx.services.accounts.me(u) } : { signed_in: false } };
     },
   },
+  {
+    // The /account sign-in accommodation for phone-less accounts (§11.1): email a code instead.
+    method: "POST",
+    pattern: "sign-in/code",
+    scope: null,
+    bucket: "public",
+    handler: async (ctx) => {
+      assertSameOrigin(ctx);
+      const body = parseBody(UnauthedCodeIssueSchema, ctx.body ?? {});
+      const data = await ctx.services.accounts.issueSignInCode(body.email, body.turnstile_token, ipOf(ctx.req));
+      return { data };
+    },
+  },
+  {
+    method: "POST",
+    pattern: "sign-in/verify",
+    scope: null,
+    bucket: "public",
+    handler: async (ctx) => {
+      assertSameOrigin(ctx);
+      const body = parseBody(UnauthedCodeVerifySchema, ctx.body ?? {});
+      const r = await ctx.services.accounts.verifySignInCode(body.email, body.code);
+      return { data: r.data, headers: cookieFor(r.session.token) };
+    },
+  },
+  authed("profile", (u, ctx) => ctx.services.accounts.updateProfile(u, parseBody(ProfileSchema, ctx.body ?? {}))),
   authed("alerts", (u, ctx) => ctx.services.accounts.alerts(u), "GET"),
   authed("email", (u, ctx) => ctx.services.accounts.changeEmail(u, parseBody(ChangeEmailSchema, ctx.body ?? {}))),
   authed("email/verify", (u, ctx) => ctx.services.accounts.verifyEmail(u, parseBody(CodeSchema, ctx.body ?? {}))),
@@ -138,4 +171,80 @@ export const ACCOUNT_ROUTES: RouteSpec[] = [
   },
   authed("waitlist/join", (u, ctx) => ctx.services.accounts.join(u, parseBody(VarietyRefSchema, ctx.body ?? {}))),
   authed("waitlist/leave", (u, ctx) => ctx.services.accounts.leave(u, parseBody(VarietyRefSchema, ctx.body ?? {}))),
+  {
+    // Recognized-contact resend (unauthenticated): a fresh code for the pending join's email.
+    method: "POST",
+    pattern: "waitlist/code",
+    scope: null,
+    bucket: "public",
+    handler: async (ctx) => {
+      assertSameOrigin(ctx);
+      const body = parseBody(UnauthedCodeIssueSchema, ctx.body ?? {});
+      const data = await ctx.services.accounts.resendWaitlistCode(body.email);
+      return { data };
+    },
+  },
+  {
+    // Recognized-contact verify (unauthenticated): establishes the session at verify time and
+    // completes the pending join in the same step.
+    method: "POST",
+    pattern: "waitlist/verify",
+    scope: null,
+    bucket: "public",
+    handler: async (ctx) => {
+      assertSameOrigin(ctx);
+      const body = parseBody(UnauthedCodeVerifySchema, ctx.body ?? {});
+      const r = await ctx.services.accounts.verifyWaitlistCode(body.email, body.code);
+      return { data: r.data, headers: cookieFor(r.session.token) };
+    },
+  },
+  {
+    // The no-JS floor's plain join form (form-encoded, Turnstile-exempt per §11.4 with §3.4.5's
+    // compensating controls; the same public rate-limit bucket as the create path). Every
+    // outcome is a 303 redirect-back with the block's fragment — never a JSON error page.
+    method: "POST",
+    pattern: "waitlist/join-form",
+    scope: null,
+    bucket: "public",
+    handler: async (ctx) => formRedirect(ctx, (raw, user) => ctx.services.accounts.joinFromForm(raw, user)),
+  },
+  {
+    // The no-JS floor's plain code form (form-encoded; Turnstile never applied to code
+    // verification). Every outcome is a 303 redirect-back with the block's fragment.
+    method: "POST",
+    pattern: "waitlist/verify-form",
+    scope: null,
+    bucket: "public",
+    handler: async (ctx) => formRedirect(ctx, (raw, user) => ctx.services.accounts.verifyFromForm(raw, user)),
+  },
 ];
+
+/**
+ * Run a no-JS form submission and wrap its outcome as a 303. The service methods already
+ * redirect every expected failure back to the floor; this net catches only the unexpected
+ * ServiceErrors (a variety deleted mid-submit, a code service outage) and lands those on the
+ * variety page too — rate limits and listed races as the matching floor error, anything else
+ * on the bare page (which 404s on its own for an unknown variety). A visitor is never
+ * stranded on a JSON error page. Genuine bugs (non-ServiceError throws) still 500 — loudly.
+ */
+async function formRedirect(
+  ctx: WriteContext,
+  run: (raw: Record<string, unknown>, user: UserRow | null) => Promise<{ redirect: string; sessionToken: string | null }>,
+): Promise<{ data: unknown; redirect: string; headers?: Record<string, string> }> {
+  assertSameOrigin(ctx);
+  const raw = (ctx.body ?? {}) as Record<string, unknown>;
+  const variety = typeof raw.variety === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(raw.variety) ? raw.variety : null;
+  try {
+    const r = await run(raw, await sessionUser(ctx));
+    return { data: null, redirect: r.redirect, ...(r.sessionToken ? { headers: cookieFor(r.sessionToken) } : {}) };
+  } catch (err) {
+    if (!(err instanceof ServiceError) || !variety) throw err;
+    if (err.status === 429) {
+      return { data: null, redirect: joinErrorRedirect(variety, ["rate_limited"], { email: typeof raw.email === "string" ? raw.email : "" }) };
+    }
+    if (err.code === "already_listed") {
+      return { data: null, redirect: joinErrorRedirect(variety, ["already_listed"], { email: typeof raw.email === "string" ? raw.email : "" }) };
+    }
+    return { data: null, redirect: `/variety/${variety}` };
+  }
+}

@@ -34,6 +34,11 @@ export interface WriteOk {
   revalidate?: string[];
   /** Extra response headers (e.g. Set-Cookie for the account session). */
   headers?: Record<string, string>;
+  /**
+   * POST-redirect-GET (Tranche 3.2 no-JS floor): when set, the router answers 303 See Other
+   * to this location (plus `headers`, e.g. the session cookie) instead of the JSON envelope.
+   */
+  redirect?: string;
 }
 
 export interface RouteSpec {
@@ -155,10 +160,17 @@ export function writeRouter(prefix: string, routes: RouteSpec[]) {
         const text = await req.text();
         if (text.length > MAX_BODY_BYTES) throw new Problem(413, "payload_too_large", `body exceeds ${MAX_BODY_BYTES} bytes`);
         if (text.trim().length > 0) {
-          try {
-            body = JSON.parse(text);
-          } catch {
-            throw new Problem(400, "invalid_json", "body must be JSON");
+          const contentType = req.headers.get("content-type") ?? "";
+          if (contentType.includes("application/x-www-form-urlencoded")) {
+            // The no-JS floor's plain forms (Tranche 3.2): flat string fields. Repeated keys
+            // keep the last value — these forms have no multi-valued fields.
+            body = Object.fromEntries(new URLSearchParams(text).entries());
+          } else {
+            try {
+              body = JSON.parse(text);
+            } catch {
+              throw new Problem(400, "invalid_json", "body must be JSON");
+            }
           }
         }
       }
@@ -176,6 +188,13 @@ export function writeRouter(prefix: string, routes: RouteSpec[]) {
       }
 
       const out = await spec.handler({ req, url, params, services, env, principal, body });
+      if (out.redirect) {
+        await revalidateAll(out.revalidate ?? []);
+        return new Response(null, {
+          status: 303,
+          headers: { Location: out.redirect, "Cache-Control": CACHE_NO_STORE, ...baseHeaders(), ...(out.headers ?? {}) },
+        });
+      }
       const status = out.status ?? 200;
       const payload = { data: out.data, meta: { generated_at: new Date().toISOString() } };
       if (idemKey) {

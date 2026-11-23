@@ -353,12 +353,15 @@ describe("3.3 — waitlist busy discipline on the current form (3.3-E)", () => {
       }),
     );
     render(<WaitlistBlock varietySlug="sunset" varietyName="Sunset" />);
-    const email = (await screen.findByLabelText("Email")) as HTMLInputElement;
+    // The floor renders first; the human-check note marks the enhanced alert step's arrival.
+    await screen.findByText(/The human check isn’t set up on this server yet/);
+    fireEvent.click(fieldInput("waitlist-channel-sms"));
+    const email = fieldInput("waitlist-email");
     email.focus();
     fireEvent.submit(email.closest("form")!);
     expect(await screen.findByRole("button", { name: "Joining…" })).toBeDefined();
     expect(email.disabled).toBe(false);
-    expect(fieldInput("waitlist-name").disabled).toBe(false);
+    expect(fieldInput("waitlist-phone").disabled).toBe(false);
     expect(document.activeElement).not.toBe(document.body);
     resolvePost(new Response(JSON.stringify({ status: 400, code: "invalid_json", detail: "body must be JSON" }), { status: 400 }));
     await screen.findByRole("alert");

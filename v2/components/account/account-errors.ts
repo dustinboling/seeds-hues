@@ -21,6 +21,9 @@ export const CREATE_SUMMARY_HEADING = "Some fields need attention before creatin
 export const SIGNIN_SUMMARY_HEADING = "Some fields need attention before signing in.";
 export const CHANGE_EMAIL_SUMMARY_HEADING = "Some fields need attention before updating.";
 export const ALERT_PHONE_SUMMARY_HEADING = "Some fields need attention before saving.";
+/** Tranche 3.2 headings (same construction; flagged as new strings in the build's PR body). */
+export const WAITLIST_JOIN_SUMMARY_HEADING = "Some fields need attention before joining the waiting list.";
+export const FINISH_PROFILE_SUMMARY_HEADING = "Some fields need attention before finishing your account.";
 
 /** Sentences Wren repeats byte-identically across the account maps. */
 const HUMAN_CHECK_FAILED = "The human check didn't pass — please complete it and try again.";
@@ -143,6 +146,64 @@ export function alertPhoneFailure(status: number, code: string, detail: string):
     return { fields, form };
   }
   return { fields: [], form: sharedForm(status, code, "Could not save your text settings. Check your connection and try again.") ?? FALLBACK };
+}
+
+/**
+ * Map a failed waitlist alert-step submission (Tranche 3.2): POST /api/v1/account with
+ * join_variety. Email and phone failures are per-field (COPY-3-3 §3.1's sentences); a
+ * listed race passes the API's own friendly message through as the form message. The
+ * recognized-contact answer is never a failure — it is a 200 the caller branches on.
+ */
+export function waitlistJoinFailure(status: number, code: string, detail: string): MappedFormFailure {
+  const FALLBACK = "We couldn't join the waiting list. Please check the form and try again.";
+  if (code === "invalid_phone") return { fields: [{ key: "phone", message: "Enter your phone number as a 10-digit US number." }], form: null };
+  if (code === "already_listed") return { fields: [], form: detail };
+  if (code === "no_match") return { fields: [], form: "We couldn't join the waiting list with that email — please try again." };
+  if (code === "resend_too_soon") return { fields: [], form: "A code was just sent — wait a minute, then try again." };
+  if (code === "resend_limit") return { fields: [], form: "That's the most codes we can send in an hour — please try again later." };
+  if (code === "validation_error") {
+    const FIELD_COPY: Record<string, string> = { email: "Enter a valid email address.", phone: "Enter your phone number as a 10-digit US number." };
+    const fields = validationFields(detail, ["email", "phone"]).map((key) => ({ key, message: FIELD_COPY[key]! }));
+    const form = validationFormMessage(detail) ?? (fields.length === 0 ? FALLBACK : null);
+    return { fields, form };
+  }
+  return { fields: [], form: sharedForm(status, code, "Could not join the waiting list. Check your connection and try again.") ?? FALLBACK };
+}
+
+/**
+ * Map a failed POST /api/v1/account/profile response (Tranche 3.2, §3.2.5): the deferred
+ * name/ZIP failures are per-field (COPY-3-3 §3.1's sentences); the account-type group sends
+ * only values the schema accepts, so it has no message.
+ */
+export function profileFailure(status: number, code: string, detail: string): MappedFormFailure {
+  const FALLBACK = "We couldn't save your details. Please check the form and try again.";
+  if (code === "unknown_zip") return { fields: [{ key: "zip", message: "Your ZIP code isn't one we recognize — check the 5 digits and try again." }], form: null };
+  if (code === "validation_error") {
+    const FIELD_COPY: Record<string, string> = { name: "Enter your name.", zip: "Enter your ZIP code as 5 digits." };
+    const fields = validationFields(detail, ["name", "zip"]).map((key) => ({ key, message: FIELD_COPY[key]! }));
+    const form = validationFormMessage(detail) ?? (fields.length === 0 ? FALLBACK : null);
+    return { fields, form };
+  }
+  return { fields: [], form: sharedForm(status, code, "Could not save your details. Check your connection and try again.") ?? FALLBACK };
+}
+
+/**
+ * Map a failed POST /api/v1/account/sign-in/code response (Tranche 3.2, §11.1): the email
+ * facts are per-field on the sign-in form's email input; human-check, rate-limit, and
+ * connection failures are form-level.
+ */
+export function signInCodeFailure(status: number, code: string, detail: string): MappedFormFailure {
+  const FALLBACK = "We couldn't email you a code. Please check the form and try again.";
+  if (code === "no_account") return { fields: [{ key: "email", message: "We couldn't find an account with that email — check it and try again." }], form: null };
+  if (code === "has_phone") return { fields: [{ key: "email", message: "This account has a phone number — sign in with your email and phone number instead." }], form: null };
+  if (code === "validation_error") {
+    const fields = validationFields(detail, ["email"]).map((key) => ({ key, message: "Enter a valid email address." }));
+    const form = validationFormMessage(detail) ?? (fields.length === 0 ? FALLBACK : null);
+    return { fields, form };
+  }
+  if (code === "resend_too_soon") return { fields: [], form: "A code was just sent — wait a minute, then try again." };
+  if (code === "resend_limit") return { fields: [], form: "That's the most codes we can send in an hour — please try again later." };
+  return { fields: [], form: sharedForm(status, code, "Could not email you a code. Check your connection and try again.") ?? FALLBACK };
 }
 
 /** Map a failed POST /api/v1/account/delete response (COPY-3-3 §3.6). */
