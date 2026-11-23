@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 878 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 887 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -98,6 +98,8 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/chocolate-lace-flower-dara.webp": "artwork/chocolate-lace-flower-dara.png",
   "/artwork/clarkia-tower-coral.webp": "artwork/clarkia-tower-coral.png",
   "/artwork/clary-sage-tricolor-mix.webp": "artwork/clary-sage-tricolor-mix.png",
+  "/artwork/cleome-cherry-queen.webp": "artwork/cleome-cherry-queen.png",
+  "/artwork/cleome-mauve-queen.webp": "artwork/cleome-mauve-queen.png",
   "/artwork/cleome-queen-mix.webp": "artwork/cleome-queen-mix.png",
   "/artwork/cleome-white-queen.webp": "artwork/cleome-white-queen.png",
   "/artwork/coleus-chocolate-covered-cherry.webp": "artwork/coleus-chocolate-covered-cherry.png",
@@ -424,6 +426,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/milkweed-swamp-milkweed-white.webp": "artwork/milkweed-swamp-milkweed-white.png",
   "/artwork/milkweed-swamp-milkweed.webp": "artwork/milkweed-swamp-milkweed.png",
   "/artwork/mullein-southern-charm.webp": "artwork/mullein-southern-charm.png",
+  "/artwork/mullein-wedding-candles.webp": "artwork/mullein-wedding-candles.png",
   "/artwork/nasturtium-caribbean-crush.webp": "artwork/nasturtium-caribbean-crush.png",
   "/artwork/nasturtium-cherry-rose-jewel.webp": "artwork/nasturtium-cherry-rose-jewel.png",
   "/artwork/nasturtium-gleam-salmon.webp": "artwork/nasturtium-gleam-salmon.png",
@@ -523,6 +526,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/pea-ruby-beauty.webp": "artwork/pea-ruby-beauty.png",
   "/artwork/pea-spring-blush.webp": "artwork/pea-spring-blush.png",
   "/artwork/pea-spring-rose.webp": "artwork/pea-spring-rose.png",
+  "/artwork/perennial-babys-breath-perennial-babys-breath.webp": "artwork/perennial-babys-breath-perennial-babys-breath.png",
   "/artwork/phlox-blushing-bride.webp": "artwork/phlox-blushing-bride.png",
   "/artwork/phlox-cherry-caramel.webp": "artwork/phlox-cherry-caramel.png",
   "/artwork/phlox-creme-brulee.webp": "artwork/phlox-creme-brulee.png",
@@ -553,6 +557,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/safflower-zanzibar.webp": "artwork/safflower-zanzibar.png",
   "/artwork/salvia-rose-queen.webp": "artwork/salvia-rose-queen.png",
   "/artwork/shirley-poppy-amazing-grey.webp": "artwork/shirley-poppy-amazing-grey.png",
+  "/artwork/shirley-poppy-angels-choir.webp": "artwork/shirley-poppy-angels-choir.png",
   "/artwork/shirley-poppy-mother-of-pearl.webp": "artwork/shirley-poppy-mother-of-pearl.png",
   "/artwork/shirley-poppy-pandora.webp": "artwork/shirley-poppy-pandora.png",
   "/artwork/shirley-poppy-supreme.webp": "artwork/shirley-poppy-supreme.png",
@@ -626,6 +631,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/stock-buttercream.webp": "artwork/stock-buttercream.png",
   "/artwork/stock-katz-bright-rose.webp": "artwork/stock-katz-bright-rose.png",
   "/artwork/stock-katz-lavender-light.webp": "artwork/stock-katz-lavender-light.png",
+  "/artwork/stock-katz-mix.webp": "artwork/stock-katz-mix.png",
   "/artwork/stock-katz-pink.webp": "artwork/stock-katz-pink.png",
   "/artwork/stock-katz-purple.webp": "artwork/stock-katz-purple.png",
   "/artwork/stock-malmaison-pink.webp": "artwork/stock-malmaison-pink.png",
@@ -705,6 +711,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-john-grey.webp": "artwork/sweet-pea-john-grey.png",
   "/artwork/sweet-pea-joyce-stanton.webp": "artwork/sweet-pea-joyce-stanton.png",
   "/artwork/sweet-pea-judith-wilkenson.webp": "artwork/sweet-pea-judith-wilkenson.png",
+  "/artwork/sweet-pea-juliet.webp": "artwork/sweet-pea-juliet.png",
   "/artwork/sweet-pea-karen-louise.webp": "artwork/sweet-pea-karen-louise.png",
   "/artwork/sweet-pea-kings-ransom.webp": "artwork/sweet-pea-kings-ransom.png",
   "/artwork/sweet-pea-lady-nicholson.webp": "artwork/sweet-pea-lady-nicholson.png",
@@ -745,6 +752,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-restormel.webp": "artwork/sweet-pea-restormel.png",
   "/artwork/sweet-pea-richard-judy.webp": "artwork/sweet-pea-richard-judy.png",
   "/artwork/sweet-pea-route-66.webp": "artwork/sweet-pea-route-66.png",
+  "/artwork/sweet-pea-shell-pink.webp": "artwork/sweet-pea-shell-pink.png",
   "/artwork/sweet-pea-sir-jimmy-shand.webp": "artwork/sweet-pea-sir-jimmy-shand.png",
   "/artwork/sweet-pea-snowlight.webp": "artwork/sweet-pea-snowlight.png",
   "/artwork/sweet-pea-solstice-light-blue.webp": "artwork/sweet-pea-solstice-light-blue.png",
@@ -775,6 +783,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/tomato-red-currant.webp": "artwork/tomato-red-currant.png",
   "/artwork/tomato-sunpeach.webp": "artwork/tomato-sunpeach.png",
   "/artwork/verbena-vanity.webp": "artwork/verbena-vanity.png",
+  "/artwork/verbena-verbena-bonariensis.webp": "artwork/verbena-verbena-bonariensis.png",
   "/artwork/viola-brush-strokes.webp": "artwork/viola-brush-strokes.png",
   "/artwork/viola-gem-apricot-antique.webp": "artwork/viola-gem-apricot-antique.png",
   "/artwork/viola-gem-heavenly-blue.webp": "artwork/viola-gem-heavenly-blue.png",
