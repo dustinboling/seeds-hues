@@ -115,8 +115,12 @@ describe("Motif B retirement (2026-11-21)", () => {
     expect(at).toBeLessThan(src.indexOf('id="crops-title"'));
     // The stem rule is gone from the break — but the crop packet cards below keep
     // their mini rules (a different class), and the footer stem is untouched.
+    // Tranche 3.1b-1: the packet cards render from the home browse component the
+    // in-place layer hydrates — the mini-rule pin follows the markup there.
     expect(src).not.toContain("divider-stem mb-8 mt-10");
-    expect(src).toContain('className="divider-stem-mini mt-1"');
+    expect(readFileSync(join(process.cwd(), "components/home/HomeBrowse.tsx"), "utf8")).toContain(
+      'className="divider-stem-mini mt-1"',
+    );
     expect(src).toContain('from "@/components/ui/HomeMotifDivider"');
   });
 

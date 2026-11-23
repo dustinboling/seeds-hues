@@ -1,21 +1,19 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SearchBox } from "@/components/search/SearchBox";
-import { CropCardImage } from "@/components/crop/CropCardImage";
+import { HomeBrowse, type HomeBrowseInitial } from "@/components/home/HomeBrowse";
 import { AvailabilityBadge } from "@/components/variety/Availability";
 import { HomeMotifDivider } from "@/components/ui/HomeMotifDivider";
 import { ThemeArt } from "@/components/ui/ThemeArt";
 import { PodDivider } from "@/components/ui/PodDivider";
-import { BrowseFilters } from "@/components/ui/BrowseFilters";
-import { activeFilterLabels, type BrowseFilterState } from "@/lib/browse";
+import { readBrowseFiltersForGroups } from "@/lib/browse";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { siteOrganizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
-import { SITE_DESCRIPTION, SITE_TITLE } from "@/lib/config";
+import { CROP_BROWSE_LIMIT, SITE_DESCRIPTION, SITE_TITLE } from "@/lib/config";
 import { formatFriendlyDate, plural, shortCommonName } from "@/lib/format";
-import { parseMethodParam, parseSeasonParam } from "@/lib/browse";
-import { METHOD_PARAMS, SEASON_PARAMS } from "@/lib/validators";
+import { pageWindow } from "@/lib/paging";
 
 export const dynamic = "force-dynamic";
 
@@ -34,22 +32,23 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 export default async function HomePage({ searchParams }: Props) {
   const sp = await searchParams;
-  const filters: BrowseFilterState = { season: parseSeasonParam(sp.season), method: parseMethodParam(sp.method), lifeCycle: null, hue: [], smallFarm: false };
-  const active = activeFilterLabels(filters);
+  const filters = readBrowseFiltersForGroups(sp, ["season", "method"], "single");
   const { catalog } = await getServices();
-  const [counts, crops, coverage, recent] = await Promise.all([
+  const [counts, payload, coverage, recent] = await Promise.all([
     catalog.counts(),
-    catalog.listCrops(
-      // Browse-by-crop shows the whole catalog; the limit must cover it (124 crops, Nov 2026).
-      { offset: 0, limit: 500 },
-      {
-        season: filters.season ? SEASON_PARAMS[filters.season] : undefined,
-        methods: filters.method ? [METHOD_PARAMS[filters.method]] : undefined,
-      },
-    ),
+    // The browse payload: the crop window plus the per-option counts describing them —
+    // the identical contract GET /api/browse/crops serves the in-place layer.
+    catalog.browseCrops({ filters, page: pageWindow(1, CROP_BROWSE_LIMIT) }),
     catalog.coverage(),
     catalog.recent({ limit: 6 }),
   ]);
+  const initial: HomeBrowseInitial = {
+    state: filters,
+    counts: payload.counts,
+    items: payload.items,
+    total: payload.total,
+    page: 1,
+  };
   const withSellers = coverage.reduce((n, c) => n + c.varieties_with_sellers, 0);
   const lastUpdated = coverage.map((c) => c.last_updated).filter((d): d is string => Boolean(d)).sort().at(-1) ?? null;
   const lastUpdatedFriendly = formatFriendlyDate(lastUpdated);
@@ -95,35 +94,7 @@ export default async function HomePage({ searchParams }: Props) {
             All crops
           </Link>
         </div>
-        <BrowseFilters basePath="/" state={filters} groups={["season", "method"]} />
-        {active.length ? (
-          <p className="mt-3 text-muted" data-testid="filter-result" aria-live="polite" aria-atomic="true">
-            {[plural(crops.total, "crop"), ...active].join(" · ")}
-          </p>
-        ) : null}
-        <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-          {crops.items.map((c) => (
-            <li key={c.slug} className="h-full">
-              {/* Vintage seed packet, revised 2026-11-16 at the owner's direction: the crop
-                  illustration as packet art on top, the crop name centred at the BOTTOM in a
-                  fixed-height zone, and NO seed-house imprint line. No counts — the owner
-                  asked for the variety/seller count lines off the homepage cards. Every card
-                  is the same height: full-height link, fixed-aspect art, fixed name zone. */}
-              <Link
-                href={`/crop/${c.slug}`}
-                className="card card-hover packet tap flex h-full flex-col items-center p-4 text-center no-underline"
-              >
-                <span className="block w-full">
-                  <CropCardImage media={c.media} commonName={c.commonName} />
-                </span>
-                <span aria-hidden="true" className="divider-stem-mini mt-1" />
-                <span className="flex h-[3.5rem] items-center justify-center">
-                  <span className="line-clamp-2 font-display text-lg font-semibold leading-snug text-ink">{shortCommonName(c.commonName)}</span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <HomeBrowse initial={initial} />
       </section>
       <PodDivider bundle="/ornaments/bundle-cosmos.webp" className="my-2" />
 
