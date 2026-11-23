@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 960 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 969 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -481,6 +481,8 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/marigold-tiger-eyes.webp": "artwork/marigold-tiger-eyes.png",
   "/artwork/mignonette-garden-mignonette.webp": "artwork/mignonette-garden-mignonette.png",
   "/artwork/mignonette-white-mignonette.webp": "artwork/mignonette-white-mignonette.png",
+  "/artwork/milkweed-milkmaid.webp": "artwork/milkweed-milkmaid.png",
+  "/artwork/milkweed-oscar.webp": "artwork/milkweed-oscar.png",
   "/artwork/milkweed-pleurisy-root.webp": "artwork/milkweed-pleurisy-root.png",
   "/artwork/milkweed-soulmate.webp": "artwork/milkweed-soulmate.png",
   "/artwork/milkweed-swamp-milkweed-white.webp": "artwork/milkweed-swamp-milkweed-white.png",
@@ -610,6 +612,9 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/queen-annes-lace-green-mist.webp": "artwork/queen-annes-lace-green-mist.png",
   "/artwork/queen-annes-lace-queen-of-africa.webp": "artwork/queen-annes-lace-queen-of-africa.png",
   "/artwork/quinoa-red-head.webp": "artwork/quinoa-red-head.png",
+  "/artwork/ranunculus-mach-mix.webp": "artwork/ranunculus-mach-mix.png",
+  "/artwork/ranunculus-magic-mix.webp": "artwork/ranunculus-magic-mix.png",
+  "/artwork/ranunculus-sprinkles-mix.webp": "artwork/ranunculus-sprinkles-mix.png",
   "/artwork/red-leaf-hibiscus-mahogany-splendor.webp": "artwork/red-leaf-hibiscus-mahogany-splendor.png",
   "/artwork/rudbeckia-cherry-brandy.webp": "artwork/rudbeckia-cherry-brandy.png",
   "/artwork/rudbeckia-chim-chiminee.webp": "artwork/rudbeckia-chim-chiminee.png",
@@ -618,6 +623,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/rudbeckia-macau.webp": "artwork/rudbeckia-macau.png",
   "/artwork/rudbeckia-prairie-sun.webp": "artwork/rudbeckia-prairie-sun.png",
   "/artwork/rudbeckia-sahara.webp": "artwork/rudbeckia-sahara.png",
+  "/artwork/rudbeckia-tall-dark-sahara.webp": "artwork/rudbeckia-tall-dark-sahara.png",
   "/artwork/safflower-zanzibar.webp": "artwork/safflower-zanzibar.png",
   "/artwork/salvia-rose-queen.webp": "artwork/salvia-rose-queen.png",
   "/artwork/shirley-poppy-amazing-grey.webp": "artwork/shirley-poppy-amazing-grey.png",
@@ -631,6 +637,9 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/silver-lace.webp": "artwork/silver-lace.png",
   "/artwork/snapdragon-avignon-bicolor-yellow.webp": "artwork/snapdragon-avignon-bicolor-yellow.png",
   "/artwork/snapdragon-black-prince.webp": "artwork/snapdragon-black-prince.png",
+  "/artwork/snapdragon-chantilly-bronze-white-throat.webp": "artwork/snapdragon-chantilly-bronze-white-throat.png",
+  "/artwork/snapdragon-chantilly-cream-yellow.webp": "artwork/snapdragon-chantilly-cream-yellow.png",
+  "/artwork/snapdragon-chantilly-deep-orange.webp": "artwork/snapdragon-chantilly-deep-orange.png",
   "/artwork/snapdragon-chantilly-light-pink.webp": "artwork/snapdragon-chantilly-light-pink.png",
   "/artwork/snapdragon-chantilly-light-salmon.webp": "artwork/snapdragon-chantilly-light-salmon.png",
   "/artwork/snapdragon-costa-apricot.webp": "artwork/snapdragon-costa-apricot.png",
