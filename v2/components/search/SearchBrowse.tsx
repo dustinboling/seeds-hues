@@ -27,11 +27,14 @@ const GROUPS: BrowseFilterGroup[] = ["season", "method", "lifeCycle", "hue"];
 /** The 3.1b failure line (brief §2.5.6 contract — the wording stands for every new surface). */
 const FAILURE_MESSAGE = "That filter didn't apply — you're still seeing the previous results. Try again.";
 
+// The match keys are the singular SearchResult types (lib/validators SEARCH_TYPES): the
+// re-group below compares x.type === key, so plural keys silently drop every group but
+// series. Labels keep the shipped plural wording; order is the shipped grouped layout.
 const GROUP_DEFS = [
-  ["crops", "Crops"],
+  ["crop", "Crops"],
   ["series", "Series"],
-  ["varieties", "Varieties"],
-  ["sellers", "Sellers"],
+  ["variety", "Varieties"],
+  ["seller", "Sellers"],
 ] as const;
 
 /** The server-rendered browse snapshot this block hydrates from (items are the flattened groups). */
