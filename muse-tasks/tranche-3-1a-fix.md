@@ -27,3 +27,9 @@ Bring all three to the spec's exact forms everywhere the applied row renders (SS
 - No scratch or fixture files. ESLint per file group as you go; strict narrowing in tests.
 - Finish discipline: run the full `npm run verify` once, as the last act. If verify fails, fix only failures in files this task touched, re-run once more, and finish. Failures in untouched files: report verbatim in the PR body, do not chase. Never more than two verify runs.
 - US spelling. No prices anywhere. Nothing outside F1 + F2.
+
+## Addendum 2026-11-22 (coordinator) — read before starting
+
+Three prior attempts have not landed: run 45084698950 (cancelled), run 45087002093 (completed, no branch change), run 45098781694 (the builder's changes FAILED the workflow's own verify gate — nothing landed). The failed run's log is the lesson: **tests/dom/variety-browse.test.tsx failed 14 of its 20 tests and tests/unit/browse-filters.test.ts failed 1** — the attempt changed the components in ways that broke the browse behavior suite broadly (the §2.5.6 failure-path tests among them).
+
+This fix is SURGICAL. The complete change set is: (1) ChipCount gains the sr-only unit per SPEC §2.4.2 ("(7)" visually, "7 varieties" for assistive tech, following the shipped StateFilter pattern); (2) remover accessible names take the §2.6.1 group-carrying form ("Remove the Hue filter, Pink"); (3) the clear control reads "Clear all filters" (§2.6.2); (4) the test pins that assert the old strings are updated to the spec forms. NOTHING ELSE changes — no behavior, no structure, no other strings. Before finishing, run the FULL verify (npm run verify in v2/) and confirm it is green end to end, with tests/dom/variety-browse.test.tsx and tests/unit/browse-filters.test.ts specifically green; a fix that trades 15 test failures for 2 findings is a failed run, and the workflow gate will (correctly) refuse it again.
