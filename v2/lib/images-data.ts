@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1005 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1014 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -123,6 +123,8 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/columbine-songbird-bluebird.webp": "artwork/columbine-songbird-bluebird.png",
   "/artwork/columbine-songbird-cardinal.webp": "artwork/columbine-songbird-cardinal.png",
   "/artwork/columbine-songbird-mixture.webp": "artwork/columbine-songbird-mixture.png",
+  "/artwork/columbine-songbird-nightingale.webp": "artwork/columbine-songbird-nightingale.png",
+  "/artwork/columbine-songbird-robin.webp": "artwork/columbine-songbird-robin.png",
   "/artwork/corn-cockle-dawn-creek-blush.webp": "artwork/corn-cockle-dawn-creek-blush.png",
   "/artwork/corn-cockle-ocean-pearls.webp": "artwork/corn-cockle-ocean-pearls.png",
   "/artwork/cornflower-classic-fantastic.webp": "artwork/cornflower-classic-fantastic.png",
@@ -339,7 +341,12 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/dahlia-seed-bees-choice.webp": "artwork/dahlia-seed-bees-choice.png",
   "/artwork/dahlia-seed-cancan-girls.webp": "artwork/dahlia-seed-cancan-girls.png",
   "/artwork/dahlia-seed-collarette.webp": "artwork/dahlia-seed-collarette.png",
+  "/artwork/dahlia-seed-coseytown-honey-pot-mix.webp": "artwork/dahlia-seed-coseytown-honey-pot-mix.png",
+  "/artwork/dahlia-seed-miss-amara.webp": "artwork/dahlia-seed-miss-amara.png",
+  "/artwork/dahlia-seed-mixed-parent.webp": "artwork/dahlia-seed-mixed-parent.png",
+  "/artwork/dahlia-seed-paulas-field-mix.webp": "artwork/dahlia-seed-paulas-field-mix.png",
   "/artwork/dahlia-seed-petite-florets.webp": "artwork/dahlia-seed-petite-florets.png",
+  "/artwork/dahlia-seed-premium-pollinator-mix.webp": "artwork/dahlia-seed-premium-pollinator-mix.png",
   "/artwork/dahlia-shooting-stars.webp": "artwork/dahlia-shooting-stars.webp",
   "/artwork/delphinium-belladonna-mix.webp": "artwork/delphinium-belladonna-mix.png",
   "/artwork/delphinium-bellamosum.webp": "artwork/delphinium-bellamosum.png",
@@ -366,6 +373,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/echinacea-powwow-white.webp": "artwork/echinacea-powwow-white.png",
   "/artwork/echinacea-powwow-wild-berry.webp": "artwork/echinacea-powwow-wild-berry.png",
   "/artwork/echinacea-primadonna-deep-rose.webp": "artwork/echinacea-primadonna-deep-rose.png",
+  "/artwork/echinacea-primadonna-white.webp": "artwork/echinacea-primadonna-white.png",
   "/artwork/echinacea-white-swan.webp": "artwork/echinacea-white-swan.png",
   "/artwork/eryngium-blaukappe.webp": "artwork/eryngium-blaukappe.png",
   "/artwork/eryngium-blue-glitter.webp": "artwork/eryngium-blue-glitter.png",
@@ -378,6 +386,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/eucalyptus-small-leaved-gum.webp": "artwork/eucalyptus-small-leaved-gum.png",
   "/artwork/euphorbia.webp": "artwork/euphorbia.png",
   "/artwork/false-indigo-blue-wild-indigo.webp": "artwork/false-indigo-blue-wild-indigo.png",
+  "/artwork/false-sunflower-bleeding-hearts.webp": "artwork/false-sunflower-bleeding-hearts.png",
   "/artwork/false-sunflower-summer-sun.webp": "artwork/false-sunflower-summer-sun.png",
   "/artwork/feverfew-magic-lime-green.webp": "artwork/feverfew-magic-lime-green.png",
   "/artwork/feverfew-tetra-white.webp": "artwork/feverfew-tetra-white.png",
