@@ -22,6 +22,7 @@ const fake = vi.hoisted(() => ({
   cropState: null as unknown,
   siblings: { items: [] as unknown[], total: 0 },
   siblingOpts: null as unknown,
+  search: { crops: [] as unknown[], series: [] as unknown[], varieties: [] as unknown[], sellers: [] as unknown[] },
 }));
 const store = vi.hoisted(() => ({ services: null as unknown }));
 vi.mock("@/lib/services/context", () => ({ getServices: async () => store.services }));
@@ -34,6 +35,8 @@ import type {
   CropDetail,
   CropDetailCounts,
   CropListItem,
+  SearchResult,
+  SearchType,
   VarietyDetail,
   VarietyListItem,
 } from "@/lib/validators";
@@ -63,7 +66,13 @@ store.services = fakeServices({
       fake.siblingOpts = opts;
       return fake.siblings;
     },
-    browseSearch: async () => ({ crops: [], series: [], varieties: [], sellers: [], total: 0, page: 1, pages: 1, counts: zeroBrowseCounts() }),
+    browseSearch: async () => ({
+      ...fake.search,
+      total: fake.search.crops.length + fake.search.series.length + fake.search.varieties.length + fake.search.sellers.length,
+      page: 1,
+      pages: 1,
+      counts: zeroBrowseCounts(),
+    }),
     suggestCorrection: async () => ({ name: "Alison", href: "/search?q=Alison" }),
   },
 });
@@ -80,6 +89,7 @@ beforeEach(() => {
   fake.cropState = null;
   fake.siblings = { items: [], total: 0 };
   fake.siblingOpts = null;
+  fake.search = { crops: [], series: [], varieties: [], sellers: [] };
 });
 
 function zeroBrowseCounts(): BrowseCounts {
@@ -284,5 +294,26 @@ describe("did-you-mean (§5.3.4): the zero-results state offers the near match a
     const h = renderToStaticMarkup((await SearchPage({ searchParams: Promise.resolve({ q: "alsion" }) })) as ReactElement);
     expect(h).toContain("Nothing matches");
     expect(h).toMatch(/Did you mean\s*<a[^>]*href="\/search\?q=Alison"[^>]*>\s*<strong>Alison<\/strong>\s*<\/a>\s*\?/);
+  });
+});
+
+function searchHit(type: SearchType, slug: string, title: string, href: string): SearchResult {
+  return { type, slug, title, subtitle: `${title} subtitle`, href, matchedAlias: null };
+}
+
+describe("search groups repair (3.4 completion): the with-results state renders every group", () => {
+  it("renders the crop, series, variety and seller rows — no group silently dropped", async () => {
+    fake.search = {
+      crops: [searchHit("crop", "sweet-pea", "Sweet Pea", "/crop/sweet-pea")],
+      series: [searchHit("series", "spencer", "Spencer series", "/series/spencer")],
+      varieties: [searchHit("variety", "sweet-pea-alison", "Alison", "/variety/sweet-pea-alison")],
+      sellers: [searchHit("seller", "floret", "Floret", "/seller/floret")],
+    };
+    const h = renderToStaticMarkup((await SearchPage({ searchParams: Promise.resolve({ q: "sweet" }) })) as ReactElement);
+    expect(h).toContain("4 results for “sweet”");
+    for (const label of ["Crops", "Series", "Varieties", "Sellers"]) expect(h, label).toContain(label);
+    for (const href of ["/crop/sweet-pea", "/series/spencer", "/variety/sweet-pea-alison", "/seller/floret"]) {
+      expect(h, href).toContain(`href="${href}"`);
+    }
   });
 });
