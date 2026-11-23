@@ -1450,6 +1450,27 @@ export async function updateVarietyColor(db: Db, varietyId: number, patch: Varie
   return changed;
 }
 
+/**
+ * The admin-key variety description write (decision 28): sets the description (null clears
+ * it to NULL) and reports the changed-field list back. Same conventions as
+ * updateVarietyColor (seq bump, updatedAt, the changed list); an unchanged save writes
+ * nothing.
+ */
+export async function updateVarietyDescription(db: Db, varietyId: number, description: string | null, at: string): Promise<["description"] | []> {
+  const [cur] = await db
+    .select({ description: varieties.description })
+    .from(varieties)
+    .where(eq(varieties.id, varietyId))
+    .limit(1);
+  if (!cur) return [];
+  if (description === cur.description) return [];
+  await atomic(db, [
+    ...nextSeq(db),
+    db.update(varieties).set({ description, updatedAt: at, updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
+  ]);
+  return ["description"];
+}
+
 /** A variety ref for writes: a numeric id or a slug (removed varieties resolve too — the effect itself reports already_removed). */
 export async function varietyRefBySlugOrId(db: Db, ref: string): Promise<{ id: number; slug: string; name: string } | null> {
   const byId = /^\d{1,12}$/.test(ref.trim());
