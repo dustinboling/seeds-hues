@@ -134,13 +134,14 @@ export function CropDetailBrowse({
       <p id="crop-results-count" className="mt-4 text-muted" aria-live="polite" aria-atomic="true">
         {cropDetailCountLine(committed.state, committed.total, committed.page, pages)}
       </p>
-      {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
-          flight. Cleared on settle — the attribute is absent then, so settled markup is
-          byte-identical with or without this line. D-B1-2: past ~1s in flight the region
-          also dims (an owned opacity utility — no new color, no spinner, no skeleton). */}
+      {/* Pending indication (§2.5.3 as amended 2026-11-23): busy while a filter change
+          is in flight. Cleared on settle — the attribute is absent then, so settled markup
+          is byte-identical with or without this line. Past ~200ms in flight the region
+          also shows the pending cue (a leaf hairline + wash from the token layer — no new
+          color, no spinner, no skeleton). */}
       <div
         id="crop-variety-results"
-        className={pendingCue ? "mt-3 opacity-50" : "mt-3"}
+        className={pendingCue ? "mt-3 browse-pending" : "mt-3"}
         aria-busy={pending === null ? undefined : true}
       >
         {committed.total > 0 ? (

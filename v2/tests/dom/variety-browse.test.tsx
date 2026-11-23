@@ -749,25 +749,59 @@ describe("sort from page 2 (B-1 item 1: the commit is in place, not a navigation
   });
 });
 
-describe("D-B1-2 pending cue (visible past ~1s in flight, removed on swap)", () => {
-  it("dims the results region past ~1s in flight and clears the cue on swap", async () => {
+describe("pending cue (SPEC §2.5.3 as amended 2026-11-23: visible by ~0.4s, cleared on swap)", () => {
+  it("shows the cue by ~0.4s into a slow sort to availability and clears it on swap (busy set and cleared)", async () => {
     const d = deferred<Response>();
     fetchImpl = () => d.promise;
     const before = makeInitial();
     render(createElement(VarietyBrowse, { initial: before }));
-    fireEvent.click(chip("Season", `Cool Season Hardy Annuals ${before.counts.season.options.cool} varieties`));
-    // Immediate: busy on, no visible cue yet.
-    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    // Resting: no cue and no busy indication.
+    expect(resultsRegion().className).not.toContain("browse-pending");
     expect(resultsRegion().className).not.toContain("opacity-50");
-    // Past ~1s still in flight: the quiet cue appears (an owned opacity utility).
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1150));
-    });
-    expect(resultsRegion().className).toContain("opacity-50");
-    // The swap clears both the cue and the busy indication, together.
-    d.resolve(jsonResponse(makePayload({ state: { ...resting(), season: "cool" }, items: [item(7)], total: 12 })));
-    await waitFor(() => expect(resultsRegion().className).not.toContain("opacity-50"));
     expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
-    expect(countLine().textContent).toBe("12 varieties · Cool Season Hardy Annuals, alphabetical.");
+    fireEvent.click(sortChip("Most sellers first"));
+    // Immediate: busy on, cue not yet (the ~200ms appearance delay keeps instant
+    // updates from flashing it).
+    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    expect(resultsRegion().className).not.toContain("browse-pending");
+    // By ~0.4s still in flight: the visible cue is on the region — and the struck
+    // deviation's dim is gone (the cue replaces it, it never stacks on it).
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    });
+    expect(resultsRegion().className).toContain("browse-pending");
+    expect(resultsRegion().className).not.toContain("opacity-50");
+    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    // The swap clears both the cue and the busy indication, together.
+    d.resolve(jsonResponse(makePayload({ state: { ...resting(), sort: "availability" }, items: [item(7)], total: 12 })));
+    await waitFor(() => expect(resultsRegion().className).not.toContain("browse-pending"));
+    expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
+    expect(countLine().textContent).toBe("12 varieties, most sellers first.");
+  }, 15000);
+
+  it("shows the cue by ~0.4s on the reverse sort (availability back to Name A–Z) and clears it on swap", async () => {
+    const d = deferred<Response>();
+    fetchImpl = () => d.promise;
+    const before = makeInitial({ state: { ...resting(), sort: "availability" } });
+    render(createElement(VarietyBrowse, { initial: before }));
+    expect(countLine().textContent).toBe("49 varieties, most sellers first. Page 1 of 3.");
+    expect(resultsRegion().className).not.toContain("browse-pending");
+    expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
+    fireEvent.click(sortChip("Name A–Z"));
+    // Immediate: busy on, cue not yet.
+    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    expect(resultsRegion().className).not.toContain("browse-pending");
+    // By ~0.4s still in flight: the visible cue is on the region.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    });
+    expect(resultsRegion().className).toContain("browse-pending");
+    expect(resultsRegion().className).not.toContain("opacity-50");
+    expect(resultsRegion().getAttribute("aria-busy")).toBe("true");
+    // The swap clears both the cue and the busy indication, together.
+    d.resolve(jsonResponse(makePayload({ items: [item(7)], total: 12 })));
+    await waitFor(() => expect(resultsRegion().className).not.toContain("browse-pending"));
+    expect(resultsRegion().hasAttribute("aria-busy")).toBe(false);
+    expect(countLine().textContent).toBe("12 varieties, alphabetical.");
   }, 15000);
 });

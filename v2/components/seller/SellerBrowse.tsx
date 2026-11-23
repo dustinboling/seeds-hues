@@ -94,13 +94,14 @@ export function SellerBrowse({ initial, states }: { initial: SellerBrowseInitial
       <SmallFarmLegend className="mt-1 max-w-2xl" />
       <StateFilter basePath={BASE_PATH} states={states} browse={browse} />
       <InPlaceAppliedRow config={config} browse={browse} showClearAll={false} />
-      {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
-          flight. Cleared on settle — the attribute is absent then, so settled markup is
-          byte-identical with or without this line. D-B1-2: past ~1s in flight the region
-          also dims (an owned opacity utility — no new color, no spinner, no skeleton). */}
+      {/* Pending indication (§2.5.3 as amended 2026-11-23): busy while a filter change
+          is in flight. Cleared on settle — the attribute is absent then, so settled markup
+          is byte-identical with or without this line. Past ~200ms in flight the region
+          also shows the pending cue (a leaf hairline + wash from the token layer — no new
+          color, no spinner, no skeleton). */}
       <div
         id="seller-results"
-        className={pendingCue ? "opacity-50" : undefined}
+        className={pendingCue ? "browse-pending" : undefined}
         aria-busy={pending === null ? undefined : true}
       >
         <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

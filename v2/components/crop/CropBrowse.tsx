@@ -62,10 +62,10 @@ export function CropBrowse({ initial }: { initial: CropBrowseInitial }) {
       </p>
       <InPlaceFilters config={config} browse={browse} />
       <InPlaceAppliedRow config={config} browse={browse} />
-      {/* D-B1-2: past ~1s in flight the region dims (an owned opacity utility). */}
+      {/* Pending cue (§2.5.3 as amended 2026-11-23): past ~200ms in flight the region carries the leaf hairline + wash. */}
       <div
         id="crop-results"
-        className={pendingCue ? "mt-6 opacity-50" : "mt-6"}
+        className={pendingCue ? "mt-6 browse-pending" : "mt-6"}
         aria-busy={pending === null ? undefined : true}
       >
         {committed.total > 0 ? (
