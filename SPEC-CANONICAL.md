@@ -849,7 +849,7 @@ Two questions block week 1; the rest have defaults that hold until you say other
 
 ### Decisions log
 
-All decided Nov 16, 2026, except decision 26 (2026-11-19) and decision 27 (2026-11-22).
+All decided Nov 16, 2026, except decision 26 (2026-11-19), decision 27 (2026-11-22) and decision 28 (2026-11-23).
 
 | # | Decision | Basis |
 | --- | --- | --- |
@@ -880,6 +880,7 @@ All decided Nov 16, 2026, except decision 26 (2026-11-19) and decision 27 (2026-
 | 25 | The 20 research candidates are dropped; sellers come from the six exemplars plus agent discovery, each approved by hand *(the hand-approval framing is superseded for seller size by decision 26)* | Your message |
 | 26 | **Open directory (2026-11-19):** the directory lists any US seller regardless of size — the small-farms-only rule is superseded. Small family farms carry a "Small farm" badge (Hue's judgment call, no formal test; `sellers.is_small_farm`, set only through the admin path) and a "Small farms" filter narrows browse and variety listings to badged sellers. US-only (decision 7) holds. "Add Your Farm" keeps its name. | Dustin's ruling, 2026-11-19 |
 | 27 | **Zero-seller pages stay indexable (2026-11-22):** every published variety page is indexable and in the sitemap, including the 262 with no seller yet (of 812, per Bea Discovery's 2026-11-22 audit), subject to a zero-seller substance standard (a real description and complete facts from the catalog's own fields). Sitemaps are segmented by page type with the zero-seller cohort in its own file, so the cohort's indexation is measurable separately. **Pre-committed fallback:** if the cohort's not-indexed share runs materially worse than the listed cohort's in the first Search Console reads after the Dec 16, 2026 launch, the cohort (or its below-standard pages) returns to noindex. Supersedes decision 8 and the noindex clause of the §5 index rule. | Dustin's ruling, voice call 2026-11-22 — "Yeah, we need to keep those pages indexable" — adopting Bea Discovery's audit recommendation (a) with (c) pre-committed |
+| 28 | **Variety prose names no seller (2026-11-23):** a variety's own description must not name any seller, in any form. This is the prose companion to the ANS removals — the seller-list answer string came out of variety page headers (PR #44, Dustin's ruling 2026-11-22) and out of the meta/OG/Twitter descriptions (PR #52, his ruling 2026-11-23) — and it closes the ANS gate's note N2. A seller attribution in prose is removed while the underlying variety fact is preserved: the fact stays, the name goes. Census 2026-11-23 (Priya): 12 of the 46 described varieties carried 16 seller mentions from 6 sellers; Wren's rewrites passed Quinn's gate (PASS WITH NOTES) the same day; application follows through the admin write path with read-back verification, per the Tranche 1.1 pattern. | Dustin's ruling, 2026-11-23 — "Scrub seller names from variety prose too." |
 
 Decisions 17 to 23 are mine. Strike any you disagree with and I will rework the sections they touch.
 
