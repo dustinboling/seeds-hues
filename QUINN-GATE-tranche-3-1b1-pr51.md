@@ -1,0 +1,94 @@
+# Quinn Gate — Item 3.1b-1 (Tranche 3), PR #51 — RE-GATE of the completion build (repair 2)
+
+**Verdict: PASS WITH NOTES** — one Major note (N1, search page-view logging dropped) that requires a follow-up repair dispatch but does not block this merge; every PR #50 finding (F1–F4) is closed by direct evidence.
+
+**Target:** PR #51, head `a6adefd` — branch `muse/45143669604`, the completion build answering the FAIL on PR #50 (record `QUINN-GATE-tranche-3-1b1-pr50.md`). Its own delta vs PR #50's head `8ff481d` is 11 files, +739/−123 (plus the carried brief file): two new routes, home + /search page rewires, two new browse components, two new test files, three touched existing tests. Brief: `muse-tasks/tranche-3-1b1-repair-2.md`.
+
+Four axes, kept separate: **Severity** (per finding) · **Evidence** (directly observed — my own verify run with captured exit code, HTTP responses against a local server of the PR head, real-Chromium drives at 390px and 1280px, SSR HTML, a local-D1 readback, and source/diff audits; nothing rests on the maker's claims) · **Coverage** (ledger at the end) · **Verdict** (this line).
+
+---
+
+## Note N1 — MAJOR (regression, non-blocking): /search page views no longer write a `search_events` row
+
+- **Object:** `v2/app/search/page.tsx` now renders first paint from `catalog.browseSearch`, which by design never logs. The pre-completion page called `catalog.search(q, { logClient: "web/search-page" })`, writing one `search_events` row per page view. `browseSearch`'s own header comment states its premise — "Never logs: the page view already logged the query" — and the completion removed the page-view log that premise relied on. Nothing else in the tree logs with that client (grep: zero remaining uses).
+- **Evidence (payload-parity style, entered → persisted → readback):** local D1 `search_events` count was 0 before my drives; after multiple /search page loads (SSR curl, Chromium JS, Chromium no-JS) the table held exactly **1 row — client `web-autocomplete/1`** (the SearchBox suggestion fetch), and **zero** `web/search-page` rows. In-place refinements correctly write nothing; the loss is the page-view row only.
+- **Impact:** the admin Statistics search data silently loses the page-view source from merge until repaired. Mitigation, stated honestly: most /search arrivals are typed into the SearchBox, whose autocomplete logging still fires (the one row above), so the practical undercount is partial — direct arrivals (links, bookmarks, back/forward) are the ones lost.
+- **Why a note and not a FAIL:** no shopper-facing behavior, result, or data integrity is affected; F1–F4 are fully closed; the repair is small and separable (restore one page-view log per /search render, client `web/search-page`, keeping refinements silent). **Required follow-up:** a repair dispatch restoring the page-view log, gated by a test that a /search render writes exactly one row — this class (a service comment's premise silently invalidated by a page rewire) is exactly what a pin exists for. If the coordinator prefers to hold the merge for it, the fix is small enough to ride this PR; that scheduling call is the coordinator's, and this gate does not hide the finding either way.
+
+No other findings. The findings below are closures, each with its evidence.
+
+---
+
+## Item-by-item gate results
+
+### 1. Verify reproduction — PASS
+
+In the pre-materialized worktree (`a6adefd`), `npm install` then `npm run verify` run to a captured exit code: **VERIFY_EXIT=0 — lint, typecheck, and 71 test files / 1,192 tests, all passing**, exactly the workflow gate's counts (up from 69/1,174 at PR #50; the delta is the two new test files: census 6 tests, contract 12 tests, both green in the run). One process note: my first verify invocation's wrapper was SIGTERM'd after the suite printed its summary, so I re-ran the full verify and hold the second run's explicit exit 0 as the evidence.
+
+### 2. F1 closure — PASS (Blocker closed)
+
+- **Routes exist on the plumbing:** `v2/app/api/browse/crops/route.ts` and `v2/app/api/browse/search/route.ts`, both built on `lib/api/browse-route.ts` helpers (`browseSearchParamsRecord`, `strictBrowsePage`, `browseMethodNotAllowed`, `BROWSE_NO_INDEX`) and the existing service methods, mirroring `varieties/route.ts` in shape and error behavior (429 rate limit, JSON 404 for garbage/past-end page on the paged route, 405 for other methods).
+- **HTTP proof (local server of the PR head, local D1):** `GET /api/browse/crops?season=cool` → **200**, payload keys `{items, total, counts, page, pages}`, total **52** (matches the PR #50 SSR chip count for that season), per-group counts present for all five groups. `GET /api/browse/search?q=zinnia` → **200**, keys `{crops, series, varieties, sellers, total, counts, page, pages}`, total **51** (matches PR #50's rendered "51 results"). `?life_cycle=perennial` accepted (200). Control `/api/browse/varieties?season=spring` → 200. Garbage `?page=abc` on crops → JSON 404, as designed.
+- **The decisive drive (/crop, Chromium, 390px):** at rest the count line reads "124 crops in the directory, alphabetical."; chips hydrate to `<button>`s; tapping "Cool Season Hardy Annuals" issued the fetch and **updated in place** — URL gained `?season=cool`, count line committed to "52 crops · Cool Season Hardy Annuals, alphabetical.", the applied row's remover is a hydrated `<button aria-label="Remove the Season filter, Cool Season Hardy Annuals">`, focus stayed on the tapped chip, and **no failure alert fired** (the only `[role="alert"]` node in the DOM is Next's empty `__next-route-announcer__`). The goal that was impossible at PR #50 completes.
+
+### 3. F2 closure — PASS (Critical closed)
+
+Home drives at **390px and 1280px**, plus SSR HTML:
+
+- **Count line at rest:** present unconditionally — SSR HTML carries `data-testid="filter-result"` with text **"124 crops"** (the unfiltered crop total), and the hydrated DOM reads the same. It is the persistent live region (`aria-live="polite"`, `aria-atomic="true"`), committed-driven, never remounts.
+- **Counted chips:** "All (124)", "Cool Season Hardy Annuals (52)", "Warm Season Tender Annuals (36)", "Direct Sow (50)", "Start indoors (114)", each with its sr-only unit text.
+- **In place:** tapping "Warm Season Tender Annuals" → URL `/?season=warm`, count line "36 crops · Warm Season Tender Annuals", applied row with `<button>` remover; tapping the remover restores "124 crops" and URL `/` — no reload, no failure alert, both viewports.
+- **Designed zero state:** no season×method combination in the local data yields zero (API-checked: minimum 21), so I render-proved it by fulfilling the crops endpoint with a contract-shaped zero payload for `season=warm`: the state renders (`data-testid="home-crop-empty"`, "No crops match." + in-place **Clear filters** button) under the count line "0 crops · Warm Season Tender Annuals", with the applied row retained above it for recovery. Code and render agree.
+- **Composition unchanged:** DOM order is hero → `home-motif` divider → Browse by crop (`crops-title`) → Recently restocked (`recent-title`) → How it works; hero h1 is the pinned "Find where to buy any flower seed". The resting grid still shows the whole catalog (`CROP_BROWSE_LIMIT = 500`, unchanged). All five PR #50 pins intact — motif divider position render-checked in DOM order and in SSR HTML, hero line render-checked, `divider-stem-mini mt-1` present in the card markup (now in `HomeBrowse.tsx`, where the cards render).
+
+### 4. F3 closure — PASS (Critical closed)
+
+/search drive (Chromium, 390px, `?q=zinnia`), plus SSR and no-JS drives:
+
+- **Life cycle group PRESENT:** legends render in order **Season / Sowing method / Life cycle / Hue** — hydrated, SSR, and no-JS forms all agree. Sellers was not added.
+- **Counted chips** throughout, including the §2.4 zero-count rule rendering and staying operable ("Cool Season Hardy Annuals (0)").
+- **Live region:** the results `<h2 id="results-title">` — "51 results for "zinnia"" at rest.
+- **In place over the wire (F1's second half exercised):** tapping the **Perennial** life-cycle chip fetched `/api/browse/search?...&life_cycle=perennial` and committed without reload (a window marker set before the tap survived): URL gained `life_cycle=perennial`, h2 committed to "No results for "zinnia" · Perennial", and the designed zero-results state rendered from real data (that combination genuinely yields 0 — API-confirmed). Applied row present with removers.
+- **Clear All carries q (§2.6.4):** SSR/no-JS Clear All href is **`/search?q=zinnia`** (render-proved in SSR HTML and in the no-JS drive); chip hrefs in the floor carry `q` plus the filter params.
+
+### 5. F4 closure + non-vacuity — PASS (Major closed, proven both directions)
+
+- **The census is real:** `tests/unit/tranche-3-1b1-census.test.ts` walks the actual component tree for every `API_PATH = "/api/browse/…"` a browse component fetches and asserts the matching `app/api/browse/…/route.ts` exists; for surface consumption it requires each of home / /crop / /search to render (as JSX) a value-imported component whose own source calls `useInPlaceBrowse(`/`browseInPlaceConfig(` — a type-only import counts for nothing. Both halves carry anti-vacuity guards (the census must find endpoints; the machinery must export the hook). Written over the real filesystem in the tranche-2-3-chips tradition; no mocks. The companion contract file `tests/contract/browse-crops-search.test.ts` exercises both new route handlers against a real test D1 (totals vs the service, 404/405 behavior, noindex/no-store).
+- **Non-vacuity, by my execution:** I copied both new test files into a scratch worktree at PR #50's head `8ff481d` and ran them: **they fail there, on exactly F1–F3** — census: "every fetched browse path has its route file" ✗, "home renders a browse component consuming the shared machinery" ✗, "/search renders…" ✗ (the /crop consumption test and both vacuity guards pass there, as they should — /crop was built); the contract file cannot even load (its route imports don't exist). On the PR #51 tree both files pass inside the full verify (§1). The copies were removed from the scratch tree afterwards; it is clean.
+
+### 6. Touched existing tests — each judged: legitimate pin-follows-the-markup, none weakened
+
+Diffed against `8ff481d` file by file:
+
+- **`tests/unit/motif-divider.test.ts` (+6/−1): LEGITIMATE.** The `divider-stem-mini mt-1` pin now reads `components/home/HomeBrowse.tsx` instead of `app/page.tsx` — because the packet cards genuinely render there now (render-verified: the class is in the served home HTML's card markup). The asserted string is byte-identical, the negative pin (`divider-stem mb-8 mt-10` absent) is untouched, and a comment records the move. Same strength, new address.
+- **`tests/unit/tranche-1-3-accessibility.test.ts` (+2/−1): LEGITIMATE.** The Fix-3 count-line pin (exact element string with `aria-live="polite"`/`aria-atomic="true"`) now reads `HomeBrowse.tsx`, where that element now renders — render-verified in SSR and hydrated DOM with exactly that markup. Nothing about the assertion changed.
+- **`tests/unit/tranche-1-4.test.ts` (+34/−1): LEGITIMATE.** The fake catalog service swaps `listCrops` for `browseCrops` returning the same fake crops payload plus `page/pages/counts` — because the home page genuinely consumes `browseCrops` now (source- and render-verified). The added `zeroBrowseCounts()` helper only shapes the fake's counts; **no assertion was removed, loosened, or reworded** — the diff is the fixture swap plus the helper, and the file's hero-line and friendly-date pins pass in the full run.
+- **The census repair was NOT altered:** `tests/unit/tranche-2-3-chips.test.ts` is **byte-identical** to PR #50's version (md5 `0e1a3c12d3ee5623addc4f75cb3d2928` on both trees; zero-line diff).
+
+### 7. Regressions & scope — PASS (with N1 above)
+
+- **/variety (instrumented re-drive, 390px + 1280px):** White tap → `GET /api/browse/varieties?color_family=white` 200 → URL `?color_family=white`, count line "116 varieties · White, alphabetical. Page 1 of 5."; Blush tap → `?color_family=white,blush`, **"135 varieties · White · Blush, alphabetical. Page 1 of 6."** — the PR #50 numbers to the digit. At 1280px the "Page 2" pager link soft-navigates (window marker survives, URL `?page=2`, "Page 2 of …" renders) — **N-D1 still holds** on the machinery after the completion. (An earlier un-instrumented drive appeared to show hue taps not committing; the instrumented re-drive with hydration-settle waits shows the requests firing and committing — the first attempt's taps landed before hydration under heavy shared-CPU contention. Recorded so the discrepancy is explained, not hidden.)
+- **/crop SSR/no-JS floor unchanged in form:** SSR of `/crop?season=cool` carries the live line ("52 crops · Cool Season Hardy Annuals, alphabetical."), the applied row (`data-testid="applied-filters"`) with the remover as an `<a class="chip-filter chip-removable">` bearing the pinned aria-label, and Clear All as `<a href="/crop">`. The one `skeleton`/`Loading crops…` match in the SSR HTML is the route's pre-existing page-load Suspense fallback, present before this item; the in-place layer itself contains no spinner/skeleton (source grep of all three browse components: none) and none appeared during any in-place drive.
+- **T-C (no prices):** the actual JSON of both new routes was scanned — **no price key anywhere** in either payload (crops or search, filtered or not). Item shapes match the PR #50 contract (crops: slug/commonName/latinName/counts/media…; search: the four grouped result lists).
+- **Scope audit:** the 11-file delta is exactly routes (2) + home page & component (2) + search page & component (2) + tests (5: two new, three judged in §6). `/crop/[slug]`, `/seller`, `SellerFilterSection.tsx`, SearchBox: untouched (empty diff). No sort work, no composition change. The delta matches the completion brief's fence line for line.
+
+### 8. Usability pass — the three surfaces as a shopper meets them
+
+**Evaluator structure: single evaluator (Quinn); no cold second rater commissioned** — this re-gate's verdict rests on completion/non-completion facts and measured state transitions, not on rated impressions; the one judgment call (N1's severity) is argued in the open above.
+
+- **/crop — goal "Narrow the crop list to one season" (390px): COMPLETES.** Feedback is immediate and legible: the count line restates total + applied filter in words, the URL becomes shareable, the applied row names what is on and offers its remover, focus never leaves the control the shopper tapped. The §2.5.6 failure path — the only behavior this surface could show at PR #50 — was not triggered by any tap in this gate.
+- **Home — goal "See how many crops fit a season, and narrow the grid" (390px + 1280px): COMPLETES.** The at-rest count line answers "how much is here" before any tap (the PR #50 defect — silence until filtered — is gone). Chips carry their counts, so the consequence of a tap is known before it is taken (recognition over recall). Applying and removing a filter are symmetric, in place, and announced once by the single persistent live region; the zero state, when reached, explains itself and keeps the way back on the same screen.
+- **/search — goal "Filter zinnia results by life cycle" (390px): COMPLETES.** The group a shopper needs is present and labelled in the shopper's words; a zero-count option still renders with its 0 rather than vanishing; a combination that empties the results says so in the live-region heading itself ("No results for "zinnia" · Perennial") above the designed empty state — no silent empty list, no dead end, Clear All keeps the query.
+- **Announcement discipline (all surfaces):** exactly one persistent live region per surface, text committed once per change (observed as single text transitions on every tap); no duplicate announcements, no spinner or skeleton on any in-place change, `aria-busy` present only while a commit is pending (absent at rest). Dev-mode timing on a contended VM makes sub-second pending states hard to clock precisely; no pending state in any drive left the shopper without the prior results visible, which is the behavior the contract exists to guarantee.
+
+---
+
+## Coverage ledger
+
+- **Population:** the completion brief's five checklist lines and the PR #50 pass conditions — routes + payload shape (F1), home build (F2), /search build (F3), census existence + non-vacuity (F4), the three touched-test judgments, the tranche-2-3-chips byte-identity, verify reproduction, /variety + N-D1 regression, /crop floor, T-C on the new payloads, scope audit, and the three-surface usability pass at 390px/1280px.
+- **Checked:** full verify with captured exit 0 (71/1,192); HTTP status + payload shape + price scan on both new routes (valid, filtered, life-cycle, garbage-page, control); Chromium drives — /crop tap-to-commit, home at both viewports (rest/tap/remove), home zero state via contract-shaped fulfilled payload, /search life-cycle toggle over the wire to a real-data zero state, /search no-JS floor, /crop SSR floor, /variety multi-select + soft-nav paging (instrumented); SSR HTML for home composition/pins and /search q-carrying links; census non-vacuity executed on the PR #50 tree; all three touched tests diffed line by line; search_events readback before/after (which is how N1 was caught).
+- **Partial:** home and /crop zero states are not reachable from the local data by real filter combinations (all counts > 0) — home's was render-proved via a fulfilled contract-shaped payload and /crop's was code-verified at PR #50 and its component is unchanged; /search's zero state was reached with real data, which covers the shared pattern's behavior. Announcement *counting* (exactly-once) is from DOM observation of single persistent regions, not a screen-reader recording. aria-busy duration past 1s could not be clocked under dev-mode contention; the pending-keeps-prior-results behavior was observed on every commit.
+- **Exclusions:** `/crop/[slug]` and `/seller` (Item 3.1b-2, fenced and untouched); production deployment (pre-merge gate); 320px spot check and reduced-motion/enlarged-text states (no new animation or layout primitives in the delta — the surfaces reuse the gated machinery's).
+- **Residual risk:** production-mode timing (dev server used here, on a shared-CPU VM) remains the standing caveat; the coordinator's post-merge live verification is the backstop, as with every gate. N1's data loss accrues silently until its repair lands — the one item in this record that gets worse by waiting.
+
+**Gate record filed by Quinn Assurance, 2026-11-23. Verdict: PASS WITH NOTES — merge may proceed; N1 (search page-view logging) is owed a follow-up repair dispatch with its own pin, and this gate will confirm it on return.**
