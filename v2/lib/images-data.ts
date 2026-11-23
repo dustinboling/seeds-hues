@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1060 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1062 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -828,8 +828,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-clotted-cream.webp": "artwork/sweet-pea-clotted-cream.png",
   "/artwork/sweet-pea-cold-steel.webp": "artwork/sweet-pea-cold-steel.png",
   "/artwork/sweet-pea-coquette.webp": "artwork/sweet-pea-coquette.png",
+  "/artwork/sweet-pea-cosmic-kitty-mix.webp": "artwork/sweet-pea-cosmic-kitty-mix.png",
   "/artwork/sweet-pea-daily-mail.webp": "artwork/sweet-pea-daily-mail.png",
   "/artwork/sweet-pea-dancing-queen.webp": "artwork/sweet-pea-dancing-queen.png",
+  "/artwork/sweet-pea-dark-matter-mix.webp": "artwork/sweet-pea-dark-matter-mix.png",
   "/artwork/sweet-pea-dynasty.webp": "artwork/sweet-pea-dynasty.png",
   "/artwork/sweet-pea-earl-grey.webp": "artwork/sweet-pea-earl-grey.png",
   "/artwork/sweet-pea-edith-flanagan.webp": "artwork/sweet-pea-edith-flanagan.png",
