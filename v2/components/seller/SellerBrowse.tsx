@@ -29,6 +29,7 @@ import {
   sellerBrowseCountText,
   sellerBrowseFiltersFromSearch,
   sellerBrowseHref,
+  sellerDocumentTitle,
   sellerFilterParams,
   sellerRemoversFor,
   type SellerBrowseState,
@@ -69,9 +70,10 @@ export function SellerBrowse({ initial, states }: { initial: SellerBrowseInitial
       return qs ? `${API_PATH}?${qs}` : API_PATH;
     },
     historyValueFor: (state) => ({ browse: sellerFilterParams(state) }),
+    titleFor: (state, page) => sellerDocumentTitle(state, states, page),
   };
   const browse = useInPlaceBrowse(initial, config);
-  const { committed, pending } = browse;
+  const { committed, pending, pendingCue } = browse;
   const pages = totalPages(committed.total);
   const active = states.find((s) => s.code === committed.state.state) ?? null;
 
@@ -94,8 +96,13 @@ export function SellerBrowse({ initial, states }: { initial: SellerBrowseInitial
       <InPlaceAppliedRow config={config} browse={browse} showClearAll={false} />
       {/* Pending indication (§2.5.3's state discipline): busy while a filter change is in
           flight. Cleared on settle — the attribute is absent then, so settled markup is
-          byte-identical with or without this line. */}
-      <div id="seller-results" aria-busy={pending === null ? undefined : true}>
+          byte-identical with or without this line. D-B1-2: past ~1s in flight the region
+          also dims (an owned opacity utility — no new color, no spinner, no skeleton). */}
+      <div
+        id="seller-results"
+        className={pendingCue ? "opacity-50" : undefined}
+        aria-busy={pending === null ? undefined : true}
+      >
         <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {committed.items.map((s) => (
             <li key={s.slug}>

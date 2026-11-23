@@ -45,8 +45,10 @@ function tierOf(v: Pick<VarietyListItem, "inStockCount" | "listingCount">): numb
 }
 
 /**
- * The tier property over a whole ordered set: tiers never decrease; within a tier,
- * listing counts never increase; count ties break by name ascending (slug last).
+ * The tier property over a whole ordered set (§5.2.2 as amended by the 2026-11-23
+ * coordinator ruling): tiers never decrease; within a tier, distinct-seller counts never
+ * increase; seller ties break by in-stock listings desc, then listings desc, then name
+ * ascending (slug last).
  */
 function expectTierOrder(items: VarietyListItem[]): void {
   const lower = (v: VarietyListItem): string => v.varietyName.toLowerCase();
@@ -55,7 +57,13 @@ function expectTierOrder(items: VarietyListItem[]): void {
     const b = items[i]!;
     expect(tierOf(b), `tier decreases at ${b.slug} (after ${a.slug})`).toBeGreaterThanOrEqual(tierOf(a));
     if (tierOf(a) !== tierOf(b)) continue;
-    expect(b.listingCount, `listing count rises within tier at ${b.slug}`).toBeLessThanOrEqual(a.listingCount);
+    expect(b.sellerCount, `seller count rises within tier at ${b.slug}`).toBeLessThanOrEqual(a.sellerCount);
+    if (a.sellerCount !== b.sellerCount) continue;
+    expect(b.inStockCount, `in-stock count rises within seller tie at ${b.slug}`).toBeLessThanOrEqual(a.inStockCount);
+    if (a.inStockCount !== b.inStockCount) continue;
+    expect(b.listingCount, `listing count rises within seller+in-stock tie at ${b.slug}`).toBeLessThanOrEqual(
+      a.listingCount,
+    );
     if (a.listingCount !== b.listingCount) continue;
     expect(
       lower(a) < lower(b) || (lower(a) === lower(b) && a.slug <= b.slug),

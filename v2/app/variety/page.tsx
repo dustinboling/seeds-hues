@@ -9,8 +9,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
-import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage } from "@/lib/paging";
-import { activeFilterLabels, readBrowseFilters } from "@/lib/browse";
+import { assertPageInRange, pagePath, pageWindow, parsePage } from "@/lib/paging";
+import { hasActiveFilters, readBrowseFilters, varietyBrowseTitle } from "@/lib/browse";
 import { legacySlug } from "@/lib/legacy";
 import { PAGE_SIZE } from "@/lib/config";
 import { VarietiesSkeleton } from "./skeleton";
@@ -22,10 +22,11 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const sp = await searchParams;
   const page = parsePage(sp.page);
-  const active = activeFilterLabels(readBrowseFilters(sp, "multi"));
-  const filtered = active.length > 0;
+  const filters = readBrowseFilters(sp, "multi");
+  const filtered = hasActiveFilters(filters);
   return pageMetadata({
-    title: `${filtered ? `${active.join(" · ")} — flower seed varieties` : "All flower seed varieties"}${pageTitleSuffix(page)}`,
+    // The in-place title sync shares varietyBrowseTitle, so SSR and hydrated commits agree.
+    title: varietyBrowseTitle(filters, page),
     description:
       "Every flower seed variety in the directory, alphabetical, with how many sellers list it and when each listing was last checked.",
     // Filtered views (season, sowing method, life cycle, hue, small farms) are crawlable but not indexed; the canonical
