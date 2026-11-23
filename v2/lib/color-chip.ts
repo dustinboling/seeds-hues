@@ -8,7 +8,7 @@
  * Hue filter, the variety page, and the OG card all draw from this module, so the three can
  * never drift apart. Suppression is a rendering rule only: stored data is never altered.
  */
-import { COLOR_FAMILY_SWATCHES, type ColorFamily } from "@/lib/validators";
+import { COLOR_FAMILY_SWATCHES, type ColorFamily } from "@/lib/browse";
 
 /**
  * The families around the Mixed disc, in order: the ONE source for both Mixed renderings

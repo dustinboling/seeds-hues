@@ -1,54 +1,28 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
-import { VarietyGrid } from "@/components/variety/VarietyCard";
-import { Pagination } from "@/components/ui/Pagination";
-import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
 import { PodDivider } from "@/components/ui/PodDivider";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { BrowseFilters, activeFilterLabels, filterParams, type BrowseFilterState } from "@/components/ui/BrowseFilters";
+import { ResultsScrollClamp } from "@/components/ui/ResultsScrollClamp";
+import { VarietyBrowse, type VarietyBrowseInitial } from "@/components/variety/VarietyBrowse";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
-import {
-  assertPageInRange,
-  pagePath,
-  pageTitleSuffix,
-  pageWindow,
-  parseHueParam,
-  parseLifeCycleParam,
-  parseMethodParam,
-  parsePage,
-  parseSeasonParam,
-  totalPages,
-} from "@/lib/paging";
+import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage } from "@/lib/paging";
+import { activeFilterLabels, readBrowseFilters } from "@/lib/browse";
 import { legacySlug } from "@/lib/legacy";
-import { plural } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/config";
-import { METHOD_PARAMS, SEASON_PARAMS, type VarietyListItem } from "@/lib/validators";
-import { EMPTY_BROWSE, SMALL_FARM_EMPTY_BROWSE, parseSmallFarmParam } from "@/lib/small-farm";
 import { VarietiesSkeleton } from "./skeleton";
 
 export const dynamic = "force-dynamic";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
-function readFilters(sp: Record<string, string | string[] | undefined>): BrowseFilterState {
-  return {
-    season: parseSeasonParam(sp.season),
-    method: parseMethodParam(sp.method),
-    lifeCycle: parseLifeCycleParam(sp.life_cycle),
-    hue: parseHueParam(sp.color_family),
-    smallFarm: parseSmallFarmParam(sp.small_farm),
-  };
-}
-
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const sp = await searchParams;
   const page = parsePage(sp.page);
-  const active = activeFilterLabels(readFilters(sp));
+  const active = activeFilterLabels(readBrowseFilters(sp, "multi"));
   const filtered = active.length > 0;
   return pageMetadata({
     title: `${filtered ? `${active.join(" · ")} — flower seed varieties` : "All flower seed varieties"}${pageTitleSuffix(page)}`,
@@ -72,41 +46,31 @@ export default async function VarietiesPage({ searchParams }: Props) {
   if (legacy) permanentRedirect(`/variety/${legacy}`);
 
   const page = parsePage(sp.page);
-  const filters = readFilters(sp);
+  const filters = readBrowseFilters(sp, "multi");
   const { catalog } = await getServices();
-  const { items, total } = await catalog.listVarieties({
-    filters: {
-      season: filters.season ? [SEASON_PARAMS[filters.season]] : undefined,
-      methods: filters.method ? [METHOD_PARAMS[filters.method]] : undefined,
-      lifeCycle: filters.lifeCycle ? [filters.lifeCycle] : undefined,
-      colorFamily: filters.hue ? [filters.hue] : undefined,
-      smallFarmOnly: filters.smallFarm || undefined,
-    },
-    page: pageWindow(page),
-  });
-  assertPageInRange(page, total);
+  // The browse payload: the page of results plus the per-option counts describing them —
+  // the identical contract GET /api/browse/varieties serves the in-place layer.
+  const payload = await catalog.browseVarieties({ filters, page: pageWindow(page) });
+  assertPageInRange(page, payload.total);
+  const initial: VarietyBrowseInitial = {
+    state: filters,
+    counts: payload.counts,
+    items: payload.items,
+    total: payload.total,
+    page,
+  };
   return (
     <Suspense fallback={<VarietiesSkeleton />}>
-      <VarietiesContent page={page} filters={filters} items={items} total={total} />
+      <VarietiesContent page={page} initial={initial} />
     </Suspense>
   );
 }
 
-function VarietiesContent({
-  page,
-  filters,
-  items,
-  total,
-}: {
-  page: number;
-  filters: BrowseFilterState;
-  items: VarietyListItem[];
-  total: number;
-}) {
-  const active = activeFilterLabels(filters);
+function VarietiesContent({ page, initial }: { page: number; initial: VarietyBrowseInitial }) {
+  const filters = initial.state;
   // Every filter group joins navKey, so ResultsScrollClamp fires on each list navigation (ux-spec §3.4.2).
-  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue, filters.smallFarm].join("|");
-  const pages = totalPages(total);
+  // In-place changes never re-render this server tree, so the clamp cannot fire for them.
+  const navKey = [page, filters.season, filters.method, filters.lifeCycle, filters.hue.join(","), filters.smallFarm].join("|");
   const crumbs = [
     { name: "Home", href: "/" },
     { name: "Varieties", href: "/variety" },
@@ -118,34 +82,13 @@ function VarietiesContent({
       <JsonLd
         data={itemListJsonLd(
           "Flower seed varieties",
-          items.map((v) => ({ name: v.varietyName, href: `/variety/${v.slug}` })),
+          initial.items.map((v) => ({ name: v.varietyName, href: `/variety/${v.slug}` })),
           (page - 1) * PAGE_SIZE + 1,
         )}
       />
       <Breadcrumbs items={crumbs} />
       <h1 className="text-3xl font-semibold text-leaf">Flower seed varieties</h1>
-      <p id="variety-results-count" className="mt-2 text-muted" aria-live="polite" aria-atomic="true">
-        {[plural(total, "variety", "varieties"), ...active].join(" · ")}, alphabetical.
-        {pages > 1 ? ` Page ${page} of ${pages}.` : ""}
-      </p>
-      <BrowseFilters basePath="/variety" state={filters} groups={["season", "method", "lifeCycle", "hue", "smallFarm"]} />
-      <div id="variety-results" className="mt-6">
-        {total > 0 ? (
-          <VarietyGrid items={items} wide />
-        ) : (
-          // Empty state (ux-spec §3.5) — announced first by the count line's zero above.
-          <p className="text-muted" data-testid="variety-empty">
-            {filters.smallFarm ? SMALL_FARM_EMPTY_BROWSE : EMPTY_BROWSE}
-            {active.length > 0 ? (
-              <>
-                {" "}
-                <Link href="/variety">Clear filters</Link>.
-              </>
-            ) : null}
-          </p>
-        )}
-      </div>
-      <Pagination basePath="/variety" page={page} totalPages={pages} extra={filterParams(filters)} label="Varieties pages" />
+      <VarietyBrowse initial={initial} />
       <PodDivider bundle="/ornaments/bundle-zinnia.webp" className="mt-8" />
       <ResultsScrollClamp targetId="variety-results-count" regionId="variety-results" navKey={navKey} />
     </>

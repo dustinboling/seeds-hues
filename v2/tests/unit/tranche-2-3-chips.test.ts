@@ -15,7 +15,8 @@
  * - Census (2.3-A): no bare `chip` class token and no `chip tap` pair in any
  *   class literal; no chipClass declaration survives; chip-filter sits only on
  *   <a>/<button> (Link counts as <a>), chip-tag only on <span>, chip-removable
- *   only beside chip-filter on a remover link.
+ *   only beside chip-filter on a remover link — except Tranche 3.1a's registered
+ *   exception: the /variety applied row's hydrated removers are <button>s.
  * - QueueNav flex cure: the anchor's class string is exactly the PR#35 form
  *   `chip-filter flex items-center gap-2` — the pin fails if `flex` is dropped.
  * - R-3: the two listing-list removers carry chip-removable with the drawn
@@ -392,7 +393,11 @@ describe("2.3-A — class census (no bare chip, no helpers, elements exclusive)"
       if (use.tokens.includes("chip-removable")) {
         split++;
         expect(use.tokens, `${use.file}: chip-removable without chip-filter`).toContain("chip-filter");
-        expect(["a", "Link"], `${use.file}: chip-removable on <${use.tag ?? "?"}>`).toContain(use.tag);
+        // Tranche 3.1a: the /variety applied row's hydrated removers are <button>s (in-place,
+        // like the hydrated filter chips) — the one registered exception; everywhere else a
+        // remover is still a link.
+        const tags = use.file === "components/variety/VarietyBrowse.tsx" ? ["a", "Link", "button"] : ["a", "Link"];
+        expect(tags, `${use.file}: chip-removable on <${use.tag ?? "?"}>`).toContain(use.tag);
       }
     }
     expect(split, "no split-class use examined (the exclusivity check is vacuous)").toBeGreaterThan(0);

@@ -60,94 +60,30 @@ const SeasonClassSchema = z.enum(SEASON_CLASSES).meta({
   description: "Crop season class (The Gardener's Workshop seed categories). null = not classified.",
 });
 
-/** Display labels for season classes (UI + docs). */
-export const SEASON_LABELS: Record<z.infer<typeof SeasonClassSchema>, string> = {
-  cool_season_hardy_annual: "Cool Season Hardy Annuals",
-  warm_season_tender_annual: "Warm Season Tender Annuals",
-};
-
-/** Short query-param values (`?season=cool|warm`) ↔ season classes. */
-export const SEASON_PARAMS = { cool: "cool_season_hardy_annual", warm: "warm_season_tender_annual" } as const;
-export type SeasonParam = keyof typeof SEASON_PARAMS;
-
 const SowingMethodSchema = z.enum(SOWING_METHODS).meta({
   id: "SowingMethod",
   description: "How a crop is sown (Floret Library sowing notes): direct_sow and/or transplant (start indoors).",
 });
 
-/** Display labels for sowing methods (UI + docs). */
-export const SOWING_METHOD_LABELS: Record<z.infer<typeof SowingMethodSchema>, string> = {
-  direct_sow: "Direct Sow",
-  transplant: "Start indoors",
-};
-
-/** Short query-param values (`?method=direct|trays`) ↔ sowing methods. */
-export const METHOD_PARAMS = { direct: "direct_sow", trays: "transplant" } as const;
-export type MethodParam = keyof typeof METHOD_PARAMS;
-
 /**
- * Life-cycle filter buckets (`?life_cycle=annual|biennial|perennial`): how the crop is grown,
- * derived from plants.life_cycle by lifeCycleBuckets() in lib/life-cycle.ts (never stored).
+ * Browse-filter vocabulary (season/method/life-cycle/hue params, labels and swatches): defined
+ * in lib/browse.ts — the client-safe home the hydrated filter layer imports — and re-exported
+ * here so every existing `@/lib/validators` import keeps working. The label maps there carry
+ * the same zod-inferred key types (via `import type`), so completeness over these enums is
+ * still checked at compile time.
  */
-export const LIFE_CYCLE_PARAMS = ["annual", "biennial", "perennial"] as const;
-export type LifeCycleParam = (typeof LIFE_CYCLE_PARAMS)[number];
-export const LIFE_CYCLE_LABELS: Record<LifeCycleParam, string> = { annual: "Annual", biennial: "Biennial", perennial: "Perennial" };
-
-/**
- * Variety colour families ("Hue") — the ONE vocabulary for catalog input, filters and UI.
- * varieties.color_family also holds 'unknown' (the column default), which is never an input
- * value: a variety without a family is simply unknown.
- */
-export const COLOR_FAMILIES = [
-  "white",
-  "blush",
-  "pink",
-  "peach",
-  "orange",
-  "yellow",
-  "red",
-  "burgundy",
-  "purple",
-  "blue",
-  "green",
-  "chocolate",
-  "mix",
-] as const;
-export type ColorFamily = (typeof COLOR_FAMILIES)[number];
-
-/** Representative swatch per colour family (UI chips). mix = null: drawn as a conic gradient. */
-export const COLOR_FAMILY_SWATCHES: Record<ColorFamily, string | null> = {
-  white: "#F7F3E8",
-  blush: "#F2C4CE",
-  pink: "#E87A9E",
-  peach: "#F5A97F",
-  orange: "#E8813A",
-  yellow: "#EFC93F",
-  red: "#C03434",
-  burgundy: "#7A2440",
-  purple: "#8B6BAE",
-  blue: "#5B7FBF",
-  green: "#7A9A4D",
-  chocolate: "#6B4A35",
-  mix: null,
-};
-
-/** Display labels for colour families (chips + result lines). */
-export const COLOR_FAMILY_LABELS: Record<ColorFamily, string> = {
-  white: "White",
-  blush: "Blush",
-  pink: "Pink",
-  peach: "Peach",
-  orange: "Orange",
-  yellow: "Yellow",
-  red: "Red",
-  burgundy: "Burgundy",
-  purple: "Purple",
-  blue: "Blue",
-  green: "Green",
-  chocolate: "Chocolate",
-  mix: "Mixed",
-};
+export {
+  COLOR_FAMILIES,
+  COLOR_FAMILY_LABELS,
+  COLOR_FAMILY_SWATCHES,
+  LIFE_CYCLE_LABELS,
+  LIFE_CYCLE_PARAMS,
+  METHOD_PARAMS,
+  SEASON_LABELS,
+  SEASON_PARAMS,
+  SOWING_METHOD_LABELS,
+} from "@/lib/browse";
+export type { ColorFamily, LifeCycleParam, MethodParam, SeasonParam } from "@/lib/browse";
 
 export const PlantRefSchema = z
   .object({
@@ -327,6 +263,68 @@ export const VarietyFactsSchema = z
 export const VarietyListItemSchema = VarietySummarySchema.extend({
   media: z.array(MediaSchema),
 }).meta({ id: "VarietyListItem" });
+
+const nonnegInt = z.number().int().nonnegative();
+
+/**
+ * Per-option counts for the /variety browse filters (Tranche 3.1a): every chip's count under
+ * the current state — each group's "All" with that group cleared, each option with that
+ * option applied (hue: toggled from its current state), every other group held. Zero counts
+ * are kept: a 0-count option renders its 0 and stays operable. Option keys mirror the
+ * lib/browse.ts vocabulary exactly (pinned by tests/unit/browse-filters.test.ts).
+ */
+export const BrowseCountsSchema = z
+  .object({
+    season: z.object({ all: nonnegInt, options: z.object({ cool: nonnegInt, warm: nonnegInt }) }),
+    method: z.object({ all: nonnegInt, options: z.object({ direct: nonnegInt, trays: nonnegInt }) }),
+    lifeCycle: z.object({
+      all: nonnegInt,
+      options: z.object({ annual: nonnegInt, biennial: nonnegInt, perennial: nonnegInt }),
+    }),
+    hue: z.object({
+      all: nonnegInt,
+      options: z.object({
+        white: nonnegInt,
+        blush: nonnegInt,
+        pink: nonnegInt,
+        peach: nonnegInt,
+        orange: nonnegInt,
+        yellow: nonnegInt,
+        red: nonnegInt,
+        burgundy: nonnegInt,
+        purple: nonnegInt,
+        blue: nonnegInt,
+        green: nonnegInt,
+        chocolate: nonnegInt,
+        mix: nonnegInt,
+      }),
+    }),
+    smallFarm: z.object({ all: nonnegInt, on: nonnegInt }),
+  })
+  .meta({
+    id: "BrowseCounts",
+    description: "Per-option result counts for the /variety browse filters, from the same query behind the results.",
+  });
+
+export type BrowseCounts = z.infer<typeof BrowseCountsSchema>;
+
+/**
+ * GET /api/browse/varieties payload (Tranche 3.1a): the page of results plus the per-option
+ * counts describing them. The /variety server page (first paint) and every in-place update
+ * consume this identical contract, so SSR and in-place can never disagree. No prices anywhere
+ * (R1): counts, paging, and VarietyListItem, which itself carries no price field.
+ */
+export const BrowseVarietiesPayloadSchema = z
+  .object({
+    items: z.array(VarietyListItemSchema),
+    total: z.number().int().nonnegative(),
+    page: z.number().int().positive(),
+    pages: z.number().int().positive(),
+    counts: BrowseCountsSchema,
+  })
+  .meta({ id: "BrowseVarietiesPayload" });
+
+export type BrowseVarietiesPayload = z.infer<typeof BrowseVarietiesPayloadSchema>;
 
 /** Variety-path names kept for existing imports; same schema as MediaSchema. */
 export const VarietyMediaSchema = MediaSchema;

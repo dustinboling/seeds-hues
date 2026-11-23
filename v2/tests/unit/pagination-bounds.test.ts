@@ -31,9 +31,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PAGE_SIZE } from "@/lib/config";
 import { totalPages } from "@/lib/paging";
 import { stateBySlug } from "@/lib/data/states";
+import {
+  COLOR_FAMILIES,
+  LIFE_CYCLE_PARAMS,
+  METHOD_PARAMS,
+  SEASON_PARAMS,
+  varietyFiltersFromBrowse,
+  type BrowseFilterState,
+} from "@/lib/browse";
 import type { Page, VarietyFilters } from "@/lib/repositories/catalog-read";
 import type { Paged } from "@/lib/services/catalog";
 import type {
+  BrowseCounts,
+  BrowseVarietiesPayload,
   CropDetail,
   PublicListing,
   SellerDetail,
@@ -201,6 +211,32 @@ async function defaultListVarieties(opts: VarietyQuery): Promise<Paged<VarietyLi
 /** Swappable so the streaming probes can gate the catalog on a deferred (see below). */
 let listVarietiesImpl: (opts: VarietyQuery) => Promise<Paged<VarietyListItem>> = defaultListVarieties;
 
+type BrowseQuery = { filters: BrowseFilterState; page: Page };
+
+/** Zero counts in the schema's shape (option keys derived from the vocabulary, never listed). */
+function zeroCounts(): BrowseCounts {
+  const zeros = <K extends string>(keys: readonly K[]): Record<K, number> =>
+    Object.fromEntries(keys.map((k) => [k, 0])) as Record<K, number>;
+  return {
+    season: { all: 0, options: zeros(Object.keys(SEASON_PARAMS) as (keyof typeof SEASON_PARAMS)[]) },
+    method: { all: 0, options: zeros(Object.keys(METHOD_PARAMS) as (keyof typeof METHOD_PARAMS)[]) },
+    lifeCycle: { all: 0, options: zeros(LIFE_CYCLE_PARAMS) },
+    hue: { all: 0, options: zeros(COLOR_FAMILIES) },
+    smallFarm: { all: 0, on: 0 },
+  };
+}
+
+/** The /variety fake serves the browse payload through the same swappable totals. */
+async function fakeBrowseVarieties(opts: BrowseQuery): Promise<BrowseVarietiesPayload> {
+  const r = await listVarietiesImpl({ filters: varietyFiltersFromBrowse(opts.filters), page: opts.page });
+  return {
+    ...r,
+    page: Math.floor(opts.page.offset / opts.page.limit) + 1,
+    pages: totalPages(r.total, opts.page.limit),
+    counts: zeroCounts(),
+  };
+}
+
 async function fakeListSellers(page: Page, filters?: { region?: string[] }): Promise<Paged<SellerListItem>> {
   const total = filters?.region?.length ? T_STATE : T_SELLER;
   const n = Math.max(0, Math.min(page.limit, total - page.offset));
@@ -219,6 +255,7 @@ function cropResult(page: Page): { crop: CropDetail; total: number; colorFamilie
 store.services = fakeServices({
   catalog: {
     listVarieties: (opts: VarietyQuery) => listVarietiesImpl(opts),
+    browseVarieties: (opts: BrowseQuery) => fakeBrowseVarieties(opts),
     listSellers: (page: Page, filters?: { region?: string[] }) => fakeListSellers(page, filters),
     listSellerStates: async () => fake.states,
     getSeller: async () => fake.seller,
@@ -296,10 +333,10 @@ async function streamSegmentShell(relativePath: string): Promise<string> {
  * passes.
  */
 async function expectVarietyTrue404(sp: SearchParams, total: number): Promise<void> {
-  let release = (_v: Paged<VarietyListItem>): void => {
+  let release = (_v: BrowseVarietiesPayload): void => {
     throw new Error("catalog gate not armed");
   };
-  const gated = new Promise<Paged<VarietyListItem>>((res) => {
+  const gated = new Promise<BrowseVarietiesPayload>((res) => {
     release = res;
   });
   listVarietiesImpl = () => gated;
@@ -316,7 +353,7 @@ async function expectVarietyTrue404(sp: SearchParams, total: number): Promise<vo
     expect(state).toBe("pending");
     const shell = await streamSegmentShell("app/variety/loading.tsx");
     expect(shell.length, "segment shell bytes flushed before the 404 resolved — the response is already 200").toBe(0);
-    release({ items: [], total });
+    release({ items: [], total, page: 1, pages: totalPages(total), counts: zeroCounts() });
     await expect(pending).rejects.toThrow(NOT_FOUND_DIGEST);
   } finally {
     listVarietiesImpl = defaultListVarieties;

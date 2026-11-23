@@ -261,6 +261,9 @@ describe("2.1-B — arbitrary-value lint", () => {
       pattern: /^(\[-webkit-overflow-scrolling:touch\]|\[scrollbar-width:none\]|\[&::-webkit-scrollbar\]|has-\[:(checked|focus-visible)\])$/,
       reason: "CSS property setting or state query, not a design value",
     },
+    // Tranche 3 §2.7 (Ada A3): the filter strip's inline scroll padding, a spec'd literal
+    // beside the strip's other property settings above.
+    { pattern: /^\[scroll-padding-inline:3rem\]$/, reason: "Tranche 3 §2.7 A3 strip finish (spec'd literal)" },
   ];
 
   it("matches every remaining arbitrary value against the allowlist", () => {

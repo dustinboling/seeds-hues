@@ -16,7 +16,8 @@ vi.mock("next/link", () => ({
     createElement("a", { href, ...(rest as Record<string, unknown>) }, children),
 }));
 
-import { BrowseFilters, type BrowseFilterState } from "@/components/ui/BrowseFilters";
+import { BrowseFilters } from "@/components/ui/BrowseFilters";
+import type { BrowseFilterState } from "@/lib/browse";
 import { Swatch } from "@/components/ui/Swatch";
 import { VarietyView } from "@/app/variety/[slug]/variety-view";
 import { MIX_GRADIENT, resolveColorChip } from "@/lib/color-chip";
@@ -60,7 +61,7 @@ describe("Swatch", () => {
 });
 
 describe("Hue filter Mixed chip", () => {
-  const state: BrowseFilterState = { season: null, method: null, lifeCycle: null, hue: "mix", smallFarm: false };
+  const state: BrowseFilterState = { season: null, method: null, lifeCycle: null, hue: ["mix"], smallFarm: false };
 
   it("draws the same shared gradient definition the variety page uses", () => {
     const html = renderToStaticMarkup(createElement(BrowseFilters, { basePath: "/variety", state, groups: ["hue"] }));

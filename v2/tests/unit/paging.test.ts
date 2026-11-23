@@ -1,22 +1,19 @@
 /**
- * Direct tests for lib/paging.ts (refactor R2 §5): ?page= parsing, page windows,
- * range guards and the list-page filter params. Pins current behavior exactly —
- * including assertPageInRange's throw semantics. Changing any of this is a held
- * workstream; these tests only prove what is.
+ * Direct tests for lib/paging.ts (refactor R2 §5): ?page= parsing, page windows and range
+ * guards — plus the list-page filter params, which live in lib/browse.ts since Tranche 3.1a
+ * (Hue went multi-select there; the single-select surfaces keep their rule). Pins current
+ * behavior exactly — including assertPageInRange's throw semantics. Changing any of this is
+ * a held workstream; these tests only prove what is.
  */
 import { describe, expect, it } from "vitest";
+import { assertPageInRange, pagePath, pageTitleSuffix, pageWindow, parsePage, totalPages } from "@/lib/paging";
 import {
-  assertPageInRange,
-  pagePath,
-  pageTitleSuffix,
-  pageWindow,
   parseHueParam,
+  parseHueParamSingle,
   parseLifeCycleParam,
   parseMethodParam,
-  parsePage,
   parseSeasonParam,
-  totalPages,
-} from "@/lib/paging";
+} from "@/lib/browse";
 
 /** What next/navigation's notFound() throws (its message and digest). */
 const NOT_FOUND_DIGEST = "NEXT_HTTP_ERROR_FALLBACK;404";
@@ -91,10 +88,20 @@ describe("filter params (unknown values are ignored, never 404)", () => {
     expect(parseMethodParam("bogus")).toBeNull();
   });
 
-  it("?color_family= is one of COLOR_FAMILIES", () => {
-    expect(parseHueParam(undefined)).toBeNull();
-    expect(parseHueParam("pink")).toBe("pink");
-    expect(parseHueParam("bogus")).toBeNull();
+  it("?color_family= (multi) is a comma list and/or repeats, canonical order, garbage ignored", () => {
+    expect(parseHueParam(undefined)).toEqual([]);
+    expect(parseHueParam("pink")).toEqual(["pink"]);
+    expect(parseHueParam("bogus")).toEqual([]);
+    expect(parseHueParam("peach,pink")).toEqual(["pink", "peach"]);
+    expect(parseHueParam(["pink", "pink,peach", "bogus"])).toEqual(["pink", "peach"]);
+  });
+
+  it("?color_family= (single) keeps today's exact rule: first raw value must be one family", () => {
+    expect(parseHueParamSingle(undefined)).toBeNull();
+    expect(parseHueParamSingle("pink")).toBe("pink");
+    expect(parseHueParamSingle("bogus")).toBeNull();
+    expect(parseHueParamSingle("pink,peach")).toBeNull();
+    expect(parseHueParamSingle(["peach", "pink"])).toBe("peach");
   });
 
   it("?life_cycle= is annual | biennial | perennial", () => {
