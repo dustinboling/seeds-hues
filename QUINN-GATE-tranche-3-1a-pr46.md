@@ -99,3 +99,123 @@ The gate still cannot pass, for one reason, stated plainly: **the two execution 
 - **Returns to the maker:** nothing for F1/F2 — both are fixed as specified. N1 is a pipeline-template fix for Hue to schedule (second occurrence; treat as chronic). N2 is opportunistic.
 - **Owed before merge:** the confirmation run + the browser drive above, then a narrow Quinn confirmation of their records. The coordinator merges only after that — **not on this record**.
 - **Can proceed:** nothing in this PR is blocked by N1/N2 once the owed execution lands clean.
+
+---
+
+# CONFIRMATION RUN — appended 2026-11-22, Quinn (second session, per the return conditions above)
+
+**Authorization:** Dustin's standing ruling (2026-11-22) — fresh Quinn gate agent per attempt until a session gets through; Quinn's standing approval covers checking out the build branch in a fresh scratch worktree and running the project's own install/verify commands. Executed in `seeds-hues-quinn-pr46-wt` at `30f6eca` (the prior session's worktree, verified at head, working tree clean).
+
+## Verdict: FAIL — narrow, and not on PR #46's delta
+
+**All three owed confirmation items now stand confirmed by Quinn's own execution, and F1/F2 are closed.** The owed real-browser drive ran in full — and it surfaces **one new defect, N-D1 (pagination), in PR #41's 3.1a core**, which PR #46's diff does not touch. The drive was an explicit PASS condition for this stack ("one pagination click to confirm it still navigates" — in effect, it does not), so the stack cannot merge on this record. **Do not merge.** Return conditions are narrow and listed at the end; F1/F2 need no further work.
+
+Axes kept separate, per the standing rule: **Severity** — N-D1 Major (defect scale) / Nielsen 3. **Evidence** — directly observed and measured in a real browser, three independent reproductions (below). **Coverage** — complete for the owed items except 3.1-I, UNCHECKED for a named fixture reason (below), never rounded up. **Verdict** — FAIL on the stack's drive condition; PASS on every confirmation item this run owed.
+
+---
+
+## Confirmation item 1 — Quinn-executed `npm run verify`: PASS, exact match
+
+- `npm ci` (699 packages), then `npm run verify` in `v2/` on `30f6eca`: **exit 0** — ESLint, `tsc --noEmit`, and Vitest all green end to end.
+- Quinn-executed counts: **67 test files passed (67), 1145 tests passed (1145)** — **identical to the workflow's accounting in the PR body. No delta.**
+
+## Confirmation item 2 — Non-vacuity by execution: PASS, both directions
+
+- **FAIL direction:** the branch's two updated test files (`tests/dom/variety-browse.test.tsx`, `tests/unit/browse-filters.test.ts`) copied onto PR #41 head `fbf625e` source: **17 failed / 32 passed (49), both files failed, exit 1.** The pins bite on the old code, as required. (The PR #41 worktree was restored to a clean tree afterwards.)
+- **PASS direction:** the same two files on `30f6eca`: **49 passed (49), exit 0** — and green again inside the full verify run above.
+
+## Confirmation item 3 — Rendered-output spot proof (SSR, from the built branch): PASS
+
+Served the branch's own production build locally (`npm run cf:build` + `wrangler dev` preview on :8787, local D1 seeded via the project's `db:setup:local`). Actual server-rendered HTML, not test files:
+
+- **F1 chip (unfiltered `/variety` SSR):** `Pink <span class="text-muted tabular-nums"><span aria-hidden="true">(98)</span><span class="sr-only">98 varieties</span></span>` — visible "(98)" aria-hidden, sr-only "98 varieties", in the rendered output.
+- **F2 applied row (SSR of `/variety?color_family=pink,peach&season=cool`):** `<a aria-label="Remove the Season filter, Cool Season Hardy Annuals" … href="/variety?color_family=pink%2Cpeach">Season: Cool Season Hardy Annuals</a>`, `<a aria-label="Remove the Hue filter, Pink" …>Hue: Pink</a>`, `<a aria-label="Remove the Hue filter, Peach" …>Hue: Peach</a>`, and `>Clear all filters<` — each remover's href removes exactly its own filter. The §2.6.1/§2.6.2 forms are the shipped forms in both render paths.
+
+---
+
+## The real-browser drive — executed (local production build; 390px first, then desktop)
+
+**Method and environment, disclosed:** Playwright driving Chromium (headless shell) against the locally built Worker — the real built product, per the owed conditions (production is unreachable from this VM). Two environment artifacts, neither an app defect: (1) console `ERR_TUNNEL_CONNECTION_FAILED` errors throughout — the external image CDN is unreachable through this VM's proxy; same-origin behavior was unaffected. (2) The shell build's `isMobile: true` emulation corrupts layout metrics after hydration (innerHeight read 3376 on a 844px viewport); the final full drive ran under the corrected context (390×844 CSS px, devicePixelRatio 2, touch + iPhone UA, isMobile off — metrics verified sane: innerHeight 844, fixed nav 390 wide at y 779). Behavioral results (URLs, history, announcements, focus, network) were consistent across both contexts; **all geometry measurements below come from the corrected run.**
+
+### Goal 1 — "Find pink or peach varieties" (3.1-A measurements): PASS
+- Tap Pink: commit (URL gains `color_family=pink`) in **250ms** on the final run; tap Peach: **254ms** (`color_family=pink,peach`). Across four runs the tap→commit range was 184–443ms including Playwright's own tap overhead (~50–180ms of it) on a shared 1.5-CPU VM — the ≤400ms bound is met on the clean runs; the variance is disclosed, not hidden.
+- Per tap: **no document load** (window marker survived), **scroll position identical**, **history +1**, **focus remained on the tapped chip** after the swap, **exactly one request** (`/api/browse/varieties`, 200) and **zero `/api/track`**. Announcements: "98 varieties · Pink, alphabetical. Page 1 of 5." → "160 varieties · Pink · Peach, alphabetical. Page 1 of 7." (98+62=160 ✓).
+- Back ×2 restored pink-only, then unfiltered, **in place** (marker alive, pressed states correct at each step); Forward ×1 restored pink. (The failed-Back/Forward disagreement of PR #41's F4 was **not** reproduced on the success path; F4's failure-path case was not re-exercised and stays as carried.)
+
+### Goal 2 — "Narrow by season, then undo one thing" (F2 in the real a11y tree): PASS
+- With Season=Cool + Hue=Pink applied, the accessibility tree names are exactly: **"Remove the Season filter, Cool Season Hardy Annuals"**, **"Remove the Hue filter, Pink"**, **"Clear all filters"**; visible labels "Season: Cool Season Hardy Annuals" / "Hue: Pink". F2's forms hold in the live tree, not only in pins.
+- Tapping "Remove the Hue filter, Pink": **one history entry**, URL drops only `color_family`, announcement updates ("335 varieties · Cool Season Hardy Annuals…"), and **focus hands off to "Clear all filters"** while the row persists with the Season remover — §2.6.3 behavior as specified.
+
+### Goal 3 — "Hit zero results and recover": PASS
+- Path: Season=Cool + Life cycle=Biennial (6 varieties) → the Hue strip's Blue chip genuinely reads **"Blue (0)0 varieties"** → tapped it. Results region: **0 card links** and a dedicated empty state inside the region — **"No varieties match. Clear filters."** — announcement "0 varieties · Cool Season Hardy Annuals · Biennial · Blue, alphabetical.", applied row still visible.
+- "Clear all filters" recovers **in place** to 778 varieties; **focus lands on the first "All" chip**, per §2.6.3.
+
+### Goal 4 — "Go Back after changing filters" + pagination (3.1-B network proof): FAIL — see N-D1
+- The in-place half of 3.1-B is **proven**: across Goals 1–3, in-place changes fired only `/api/browse/varieties` — no page-view beacon, no document request. A variety detail page load fired **exactly one** `POST /api/track` (the view beacon). The beacon discipline is correct.
+- The pagination half **fails**: N-D1 below.
+
+### 3.1-F — rendered focus ring + chevrons: PASS
+- Coordinate space for all measurements: **DOM border-box, CSS pixels**; viewport 390×844, scrollY 0, zoom 1, devicePixelRatio 2.
+- Keyboard Tab landed on the first chip ("All"): computed outline **`solid 3px rgb(122, 62, 16)`**; screenshot inspected — the full ring renders **unclipped on all four sides**. Last Hue chip ("Mixed", focused): rect **x 263.9 → 374.3 of 390**, y 523.8, 110.4×44 — fully inside the strip's visible width, **not parked under a chevron** (the strip's `scroll-padding-inline: 3rem` does its job); its ring screenshot likewise complete.
+- Chevrons at 390px measure **0×0 — by design, not defect**: `FilterStrip`'s `.filter-strip-btn` is shown only on hover-capable fine pointers (the component's own doc comment; edge fades are the touch affordance). Measured where the control exists — **desktop 1280px: both Hue chevrons 44×44 CSS px**, display flex, left disabled at strip start, and clicking "Scroll Hue right" scrolled the strip 0 → 526px. The 44×44 expectation (the spec's target, Apple HIG class) is met on the surface that ships the control.
+
+### 3.1-K — forced failure (route-blocked `/api/browse/varieties`): PASS
+- With the route aborted, tapping Yellow: **exactly one** `role="alert"` — **"Couldn't update the list — the last results are still shown."** — the Yellow press **reverted** (aria-pressed false), first card, announcement, and URL all **unchanged**. Unblocked, the retry committed (49 varieties · Yellow), the alert **cleared**, press stood. Every clause of the condition met.
+
+### 3.1-I — SellerFilterSection spot regression: UNCHECKED (fixture limit, named)
+- The local catalog fixture cannot construct the precondition: across all 778 varieties, sellerCount is **0 for 761 and 1 for 17 — no multi-seller variety exists locally**, and the section's Small farms toggle renders only when a variety has sellers to filter (four detail pages inspected: no toggle, one seller link each). Exercising it would require fabricating catalog data, which this gate does not do.
+- Remainder owner: the re-drive after N-D1's fix, against production data post-merge (acceptable for this spot regression — the section is PR #38 code, untouched by PRs #41 and #46) or against a seeded multi-seller fixture if the maker provides one.
+
+### Desktop spot pass (1280px): PASS
+- Goal 1 repeated: in-place commit, focus on the tapped chip, remover "Hue: Pink" / "Remove the Hue filter, Pink", "Clear all filters" present, announcement correct. No desktop-only divergence in the touched flows.
+
+### PR #41 desk hypotheses, now judged
+- (a) Parenthesized counts as decoration → subsumed into observation O1 below.
+- (b) The optimistic press lands before the rows swap → **confirmed as the specified design** (press within ~50–180ms, commit at ~200–400ms); not a finding.
+- (c) With no filters active, the failure line renders alone in the applied-row slot → observed in 3.1-K; the single line is plain and correctly worded; **severity 0 — not a problem.**
+
+---
+
+## NEW DEFECT N-D1 — Major (defect scale) / Nielsen 3 — Pagination changes the URL but not the results
+
+- **Object:** `/variety` pagination ("Next →" and numbered "Page N" links), hydrated app, on the locally built `30f6eca`. **Origin: PR #41's 3.1a browse controller — PR #46's 5-file delta does not touch pagination, routing, or state reconciliation.** This is a stack defect surfaced by the owed drive, recorded here because this gate is where the drive was owed.
+- **Steps to reproduce:** (1) Load `/variety` and let it hydrate. (2) Tap **Next →** (or the **Page 2** link). (3) Wait — 6 seconds in the recorded run.
+- **Expected:** the results, announcement, and cards render page 2 ("Page 2 of 33", first card `/variety/apple-of-peru` — which a hard load of the same URL does render, verified).
+- **Actual:** the URL becomes `/variety?page=2` and the RSC fetch for it returns **200**, but the rendered page never changes: announcement still "778 varieties, alphabetical. **Page 1 of 33**.", first card still page 1's, scroll and content untouched. Reproduced **three times** (the drive's Goal 4 and two independent probes, Next and numbered link). After the stuck state, tapping a filter chip recovers cleanly in place — the shopper is not stranded, but paging itself silently does nothing.
+- **Why it rates Major / Nielsen 3:** *Frequency* — every shopper who pages (33 pages of 24; filters are the promoted path, which tempers but does not remove it). *Impact* — the failure is **silent**: the announcement agrees with the stale content, so the shopper has no signal that paging failed; only the first 24 of 778 varieties are reachable through the paging controls. *Persistence* — every attempt, until a reload. Workarounds exist (reload, filters, search), so it is not a Blocker — but a core control that does nothing while appearing to work is a Nielsen 3, and Nielsen 3 blocks a clean PASS under the house gating rule.
+- **Root-cause grouping:** same family as carried **F4** (URL ↔ committed-state disagreement in the browse controller's relationship with router state) — F4 was the Back/Forward sibling; N-D1 is the forward-navigation case. Two symptoms, one suspect area: density predicts density, and the fix pass should examine the controller's URL↔state reconciliation as a whole, not only the pagination symptom.
+- **Evidence fidelity:** [BROWSER] — real Chromium, real built Worker, real local D1 data; `framenavigated` + full request/response log recorded. The maker's DOM suite passes a test named for pagination non-interception, but it does not exercise a real router navigation — the same fidelity gap as the BusyForm escape: handler-level green, browser-level broken. **No second rating exists for N-D1** (Athene's cold rating covered PR #41's F1/F2 severities only); this rating is single-evaluator (Quinn), with the mechanical repro above as its evidence.
+
+## F6 — now judged on the throttled run (was PR #41 FYI): Nielsen 2, note
+
+- Deterministic slow run (the browse fetch route-delayed 2.5s): mid-flight, there is **no `aria-busy`, no progressbar, no spinner** anywhere — the only in-flight signal is the tapped chip's optimistic press, while the announcement still states the old total. The commit lands correctly when the response arrives.
+- Nielsen 2 (minor): on a slow connection the shopper gets a multi-second gap in which the pressed chip and the stated results disagree, with nothing saying an update is coming. Frequency: slow connections only; impact: low-moderate confusion, self-corrects; persistence: per slow commit. **A note, not a return condition** — PR #41 scope (§2.5.3's permissive reading), unchanged by PR #46. Recommended to ride with N-D1's fix pass, since both live in the same controller.
+
+## Observation O1 — Per-option counts are toggle-preview counts (spec question, not a defect of this PR)
+
+- Beside a **selected** hue, the count is the size of the set if that hue were toggled: with Pink selected and 98 results listed, the Pink chip reads "(778)" / "778 varieties" (toggling Pink off returns all 778); with Pink+Peach selected, Peach reads "(98)" (removing Peach leaves Pink's 98). The semantics are consistent, and the announcement always states the true current total — but a first-time shopper, sighted or on assistive tech, can reasonably read "Pink — 778 varieties" as the number of pink varieties while 98 are listed.
+- This is the pre-existing §2.4.2 counts-matrix design from PR #41 (cf. carried F5), **not** PR #46's delta — F1 only gave the existing counts their sr-only unit, exactly as specified. Recorded as an observation for Hue/Dustin to rule on as a spec-interpretation question; **not a return condition for this PR.** Nielsen 2, single-evaluator.
+
+---
+
+## Usability pass summary (this run)
+
+- **Flows taken:** the four shopper goals at 390px (multi-select hue with Back/Forward; season + applied-row removal; zero-results + recovery; pagination + detail-page beacon), 3.1-F keyboard/measurement pass, 3.1-K forced failure, desktop spot pass at 1280px, throttled/delayed-fetch run for F6. Stop point: 3.1-I only, for the fixture reason named above.
+- **Findings by Nielsen severity:** 3 — one (N-D1). 2 — two (F6 judged; O1 observation). 1/0 — none further; hypotheses (b) and (c) closed as non-findings.
+- **Evaluator structure:** single evaluator (Quinn) for the drive and for N-D1/F6/O1 ratings. The F1/F2 severity second-rating (Athene Coldread) stands as previously commissioned; the coordinator reconciles.
+- **Boundaries:** local build only (production unmerged and unreachable from this VM); Chromium engine only — no WebKit/Safari pass exists in this evidence base; no run on Dustin's own devices (access limit; his post-merge eyeball remains the final rendered proof per house practice).
+
+## Coverage ledger (this run)
+
+- **Population:** the prior record's three confirmation items, the seven owed drive conditions, PR #41's carried F4/F5/F6, and the three desk hypotheses.
+- **Structured sample actually checked:** all of it, executed — verify (full suite), non-vacuity (both directions, the two changed test files), SSR rendered output (two states), drive goals 1–4, 3.1-F, 3.1-K, desktop spot, delayed-fetch F6 run — **except 3.1-I** (excluded below).
+- **Adversarial additions:** numbered-link variant of the pagination defect; chip-tap recovery after the stuck pagination state; deterministic 2.5s route delay (after a network-throttle attempt proved too weak to hold the fetch in flight); chevron measurement on the desktop surface where the control exists; full network logging on every goal.
+- **Exclusions, with reasons:** 3.1-I — the local catalog contains no multi-seller variety (sellerCount max 1 across 778), so the toggle's precondition cannot exist without fabricated data. Live production — unmerged; also unreachable from this VM. WebKit — no engine available in this environment.
+- **Residual risk:** the class this coverage can still miss is real-device Safari behavior and every multi-seller surface; both are named, owned above, and neither is rounded into coverage.
+
+## Return conditions (narrow) / what can proceed
+
+- **Returns to the maker (3.1a stack, not the PR #46 fix):** N-D1 — pagination under soft navigation must render the target page, or pagination must become true document navigation; the maker's choice. Quinn then re-drives **Goal 4 only** (Next + one numbered link + Back) plus a chip-after-paging regression check.
+- **Also owed at that re-drive:** 3.1-I, against production data post-merge or a maker-provided multi-seller fixture.
+- **Closed by this record:** confirmation items 1–3; drive goals 1, 2, 3; 3.1-B's in-place/beacon half; 3.1-F; 3.1-K; F6 (judged, Nielsen 2 note); desk hypotheses (a)–(c). **F1 and F2 are confirmed fixed by execution and need no further work.** N1/N2 from the prior record stand as before.
+- **Merge:** not on this record. The coordinator merges only after the N-D1 re-drive passes.
