@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 987 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 996 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -740,6 +740,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sunflower-better-off-red.webp": "artwork/sunflower-better-off-red.png",
   "/artwork/sunflower-frilly.webp": "artwork/sunflower-frilly.png",
   "/artwork/sunflower-greenburst.webp": "artwork/sunflower-greenburst.png",
+  "/artwork/sunflower-mountainlily-mixed.webp": "artwork/sunflower-mountainlily-mixed.png",
   "/artwork/sunflower-procut-gold.webp": "artwork/sunflower-procut-gold.png",
   "/artwork/sunflower-procut-red.webp": "artwork/sunflower-procut-red.png",
   "/artwork/sunflower-procut-white-lite.webp": "artwork/sunflower-procut-white-lite.webp",
@@ -748,8 +749,10 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sunflower-sparky.webp": "artwork/sunflower-sparky.png",
   "/artwork/sunflower-starburst-panache.webp": "artwork/sunflower-starburst-panache.png",
   "/artwork/sunflower-sunrich-gold.webp": "artwork/sunflower-sunrich-gold.png",
+  "/artwork/sunflower-van-goghs-fantasy.webp": "artwork/sunflower-van-goghs-fantasy.png",
   "/artwork/sweet-pea-albutt-blue.webp": "artwork/sweet-pea-albutt-blue.png",
   "/artwork/sweet-pea-alison-valentini.webp": "artwork/sweet-pea-alison-valentini.png",
+  "/artwork/sweet-pea-alison.webp": "artwork/sweet-pea-alison.png",
   "/artwork/sweet-pea-almost-black.webp": "artwork/sweet-pea-almost-black.png",
   "/artwork/sweet-pea-anniversary.webp": "artwork/sweet-pea-anniversary.png",
   "/artwork/sweet-pea-apricot-queen.webp": "artwork/sweet-pea-apricot-queen.png",
@@ -773,6 +776,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-cheryl-rainey.webp": "artwork/sweet-pea-cheryl-rainey.png",
   "/artwork/sweet-pea-chloranthus.webp": "artwork/sweet-pea-chloranthus.png",
   "/artwork/sweet-pea-chocolate-flake.webp": "artwork/sweet-pea-chocolate-flake.png",
+  "/artwork/sweet-pea-clementine-kiss.webp": "artwork/sweet-pea-clementine-kiss.png",
   "/artwork/sweet-pea-clotted-cream.webp": "artwork/sweet-pea-clotted-cream.png",
   "/artwork/sweet-pea-cold-steel.webp": "artwork/sweet-pea-cold-steel.png",
   "/artwork/sweet-pea-coquette.webp": "artwork/sweet-pea-coquette.png",
@@ -781,6 +785,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-dynasty.webp": "artwork/sweet-pea-dynasty.png",
   "/artwork/sweet-pea-earl-grey.webp": "artwork/sweet-pea-earl-grey.png",
   "/artwork/sweet-pea-edith-flanagan.webp": "artwork/sweet-pea-edith-flanagan.png",
+  "/artwork/sweet-pea-emma.webp": "artwork/sweet-pea-emma.png",
   "/artwork/sweet-pea-enchante.webp": "artwork/sweet-pea-enchante.png",
   "/artwork/sweet-pea-erewhon.webp": "artwork/sweet-pea-erewhon.png",
   "/artwork/sweet-pea-ethel-grace.webp": "artwork/sweet-pea-ethel-grace.png",
@@ -788,6 +793,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-frances-kate.webp": "artwork/sweet-pea-frances-kate.png",
   "/artwork/sweet-pea-future-shock.webp": "artwork/sweet-pea-future-shock.png",
   "/artwork/sweet-pea-geoff-hughes.webp": "artwork/sweet-pea-geoff-hughes.png",
+  "/artwork/sweet-pea-gerry-cullinan.webp": "artwork/sweet-pea-gerry-cullinan.png",
   "/artwork/sweet-pea-glasnevin.webp": "artwork/sweet-pea-glasnevin.png",
   "/artwork/sweet-pea-grandma-butt.webp": "artwork/sweet-pea-grandma-butt-v2.png",
   "/artwork/sweet-pea-gwendoline.webp": "artwork/sweet-pea-gwendoline.png",
@@ -853,6 +859,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-spring-sunshine-burgundy.webp": "artwork/sweet-pea-spring-sunshine-burgundy.png",
   "/artwork/sweet-pea-spring-sunshine-champagne.webp": "artwork/sweet-pea-spring-sunshine-champagne.png",
   "/artwork/sweet-pea-strawberry-fields.webp": "artwork/sweet-pea-strawberry-fields.png",
+  "/artwork/sweet-pea-susan-burgess.webp": "artwork/sweet-pea-susan-burgess.png",
   "/artwork/sweet-pea-suzy-z.webp": "artwork/sweet-pea-suzy-z.png",
   "/artwork/sweet-pea-sylvestris.webp": "artwork/sweet-pea-sylvestris.png",
   "/artwork/sweet-pea-topsy.webp": "artwork/sweet-pea-topsy.png",
@@ -863,6 +870,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/sweet-pea-white-supreme.webp": "artwork/sweet-pea-white-supreme.png",
   "/artwork/sweet-pea-wild-swan.webp": "artwork/sweet-pea-wild-swan.png",
   "/artwork/sweet-pea-windsor.webp": "artwork/sweet-pea-windsor.png",
+  "/artwork/sweet-pea-winter-elegance-mix.webp": "artwork/sweet-pea-winter-elegance-mix.png",
   "/artwork/sweet-pea-yvette-ann.webp": "artwork/sweet-pea-yvette-ann.png",
   "/artwork/sweet-rocket-pale-lavender.webp": "artwork/sweet-rocket-pale-lavender.png",
   "/artwork/sweet-sultan-imperial-bride-white.webp": "artwork/sweet-sultan-imperial-bride-white.png",
@@ -879,6 +887,7 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/trachelium-lake-michigan-purple.webp": "artwork/trachelium-lake-michigan-purple.png",
   "/artwork/trachelium-lake-michigan-violet.webp": "artwork/trachelium-lake-michigan-violet.png",
   "/artwork/trachelium-lake-michigan-white.webp": "artwork/trachelium-lake-michigan-white.png",
+  "/artwork/verbena-finesse.webp": "artwork/verbena-finesse.png",
   "/artwork/verbena-vanity.webp": "artwork/verbena-vanity.png",
   "/artwork/verbena-verbena-bonariensis.webp": "artwork/verbena-verbena-bonariensis.png",
   "/artwork/viola-brush-strokes.webp": "artwork/viola-brush-strokes.png",
