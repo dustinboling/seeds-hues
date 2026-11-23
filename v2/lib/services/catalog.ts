@@ -886,13 +886,16 @@ export function createCatalogService(db: Db) {
      * matches compute once, then filter per count state; sellers never filter (constant
      * across the matrix); hue moves only the variety slice (variety-level); season, method
      * and life cycle move varieties, crops and series (plant-level). The /search page and
-     * GET /api/browse/search share this. Never logs: the page view already logged the query
-     * — refinements are silent, like every in-place change.
+     * GET /api/browse/search share this. Logs one search_events row when `logClient` is
+     * set — the /search page view sets it (client `web/search-page`), so the page view is
+     * logged exactly once; the browse endpoint never sets it — refinements are silent,
+     * like every in-place change.
      */
-    async browseSearch(q: string, opts: { filters: BrowseFilterState }): Promise<BrowseSearchPayload> {
+    async browseSearch(q: string, opts: { filters: BrowseFilterState; logClient?: string | null }): Promise<BrowseSearchPayload> {
       const query = normaliseQuery(q);
       const lim = SEARCH_BROWSE_LIMIT;
       if ([...query.replace(/[%_\\]/g, "")].length < MIN_QUERY_CHARS) {
+        if (opts.logClient && query) await logSearch(query, 0, opts.logClient);
         return parse(
           BrowseSearchPayloadSchema,
           {
@@ -927,6 +930,7 @@ export function createCatalogService(db: Db) {
         groupsFor(opts.filters),
         Promise.all(countQueries.map((c) => groupsFor(c.state).then((g) => g.total))),
       ]);
+      if (opts.logClient) await logSearch(query, main.total, opts.logClient);
       return parse(
         BrowseSearchPayloadSchema,
         {
