@@ -22,13 +22,25 @@ function renderShell(urlOriginal: string, children: ReactNode = <h1>Test page</h
   );
 }
 
+/**
+ * The shell now carries labelled header/footer navs alongside the tab-bar
+ * placeholder, so the bare "navigation" role query is ambiguous. Select the
+ * placeholder by its structural class hook (asserted nowhere) so every
+ * landmark/marker assertion below stays meaningful.
+ */
+function getPlaceholderNav(): HTMLElement {
+  const matches = screen.getAllByRole("navigation").filter((el) => el.classList.contains("tabbar-placeholder"));
+  expect(matches).toHaveLength(1);
+  return matches[0] as HTMLElement;
+}
+
 describe("shell landmarks", () => {
   it("renders banner, main, contentinfo, and the placeholder nav", () => {
     renderShell("/");
     expect(screen.getByRole("banner")).toBeTruthy();
     expect(screen.getByRole("main")).toBeTruthy();
     expect(screen.getByRole("contentinfo")).toBeTruthy();
-    const nav = screen.getByRole("navigation");
+    const nav = getPlaceholderNav();
     expect(nav.getAttribute("data-placeholder")).toBe("tab-bar-d1");
     // The empty placeholder must not expose a labelled landmark.
     expect(nav.getAttribute("aria-label")).toBeNull();
@@ -45,7 +57,7 @@ describe("shell landmarks", () => {
 
   it("carries the tab-bar placeholder as five empty slots (structure only)", () => {
     renderShell("/");
-    const nav = screen.getByRole("navigation");
+    const nav = getPlaceholderNav();
     const slots = nav.querySelectorAll("li.tabbar-slot");
     expect(slots.length).toBe(5);
     for (const slot of slots) {

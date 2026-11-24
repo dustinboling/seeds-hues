@@ -19,6 +19,28 @@ body {
     "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, ui-serif, serif;
   font-size: 1.0625rem;
   line-height: 1.6;
+  position: relative;
+}
+
+/* Paper grain: one tiled texture over the flat paper ground, under all
+   content. Cards, header sheets and inputs keep their own flat fills, so no
+   small text sits on grain inside them. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("/theme/paper-grain.webp");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  opacity: 0.5;
+}
+
+@media (forced-colors: active) {
+  body::before {
+    display: none;
+  }
 }
 
 h1,
@@ -110,75 +132,389 @@ label {
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
-  padding: 1.5rem max(1rem, env(safe-area-inset-left)) 6rem
+  padding: 1.5rem max(1rem, env(safe-area-inset-left)) 0
     max(1rem, env(safe-area-inset-right));
 }
 
+/* Compact header: a single row at every width, nothing wraps. */
 .site-header {
   border-bottom: 1px solid var(--sys-color-border);
+  padding-top: env(safe-area-inset-top);
 }
 
 .site-header-inner {
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
-  padding: 0.75rem max(1rem, env(safe-area-inset-left)) 0.75rem
-    max(1rem, env(safe-area-inset-right));
+  padding: 0 max(1rem, env(safe-area-inset-left)) 0 max(1rem, env(safe-area-inset-right));
+  display: flex;
+  min-height: 3.5rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .site-header-inner {
+    column-gap: 1rem;
+  }
+}
+
+.site-lockup {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+@media (min-width: 768px) {
+  .site-lockup {
+    gap: 0.75rem;
+  }
+}
+
+.site-logo-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .site-logo-link {
+    padding-inline: 0.25rem;
+  }
+}
+
+.site-logo {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .site-logo {
+    height: 44px;
+  }
+}
+
+.site-lockup-divider {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .site-lockup-divider {
+    display: block;
+    width: 1px;
+    height: 2.5rem;
+    flex-shrink: 0;
+    background: color-mix(in oklab, var(--sys-color-border-strong) 70%, transparent);
+  }
 }
 
 .site-wordmark {
-  display: inline-flex;
-  flex-direction: column;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
   min-height: 44px;
-  justify-content: center;
   color: var(--sys-color-text);
   text-decoration: none;
-  line-height: 1.25;
+}
+
+.site-wordmark:hover {
+  color: var(--sys-color-text);
 }
 
 .site-wordmark-name {
   font-family:
     "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, ui-serif, serif;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 15px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.site-wordmark-domain {
+@media (min-width: 768px) {
+  .site-wordmark-name {
+    font-size: 1.25rem;
+  }
+}
+
+.site-wordmark-byline {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .site-wordmark-byline {
+    display: block;
+    white-space: nowrap;
+    font-family:
+      "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+      sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.25;
+    color: var(--sys-color-text-muted);
+  }
+}
+
+.site-header-right {
+  margin-left: auto;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .site-header-right {
+    gap: 0.5rem;
+  }
+}
+
+.header-nav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .header-nav {
+    display: block;
+  }
+}
+
+.header-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header-nav-takeover {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .header-nav-takeover {
+    display: block;
+  }
+}
+
+.header-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border-radius: 8px;
+  padding-inline: 0.75rem;
   font-family:
     "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
-  font-size: 0.8125rem;
-  color: var(--sys-color-text-muted);
+  font-weight: 500;
+  color: var(--sys-color-text);
+  text-decoration: none;
+  transition:
+    background-color 160ms ease-out,
+    color 160ms ease-out;
+}
+
+@media (min-width: 1024px) {
+  .header-nav-link {
+    padding-inline: 0.5rem;
+  }
+}
+
+.header-nav-link:hover {
+  background: var(--sys-color-accent-tint);
+  color: var(--sys-color-accent-strong);
+}
+
+.header-nav-current {
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+.header-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sys-color-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease-out,
+    color 160ms ease-out;
+}
+
+button.header-icon-button {
+  font: inherit;
+}
+
+.header-icon-button:hover {
+  background: var(--sys-color-accent-tint);
+  color: var(--sys-color-accent-strong);
+}
+
+.header-menu {
+  position: relative;
+  flex: none;
+}
+
+@media (min-width: 1024px) {
+  .header-menu {
+    display: none;
+  }
+}
+
+.header-menu-panel {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 50;
+  margin-top: 0.5rem;
+  min-width: 14rem;
+  border-radius: 12px;
+  border: 1px solid var(--sys-color-border);
+  background: var(--sys-color-bg);
+  padding-block: 0.5rem;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.header-menu-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.header-menu-link {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  padding-inline: 1rem;
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  color: var(--sys-color-text);
+  text-decoration: none;
+}
+
+.header-menu-link:hover {
+  background: var(--sys-color-accent-tint);
+}
+
+.header-menu-current {
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+/* The one botanical motif: a thin stem with two leaves. Decorative. */
+.divider-stem {
+  display: block;
+  height: 24px;
+  background: url("/theme/divider-stem.svg") center / 220px 24px no-repeat;
+}
+
+.footer-stem {
+  margin-top: 4rem;
 }
 
 .site-footer {
+  margin-top: 1rem;
   background: var(--sys-color-bg-deep);
   border-top: 1px solid var(--sys-color-border);
   color: var(--sys-color-text-soft);
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .site-footer {
+    padding-bottom: 2rem;
+  }
 }
 
 .site-footer-inner {
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
-  padding: 1.5rem max(1rem, env(safe-area-inset-left))
-    calc(5.5rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-right));
-  font-family:
-    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    sans-serif;
+  padding: 2rem max(1rem, env(safe-area-inset-left)) 0 max(1rem, env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   font-size: 0.875rem;
   line-height: 1.5;
+}
+
+.site-footer-inner p {
+  margin: 0;
+}
+
+.site-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-footer-logo-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.25rem;
+  text-decoration: none;
+}
+
+.site-footer-logo {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+
+.site-footer-divider {
+  height: 2rem;
+  width: 1px;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--sys-color-border-strong) 70%, transparent);
 }
 
 .site-footer-wordmark {
   font-family:
     "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, ui-serif, serif;
   font-size: 1rem;
+  font-weight: 600;
   color: var(--sys-color-text);
 }
 
-.site-footer-domain {
-  color: var(--sys-color-text-muted);
+.site-footer-owner-link {
+  font-weight: 500;
+  color: var(--sys-color-link);
+}
+
+.site-footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1rem;
+  row-gap: 0.25rem;
+}
+
+.site-footer-links a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
 }
 
 /* Named placeholder: the bar's footprint only. Slots are empty by design (see
@@ -208,67 +544,7 @@ label {
   border-radius: 12px;
 }
 
-/* Proof-route sections (data for the gate's rendered-diff check, not copy). */
-.proof-domain {
-  color: var(--sys-color-text-muted);
-  font-family:
-    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    sans-serif;
-}
-
-.proof-swatches {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-}
-
-.proof-swatch {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--sys-color-surface);
-  border: 1px solid var(--sys-color-border);
-  border-radius: 12px;
-  padding: 0.5rem 0.75rem;
-  font-family:
-    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    sans-serif;
-  font-size: 0.875rem;
-}
-
-.proof-chip {
-  flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--sys-color-border-strong);
-}
-
-.proof-token-name {
-  color: var(--sys-color-text);
-  overflow-wrap: anywhere;
-}
-
-.proof-token-value {
-  margin-left: auto;
-  color: var(--sys-color-text-muted);
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  font-size: 0.75rem;
-}
-
-.font-proof-display,
-.font-proof-serif,
-.font-proof-sans {
-  font-size: 1.25rem;
-}
-
 @media (forced-colors: active) {
-  .proof-chip {
-    border: 1px solid CanvasText;
-  }
   .tabbar-slot {
     border: 1px dashed CanvasText;
   }
