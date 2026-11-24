@@ -99,6 +99,16 @@ export const visibleListing = and(
 );
 export const activeVariety = and(eq(varieties.status, "active"), isNull(varieties.deletedAt));
 
+/**
+ * A variety's Latin name for display (migration 0017): the variety's own override wins
+ * when set; the plant's value is the fallback; NULL when neither carries one (never a
+ * placeholder). The ONE read path — every variety-context select that surfaces a Latin
+ * name uses this (summary rows, the variety detail row, public listing rows, and the
+ * admin variety views). Crop-context selects (crop rows, series rows, crop search, sync
+ * crops) keep reading plants.latinName directly: a crop has no variety to override it.
+ */
+export const effectiveVarietyLatin = sql<string | null>`coalesce(${varieties.latinName}, ${plants.latinName})`;
+
 const lowerName = sql`lower(${varieties.varietyName})`;
 
 export interface VarietyFilters {
@@ -347,7 +357,7 @@ export async function listVarietySummaryRows(
         indexable: varieties.indexable,
         plantSlug: plants.slug,
         commonName: plants.commonName,
-        latinName: plants.latinName,
+        latinName: effectiveVarietyLatin,
         ...plantRefCols,
         categorySlug: categories.slug,
         categoryName: categories.name,
@@ -515,7 +525,7 @@ export async function varietyDetailRow(db: Db, slug: string) {
       updatedAt: varieties.updatedAt,
       plantSlug: plants.slug,
       commonName: plants.commonName,
-      latinName: plants.latinName,
+      latinName: effectiveVarietyLatin,
       plantDescription: plants.description,
       plantSowingNotes: plants.sowingNotes,
       ...plantRefCols,
@@ -680,7 +690,7 @@ const listingSelect = {
   colorSwatch: varieties.colorSwatch,
   plantSlug: plants.slug,
   commonName: plants.commonName,
-  latinName: plants.latinName,
+  latinName: effectiveVarietyLatin,
   ...plantRefCols,
 };
 

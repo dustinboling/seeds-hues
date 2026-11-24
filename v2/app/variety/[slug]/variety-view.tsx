@@ -107,7 +107,9 @@ export async function VarietyView({ slug, smallFarmOnly, waitlistFloor = RESTING
   ];
   const facts: { label: string; value: ReactNode }[] = [
     { label: "Crop", value: <Link href={`/crop/${v.plant.slug}`}>{proseCommonName(v.plant.commonName)}</Link> },
-    { label: "Latin name", value: v.plant.latinName ? <i>{v.plant.latinName}</i> : UNKNOWN },
+    // No Latin anywhere (neither the variety nor its crop carries one) → no Latin line,
+    // never a placeholder — the same omit-when-absent rule the header eyebrow follows.
+    ...(v.plant.latinName ? [{ label: "Latin name", value: <i>{v.plant.latinName}</i> }] : []),
     { label: "Series", value: v.series ? <Link href={`/series/${v.series.slug}`}>{v.series.name}</Link> : "None" },
     { label: "Hue", value: v.facts.color_family === "unknown" ? UNKNOWN : titleCaseTag(v.facts.color_family) },
     {
