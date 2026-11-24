@@ -33,11 +33,11 @@ import {
 } from "../../lib/browse";
 import { totalPages } from "../../lib/paging";
 import { EMPTY_BROWSE, SMALL_FARM_EMPTY_BROWSE } from "../../lib/small-farm";
-import { AppliedRow } from "./AppliedRow";
-import { BrowseFilters } from "./BrowseFilters";
-import { useInPlaceNav, type NavigateFn } from "./InPlaceNav";
-import { Pagination } from "./Pagination";
-import { SortChips } from "./SortChips";
+import { AppliedRow } from "../browse/AppliedRow";
+import { BrowseFilters } from "../browse/BrowseFilters";
+import { useInPlaceNav, type NavigateFn } from "../browse/InPlaceNav";
+import { Pagination } from "../browse/Pagination";
+import { SortChips } from "../browse/SortChips";
 
 const BASE_PATH = "/variety";
 const GROUPS = ["season", "method", "lifeCycle", "hue", "smallFarm"] as const;
