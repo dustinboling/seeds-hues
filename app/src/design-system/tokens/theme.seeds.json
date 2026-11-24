@@ -1,0 +1,54 @@
+{
+  "$comment": "Slice-1 mirror of the @hues theme.seeds.json directory theme (see SWAP.md). Every sys slot resolves to the value seeds actually renders: live values ported as-is, except sys.color.bg which takes the warmed ground per Dustin's Q3 ruling — the conversion's only deliberate color delta. The six near-miss design defaults (seeds-link, fern, seeds-deep, seeds-muted, gold-ink, ink-soft) are NOT taken; each note records why, because a silent swap to any of them would be an undeclared re-derivation of the directory's identity.",
+  "sys.color.bg": {
+    "value": "#f8f6ec",
+    "from": "design.seeds-ground",
+    "note": "Q3 DELTA (Dustin 2026-11-23): warmed ground replaces live paper #f8f1e1 as the ground. PWA theme-color follows this value."
+  },
+  "sys.color.link": {
+    "value": "#1f5c3d",
+    "from": "seeds.link",
+    "note": "As-is. Design default design.seeds-link #1B5E37 not taken (near-miss; seeds' identity value stands)."
+  },
+  "sys.color.accent": {
+    "value": "#2e6b4f",
+    "from": "seeds.leaf-600",
+    "note": "As-is. Seeds leaf-600 (hover/secondary green) occupies the accent slot; design default design.fern #2D6A4F not taken."
+  },
+  "sys.color.accent-strong": {
+    "value": "#1e4634",
+    "from": "seeds.leaf",
+    "note": "As-is. Seeds leaf (primary green) occupies the accent-strong slot; design default design.seeds-deep #1B4332 not taken."
+  },
+  "sys.color.text-muted": {
+    "value": "#6a5f4c",
+    "from": "seeds.muted",
+    "note": "As-is. Design default design.seeds-muted #595959 not taken (near-miss; seeds' identity value stands)."
+  },
+  "sys.color.accent-ink": {
+    "value": "#8a5e08",
+    "from": "seeds.warn",
+    "note": "As-is. Seeds warn (ochre text: Unknown badges, field errors) occupies the accent-ink slot by role; design default design.gold-ink #86691f not taken."
+  },
+  "sys.color.border-field": {
+    "value": "#71806c",
+    "from": "design.ink-soft",
+    "note": "Design default kept AND unreferenced: no seeds token feeds this slot in slice 1 — seeds resting field borders render sys.color.border-strong (line-strong) and filled borders sys.color.text-soft (ink-soft), both as-is. Adopting #71806c on any seeds surface would be a second color delta, so the comp layer points fields at the as-is slots instead. Flagged for Quinn/design review."
+  },
+  "sys.color.bg-deep": { "value": "#f0e5cb", "from": "seeds.paper-deep", "provisional": true, "note": "As-is." },
+  "sys.color.surface": { "value": "#fffdf6", "from": "seeds.surface", "provisional": true, "note": "As-is." },
+  "sys.color.text": { "value": "#2e2a23", "from": "seeds.ink", "provisional": true, "note": "As-is." },
+  "sys.color.text-soft": { "value": "#4a4438", "from": "seeds.ink-soft", "provisional": true, "note": "As-is." },
+  "sys.color.border": { "value": "#e0d5b8", "from": "seeds.line", "provisional": true, "note": "As-is." },
+  "sys.color.border-strong": { "value": "#91825C", "from": "seeds.line-strong", "provisional": true, "note": "As-is." },
+  "sys.color.accent-tint": { "value": "#e3ead8", "from": "seeds.leaf-50", "provisional": true, "note": "As-is." },
+  "sys.color.petal": { "value": "#8e2a52", "from": "seeds.petal", "provisional": true, "note": "As-is." },
+  "sys.color.petal-tint": { "value": "#f7e8ec", "from": "seeds.petal-50", "provisional": true, "note": "As-is." },
+  "sys.color.accent-ink-tint": { "value": "#f7edd3", "from": "seeds.warn-50", "provisional": true, "note": "As-is." },
+  "sys.color.danger": { "value": "#8F1D12", "from": "seeds.danger", "provisional": true, "note": "As-is (admin-only)." },
+  "sys.color.sage": { "value": "#7d9b76", "from": "seeds.sage", "provisional": true, "note": "As-is (decorative foliage only; never text)." },
+  "sys.color.focus": { "value": "#7a3e10", "from": "seeds.focus", "provisional": true, "note": "As-is." },
+  "sys.color.listing": { "value": "#E9DFC2", "from": "seeds.listing", "provisional": true, "note": "As-is." },
+  "sys.color.visit": { "value": "#DFE9D6", "from": "seeds.visit", "provisional": true, "note": "As-is." },
+  "sys.color.stem-rule": { "value": "rgb(151 134 95 / 0.45)", "from": "seeds.stem-rule", "provisional": true, "note": "As-is (frozen; do not re-derive)." }
+}

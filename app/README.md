@@ -1,217 +1,79 @@
-# seeds.hues.flowers — Seed Finder Directory
+# seeds-hues app (Vike + React SPA) — Slice 1
 
-A static seed-finder directory for Hues Floral Park. Every variety shows all suppliers that carry it, with verified prices (labelled with source and check date) and outbound links to buy. No cart, checkout, or user accounts — traffic-building only.
+The Seed Directory's conversion from Next.js to a Vike + React SPA. This tree
+holds the new app; the live site is `../v2/` (Next.js).
 
-## Quick start (preview)
+## Inert until Slice 9
 
-Requires Python 3 (pre-installed on most systems) or any static file server.
+Nothing in `app/` is deployed, routed, or referenced by `v2/` until the Slice 9
+cutover. The only cross-tree links are:
 
-```bash
-# From this directory (app/)
-python3 -m http.server 8080
+- `../v2/package.json`'s `verify` script chains this tree's `verify`, so the
+  gate goes red if `app/` breaks.
+- Tests read `../v2/app/globals.css` (token source of truth) and
+  `../v2/app/fonts/*` (editorial font bytes) as oracles — read-only, test-time.
+
+Do not change deploy configuration (`../v2/wrangler.jsonc`, deploy scripts) for
+this tree, and do not import `app/` code from `v2/` (or vice versa) outside the
+links above.
+
+## Layout
+
+- `pages/` — Vike filesystem routes (`+config.ts`, `+Layout.tsx`, `+Head.tsx`,
+  `index/+Page.tsx` proof route with per-route `prerender: true`, `_error/`).
+- `src/design-system/` — the @hues mirror point: token layers
+  (`tokens/*.json`), the seeds→@hues `token-mapping.json`, typed access
+  (`tokens.ts`), contrast math + table (`contrast*.ts`, `CONTRAST.md`), fonts
+  (`fonts.ts`, `fonts.css`, `font-licenses.md`), generated `tokens.css`, and
+  `SWAP.md` (how the mirror swaps for the registry packages).
+- `src/components/` — shell: header, footer, tab-bar placeholder, route announcer.
+- `src/lib/` — tested utilities (`jsonld-guard.ts`: the no-price JSON-LD guard).
+- `src/sw/` — Workbox `injectManifest` service-worker skeleton (own tsconfig).
+- `src/site.ts`, `src/pwa.ts`, `src/shell.css` — site constants, SW registration
+  snippet, shell styles (plain CSS over the token mirror; no framework yet).
+- `public/` — manifest, self-hosted icon set (byte-identical to `v2/`), fonts.
+- `scripts/` — SW build, PWA proof, token/contrast generators, font sync.
+- `tests/` — `unit/` (mapping, contrast, fonts, guard, PWA), `dom/` (shell),
+  `build/` (gate-covered production build + PWA proof).
+
+## Run
+
+Requires Node ≥ 22.12. First time (and after `package.json` changes):
+
+```sh
+cd app
+npm install
 ```
 
-Then open **http://localhost:8080** in your browser.
+Verify (lint + typecheck + tests, including the production-build proof):
 
-The site uses `fetch()` for JSON files, so it must be served over HTTP — opening `index.html` directly as a `file://` URL will not work.
-
-**Other options:**
-
-```bash
-# Node (npx serve, no install required)
-npx serve .
-
-# Node (http-server)
-npx http-server . -p 8080
+```sh
+cd app
+npm run verify
 ```
 
-## Site structure
+Develop / build:
 
-```
-app/
-├── index.html              Home — search + category browse
-├── varieties/
-│   └── index.html          Variety list (?v=<id> for detail view)
-├── sellers/
-│   └── index.html          Seller directory (?s=<id> for detail view)
-├── 404.html
-├── css/
-│   └── styles.css
-├── js/
-│   ├── data.js             JSON loader + helpers
-│   ├── utils.js            Formatting helpers (price, date, rating badge)
-│   ├── search.js           Client-side search + dropdown UI
-│   ├── variety-page.js     Variety list and detail renderer
-│   └── seller-page.js      Seller directory and detail renderer
-└── data/
-    ├── varieties.json       All seed varieties
-    ├── sellers.json         All sellers / suppliers
-    └── listings.json        All verified listings (variety × seller)
+```sh
+cd app
+npm run dev     # vike dev server
+npm run build   # vike build + SW bundle/inject + post-build PWA proof
 ```
 
-## URL scheme
+Regenerate derived files (each has a freshness test — never hand-edit outputs):
 
-| URL | View |
-|-----|------|
-| `/` | Home with search + category browse |
-| `/varieties/` | All flower varieties, alphabetical |
-| `/varieties/?v=stock-katz-mix` | Detail page for a specific variety |
-| `/varieties/?q=sweet+pea` | Filtered list from search |
-| `/sellers/` | All suppliers |
-| `/sellers/?s=geoseed` | Detail page for a specific supplier |
-
----
-
-## Data schema
-
-### `data/varieties.json`
-
-Array of variety objects:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique slug, kebab-case. Used in URLs. |
-| `commonName` | string | Common name, e.g. "Stock" |
-| `latinName` | string | Latin / botanical name, e.g. "Matthiola incana" |
-| `varietyName` | string | Cultivar or series name, e.g. "Katz Mix" |
-| `category` | string | `"flowers"`, `"vegetables"`, or `"herbs"` |
-| `subcategory` | string | e.g. `"annual"`, `"perennial"`, `"annual-climber"` |
-| `description` | string | 1–3 sentence growing description |
-| `sowingNotes` | string | Timing and sowing method |
-| `heightCm` | number \| null | Mature height in centimetres |
-| `colorSwatch` | string \| null | CSS hex color for the flower's representative color |
-| `tags` | string[] | Descriptive tags, e.g. `["cut-flower", "fragrant"]` |
-
-### `data/sellers.json`
-
-Array of seller objects:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique slug, kebab-case |
-| `name` | string | Display name |
-| `type` | string | `"wholesale"`, `"retail"`, or `"specialty"` |
-| `homepage` | string | Seller's website URL |
-| `description` | string | Brief description of the supplier |
-| `orderingNotes` | string | Account requirements, minimums, shipping notes |
-| `location` | string | City, state |
-| `rating` | null | Always `null` in Phase 1 → displays "Not yet rated". Future: set to a number 0–5 when ratings are collected. |
-| `ratingCount` | number | Always 0 in Phase 1. Future: number of submitted ratings. |
-| `ratingAverage` | null \| number | Always `null` in Phase 1. Future: average of submitted ratings. |
-
-### `data/listings.json`
-
-Array of listing objects — each is one supplier offering one variety:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique slug |
-| `varietyId` | string | References `varieties[].id` |
-| `sellerId` | string | References `sellers[].id` |
-| `sku` | string \| null | Seller's catalog number |
-| `packetSizes` | array | See below |
-| `productUrl` | string \| null | Verified direct product URL. `null` → site links to seller homepage. |
-| `notes` | string \| null | Any additional notes about this listing |
-
-Each entry in `packetSizes`:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `label` | string | Human-readable size, e.g. `"Trade Pkt (200 seeds)"` |
-| `price` | number \| null | Price in USD. `null` → renders "See seller for price" |
-| `priceSource` | string \| null | Source of the price, e.g. `"GeoSeed Catalog 2026–27"` |
-| `priceCheckDate` | string \| null | ISO date the price was verified, e.g. `"2026-11-04"` |
-| `inStock` | null | Reserved for future use. Leave `null`. |
-
----
-
-## How to add a variety
-
-1. Open `data/varieties.json`.
-2. Add an object to the array following the schema above. Choose an `id` slug that is unique and URL-safe (lowercase, hyphens, no spaces).
-3. Save. The variety appears on the `/varieties/` page immediately.
-
-```json
-{
-  "id": "cosmos-sensation-mix",
-  "commonName": "Cosmos",
-  "latinName": "Cosmos bipinnatus",
-  "varietyName": "Sensation Mix",
-  "category": "flowers",
-  "subcategory": "annual",
-  "description": "4-foot branching cosmos with large flowers in white, pink, and crimson. Excellent cut flower, direct sown.",
-  "sowingNotes": "Direct sow after last frost or in fall for winter/spring bloom in mild climates.",
-  "heightCm": 122,
-  "colorSwatch": "#FF69B4",
-  "tags": ["direct-sow", "cut-flower"]
-}
+```sh
+npm run gen:tokens-css   # tokens/*.json + mapping → src/design-system/tokens.css
+npm run gen:contrast     # token mirror → src/design-system/CONTRAST.md
+npm run sync:fonts       # v2 bytes + @fontsource → public/fonts/ + OFL-1.1.txt
 ```
 
-## How to add a seller
+## Conventions
 
-1. Open `data/sellers.json`.
-2. Add a seller object. Leave `rating`, `ratingCount`, and `ratingAverage` at their Phase 1 values (`null`, `0`, `null`).
-3. Save.
-
-```json
-{
-  "id": "silver-falls-seed",
-  "name": "Silver Falls Seed Company",
-  "type": "wholesale",
-  "homepage": "https://www.oregonwholesaleseed.com",
-  "description": "Oregon bulk flower seed grower, wholesale storefront via Oregon Wholesale Seed Company.",
-  "orderingNotes": "Wholesale pricing. Larger quantities quoted. Located in Silverton, OR.",
-  "location": "Silverton, OR",
-  "rating": null,
-  "ratingCount": 0,
-  "ratingAverage": null
-}
-```
-
-## How to add a listing
-
-1. Open `data/listings.json`.
-2. Add a listing object linking a `varietyId` to a `sellerId`.
-3. Set `price` to `null` if no verified price is available — the UI will display "See seller for price".
-4. Set `productUrl` to `null` if no direct product URL is verified — the UI links to the seller homepage.
-5. Always include `priceSource` and `priceCheckDate` when a price is given.
-
-```json
-{
-  "id": "geoseed-cosmos-sensation",
-  "varietyId": "cosmos-sensation-mix",
-  "sellerId": "geoseed",
-  "sku": "G283400",
-  "packetSizes": [
-    {
-      "label": "Trade Pkt (1,000 seeds)",
-      "price": 4.85,
-      "priceSource": "GeoSeed Catalog 2026–27",
-      "priceCheckDate": "2026-11-04",
-      "inStock": null
-    }
-  ],
-  "productUrl": null,
-  "notes": "4 ft cut flower cosmos. Wholesale account required."
-}
-```
-
----
-
-## Design rules (brief)
-
-- **No invented data.** Prices only where the source file gives them, labelled with source + check date.
-- **No hotlinked images.** Only typography and CSS color swatches.
-- **No cart, checkout, or payments.** All seller links open the seller's own site.
-- **Ratings: "Not yet rated" everywhere** until real ratings are collected. Never invent ratings.
-- Mobile-first, WCAG 2.2 AA.
-
-## Deployment
-
-This is a plain static site. Deploy the contents of `app/` to any static host:
-
-- **Netlify:** drag and drop the `app/` folder at app.netlify.com
-- **GitHub Pages:** push to a repo, set Pages source to `/ (root)` or the `app/` folder
-- **Any static host:** upload the contents of `app/` to the web root
-
-No build step, no server, no database required.
+- Strict TypeScript (`strict` + `noUncheckedIndexedAccess`), zero `any`.
+- No placeholder stubs — the single exception is the named `TabBarPlaceholder`
+  (structure + slots; the D1 design builds post-cutover).
+- WCAG 2.2 AA for the shell; every touched contrast pair is computed from the
+  actual token values (`CONTRAST.md`) and cross-checked against the recorded
+  ratios before the gate trusts them.
+- No external URLs for fonts, images, or scripts — everything is self-hosted.

@@ -1,0 +1,252 @@
+{
+  "$comment": "Seeds → @hues token mapping (slice 1, mirror path — see SWAP.md). One entry per --color-* name in v2/app/globals.css @theme. `sourceValue` is the live value (exact case); `themeValue` is what seeds renders in the new tree; `huesRef`/`huesRefValue` name the design-system ref endpoint where the brief §3 quotes one. `status: replaced` marks the single deliberate Q3 delta; everything else is `mapped` as-is. The mapping test (tests/unit/token-mapping.test.ts) fails on any unmapped name, any value drift, or any second `replaced` entry.",
+  "source": {
+    "css": "v2/app/globals.css (@theme block)",
+    "report": "v2/THEME-REPORT.md (contrast pairs)",
+    "ruling": "Dustin Q3 (OPEN-QUESTIONS.md): take the warmed ground, the conversion's only deliberate color delta"
+  },
+  "entries": [
+    {
+      "seeds": "paper",
+      "sourceValue": "#f8f1e1",
+      "status": "replaced",
+      "layer": "sys",
+      "hues": "sys.color.bg",
+      "huesRef": "design.seeds-ground",
+      "huesRefValue": "#f8f6ec",
+      "themeValue": "#f8f6ec",
+      "note": "Q3 DELTA: live paper is superseded as the ground by the warmed seeds-ground. Kept in refs.seeds.paper as the audit record."
+    },
+    {
+      "seeds": "paper-deep",
+      "sourceValue": "#f0e5cb",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.bg-deep",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#f0e5cb",
+      "note": "As-is. Provisional sys name (no design endpoint quoted in §3)."
+    },
+    {
+      "seeds": "surface",
+      "sourceValue": "#fffdf6",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.surface",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#fffdf6",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "ink",
+      "sourceValue": "#2e2a23",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.text",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#2e2a23",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "ink-soft",
+      "sourceValue": "#4a4438",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.text-soft",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#4a4438",
+      "note": "As-is. Seeds' ink-soft is body text (#4a4438) — distinct from the design-system ref ink-soft (#71806c, sys.color.border-field default), which seeds does not consume in slice 1."
+    },
+    {
+      "seeds": "muted",
+      "sourceValue": "#6a5f4c",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.text-muted",
+      "huesRef": "design.seeds-muted",
+      "huesRefValue": "#595959",
+      "themeValue": "#6a5f4c",
+      "note": "As-is. Design default #595959 not taken (near-miss); seeds' identity value stands."
+    },
+    {
+      "seeds": "line",
+      "sourceValue": "#e0d5b8",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.border",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#e0d5b8",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "line-strong",
+      "sourceValue": "#91825C",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.border-strong",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#91825C",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "leaf",
+      "sourceValue": "#1e4634",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.accent-strong",
+      "huesRef": "design.seeds-deep",
+      "huesRefValue": "#1B4332",
+      "themeValue": "#1e4634",
+      "note": "As-is. Seeds leaf (primary green) occupies accent-strong; design default #1B4332 not taken."
+    },
+    {
+      "seeds": "leaf-600",
+      "sourceValue": "#2e6b4f",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.accent",
+      "huesRef": "design.fern",
+      "huesRefValue": "#2D6A4F",
+      "themeValue": "#2e6b4f",
+      "note": "As-is. Seeds leaf-600 (hover/secondary green) occupies accent; design default #2D6A4F not taken."
+    },
+    {
+      "seeds": "leaf-50",
+      "sourceValue": "#e3ead8",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.accent-tint",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#e3ead8",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "link",
+      "sourceValue": "#1f5c3d",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.link",
+      "huesRef": "design.seeds-link",
+      "huesRefValue": "#1B5E37",
+      "themeValue": "#1f5c3d",
+      "note": "As-is. Design default #1B5E37 not taken (near-miss); seeds' identity value stands."
+    },
+    {
+      "seeds": "petal",
+      "sourceValue": "#8e2a52",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.petal",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#8e2a52",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "petal-50",
+      "sourceValue": "#f7e8ec",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.petal-tint",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#f7e8ec",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "warn",
+      "sourceValue": "#8a5e08",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.accent-ink",
+      "huesRef": "design.gold-ink",
+      "huesRefValue": "#86691f",
+      "themeValue": "#8a5e08",
+      "note": "As-is. Seeds warn (ochre text) occupies accent-ink by role; design default #86691f not taken."
+    },
+    {
+      "seeds": "warn-50",
+      "sourceValue": "#f7edd3",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.accent-ink-tint",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#f7edd3",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "danger",
+      "sourceValue": "#8F1D12",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.danger",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#8F1D12",
+      "note": "As-is. Provisional sys name (admin-only)."
+    },
+    {
+      "seeds": "sage",
+      "sourceValue": "#7d9b76",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.sage",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#7d9b76",
+      "note": "As-is. Provisional sys name (decorative foliage only; never text)."
+    },
+    {
+      "seeds": "focus",
+      "sourceValue": "#7a3e10",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.focus",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#7a3e10",
+      "note": "As-is. Provisional sys name."
+    },
+    {
+      "seeds": "listing",
+      "sourceValue": "#E9DFC2",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.listing",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#E9DFC2",
+      "note": "As-is. Provisional sys name (promoted Quiet Ledger hairline)."
+    },
+    {
+      "seeds": "visit",
+      "sourceValue": "#DFE9D6",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.visit",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "#DFE9D6",
+      "note": "As-is. Provisional sys name (promoted pill fill)."
+    },
+    {
+      "seeds": "stem-rule",
+      "sourceValue": "rgb(151 134 95 / 0.45)",
+      "status": "mapped",
+      "layer": "sys",
+      "hues": "sys.color.stem-rule",
+      "huesRef": null,
+      "huesRefValue": null,
+      "themeValue": "rgb(151 134 95 / 0.45)",
+      "note": "As-is. Provisional sys name (frozen; do not re-derive)."
+    }
+  ]
+}
