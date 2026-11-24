@@ -187,7 +187,7 @@ export function createCatalogApi(options: CatalogApiOptions) {
   // callers fire concurrently — the live API's per-IP rate limit is shared.
   let chain: Promise<void> = Promise.resolve();
 
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  const sleep = (ms: number): Promise<void> => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
   async function getRaw(path: string, init?: { ifNoneMatch?: string }): Promise<{ status: number; etag: string | null; json: () => Promise<unknown> }> {
     const headers: Record<string, string> = { "User-Agent": userAgent };
