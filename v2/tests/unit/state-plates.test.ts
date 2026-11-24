@@ -192,8 +192,9 @@ describe("seller page placement (§2)", () => {
     const at = (s: string) => head.indexOf(s);
     expect(at('<div class="min-w-0 flex-1">')).toBeGreaterThan(-1);
     expect(at("<h1")).toBeLessThan(at('data-seller-state="OR"'));
-    expect(at('data-seller-state="OR"')).toBeLessThan(at("Visit Willamette Test Farm"));
-    expect(at("Visit Willamette Test Farm")).toBeLessThan(at("<figure"));
+    // The CTA keeps its place; its label is the shop build's CS-01 form (host in parens).
+    expect(at('data-seller-state="OR"')).toBeLessThan(at("Visit their website"));
+    expect(at("Visit their website")).toBeLessThan(at("<figure"));
     expect(h.match(/data-state-plate=/g)).toHaveLength(1);
     expect(withoutPreloads(h).match(/artwork\/states\//g)).toHaveLength(1);
     // The plate's React preload carries no fetchpriority (never promoted over the <h1> LCP).

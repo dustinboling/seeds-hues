@@ -9,8 +9,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createTestD1, type TestD1 } from "../helpers/d1";
-import { createServices, type Services } from "@/lib/services";
-import type { Services as ServicesType } from "@/lib/services";
+import { createServices, type Services as ServicesType } from "@/lib/services";
 
 let t: TestD1;
 let s: ServicesType;

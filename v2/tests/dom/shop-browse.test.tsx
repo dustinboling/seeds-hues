@@ -16,7 +16,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...rest }: { href: string; children: React.ReactNode; [key: string]: unknown }) =>
@@ -25,15 +25,7 @@ vi.mock("next/link", () => ({
 
 import { ShopBrowse, type ShopBrowseInitial } from "@/components/seller/ShopBrowse";
 import { PAGE_SIZE } from "@/lib/config";
-import {
-  clearShopBrowseFilters,
-  readShopBrowseFilters,
-  shopCountsFor,
-  shopCropsFor,
-  shopViewListings,
-  type ShopBrowseState,
-  type ShopCrop,
-} from "@/lib/shop-browse";
+import { SHOP_SORT_OPTIONS, readShopBrowseFilters, shopCountsFor, shopCropsFor, shopViewListings, type ShopCrop } from "@/lib/shop-browse";
 import type { Availability, PublicListing } from "@/lib/validators";
 
 const BASE = "/seller/test-farm";
@@ -194,6 +186,30 @@ function replaceSpyOn(): ReturnType<typeof vi.spyOn> {
   return vi.spyOn(window.history, "replaceState");
 }
 
+function sortChip(name: string): HTMLButtonElement {
+  // The hydrated Sort control nests a same-named fieldset in its group, so the label
+  // query is ambiguous — the chip's data-sort value is the stable handle.
+  const value = SHOP_SORT_OPTIONS.find((o) => o.label === name)?.value;
+  if (!value) throw new Error(`shop-browse test: unknown sort ${name}`);
+  return need(document.querySelector(`button[data-sort="${value}"]`), `sort chip ${name}`) as HTMLButtonElement;
+}
+
+/** Local computation never fetches: the stub throws, and this pins zero calls. */
+const fetchCalls = () => vi.mocked(fetch).mock.calls;
+
+/** Run the search debounce (~300 ms) and flush the commit's microtasks (fake timers). */
+async function settle(ms = 350): Promise<void> {
+  await act(async () => {
+    vi.advanceTimersByTime(ms);
+  });
+  await act(async () => {});
+}
+
+/** Local commits settle synchronously, so Ruling 7 handoffs land inside the same act. */
+function shopHeading(): HTMLElement {
+  return need(document.getElementById("seller-varieties"), "shop H2");
+}
+
 beforeEach(() => {
   window.history.replaceState({}, "", BASE);
   // Local computation never fetches: prove it — any fetch attempt fails the test.
@@ -232,9 +248,11 @@ describe("server floor (no-JS: links, the GET form, every state correct from its
     // Counts: the visible numeral + the screen-reader unit "listings" (CS-18).
     expect(h).toContain('<span aria-hidden="true">(10)</span><span class="sr-only">10 listings</span>');
     // Crop chips are plain text (no swatch dot); Hue chips carry dots.
-    expect(h).toContain('href="/seller/test-farm?season=cool&amp;crop=cosmos"');
+    // Params serialize in group order (crop first — the unit-pinned shopBrowseHref order).
+    expect(h).toContain('href="/seller/test-farm?crop=cosmos&amp;season=cool"');
     expect(h).not.toMatch(/crop=cosmos[^>]*SwatchDot/);
-    // A held group narrows the counts: with season=cool held, warm reads 0 and stays a link.
+    // A held group narrows the counts: with season=cool held, warm reads its own
+    // replacement slice (20 — an option holds other groups, never its own) and stays a link.
     expect(h).toContain('href="/seller/test-farm?season=warm"');
   });
 
@@ -271,8 +289,8 @@ describe("server floor (no-JS: links, the GET form, every state correct from its
     const full = bigShop();
     const rest = floor(makeInitial(full));
     expect(rest).toContain('<p id="seller-results-count" class="mt-3 text-muted tabular-nums" aria-live="polite" aria-atomic="true">');
-    expect(rest).toContain("30 listings, in stock first.");
-    expect(floor(makeInitial(full, { sort: "recent" }))).toContain("30 listings, most recently checked first.");
+    expect(rest).toContain("30 listings, in stock first. · page 1 of 2");
+    expect(floor(makeInitial(full, { sort: "recent" }))).toContain("30 listings, most recently checked first. · page 1 of 2");
     expect(floor(makeInitial(full, { q: "variety" }))).toContain("matches for “variety”, best match first.");
     expect(floor(makeInitial(full, {}, 2))).toContain("30 listings, in stock first. · page 2 of 2");
   });
@@ -333,5 +351,294 @@ describe("server floor (no-JS: links, the GET form, every state correct from its
     const h = floor(makeInitial(single));
     expect(h).not.toContain(">Crop</legend>");
     expect(h).toContain(">Season</legend>");
+  });
+});
+
+describe("hydrated filter tap (in place, local, one entry)", () => {
+  it("season tap narrows in place: no fetch, pressed state, rows swap, one entry, focus stays, title synced", () => {
+    const full = bigShop();
+    const push = pushSpyOn();
+    const replace = replaceSpyOn();
+    renderShop(makeInitial(full));
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    const line = countLine();
+    const cool = chip("Season", "Cool Season Hardy Annuals 10 listings");
+    expect(cool.getAttribute("aria-pressed")).toBe("false");
+    // jsdom clicks don't take focus; take it explicitly so the commit must preserve it.
+    cool.focus();
+    document.title = "a stale title";
+
+    fireEvent.click(cool);
+    expect(fetchCalls()).toHaveLength(0);
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    expect(countLine()).toBe(line); // the live region updates — it is never remounted
+    expect(resultsRegion().textContent).toContain("Variety 01");
+    expect(resultsRegion().textContent).not.toContain("Variety 00");
+    expect(chip("Season", "Cool Season Hardy Annuals 10 listings").getAttribute("aria-pressed")).toBe("true");
+    // Counts recompute with the group held: warm reads its replacement slice and stays operable.
+    const warm = chip("Season", "Warm Season Tender Annuals 20 listings");
+    expect(warm.getAttribute("aria-pressed")).toBe("false");
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push.mock.calls[0]?.[2]).toBe("/seller/test-farm?season=cool");
+    expect(replace).not.toHaveBeenCalled();
+    expect(window.location.search).toBe("?season=cool");
+    expect(document.activeElement).toBe(cool);
+    expect(document.title).toBe("Test Farm — Flower Seed Seller | seeds.hues.flowers");
+    // The applied row appears with the remover + Clear All.
+    expect(screen.getByRole("button", { name: "Remove the Season filter, Cool Season Hardy Annuals" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Clear all filters" })).toBeTruthy();
+  });
+
+  it("tapping the active option is a no-op (no entry, no change)", () => {
+    window.history.replaceState({}, "", `${BASE}?season=cool`);
+    const push = pushSpyOn();
+    const replace = replaceSpyOn();
+    renderShop(makeInitial(bigShop(), { season: "cool" }));
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    fireEvent.click(chip("Season", "Cool Season Hardy Annuals 10 listings"));
+    expect(push).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
+    expect(fetchCalls()).toHaveLength(0);
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    expect(window.location.search).toBe("?season=cool");
+  });
+
+  it("Back/Forward re-sync in place (no entry)", () => {
+    const full = bigShop();
+    const push = pushSpyOn();
+    renderShop(makeInitial(full));
+    fireEvent.click(chip("Season", "Cool Season Hardy Annuals 10 listings"));
+    expect(window.location.search).toBe("?season=cool");
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+
+    window.history.replaceState({}, "", BASE);
+    fireEvent(window, new window.PopStateEvent("popstate"));
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    expect(resultsRegion().textContent).toContain("Variety 00");
+    expect(push).toHaveBeenCalledTimes(1);
+
+    window.history.replaceState({}, "", `${BASE}?season=cool`);
+    fireEvent(window, new window.PopStateEvent("popstate"));
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    expect(resultsRegion().textContent).not.toContain("Variety 00");
+    expect(resultsRegion().textContent).toContain("Variety 01");
+    expect(push).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("hydrated hue multi-select (OR within, AND across)", () => {
+  it("toggles families: counts follow the toggle definition, one entry per toggle", () => {
+    const full = bigShop();
+    const push = pushSpyOn();
+    renderShop(makeInitial(full));
+    fireEvent.click(chip("Hue", "Pink 10 listings"));
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    expect(push.mock.calls[0]?.[2]).toBe("/seller/test-farm?color_family=pink");
+    // Pink's own count toggles OFF (all 30); Blue toggles ON (pink+blue → 20).
+    expect(chip("Hue", "Pink 30 listings").getAttribute("aria-pressed")).toBe("true");
+    expect(chip("Hue", "Blue 20 listings").getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(chip("Hue", "Blue 20 listings"));
+    expect(countLine().textContent).toBe("20 listings, in stock first.");
+    expect(push.mock.calls[1]?.[2]).toBe("/seller/test-farm?color_family=pink%2Cblue");
+    expect(push).toHaveBeenCalledTimes(2);
+    // Toggling Pink off leaves Blue alone.
+    fireEvent.click(chip("Hue", "Pink 10 listings"));
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    expect(push.mock.calls[2]?.[2]).toBe("/seller/test-farm?color_family=blue");
+    expect(push).toHaveBeenCalledTimes(3);
+    expect(fetchCalls()).toHaveLength(0);
+  });
+
+  it("ANDs across groups into the zero-combination state; Clear All recovers in place", () => {
+    const full = bigShop();
+    const push = pushSpyOn();
+    renderShop(makeInitial(full));
+    fireEvent.click(chip("Season", "Cool Season Hardy Annuals 10 listings"));
+    // Cool-held pinks: 0 — and the 0 stays operable.
+    fireEvent.click(chip("Hue", "Pink 0 listings"));
+    expect(countLine().textContent).toBe("0 listings, in stock first.");
+    expect(resultsRegion().textContent).toContain("No listings in Test Farm’s shop match those filters.");
+    // The applied row stays with both removers.
+    expect(screen.getByRole("button", { name: "Remove the Season filter, Cool Season Hardy Annuals" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Remove the Hue filter, Pink" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Clear all filters" }));
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    expect(resultsRegion().textContent).toContain("Variety 00");
+    expect(push).toHaveBeenCalledTimes(3);
+    expect(push.mock.calls[2]?.[2]).toBe("/seller/test-farm");
+    // The row is gone: focus lands on the shop H2.
+    expect(document.activeElement).toBe(shopHeading());
+  });
+});
+
+describe("hydrated applied row (removers + Clear All scope, Ada Ruling 7)", () => {
+  it("a remover that leaves the row hands focus to Clear All", () => {
+    renderShop(makeInitial(bigShop(), { season: "cool", color_family: "pink,blue" }));
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    fireEvent.click(screen.getByRole("button", { name: "Remove the Hue filter, Pink" }));
+    expect(countLine().textContent).toBe("10 listings, in stock first.");
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Clear all filters" }));
+    // Pink's remover is gone; Blue's and Season's survive.
+    expect(screen.queryByRole("button", { name: "Remove the Hue filter, Pink" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Remove the Hue filter, Blue" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Remove the Season filter, Cool Season Hardy Annuals" })).toBeTruthy();
+  });
+
+  it("a remover that empties the row hands focus to the shop H2", () => {
+    const push = pushSpyOn();
+    renderShop(makeInitial(bigShop(), { season: "cool" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove the Season filter, Cool Season Hardy Annuals" }));
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    expect(push.mock.calls[0]?.[2]).toBe("/seller/test-farm");
+    expect(screen.queryByRole("group", { name: "Applied filters" })).toBeNull();
+    expect(document.activeElement).toBe(shopHeading());
+  });
+
+  it("Clear All clears filters AND query — never sort", () => {
+    const push = pushSpyOn();
+    renderShop(makeInitial(bigShop(), { season: "cool", q: "cosmos", sort: "recent" }));
+    fireEvent.click(screen.getByRole("button", { name: "Clear search and filters" }));
+    expect(countLine().textContent).toBe("30 listings, most recently checked first. · page 1 of 2");
+    expect(push.mock.calls[0]?.[2]).toBe("/seller/test-farm?sort=recent");
+    // The sort group returns with its prior selection intact; the field re-syncs empty.
+    expect(sortChip("Recently checked").getAttribute("aria-pressed")).toBe("true");
+    expect(searchField().value).toBe("");
+    expect(document.activeElement).toBe(shopHeading());
+  });
+});
+
+describe("hydrated sort (in place, page reset, phrase follows)", () => {
+  it("sort tap commits in place from page 2: rows swap, page resets, one entry", () => {
+    const full = bigShop();
+    const push = pushSpyOn();
+    window.history.replaceState({}, "", `${BASE}?page=2`);
+    renderShop(makeInitial(full, {}, 2));
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 2 of 2");
+    expect(resultsRegion().textContent).toContain("Variety 26");
+    fireEvent.click(sortChip("Name A–Z"));
+    expect(countLine().textContent).toBe("30 listings, A–Z. · page 1 of 2");
+    expect(resultsRegion().textContent).toContain("Variety 00");
+    expect(sortChip("Name A–Z").getAttribute("aria-pressed")).toBe("true");
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push.mock.calls[0]?.[2]).toBe("/seller/test-farm?sort=name");
+    expect(window.location.search).toBe("?sort=name");
+    expect(fetchCalls()).toHaveLength(0);
+  });
+});
+
+describe("hydrated search (replace while typing, push on the deliberate act)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("typing narrows in place from 2 characters: replace, no push, focus stays, sort group leaves", async () => {
+    const full = bigShop();
+    const push = pushSpyOn();
+    const replace = replaceSpyOn();
+    renderShop(makeInitial(full));
+    const field = searchField();
+    field.focus();
+    fireEvent.change(field, { target: { value: "cosmos" } });
+    // Before the debounce settles: nothing committed, no entry.
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    expect(push).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
+    await settle();
+    expect(countLine().textContent).toBe("10 matches for “cosmos”, best match first.");
+    expect(resultsRegion().textContent).toContain("Variety 02");
+    expect(resultsRegion().textContent).not.toContain("Variety 00");
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(replace.mock.calls[0]?.[2]).toBe("/seller/test-farm?q=cosmos");
+    expect(push).not.toHaveBeenCalled();
+    expect(window.location.search).toBe("?q=cosmos");
+    expect(document.activeElement).toBe(field);
+    expect(fetchCalls()).toHaveLength(0);
+    // The sort group is absent while the query is active; the row carries the search remover.
+    expect(screen.queryByRole("group", { name: "Sort" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Clear the search for cosmos" })).toBeTruthy();
+  });
+
+  it("a single character is inert: no narrowing, no entry", async () => {
+    const push = pushSpyOn();
+    const replace = replaceSpyOn();
+    renderShop(makeInitial(bigShop()));
+    fireEvent.change(searchField(), { target: { value: "c" } });
+    await settle();
+    expect(searchField().value).toBe("c");
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    expect(screen.queryByRole("group", { name: "Applied filters" })).toBeNull();
+    expect(push).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
+    expect(window.location.search).toBe("");
+  });
+
+  it("submit pushes the one entry for the settled query", async () => {
+    const push = pushSpyOn();
+    const replace = replaceSpyOn();
+    renderShop(makeInitial(bigShop()));
+    fireEvent.change(searchField(), { target: { value: "cosmos" } });
+    await settle();
+    expect(window.location.search).toBe("?q=cosmos");
+    expect(push).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+    await act(async () => {});
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push.mock.calls[0]?.[2]).toBe("/seller/test-farm?q=cosmos");
+    expect(replace).toHaveBeenCalledTimes(1); // the earlier settle only
+    expect(countLine().textContent).toBe("10 matches for “cosmos”, best match first.");
+  });
+
+  it("blur with a changed query pushes once (no per-keystroke trail)", async () => {
+    const push = pushSpyOn();
+    const replace = replaceSpyOn();
+    renderShop(makeInitial(bigShop()));
+    // Type without letting the debounce settle, then blur: the deliberate act commits.
+    fireEvent.change(searchField(), { target: { value: "cosmos" } });
+    fireEvent.blur(searchField());
+    await act(async () => {});
+    await settle();
+    expect(countLine().textContent).toBe("10 matches for “cosmos”, best match first.");
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push.mock.calls[0]?.[2]).toBe("/seller/test-farm?q=cosmos");
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  it("Back from a searched shop returns to the pre-search view in one step", async () => {
+    const push = pushSpyOn();
+    renderShop(makeInitial(bigShop()));
+    fireEvent.change(searchField(), { target: { value: "cosmos" } });
+    await settle();
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+    await act(async () => {});
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(countLine().textContent).toBe("10 matches for “cosmos”, best match first.");
+    // Back over the single search entry: the pre-search view, field re-synced, sort back.
+    window.history.replaceState({}, "", BASE);
+    fireEvent(window, new window.PopStateEvent("popstate"));
+    await act(async () => {});
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    expect(searchField().value).toBe("");
+    expect(sortChip("In stock first").getAttribute("aria-pressed")).toBe("true");
+    expect(push).toHaveBeenCalledTimes(1);
+  });
+
+  it("clearing via the search remover pushes its one entry and lands focus on the H2", async () => {
+    const push = pushSpyOn();
+    renderShop(makeInitial(bigShop()));
+    fireEvent.change(searchField(), { target: { value: "cosmos" } });
+    await settle();
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+    await act(async () => {});
+    expect(push).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button", { name: "Clear the search for cosmos" }));
+    expect(countLine().textContent).toBe("30 listings, in stock first. · page 1 of 2");
+    expect(searchField().value).toBe("");
+    expect(push).toHaveBeenCalledTimes(2);
+    expect(push.mock.calls[1]?.[2]).toBe("/seller/test-farm");
+    expect(document.activeElement).toBe(shopHeading());
   });
 });

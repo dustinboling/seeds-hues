@@ -460,6 +460,9 @@ describe("one canonical zero-seller sentence (Batch 0.2)", () => {
       shipsTo: ["US"],
       isSiteOwner: false,
       listings: [],
+      customerServicePhone: null,
+      customerServiceEmail: null,
+      locations: [],
     };
     const h = renderToStaticMarkup(
       (await SellerPage({ params: Promise.resolve({ slug: "hollyhock-test-farm" }), searchParams: Promise.resolve({}) })) as ReactElement,

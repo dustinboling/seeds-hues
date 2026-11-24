@@ -468,7 +468,9 @@ describe("control routes (already true-404; proof only — this change must not 
     const last = totalPages(L_LISTINGS);
     const h = await renderSellerDetail("hollyhock-test-farm", { page: String(last) });
     expect(h).toContain(`page ${last} of ${last}`);
-    expect(h).toContain(`Test Variety ${L_LISTINGS}`);
+    // The shop's grouped resting order (all in_stock → pure A–Z): "Test Variety 9" sorts
+    // after every two-digit name, so it is the last of the 49, alone on page 3.
+    expect(h).toContain("Test Variety 9");
     const slug = { slug: "hollyhock-test-farm" };
     await expect(
       SellerPage({ params: Promise.resolve(slug), searchParams: Promise.resolve({ page: String(last + 1) }) }),
