@@ -9,14 +9,34 @@
  */
 import type {
   ApiAvailability,
+  ApiContentLevel,
   ApiCoverageItem,
   ApiCrop,
   ApiEnvelope,
+  ApiMatchMethod,
+  ApiMedia,
+  ApiOgSeller,
+  ApiPacketSize,
+  ApiPlantGuidance,
+  ApiPlantRef,
+  ApiPollination,
+  ApiProtection,
+  ApiProvenance,
+  ApiPublicListing,
+  ApiRating,
   ApiRecentItem,
   ApiSellerItem,
+  ApiSellerRef,
+  ApiVarietyDetail,
+  ApiVarietyFacts,
+  ApiVarietyListItem,
+  ApiVarietyRef,
+  ApiVarietyStatus,
   CatalogCounts,
   OpenApiDoc,
   SyncSnapshotData,
+  ApiSeasonClass,
+  ApiSowingMethod,
 } from "./types";
 
 export class ApiRequestError extends Error {
@@ -159,9 +179,307 @@ function parseSellerItem(row: unknown): ApiSellerItem {
   };
 }
 
+// --- Variety detail (Slice 3): the same JSON GET /api/v1/varieties/[slug]
+// and GET /api/v1/varieties serve (v2's VarietyDetail / VarietyListItem). ---
+
+const DATEISH = /^\d{4}-\d{2}-\d{2}/;
+const HEX = /^#[0-9A-Fa-f]{6}$/;
+const HTTP_URL = /^https?:\/\//;
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const POLLINATION: ReadonlySet<string> = new Set(["open_pollinated", "f1_hybrid", "unknown"]);
+const PROTECTION: ReadonlySet<string> = new Set(["pvp_us", "utility_patent_us", "pbr", "none_stated", "unknown"]);
+const CONTENT_LEVELS: ReadonlySet<string> = new Set(["thin", "factual"]);
+const MATCH_METHODS: ReadonlySet<string> = new Set(["exact", "synonym", "model", "human"]);
+const SEASON_CLASSES: ReadonlySet<string> = new Set(["cool_season_hardy_annual", "warm_season_tender_annual"]);
+const SOWING_METHODS: ReadonlySet<string> = new Set(["direct_sow", "transplant"]);
+
+function reqEnum<T extends string>(row: Record<string, unknown>, key: string, what: string, allowed: ReadonlySet<string>): T {
+  const value = reqString(row, key, what);
+  if (!allowed.has(value)) throw new ApiShapeError(`${what}: ${key} has unknown value ${JSON.stringify(value)}`);
+  return value as T;
+}
+
+function optEnum<T extends string>(
+  row: Record<string, unknown>,
+  key: string,
+  what: string,
+  allowed: ReadonlySet<string>,
+): T | null {
+  const value = row[key];
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string" || !allowed.has(value)) {
+    throw new ApiShapeError(`${what}: ${key} has unknown value ${JSON.stringify(value)}`);
+  }
+  return value as T;
+}
+
+function reqDateish(row: Record<string, unknown>, key: string, what: string): string {
+  const value = reqString(row, key, what);
+  if (!DATEISH.test(value)) throw new ApiShapeError(`${what}: ${key} must be an ISO date or timestamp`);
+  return value;
+}
+
+function optDateish(row: Record<string, unknown>, key: string, what: string): string | null {
+  const value = optString(row, key, what);
+  if (value !== null && !DATEISH.test(value)) throw new ApiShapeError(`${what}: ${key} must be an ISO date or timestamp`);
+  return value;
+}
+
+function reqHttpUrl(row: Record<string, unknown>, key: string, what: string): string {
+  const value = reqString(row, key, what);
+  if (!HTTP_URL.test(value)) throw new ApiShapeError(`${what}: ${key} must be an http(s) URL`);
+  return value;
+}
+
+function optHttpUrl(row: Record<string, unknown>, key: string, what: string): string | null {
+  const value = optString(row, key, what);
+  if (value !== null && !HTTP_URL.test(value)) throw new ApiShapeError(`${what}: ${key} must be an http(s) URL`);
+  return value;
+}
+
+function reqPositiveInt(row: Record<string, unknown>, key: string, what: string): number {
+  const value = reqNumber(row, key, what);
+  if (!Number.isInteger(value) || value <= 0) throw new ApiShapeError(`${what}: ${key} must be a positive integer`);
+  return value;
+}
+
+function optInt(row: Record<string, unknown>, key: string, what: string): number | null {
+  const value = optNumber(row, key, what);
+  if (value !== null && !Number.isInteger(value)) throw new ApiShapeError(`${what}: ${key} must be an integer or null`);
+  return value;
+}
+
+function parseMedia(row: unknown): ApiMedia {
+  if (!isRecord(row)) throw new ApiShapeError("media: row must be an object");
+  const thumb = row.thumbUrl;
+  if (thumb !== undefined && typeof thumb !== "string") throw new ApiShapeError("media: thumbUrl must be a string");
+  return {
+    url: reqString(row, "url", "media"),
+    licence: reqString(row, "licence", "media"),
+    credit: reqString(row, "credit", "media"),
+    ...(thumb !== undefined ? { thumbUrl: thumb } : {}),
+  };
+}
+
+function parsePacketSize(row: unknown): ApiPacketSize {
+  if (!isRecord(row)) throw new ApiShapeError("packet: row must be an object");
+  return { label: reqString(row, "label", "packet"), seedCount: optInt(row, "seedCount", "packet") };
+}
+
+function parseSellerRef(row: unknown): ApiSellerRef {
+  if (!isRecord(row)) throw new ApiShapeError("seller ref: row must be an object");
+  return {
+    slug: reqString(row, "slug", "seller ref"),
+    name: reqString(row, "name", "seller ref"),
+    location: optString(row, "location", "seller ref"),
+    region: optString(row, "region", "seller ref"),
+    country: reqString(row, "country", "seller ref"),
+    isSmallFarm: reqBoolean(row, "isSmallFarm", "seller ref"),
+  };
+}
+
+function parsePlantRef(row: unknown): ApiPlantRef {
+  if (!isRecord(row)) throw new ApiShapeError("plant: row must be an object");
+  const methods = reqArray(row, "sowing_methods", "plant");
+  for (const method of methods) {
+    if (typeof method !== "string" || !SOWING_METHODS.has(method)) {
+      throw new ApiShapeError(`plant: unknown sowing method ${JSON.stringify(method)}`);
+    }
+  }
+  return {
+    slug: reqString(row, "slug", "plant"),
+    commonName: reqString(row, "commonName", "plant"),
+    latinName: optString(row, "latinName", "plant"),
+    lifeCycle: optString(row, "lifeCycle", "plant"),
+    season_class: optEnum<ApiSeasonClass>(row, "season_class", "plant", SEASON_CLASSES),
+    season_source_label: optString(row, "season_source_label", "plant"),
+    sowing_methods: methods as ApiSowingMethod[],
+    sowing_method_source_label: optString(row, "sowing_method_source_label", "plant"),
+  };
+}
+
+function parseVarietyRef(row: unknown): ApiVarietyRef {
+  if (!isRecord(row)) throw new ApiShapeError("variety ref: row must be an object");
+  const swatch = optString(row, "colorSwatch", "variety ref");
+  if (swatch !== null && !HEX.test(swatch)) throw new ApiShapeError("variety ref: colorSwatch must be a hex color");
+  return {
+    slug: reqString(row, "slug", "variety ref"),
+    varietyName: reqString(row, "varietyName", "variety ref"),
+    plant: parsePlantRef(reqRecord(row, "plant", "variety ref")),
+    colorSwatch: swatch,
+    colorFamily: reqString(row, "colorFamily", "variety ref"),
+    media: reqArray(row, "media", "variety ref").map(parseMedia),
+    cropMedia: reqArray(row, "cropMedia", "variety ref").map(parseMedia),
+  };
+}
+
+function parseProvenance(row: unknown): ApiProvenance {
+  if (!isRecord(row)) throw new ApiShapeError("provenance: row must be an object");
+  const confidence = reqNumber(row, "confidence", "provenance");
+  if (confidence < 0 || confidence > 1) throw new ApiShapeError("provenance: confidence must be 0–1");
+  return {
+    source_url: optHttpUrl(row, "source_url", "provenance"),
+    retrieved_at: optDateish(row, "retrieved_at", "provenance"),
+    method: reqEnum<ApiMatchMethod>(row, "method", "provenance", MATCH_METHODS),
+    confidence,
+  };
+}
+
+function parseRating(row: unknown): ApiRating {
+  if (!isRecord(row)) throw new ApiShapeError("rating: row must be an object");
+  const state = reqString(row, "state", "rating");
+  if (state !== "not_yet_rated" && state !== "rated") throw new ApiShapeError(`rating: unknown state ${state}`);
+  return { state, average: optNumber(row, "average", "rating"), review_count: reqNumber(row, "review_count", "rating") };
+}
+
+function parsePublicListing(row: unknown): ApiPublicListing {
+  if (!isRecord(row)) throw new ApiShapeError("listing: row must be an object");
+  if (row.status !== "published") throw new ApiShapeError("listing: status must be published");
+  return {
+    id: reqPositiveInt(row, "id", "listing"),
+    variety: parseVarietyRef(reqRecord(row, "variety", "listing")),
+    seller: parseSellerRef(reqRecord(row, "seller", "listing")),
+    availability: parseAvailability(row.availability),
+    lastCheckedAt: optDateish(row, "lastCheckedAt", "listing"),
+    firstSeenAt: optDateish(row, "firstSeenAt", "listing"),
+    goUrl: reqHttpUrl(row, "goUrl", "listing"),
+    productUrl: optHttpUrl(row, "productUrl", "listing"),
+    notes: optString(row, "notes", "listing"),
+    status: "published",
+    packetSizes: reqArray(row, "packetSizes", "listing").map(parsePacketSize),
+    provenance: parseProvenance(reqRecord(row, "provenance", "listing")),
+    sourceLabel: optString(row, "sourceLabel", "listing"),
+  };
+}
+
+function parseCategoryRef(row: unknown, what: string): { slug: string; name: string } {
+  if (!isRecord(row)) throw new ApiShapeError(`${what}: row must be an object`);
+  return { slug: reqString(row, "slug", what), name: reqString(row, "name", what) };
+}
+
+function parseRange(row: unknown, what: string): { min: number | null; max: number | null } {
+  if (!isRecord(row)) throw new ApiShapeError(`${what}: row must be an object`);
+  return { min: optInt(row, "min", what), max: optInt(row, "max", what) };
+}
+
+function parseVarietyFacts(row: unknown): ApiVarietyFacts {
+  if (!isRecord(row)) throw new ApiShapeError("facts: row must be an object");
+  return {
+    color_family: reqString(row, "color_family", "facts"),
+    pollination: reqEnum<ApiPollination>(row, "pollination", "facts", POLLINATION),
+    height_cm: parseRange(row.height_cm, "facts height"),
+    days_to_bloom: parseRange(row.days_to_bloom, "facts bloom"),
+  };
+}
+
+function parsePlantGuidance(row: unknown): ApiPlantGuidance {
+  if (!isRecord(row)) throw new ApiShapeError("plant: row must be an object");
+  return {
+    ...parsePlantRef(row),
+    description: optString(row, "description", "plant"),
+    sowingNotes: optString(row, "sowingNotes", "plant"),
+  };
+}
+
+/** The summary fields shared by VarietyDetail and VarietyListItem. */
+function parseVarietySummary(row: Record<string, unknown>, what: string) {
+  const swatch = optString(row, "colorSwatch", what);
+  if (swatch !== null && !HEX.test(swatch)) throw new ApiShapeError(`${what}: colorSwatch must be a hex color`);
+  const series = row.series;
+  if (series !== null && !isRecord(series)) throw new ApiShapeError(`${what}: series must be an object or null`);
+  const subcategory = row.subcategory;
+  if (subcategory !== null && !isRecord(subcategory)) throw new ApiShapeError(`${what}: subcategory must be an object or null`);
+  return {
+    slug: reqString(row, "slug", what),
+    varietyName: reqString(row, "varietyName", what),
+    category: parseCategoryRef(row.category, `${what} category`),
+    subcategory: subcategory ? parseCategoryRef(subcategory, `${what} subcategory`) : null,
+    series: series ? { slug: reqString(series, "slug", `${what} series`), name: reqString(series, "name", `${what} series`) } : null,
+    colorSwatch: swatch,
+    colorFamily: reqString(row, "colorFamily", what),
+    listingCount: reqNumber(row, "listingCount", what),
+    sellerCount: reqNumber(row, "sellerCount", what),
+    inStockCount: reqNumber(row, "inStockCount", what),
+    lastCheckedAt: optDateish(row, "lastCheckedAt", what),
+    indexable: reqBoolean(row, "indexable", what),
+    rating: parseRating(reqRecord(row, "rating", what)),
+  };
+}
+
+function parseVarietyDetail(row: unknown): ApiVarietyDetail {
+  if (!isRecord(row)) throw new ApiShapeError("variety detail: row must be an object");
+  const tags = reqArray(row, "tags", "variety detail");
+  const aliases = reqArray(row, "aliases", "variety detail");
+  for (const tag of tags) {
+    if (typeof tag !== "string") throw new ApiShapeError("variety detail: tags must be strings");
+  }
+  for (const alias of aliases) {
+    if (typeof alias !== "string") throw new ApiShapeError("variety detail: aliases must be strings");
+  }
+  return {
+    ...parseVarietySummary(row, "variety detail"),
+    plant: parsePlantGuidance(reqRecord(row, "plant", "variety detail")),
+    description: optString(row, "description", "variety detail"),
+    templateDescription: reqString(row, "templateDescription", "variety detail"),
+    answer: reqString(row, "answer", "variety detail"),
+    sowingNotes: optString(row, "sowingNotes", "variety detail"),
+    heightCm: optInt(row, "heightCm", "variety detail"),
+    facts: parseVarietyFacts(reqRecord(row, "facts", "variety detail")),
+    tags: tags as string[],
+    aliases: aliases as string[],
+    protection: reqEnum<ApiProtection>(row, "protection", "variety detail", PROTECTION),
+    protectionNote: optString(row, "protectionNote", "variety detail"),
+    contentLevel: reqEnum<ApiContentLevel>(row, "contentLevel", "variety detail", CONTENT_LEVELS),
+    updatedAt: reqDateish(row, "updatedAt", "variety detail"),
+    listings: reqArray(row, "listings", "variety detail").map(parsePublicListing),
+    media: reqArray(row, "media", "variety detail").map(parseMedia),
+  };
+}
+
+function parseVarietyListItem(row: unknown): ApiVarietyListItem {
+  if (!isRecord(row)) throw new ApiShapeError("variety list item: row must be an object");
+  return {
+    ...parseVarietySummary(row, "variety list item"),
+    plant: parsePlantRef(reqRecord(row, "plant", "variety list item")),
+    media: reqArray(row, "media", "variety list item").map(parseMedia),
+    cropMedia: reqArray(row, "cropMedia", "variety list item").map(parseMedia),
+  };
+}
+
+function parseOgSeller(row: unknown): ApiOgSeller {
+  if (!isRecord(row)) throw new ApiShapeError("og seller: row must be an object");
+  return {
+    slug: reqString(row, "slug", "og seller"),
+    name: reqString(row, "name", "og seller"),
+    location: optString(row, "location", "og seller"),
+    varietyCount: reqNumber(row, "varietyCount", "og seller"),
+  };
+}
+
+function parseVarietyStatus(row: unknown): ApiVarietyStatus {
+  if (!isRecord(row)) throw new ApiShapeError("variety status: row must be an object");
+  const status = reqString(row, "status", "variety status");
+  if (status !== "active" && status !== "merged" && status !== "unknown") {
+    throw new ApiShapeError(`variety status: unknown status ${JSON.stringify(status)}`);
+  }
+  const mergedInto = optString(row, "merged_into", "variety status");
+  if (status === "merged") {
+    // A merge with no valid target must fail loudly (500): redirecting
+    // nowhere — or to an unvalidated string — would corrupt the redirect map.
+    if (!mergedInto || !SLUG_PATTERN.test(mergedInto)) throw new ApiShapeError("variety status: merged_into must be a slug");
+    return { status, merged_into: mergedInto };
+  }
+  return { status, merged_into: null };
+}
+
 export interface CatalogApiOptions {
   /** Base URL of the API, e.g. https://seeds.hues.flowers/api/v1 (no trailing slash). */
   baseUrl: string;
+  /**
+   * Origin of the app's internal reads (the /api/internal/* mount).
+   * Default: baseUrl with its trailing /api/v1 stripped (same deployment).
+   */
+  internalBaseUrl?: string;
   fetchImpl?: FetchImpl;
   /** Base delay between paged/detail requests (ms). Default 350. */
   paceMs?: number;
@@ -179,6 +497,7 @@ const DEFAULT_MAX_RETRIES = 5;
  */
 export function createCatalogApi(options: CatalogApiOptions) {
   const baseUrl = options.baseUrl.replace(/\/+$/, "");
+  const internalBase = (options.internalBaseUrl ?? baseUrl.replace(/\/api\/v1$/, "")).replace(/\/+$/, "");
   const fetchImpl = options.fetchImpl ?? fetch;
   const paceMs = options.paceMs ?? DEFAULT_PACE_MS;
   const maxRetries = options.maxRetries ?? DEFAULT_MAX_RETRIES;
@@ -322,6 +641,70 @@ export function createCatalogApi(options: CatalogApiOptions) {
         getSnapshot(),
       ]);
       return { varieties, plants, sellers, listings: snap.listings.length };
+    },
+    /**
+     * One variety with its listings, media, facts, and prose (GET
+     * /api/v1/varieties/[slug]) — the variety page's one read. Unknown or
+     * merged slugs 404 at the API and resolve null here (merged slugs
+     * redirect via mergedVarietyTarget, below).
+     */
+    async getVarietyDetail(slug: string): Promise<ApiVarietyDetail | null> {
+      try {
+        const res = await getRaw(`/varieties/${slug}`);
+        const json = await res.json();
+        if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError(`/varieties/${slug}: detail must be an object`);
+        return parseVarietyDetail(json.data);
+      } catch (error) {
+        if (error instanceof ApiRequestError && error.status === 404) return null;
+        throw error;
+      }
+    },
+    /**
+     * Every variety of the given crops (the sibling-strip source). The public
+     * API has no availability sort (v2 keeps that vocabulary service-side),
+     * so this walks the whole filtered set and the loader applies v2's
+     * availability comparator read-side.
+     */
+    async listVarietyListItems(opts: { plant: string[] }): Promise<{ items: ApiVarietyListItem[]; total: number }> {
+      return walkList("/varieties", { limit: "100", plant: opts.plant.join(",") }, parseVarietyListItem);
+    },
+    /**
+     * The merged-variety lookup (GET /api/internal/variety-status/[slug]):
+     * the survivor's slug for a merged slug, null otherwise. Non-200s throw
+     * (fail closed, like v2's page): a silent null would 404 a merged slug
+     * instead of redirecting it.
+     */
+    async mergedVarietyTarget(slug: string): Promise<string | null> {
+      const res = await fetchImpl(`${internalBase}/api/internal/variety-status/${slug}`, {
+        headers: { "User-Agent": userAgent },
+      });
+      if (!res.ok) throw new ApiRequestError(`GET /api/internal/variety-status/${slug} -> HTTP ${res.status}`, res.status);
+      const status = parseVarietyStatus((await res.json()) as unknown);
+      return status.status === "merged" ? status.merged_into : null;
+    },
+    /** The seller fields the OG card reads (subset of GET /sellers/[slug]). */
+    async ogSeller(slug: string): Promise<ApiOgSeller | null> {
+      try {
+        const res = await getRaw(`/sellers/${slug}`);
+        const json = await res.json();
+        if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError(`/sellers/${slug}: detail must be an object`);
+        return parseOgSeller(json.data);
+      } catch (error) {
+        if (error instanceof ApiRequestError && error.status === 404) return null;
+        throw error;
+      }
+    },
+    /** The crop fields the OG card reads (GET /crops/[slug], the list shape). */
+    async ogCrop(slug: string): Promise<ApiCrop | null> {
+      try {
+        const res = await getRaw(`/crops/${slug}`);
+        const json = await res.json();
+        if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError(`/crops/${slug}: detail must be an object`);
+        return parseCrop(json.data);
+      } catch (error) {
+        if (error instanceof ApiRequestError && error.status === 404) return null;
+        throw error;
+      }
     },
     /** A variety's updatedAt (lastmod refresh — the list endpoint carries no date). */
     async varietyUpdatedAt(slug: string): Promise<string> {

@@ -109,6 +109,206 @@ export interface LastmodCache {
   series: Record<string, LastmodEntry>;
 }
 
+/**
+ * Variety-detail shapes (Slice 3). The same JSON the live API serves:
+ * GET /api/v1/varieties/[slug] returns the full VarietyDetail (listings
+ * included — the detail endpoint is the variety page's one read), and
+ * GET /api/v1/varieties returns pages of VarietyListItem. Field names follow
+ * the API (camelCase entity fields; snake_case on facts/provenance/rating —
+ * v2's documented casing split). Runtime guards in api.ts. No price field
+ * exists anywhere: prices are stored, never shown (R1).
+ */
+
+/** One packet size: label and seed count only. */
+export interface ApiPacketSize {
+  label: string;
+  seedCount: number | null;
+}
+
+/** A seller as carried on a listing (badge flag included). */
+export interface ApiSellerRef {
+  slug: string;
+  name: string;
+  location: string | null;
+  region: string | null;
+  country: string;
+  /** The seller carries the "Small farm" badge. */
+  isSmallFarm: boolean;
+}
+
+/** One own-work illustration (media table row). */
+export interface ApiMedia {
+  url: string;
+  licence: string;
+  credit: string;
+  /** Deprecated, no longer populated; kept optional for compatibility. */
+  thumbUrl?: string;
+}
+
+export type ApiSeasonClass = "cool_season_hardy_annual" | "warm_season_tender_annual";
+export type ApiSowingMethod = "direct_sow" | "transplant";
+export type ApiPollination = "open_pollinated" | "f1_hybrid" | "unknown";
+export type ApiProtection = "pvp_us" | "utility_patent_us" | "pbr" | "none_stated" | "unknown";
+export type ApiContentLevel = "thin" | "factual";
+export type ApiMatchMethod = "exact" | "synonym" | "model" | "human";
+
+/** A crop as carried on variety payloads. */
+export interface ApiPlantRef {
+  slug: string;
+  commonName: string;
+  latinName: string | null;
+  lifeCycle: string | null;
+  season_class: ApiSeasonClass | null;
+  season_source_label: string | null;
+  sowing_methods: ApiSowingMethod[];
+  sowing_method_source_label: string | null;
+}
+
+/** A crop with its guidance prose (the variety-detail form). */
+export interface ApiPlantGuidance extends ApiPlantRef {
+  description: string | null;
+  sowingNotes: string | null;
+}
+
+/** "Not yet rated" is a stored state; the average is null until rated. */
+export interface ApiRating {
+  state: "not_yet_rated" | "rated";
+  average: number | null;
+  review_count: number;
+}
+
+/** Every listing carries its provenance. */
+export interface ApiProvenance {
+  source_url: string | null;
+  /** = listing.last_checked_at */
+  retrieved_at: string | null;
+  method: ApiMatchMethod;
+  confidence: number;
+}
+
+/** A variety as carried on a listing. */
+export interface ApiVarietyRef {
+  slug: string;
+  varietyName: string;
+  plant: ApiPlantRef;
+  colorSwatch: string | null;
+  colorFamily: string;
+  /** The variety's own plates, media-id order; [] when none, never omitted. */
+  media: ApiMedia[];
+  /** Its crop's plates; [] when none, never omitted. */
+  cropMedia: ApiMedia[];
+}
+
+/** The ONE public listing shape — variety pages, seller pages, listings endpoints. */
+export interface ApiPublicListing {
+  id: number;
+  variety: ApiVarietyRef;
+  seller: ApiSellerRef;
+  availability: ApiAvailability;
+  lastCheckedAt: string | null;
+  firstSeenAt: string | null;
+  /** Outbound click route: logs the click and 302s to the farm's page. */
+  goUrl: string;
+  productUrl: string | null;
+  notes: string | null;
+  status: "published";
+  packetSizes: ApiPacketSize[];
+  provenance: ApiProvenance;
+  sourceLabel: string | null;
+}
+
+export interface ApiCategoryRef {
+  slug: string;
+  name: string;
+}
+
+export interface ApiSeriesRef {
+  slug: string;
+  name: string;
+}
+
+/** A variety in a list or summary: counts are live, sellers distinct. */
+export interface ApiVarietySummary {
+  slug: string;
+  varietyName: string;
+  plant: ApiPlantRef;
+  category: ApiCategoryRef;
+  subcategory: ApiCategoryRef | null;
+  series: ApiSeriesRef | null;
+  colorSwatch: string | null;
+  colorFamily: string;
+  /** Published listings from approved sellers. */
+  listingCount: number;
+  /** Distinct sellers behind listingCount. */
+  sellerCount: number;
+  inStockCount: number;
+  /** Latest last_checked_at across its listings; null with no listings. */
+  lastCheckedAt: string | null;
+  indexable: boolean;
+  rating: ApiRating;
+}
+
+/** Variety facts: unknown is explicit ("unknown" or null, never omitted). */
+export interface ApiVarietyFacts {
+  color_family: string;
+  pollination: ApiPollination;
+  height_cm: { min: number | null; max: number | null };
+  days_to_bloom: { min: number | null; max: number | null };
+}
+
+/** GET /api/v1/varieties/[slug]: the summary plus prose, facts, listings, media. */
+export interface ApiVarietyDetail extends ApiVarietySummary {
+  plant: ApiPlantGuidance;
+  description: string | null;
+  /** Deterministic text built only from sourced structured facts. */
+  templateDescription: string;
+  /** Answer sentence built only from data. */
+  answer: string;
+  sowingNotes: string | null;
+  heightCm: number | null;
+  facts: ApiVarietyFacts;
+  tags: string[];
+  aliases: string[];
+  protection: ApiProtection;
+  protectionNote: string | null;
+  contentLevel: ApiContentLevel;
+  updatedAt: string;
+  /** In-stock first, then by seller name. */
+  listings: ApiPublicListing[];
+  /** Ordered by media id; [] when the variety has none (never omitted). */
+  media: ApiMedia[];
+}
+
+/** A variety in a list (GET /api/v1/varieties item): summary plus media. */
+export interface ApiVarietyListItem extends ApiVarietySummary {
+  media: ApiMedia[];
+  cropMedia: ApiMedia[];
+}
+
+/**
+ * The merged-variety lookup (GET /api/internal/variety-status/[slug], served
+ * by the app's own Worker in production — Slice 9 mount — and by the test
+ * stub in this tree; v2's /api/internal/seller-status/[slug] is the
+ * precedent). Merged slugs name their survivor; anything else is active or
+ * unknown. Always 200: it is a lookup, not a fetch.
+ */
+export interface ApiVarietyStatus {
+  status: "active" | "merged" | "unknown";
+  merged_into: string | null;
+}
+
+/**
+ * The seller fields the OG card reads (GET /api/v1/sellers/[slug] subset —
+ * the same names as the full SellerDetail, the Slice 2 minimal-slice
+ * pattern, not a second shape).
+ */
+export interface ApiOgSeller {
+  slug: string;
+  name: string;
+  location: string | null;
+  varietyCount: number;
+}
+
 /** One OpenAPI operation parameter (GET /api/v1/openapi.json). */
 export interface OpenApiParam {
   name: string;

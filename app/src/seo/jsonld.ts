@@ -66,3 +66,16 @@ export function itemListJsonLd(name: string, items: { name: string; href: string
     })),
   };
 }
+
+/** Variety: ItemList of the sellers listing it (links to our seller pages). */
+export function varietySellersJsonLd(v: {
+  varietyName: string;
+  listings: { seller: { slug: string; name: string } }[];
+}): Json {
+  const seen = new Set<string>();
+  const sellers = v.listings.filter((l) => !seen.has(l.seller.slug) && seen.add(l.seller.slug));
+  return itemListJsonLd(
+    `Where to buy ${v.varietyName} seed`,
+    sellers.map((l) => ({ name: l.seller.name, href: `/seller/${l.seller.slug}` })),
+  );
+}

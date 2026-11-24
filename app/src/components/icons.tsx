@@ -46,3 +46,13 @@ export function MenuIcon() {
     </Base>
   );
 }
+
+/** Protection seal icon — the variety page's protection badge. The label carries the meaning. */
+export function ProtectionIcon() {
+  return (
+    <Base>
+      <path d="M12 3.2 18.6 5.6v5.2c0 4.3-2.9 7.5-6.6 9.2-3.7-1.7-6.6-4.9-6.6-9.2V5.6L12 3.2Z" />
+      <path d="m9.2 11.6 2 2 3.8-4.4" />
+    </Base>
+  );
+}
