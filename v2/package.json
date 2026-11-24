@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run verify:spa",
-    "verify:spa": "npm --prefix ../app run verify",
+    "verify:spa": "npm --prefix ../app ci && npm --prefix ../app run verify",
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:import:local": "tsx scripts/import-catalog.ts",

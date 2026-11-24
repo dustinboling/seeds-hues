@@ -28,8 +28,11 @@ describe("shell landmarks", () => {
     expect(screen.getByRole("banner")).toBeTruthy();
     expect(screen.getByRole("main")).toBeTruthy();
     expect(screen.getByRole("contentinfo")).toBeTruthy();
-    const nav = screen.getByRole("navigation", { name: "Primary" });
+    const nav = screen.getByRole("navigation");
     expect(nav.getAttribute("data-placeholder")).toBe("tab-bar-d1");
+    // The empty placeholder must not expose a labelled landmark.
+    expect(nav.getAttribute("aria-label")).toBeNull();
+    expect(nav.getAttribute("aria-labelledby")).toBeNull();
   });
 
   it("renders the header wordmark and footer disclosures", () => {
@@ -42,7 +45,7 @@ describe("shell landmarks", () => {
 
   it("carries the tab-bar placeholder as five empty slots (structure only)", () => {
     renderShell("/");
-    const nav = screen.getByRole("navigation", { name: "Primary" });
+    const nav = screen.getByRole("navigation");
     const slots = nav.querySelectorAll("li.tabbar-slot");
     expect(slots.length).toBe(5);
     for (const slot of slots) {

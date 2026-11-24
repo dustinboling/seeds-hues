@@ -20,25 +20,33 @@ const TOLERANCE = 0.06;
 const paper = refValue("seeds.paper");
 const paperDeep = sysValue("sys.color.bg-deep");
 const surface = sysValue("sys.color.surface");
+// The recorded ratios below were measured against the LIVE seeds values, so
+// the oracle pins the live refs for the five slots the adopted package theme
+// supersedes (brief §3; QUINN-GATE-spa-slice-1 F1 cure) — the oracle validates
+// the contrast math, not the landed theme. Unchanged slots resolve via sys.
+const liveMuted = refValue("seeds.muted");
+const liveLink = refValue("seeds.link");
+const liveLeaf = refValue("seeds.leaf");
+const liveWarn = refValue("seeds.warn");
 
 describe("contrast math (oracle: recorded ratios on the old ground)", () => {
   // [label, fg, bg, recorded ratio, recorded in]
   const recorded: Array<[string, string, string, number, string]> = [
     ["ink on paper", sysValue("sys.color.text"), paper, 12.68, "THEME-REPORT"],
     ["ink-soft on paper", sysValue("sys.color.text-soft"), paper, 8.6, "globals.css"],
-    ["muted on paper", sysValue("sys.color.text-muted"), paper, 5.56, "THEME-REPORT"],
-    ["muted on surface", sysValue("sys.color.text-muted"), surface, 6.15, "THEME-REPORT"],
-    ["muted on paper-deep", sysValue("sys.color.text-muted"), paperDeep, 5.0, "THEME-REPORT"],
+    ["muted on paper", liveMuted, paper, 5.56, "THEME-REPORT"],
+    ["muted on surface", liveMuted, surface, 6.15, "THEME-REPORT"],
+    ["muted on paper-deep", liveMuted, paperDeep, 5.0, "THEME-REPORT"],
     ["ink-soft on paper-deep", sysValue("sys.color.text-soft"), paperDeep, 7.71, "THEME-REPORT"],
-    ["link on paper", sysValue("sys.color.link"), paper, 7.02, "THEME-REPORT"],
-    ["link on paper-deep", sysValue("sys.color.link"), paperDeep, 6.31, "THEME-REPORT"],
-    ["leaf on paper", sysValue("sys.color.accent-strong"), paper, 9.4, "globals.css"],
-    ["white on leaf", "#ffffff", sysValue("sys.color.accent-strong"), 10.6, "THEME-REPORT"],
-    ["leaf on leaf-50", sysValue("sys.color.accent-strong"), sysValue("sys.color.accent-tint"), 8.6, "THEME-REPORT"],
+    ["link on paper", liveLink, paper, 7.02, "THEME-REPORT"],
+    ["link on paper-deep", liveLink, paperDeep, 6.31, "THEME-REPORT"],
+    ["leaf on paper", liveLeaf, paper, 9.4, "globals.css"],
+    ["white on leaf", "#ffffff", liveLeaf, 10.6, "THEME-REPORT"],
+    ["leaf on leaf-50", liveLeaf, sysValue("sys.color.accent-tint"), 8.6, "THEME-REPORT"],
     ["petal on paper", sysValue("sys.color.petal"), paper, 7.2, "globals.css"],
     ["petal on petal-50", sysValue("sys.color.petal"), sysValue("sys.color.petal-tint"), 6.8, "THEME-REPORT"],
-    ["warn on paper", sysValue("sys.color.accent-ink"), paper, 5.1, "globals.css"],
-    ["warn on warn-50", sysValue("sys.color.accent-ink"), sysValue("sys.color.accent-ink-tint"), 4.89, "THEME-REPORT"],
+    ["warn on paper", liveWarn, paper, 5.1, "globals.css"],
+    ["warn on warn-50", liveWarn, sysValue("sys.color.accent-ink-tint"), 4.89, "THEME-REPORT"],
     ["focus on paper", sysValue("sys.color.focus"), paper, 7.39, "THEME-REPORT"],
     ["white on danger", "#ffffff", sysValue("sys.color.danger"), 8.93, "globals.css"],
     // NOTE: THEME-REPORT.md records line-strong on paper as 3.17 / on surface as
@@ -56,12 +64,12 @@ describe("contrast math (oracle: recorded ratios on the old ground)", () => {
   it("reproduces the tab-bar wash composites (7.79 / 8.55)", () => {
     const wash = mixOver(paperDeep, paper, 0.92);
     expect(Math.abs(contrastRatio(sysValue("sys.color.text-soft"), wash) - 7.79)).toBeLessThanOrEqual(TOLERANCE);
-    expect(Math.abs(contrastRatio(sysValue("sys.color.accent-strong"), wash) - 8.55)).toBeLessThanOrEqual(TOLERANCE);
+    expect(Math.abs(contrastRatio(liveLeaf, wash) - 8.55)).toBeLessThanOrEqual(TOLERANCE);
   });
 
   it("reproduces the grain worst case (muted 4.81)", () => {
     const grain = mixOver("#000000", paper, 0.065);
-    expect(Math.abs(contrastRatio(sysValue("sys.color.text-muted"), grain) - 4.81)).toBeLessThanOrEqual(TOLERANCE);
+    expect(Math.abs(contrastRatio(liveMuted, grain) - 4.81)).toBeLessThanOrEqual(TOLERANCE);
   });
 });
 

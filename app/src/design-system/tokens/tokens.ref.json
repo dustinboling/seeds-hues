@@ -7,23 +7,23 @@
     },
     "seeds-link": {
       "value": "#1B5E37",
-      "note": "Brief §3: design-system default for sys.color.link. Seeds keeps its live link #1f5c3d (theme.seeds.json); recorded here as the named ref endpoint."
+      "note": "Brief §3: package value for sys.color.link, adopted in theme.seeds.json (live seeds.link #1f5c3d superseded)."
     },
     "fern": {
       "value": "#2D6A4F",
-      "note": "Brief §3: design-system default for sys.color.accent. Seeds keeps its live leaf-600 #2e6b4f; recorded here as the named ref endpoint."
+      "note": "Brief §3: package value for sys.color.accent, adopted in theme.seeds.json (live seeds.leaf-600 #2e6b4f superseded)."
     },
     "seeds-deep": {
       "value": "#1B4332",
-      "note": "Brief §3: design-system default for sys.color.accent-strong. Seeds keeps its live leaf #1e4634; recorded here as the named ref endpoint."
+      "note": "Brief §3: package value for sys.color.accent-strong, adopted in theme.seeds.json (live seeds.leaf #1e4634 superseded)."
     },
     "seeds-muted": {
       "value": "#595959",
-      "note": "Brief §3: design-system default for sys.color.text-muted. Seeds keeps its live muted #6a5f4c; recorded here as the named ref endpoint."
+      "note": "Brief §3: package value for sys.color.text-muted, adopted in theme.seeds.json (live seeds.muted #6a5f4c superseded)."
     },
     "gold-ink": {
       "value": "#86691f",
-      "note": "Brief §3: design-system default for sys.color.accent-ink. Seeds keeps its live warn #8a5e08; recorded here as the named ref endpoint."
+      "note": "Brief §3: package value for sys.color.accent-ink, adopted in theme.seeds.json (live seeds.warn #8a5e08 superseded)."
     },
     "ink-soft": {
       "value": "#71806c",

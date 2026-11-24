@@ -13,17 +13,17 @@ for the coverage rule). WCAG 2.x relative-luminance math.
 | --- | --- | --- | --- | --- |
 | ink on ground | 12.68 | 13.17 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
 | ink-soft on ground | 8.58 | 8.91 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
-| muted on ground | 5.56 | 5.78 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
-| link on ground | 7.02 | 7.30 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
-| leaf on ground | 9.42 | 9.79 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
+| muted on ground | 6.22 | 6.47 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
+| link on ground | 6.90 | 7.17 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
+| leaf on ground | 9.84 | 10.23 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
 | petal on ground | 7.17 | 7.45 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
-| warn on ground | 5.06 | 5.26 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
+| warn on ground | 4.60 | 4.78 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
 | focus on ground | 7.39 | 7.68 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
 | line-strong on ground | 3.36 | 3.49 | 3.0 (WCAG 2.2 AA UI boundary (1.4.11; Ada's floor)) | yes |
 | line on ground (decorative) | 1.30 | 1.35 | — (none — decorative hairline, never carries text) | n/a (decorative) |
 | ink-soft on tab-bar wash | 7.79 | 7.79 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
-| leaf on tab-bar wash | 8.55 | 8.56 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
-| muted on grain-darkened ground (worst case) | 4.81 | 5.01 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
+| leaf on tab-bar wash | 8.94 | 8.94 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
+| muted on grain-darkened ground (worst case) | 5.38 | 5.60 | 4.5 (WCAG 2.2 AA body text (1.4.3)) | yes |
 
 Notes:
 

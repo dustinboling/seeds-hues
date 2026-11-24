@@ -1,39 +1,39 @@
 {
-  "$comment": "Slice-1 mirror of the @hues theme.seeds.json directory theme (see SWAP.md). Every sys slot resolves to the value seeds actually renders: live values ported as-is, except sys.color.bg which takes the warmed ground per Dustin's Q3 ruling — the conversion's only deliberate color delta. The six near-miss design defaults (seeds-link, fern, seeds-deep, seeds-muted, gold-ink, ink-soft) are NOT taken; each note records why, because a silent swap to any of them would be an undeclared re-derivation of the directory's identity.",
+  "$comment": "Slice-1 mirror of the @hues package theme.seeds.json directory theme (see SWAP.md). The seven ruled sys slots below adopt the package values per brief §3 (QUINN-GATE-spa-slice-1 F1 cure); every other slot ports the live seeds value as-is pending its ruling.",
   "sys.color.bg": {
     "value": "#f8f6ec",
     "from": "design.seeds-ground",
     "note": "Q3 DELTA (Dustin 2026-11-23): warmed ground replaces live paper #f8f1e1 as the ground. PWA theme-color follows this value."
   },
   "sys.color.link": {
-    "value": "#1f5c3d",
-    "from": "seeds.link",
-    "note": "As-is. Design default design.seeds-link #1B5E37 not taken (near-miss; seeds' identity value stands)."
+    "value": "#1B5E37",
+    "from": "design.seeds-link",
+    "note": "Adopted from the @hues package theme per brief §3 (live seeds.link #1f5c3d superseded)."
   },
   "sys.color.accent": {
-    "value": "#2e6b4f",
-    "from": "seeds.leaf-600",
-    "note": "As-is. Seeds leaf-600 (hover/secondary green) occupies the accent slot; design default design.fern #2D6A4F not taken."
+    "value": "#2D6A4F",
+    "from": "design.fern",
+    "note": "Adopted from the @hues package theme per brief §3 (live seeds.leaf-600 #2e6b4f superseded)."
   },
   "sys.color.accent-strong": {
-    "value": "#1e4634",
-    "from": "seeds.leaf",
-    "note": "As-is. Seeds leaf (primary green) occupies the accent-strong slot; design default design.seeds-deep #1B4332 not taken."
+    "value": "#1B4332",
+    "from": "design.seeds-deep",
+    "note": "Adopted from the @hues package theme per brief §3 (live seeds.leaf #1e4634 superseded)."
   },
   "sys.color.text-muted": {
-    "value": "#6a5f4c",
-    "from": "seeds.muted",
-    "note": "As-is. Design default design.seeds-muted #595959 not taken (near-miss; seeds' identity value stands)."
+    "value": "#595959",
+    "from": "design.seeds-muted",
+    "note": "Adopted from the @hues package theme per brief §3 (live seeds.muted #6a5f4c superseded)."
   },
   "sys.color.accent-ink": {
-    "value": "#8a5e08",
-    "from": "seeds.warn",
-    "note": "As-is. Seeds warn (ochre text: Unknown badges, field errors) occupies the accent-ink slot by role; design default design.gold-ink #86691f not taken."
+    "value": "#86691f",
+    "from": "design.gold-ink",
+    "note": "Adopted from the @hues package theme per brief §3 (live seeds.warn #8a5e08 superseded)."
   },
   "sys.color.border-field": {
     "value": "#71806c",
     "from": "design.ink-soft",
-    "note": "Design default kept AND unreferenced: no seeds token feeds this slot in slice 1 — seeds resting field borders render sys.color.border-strong (line-strong) and filled borders sys.color.text-soft (ink-soft), both as-is. Adopting #71806c on any seeds surface would be a second color delta, so the comp layer points fields at the as-is slots instead. Flagged for Quinn/design review."
+    "note": "Adopted from the @hues package theme per brief §3; wired as the field border via comp.field.border."
   },
   "sys.color.bg-deep": { "value": "#f0e5cb", "from": "seeds.paper-deep", "provisional": true, "note": "As-is." },
   "sys.color.surface": { "value": "#fffdf6", "from": "seeds.surface", "provisional": true, "note": "As-is." },

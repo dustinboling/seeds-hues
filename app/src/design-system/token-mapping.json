@@ -1,9 +1,9 @@
 {
-  "$comment": "Seeds → @hues token mapping (slice 1, mirror path — see SWAP.md). One entry per --color-* name in v2/app/globals.css @theme. `sourceValue` is the live value (exact case); `themeValue` is what seeds renders in the new tree; `huesRef`/`huesRefValue` name the design-system ref endpoint where the brief §3 quotes one. `status: replaced` marks the single deliberate Q3 delta; everything else is `mapped` as-is. The mapping test (tests/unit/token-mapping.test.ts) fails on any unmapped name, any value drift, or any second `replaced` entry.",
+  "$comment": "Seeds → @hues token mapping (slice 1, mirror path — see SWAP.md). One entry per --color-* name in v2/app/globals.css @theme. `sourceValue` is the live value (exact case); `themeValue` is what seeds renders in the new tree; `huesRef`/`huesRefValue` name the design-system ref endpoint where the brief §3 quotes one. `status: replaced` marks the six live values superseded by the adopted @hues package theme.seeds.json values per brief §3; everything else is `mapped` as-is. The mapping test (tests/unit/token-mapping.test.ts) fails on any unmapped name, any value drift, or any `replaced` entry outside the ruled six.",
   "source": {
     "css": "v2/app/globals.css (@theme block)",
     "report": "v2/THEME-REPORT.md (contrast pairs)",
-    "ruling": "Dustin Q3 (OPEN-QUESTIONS.md): take the warmed ground, the conversion's only deliberate color delta"
+    "ruling": "Brief §3 + Dustin Q3 (OPEN-QUESTIONS.md): the seven ruled sys slots take the @hues package theme.seeds.json values, including the warmed ground (QUINN-GATE-spa-slice-1 F1 cure)"
   },
   "entries": [
     {
@@ -59,18 +59,18 @@
       "huesRef": null,
       "huesRefValue": null,
       "themeValue": "#4a4438",
-      "note": "As-is. Seeds' ink-soft is body text (#4a4438) — distinct from the design-system ref ink-soft (#71806c, sys.color.border-field default), which seeds does not consume in slice 1."
+      "note": "As-is. Seeds' ink-soft is body text (#4a4438) — distinct from the design-system ref ink-soft (#71806c), which seeds consumes as the field border (sys.color.border-field)."
     },
     {
       "seeds": "muted",
       "sourceValue": "#6a5f4c",
-      "status": "mapped",
+      "status": "replaced",
       "layer": "sys",
       "hues": "sys.color.text-muted",
       "huesRef": "design.seeds-muted",
       "huesRefValue": "#595959",
-      "themeValue": "#6a5f4c",
-      "note": "As-is. Design default #595959 not taken (near-miss); seeds' identity value stands."
+      "themeValue": "#595959",
+      "note": "Replaced: live muted is superseded by the adopted package value per brief §3."
     },
     {
       "seeds": "line",
@@ -97,24 +97,24 @@
     {
       "seeds": "leaf",
       "sourceValue": "#1e4634",
-      "status": "mapped",
+      "status": "replaced",
       "layer": "sys",
       "hues": "sys.color.accent-strong",
       "huesRef": "design.seeds-deep",
       "huesRefValue": "#1B4332",
-      "themeValue": "#1e4634",
-      "note": "As-is. Seeds leaf (primary green) occupies accent-strong; design default #1B4332 not taken."
+      "themeValue": "#1B4332",
+      "note": "Replaced: live leaf is superseded by the adopted package value per brief §3."
     },
     {
       "seeds": "leaf-600",
       "sourceValue": "#2e6b4f",
-      "status": "mapped",
+      "status": "replaced",
       "layer": "sys",
       "hues": "sys.color.accent",
       "huesRef": "design.fern",
       "huesRefValue": "#2D6A4F",
-      "themeValue": "#2e6b4f",
-      "note": "As-is. Seeds leaf-600 (hover/secondary green) occupies accent; design default #2D6A4F not taken."
+      "themeValue": "#2D6A4F",
+      "note": "Replaced: live leaf-600 is superseded by the adopted package value per brief §3."
     },
     {
       "seeds": "leaf-50",
@@ -130,13 +130,13 @@
     {
       "seeds": "link",
       "sourceValue": "#1f5c3d",
-      "status": "mapped",
+      "status": "replaced",
       "layer": "sys",
       "hues": "sys.color.link",
       "huesRef": "design.seeds-link",
       "huesRefValue": "#1B5E37",
-      "themeValue": "#1f5c3d",
-      "note": "As-is. Design default #1B5E37 not taken (near-miss); seeds' identity value stands."
+      "themeValue": "#1B5E37",
+      "note": "Replaced: live link is superseded by the adopted package value per brief §3."
     },
     {
       "seeds": "petal",
@@ -163,13 +163,13 @@
     {
       "seeds": "warn",
       "sourceValue": "#8a5e08",
-      "status": "mapped",
+      "status": "replaced",
       "layer": "sys",
       "hues": "sys.color.accent-ink",
       "huesRef": "design.gold-ink",
       "huesRefValue": "#86691f",
-      "themeValue": "#8a5e08",
-      "note": "As-is. Seeds warn (ochre text) occupies accent-ink by role; design default #86691f not taken."
+      "themeValue": "#86691f",
+      "note": "Replaced: live warn is superseded by the adopted package value per brief §3."
     },
     {
       "seeds": "warn-50",
