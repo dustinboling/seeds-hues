@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import "../src/design-system/tokens.css";
 import "../src/design-system/fonts.css";
 import "../src/shell.css";
+import "../src/templates.css";
 import { SiteFooter } from "../src/components/SiteFooter";
 import { SiteHeader } from "../src/components/SiteHeader";
 import { RouteAnnouncer } from "../src/components/RouteAnnouncer";

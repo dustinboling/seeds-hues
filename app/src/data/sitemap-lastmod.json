@@ -1,0 +1,3613 @@
+{
+  "generated_at": "2026-11-24T14:10:45.459Z",
+  "catalog_seq": 4748,
+  "varieties": {
+    "stock-katz-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1453
+    },
+    "snapdragon-rocket-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1454
+    },
+    "snapdragon-madame-butterfly-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1455
+    },
+    "snapdragon-toulon-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1456
+    },
+    "larkspur-imperial-choice-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1457
+    },
+    "cornflower-frosty-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1458
+    },
+    "nigella-miss-jekyll-double-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1459
+    },
+    "calendula-pacific-beauty-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1460
+    },
+    "sweet-pea-winter-elegance-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1461
+    },
+    "sweet-pea-mammoth-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1462
+    },
+    "iceland-poppy-champagne-bubbles-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1463
+    },
+    "shirley-poppy-angels-choir": {
+      "updated_at": "2026-11-22T03:44:04.198Z",
+      "updated_seq": 4522
+    },
+    "virginia-stock": {
+      "updated_at": "2026-11-22T03:44:39.702Z",
+      "updated_seq": 4553
+    },
+    "breadseed-poppy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 750
+    },
+    "sweet-pea-kings-ransom": {
+      "updated_at": "2026-11-22T03:44:49.721Z",
+      "updated_seq": 4564
+    },
+    "sweet-pea-clementine-kiss": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1465
+    },
+    "sweet-pea-emma": {
+      "updated_at": "2026-11-22T03:44:50.607Z",
+      "updated_seq": 4565
+    },
+    "sweet-pea-wild-swan": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1466
+    },
+    "sweet-pea-bix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1467
+    },
+    "sweet-pea-susan-burgess": {
+      "updated_at": "2026-11-22T03:44:48.043Z",
+      "updated_seq": 4563
+    },
+    "sweet-pea-blue-shift": {
+      "updated_at": "2026-11-22T03:43:25.149Z",
+      "updated_seq": 4493
+    },
+    "sweet-pea-gerry-cullinan": {
+      "updated_at": "2026-11-22T03:44:51.236Z",
+      "updated_seq": 4566
+    },
+    "sweet-pea-raspberry-flake": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1469
+    },
+    "sweet-pea-alison": {
+      "updated_at": "2026-11-22T03:44:52.811Z",
+      "updated_seq": 4567
+    },
+    "sweet-pea-shell-pink": {
+      "updated_at": "2026-11-22T03:44:33.198Z",
+      "updated_seq": 4547
+    },
+    "sweet-pea-juliet": {
+      "updated_at": "2026-11-22T03:44:54.759Z",
+      "updated_seq": 4568
+    },
+    "sweet-pea-castle-wellan": {
+      "updated_at": "2026-11-22T03:45:07.274Z",
+      "updated_seq": 4582
+    },
+    "sweet-pea-oban-bay": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1470
+    },
+    "sweet-pea-spring-sunshine-burgundy": {
+      "updated_at": "2026-11-22T03:44:34.256Z",
+      "updated_seq": 4548
+    },
+    "sweet-pea-mollie-rilstone": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1471
+    },
+    "sweet-pea-cosmic-kitty-mix": {
+      "updated_at": "2026-11-22T03:44:34.981Z",
+      "updated_seq": 4549
+    },
+    "sweet-pea-dark-matter-mix": {
+      "updated_at": "2026-11-22T03:44:35.813Z",
+      "updated_seq": 4550
+    },
+    "zinnia-dearest-joanna-lavender-frost": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1472
+    },
+    "zinnia-dearest-bubblegum": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 762
+    },
+    "zinnia-dearest-sunset": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 763
+    },
+    "zinnia-dearest-kaleidoscope": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 764
+    },
+    "zinnia-dearest-orange-creamsicle": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1473
+    },
+    "zinnia-dearest-ellie": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 766
+    },
+    "zinnia-dearest-tabita": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 767
+    },
+    "zinnia-dawn-creek-pastels": {
+      "updated_at": "2026-11-23T13:47:42.171Z",
+      "updated_seq": 4633
+    },
+    "zinnia-dawn-creek-honey": {
+      "updated_at": "2026-11-23T13:47:38.510Z",
+      "updated_seq": 4632
+    },
+    "zinnia-dawn-creek-blush": {
+      "updated_at": "2026-11-23T13:47:34.715Z",
+      "updated_seq": 4631
+    },
+    "zinnia-dawn-creek-peach": {
+      "updated_at": "2026-11-23T13:47:45.402Z",
+      "updated_seq": 4634
+    },
+    "zinnia-gift": {
+      "updated_at": "2026-11-23T13:47:48.985Z",
+      "updated_seq": 4635
+    },
+    "zinnia-karens-fave-color-mix": {
+      "updated_at": "2026-11-23T13:47:52.827Z",
+      "updated_seq": 4636
+    },
+    "sunflower-van-goghs-fantasy": {
+      "updated_at": "2026-11-23T13:47:31.286Z",
+      "updated_seq": 4630
+    },
+    "sunflower-better-off-red": {
+      "updated_at": "2026-11-23T13:47:27.313Z",
+      "updated_seq": 4629
+    },
+    "sunflower-mountainlily-mixed": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1480
+    },
+    "snapdragon-rembrandt": {
+      "updated_at": "2026-11-23T13:47:13.321Z",
+      "updated_seq": 4627
+    },
+    "snapdragon-black-prince": {
+      "updated_at": "2026-11-22T03:44:26.213Z",
+      "updated_seq": 4542
+    },
+    "snapdragon-defiant-mix": {
+      "updated_at": "2026-11-22T03:44:24.193Z",
+      "updated_seq": 4540
+    },
+    "snapdragon-orange-wonder": {
+      "updated_at": "2026-11-22T03:44:25.351Z",
+      "updated_seq": 4541
+    },
+    "shirley-poppy-mother-of-pearl": {
+      "updated_at": "2026-11-23T13:47:11.682Z",
+      "updated_seq": 4742
+    },
+    "dahlia-seed-premium-pollinator-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1482
+    },
+    "dahlia-seed-coseytown-honey-pot-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1483
+    },
+    "dahlia-seed-paulas-field-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1484
+    },
+    "dahlia-seed-mixed-parent": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1485
+    },
+    "dahlia-seed-miss-amara": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 778
+    },
+    "dahlia-seed-aa-giant-flowered": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 779
+    },
+    "dahlia-seed-collarette": {
+      "updated_at": "2026-11-22T03:44:47.206Z",
+      "updated_seq": 4562
+    },
+    "celosia-xantippe": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1486
+    },
+    "celosia-pink-lemonade": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1487
+    },
+    "cosmos-diablo": {
+      "updated_at": "2026-11-22T03:44:43.125Z",
+      "updated_seq": 4557
+    },
+    "cosmos-sea-shells": {
+      "updated_at": "2026-11-22T03:44:59.411Z",
+      "updated_seq": 4573
+    },
+    "gomphrena-audray-pink": {
+      "updated_at": "2026-11-22T03:44:31.343Z",
+      "updated_seq": 4546
+    },
+    "rudbeckia-tall-dark-sahara": {
+      "updated_at": "2026-11-23T13:47:05.802Z",
+      "updated_seq": 4625
+    },
+    "strawflower-firefly": {
+      "updated_at": "2026-11-23T13:47:23.489Z",
+      "updated_seq": 4628
+    },
+    "amaranth-autumn-touch": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1488
+    },
+    "amaranth-coral-fountain": {
+      "updated_at": "2026-11-22T03:43:53.838Z",
+      "updated_seq": 4514
+    },
+    "amaranth-green-tails": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1490
+    },
+    "amaranth-hot-biscuits": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 4744
+    },
+    "amaranth-mira": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1492
+    },
+    "amaranth-opopeo": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1493
+    },
+    "annual-babys-breath-covent-garden": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1494
+    },
+    "apple-of-peru": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1495
+    },
+    "argentine-forget-me-not": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1496
+    },
+    "cornflower-classic-fantastic": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1497
+    },
+    "cornflower-classic-magic": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1498
+    },
+    "cornflower-classic-romantic": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1499
+    },
+    "basil-aromatto": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1500
+    },
+    "basil-cinnamon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1501
+    },
+    "basil-dark-opal": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1502
+    },
+    "basil-mrs-burns-lemon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1503
+    },
+    "bee-balm-bergamo": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1504
+    },
+    "bee-balm-lambada": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1505
+    },
+    "bees-friend": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1506
+    },
+    "bells-of-ireland": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1507
+    },
+    "rudbeckia-cherry-brandy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1508
+    },
+    "rudbeckia-chim-chiminee": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1509
+    },
+    "rudbeckia-denver-daisy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1510
+    },
+    "rudbeckia-indian-summer": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1511
+    },
+    "rudbeckia-macau": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1512
+    },
+    "rudbeckia-prairie-sun": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1513
+    },
+    "rudbeckia-sahara": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1514
+    },
+    "breadseed-poppy-black-beauty": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1515
+    },
+    "breadseed-poppy-frosted-salmon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1516
+    },
+    "breadseed-poppy-lilac-peony": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1517
+    },
+    "breadseed-poppy-peony-flowered-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1518
+    },
+    "breadseed-poppy-pink-peony": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1519
+    },
+    "breadseed-poppy-rattle-poppy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1520
+    },
+    "breadseed-poppy-white-frills": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1521
+    },
+    "bupleurum-griffithi": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1522
+    },
+    "calendula-bronze-beauty": {
+      "updated_at": "2026-11-22T03:43:29.211Z",
+      "updated_seq": 4495
+    },
+    "calendula-greenheart-orange": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1524
+    },
+    "calendula-ivory-princess": {
+      "updated_at": "2026-11-22T03:43:30.397Z",
+      "updated_seq": 4496
+    },
+    "calendula-pink-surprise": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1526
+    },
+    "calendula-zeolights": {
+      "updated_at": "2026-11-22T03:43:31.037Z",
+      "updated_seq": 4497
+    },
+    "california-poppy-cream-swirl": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1528
+    },
+    "california-poppy-thai-silk-appleblossom-chiffon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1529
+    },
+    "california-poppy-thai-silk-apricot-chiffon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1530
+    },
+    "california-poppy-thai-silk-pink-champagne": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1531
+    },
+    "candytuft-pinnacle-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1532
+    },
+    "canterbury-bells-champion-blue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1533
+    },
+    "canterbury-bells-champion-lavender": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1534
+    },
+    "canterbury-bells-champion-pink-improved": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1535
+    },
+    "canterbury-bells-champion-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1536
+    },
+    "carnation-chabaud-aurora": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1537
+    },
+    "carnation-chabaud-benigna": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1538
+    },
+    "carnation-chabaud-jeanne-dionis": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1539
+    },
+    "carnation-chabaud-la-france": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2450
+    },
+    "carnation-chabaud-orange-sherbet": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1541
+    },
+    "celosia-autumn-blaze": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1542
+    },
+    "celosia-coral-reef": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1543
+    },
+    "celosia-dusty-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1544
+    },
+    "celosia-flamingo-feather": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1545
+    },
+    "celosia-glowing-embers": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1546
+    },
+    "celosia-limonata": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1547
+    },
+    "celosia-pampas-plume-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1548
+    },
+    "celosia-pink-champagne": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1549
+    },
+    "celosia-pink-chenille": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1550
+    },
+    "celosia-rainbow-sherbet-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1551
+    },
+    "celosia-raspberry-lemonade": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1552
+    },
+    "celosia-rose-gold": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1553
+    },
+    "celosia-sangria-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1554
+    },
+    "celosia-spun-sugar": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1555
+    },
+    "celosia-summer-sherbet": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1556
+    },
+    "celosia-supercrest-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1557
+    },
+    "celosia-vintage-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1558
+    },
+    "china-aster-harlekin-light-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1559
+    },
+    "china-aster-harlekin-violet": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1560
+    },
+    "china-aster-juwel-ametrin-lavendel": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1561
+    },
+    "china-aster-lady-coral-chamois": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1562
+    },
+    "china-aster-lady-coral-lavender": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1563
+    },
+    "china-aster-lady-coral-salmon-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1564
+    },
+    "china-aster-matador-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1565
+    },
+    "china-aster-rose-of-shanghai-light-blue": {
+      "updated_at": "2026-11-22T03:43:24.222Z",
+      "updated_seq": 4492
+    },
+    "china-aster-sea-starlet-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1567
+    },
+    "china-aster-tower-chamois-apricot": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1568
+    },
+    "china-aster-valkyrie-chamois": {
+      "updated_at": "2026-11-22T03:45:00.409Z",
+      "updated_seq": 4574
+    },
+    "china-aster-valkyrie-pink": {
+      "updated_at": "2026-11-22T03:43:17.968Z",
+      "updated_seq": 4487
+    },
+    "china-aster-valkyrie-yellow": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1570
+    },
+    "chinese-forget-me-not-blue-showers": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1571
+    },
+    "chinese-forget-me-not-ms-marilyn": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1572
+    },
+    "chinese-forget-me-not-mystic-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1573
+    },
+    "chocolate-lace-flower-dara": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1574
+    },
+    "clarkia-tower-coral": {
+      "updated_at": "2026-11-22T03:43:52.855Z",
+      "updated_seq": 4513
+    },
+    "clary-sage-tricolor-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1576
+    },
+    "corn-cockle-dawn-creek-blush": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1577
+    },
+    "corn-cockle-ocean-pearls": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1578
+    },
+    "cosmos-apricot-lemonade": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1579
+    },
+    "cosmos-apricotta": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1580
+    },
+    "cosmos-brownie": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1581
+    },
+    "cosmos-cupcakes-blush": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1582
+    },
+    "cosmos-cupcakes-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1583
+    },
+    "cosmos-daydream": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1584
+    },
+    "cosmos-double-click-bicolor-rose": {
+      "updated_at": "2026-11-22T03:43:55.320Z",
+      "updated_seq": 4516
+    },
+    "cosmos-double-click-cranberries": {
+      "updated_at": "2026-11-22T03:45:01.387Z",
+      "updated_seq": 4575
+    },
+    "cosmos-double-click-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1586
+    },
+    "cosmos-double-click-snow-puff": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1587
+    },
+    "cosmos-psyche-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1588
+    },
+    "cosmos-purity": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1589
+    },
+    "cosmos-rosetta": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1590
+    },
+    "cosmos-rubenza": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1591
+    },
+    "cosmos-seashells-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1592
+    },
+    "cosmos-velouette": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1593
+    },
+    "cosmos-xanthos": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1594
+    },
+    "cosmos-xsenia": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1595
+    },
+    "cress-attraxa": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1596
+    },
+    "cress-emerald-beads": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1597
+    },
+    "cress-green-dragon": {
+      "updated_at": "2026-11-24T01:50:38.154Z",
+      "updated_seq": 4662
+    },
+    "cress-pennycress": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1599
+    },
+    "cress-wrinkled-crinkled": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1600
+    },
+    "cup-and-saucer-vine-alba": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1601
+    },
+    "cup-and-saucer-vine-purple": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1602
+    },
+    "dahlia-seed-bees-choice": {
+      "updated_at": "2026-11-22T03:45:05.951Z",
+      "updated_seq": 4580
+    },
+    "dahlia-seed-cancan-girls": {
+      "updated_at": "2026-11-22T03:45:06.600Z",
+      "updated_seq": 4581
+    },
+    "dahlia-seed-petite-florets": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1603
+    },
+    "dahlia-seed-shooting-stars": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 908
+    },
+    "dill-bouquet": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1604
+    },
+    "dusty-miller-new-look": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 910
+    },
+    "dusty-miller-silver-dust": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 911
+    },
+    "eucalyptus-baby-blue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1605
+    },
+    "eucalyptus-nichols-willow": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1606
+    },
+    "eucalyptus-round-leaved-mallee": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 914
+    },
+    "eucalyptus-silver-dollar": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1607
+    },
+    "eucalyptus-small-leaved-gum": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1608
+    },
+    "euphorbia": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1609
+    },
+    "feverfew-magic-lime-green": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1610
+    },
+    "feverfew-tetra-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1611
+    },
+    "feverfew-vegmo-single": {
+      "updated_at": "2026-11-22T03:45:02.151Z",
+      "updated_seq": 4576
+    },
+    "feverfew-vegmo-snowball": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1612
+    },
+    "figwort": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1613
+    },
+    "flax-bubble-grass": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1614
+    },
+    "flowering-tobacco-bronze-queen": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1615
+    },
+    "flowering-tobacco-grandiflora": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1616
+    },
+    "flowering-tobacco-langsdorffii": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1617
+    },
+    "flowering-tobacco-peach-screamer": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1619
+    },
+    "flowering-tobacco-rustica": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1620
+    },
+    "flowering-tobacco-starlight-dancer": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1621
+    },
+    "flowering-tobacco-tinkerbell": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1622
+    },
+    "formosa-lily": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 4748
+    },
+    "foxglove-alba": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1624
+    },
+    "foxglove-apricot-beauty": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1625
+    },
+    "foxglove-cafe-creme": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1626
+    },
+    "foxglove-camelot-cream": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1627
+    },
+    "foxglove-dalmatian-peach": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1628
+    },
+    "foxglove-excelsior": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1629
+    },
+    "foxglove-obscura-sunset": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1630
+    },
+    "foxglove-pams-choice": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1631
+    },
+    "gomphrena-pastel-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1632
+    },
+    "gomphrena-pink": {
+      "updated_at": "2026-11-22T03:43:56.619Z",
+      "updated_seq": 4517
+    },
+    "gomphrena-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1634
+    },
+    "gomphrena-sunset-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1635
+    },
+    "gomphrena-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1636
+    },
+    "godetia-grace-salmon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1637
+    },
+    "honeywort-pride-of-gibraltar": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1638
+    },
+    "hyacinth-bean-ruby-moon": {
+      "updated_at": "2026-11-22T03:43:57.730Z",
+      "updated_seq": 4518
+    },
+    "iceland-poppy-champagne-bubbles-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1640
+    },
+    "iceland-poppy-champagne-bubbles-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1641
+    },
+    "iceland-poppy-colibri-salmonato": {
+      "updated_at": "2026-11-22T03:45:03.051Z",
+      "updated_seq": 4577
+    },
+    "iceland-poppy-colibri-sherbet-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1642
+    },
+    "iceland-poppy-pastel-meadows": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1643
+    },
+    "jewels-of-opar": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1644
+    },
+    "kiss-me-over-the-garden-gate-cerise-pearls": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1645
+    },
+    "lace-flower-lacy-blue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1646
+    },
+    "lace-flower-lacy-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1647
+    },
+    "lace-flower-lacy-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1648
+    },
+    "larkspur-earl-grey": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1649
+    },
+    "larkspur-fancy-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1650
+    },
+    "larkspur-frosted-skies": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1651
+    },
+    "larkspur-giant-imperial-blue-bell": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1652
+    },
+    "larkspur-giant-imperial-blue-spire": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1653
+    },
+    "larkspur-giant-imperial-carmine-king": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1654
+    },
+    "larkspur-giant-imperial-white-king": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1655
+    },
+    "larkspur-imperial-lilac-spire": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1656
+    },
+    "larkspur-pink-perfection": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1657
+    },
+    "larkspur-smokey-eyes": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1658
+    },
+    "larkspur-splish-splash": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1659
+    },
+    "larkspur-summer-skies-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1660
+    },
+    "larkspur-white-cloud": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1661
+    },
+    "lavatera-pink-regis": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1662
+    },
+    "linaria-northern-lights-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1663
+    },
+    "nigella-african-bride": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1664
+    },
+    "nigella-albion-green-pod": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1665
+    },
+    "nigella-cramers-plum": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1666
+    },
+    "nigella-delft-blue": {
+      "updated_at": "2026-11-22T03:43:22.808Z",
+      "updated_seq": 4491
+    },
+    "nigella-miss-jekyll-dark-blue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1668
+    },
+    "nigella-miss-jekyll-rose": {
+      "updated_at": "2026-11-22T03:43:13.286Z",
+      "updated_seq": 4484
+    },
+    "nigella-starry-night-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1670
+    },
+    "nigella-transformer": {
+      "updated_at": "2026-11-24T01:50:36.598Z",
+      "updated_seq": 4661
+    },
+    "love-in-a-puff-vine": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1672
+    },
+    "lupine-javelin-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1673
+    },
+    "lupine-sunrise": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1674
+    },
+    "malope-queen-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1675
+    },
+    "marigold-brocade-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1676
+    },
+    "marigold-burgundy-bliss": {
+      "updated_at": "2026-11-22T03:43:48.598Z",
+      "updated_seq": 4510
+    },
+    "marigold-fireball": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1678
+    },
+    "marigold-francess-choice": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1679
+    },
+    "marigold-giant-orange": {
+      "updated_at": "2026-11-22T03:43:14.678Z",
+      "updated_seq": 4485
+    },
+    "marigold-harlequin": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1681
+    },
+    "marigold-la-ribera": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1682
+    },
+    "marigold-mushrooms-sol": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1683
+    },
+    "marigold-red-gem": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1684
+    },
+    "marigold-red-metamorph": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1685
+    },
+    "marigold-sparkler": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1686
+    },
+    "marigold-starfire-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1687
+    },
+    "marigold-sunbright-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1688
+    },
+    "marigold-tangerine-gem": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1689
+    },
+    "marigold-tiger-eyes": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1690
+    },
+    "mignonette-garden-mignonette": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1691
+    },
+    "mignonette-white-mignonette": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1692
+    },
+    "nasturtium-caribbean-crush": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1693
+    },
+    "nasturtium-cherry-rose-jewel": {
+      "updated_at": "2026-11-22T03:43:50.970Z",
+      "updated_seq": 4512
+    },
+    "nasturtium-gleam-salmon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1695
+    },
+    "nasturtium-ladybird-rose": {
+      "updated_at": "2026-11-22T03:43:16.236Z",
+      "updated_seq": 4486
+    },
+    "nasturtium-purple-emperor": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1697
+    },
+    "nasturtium-salmon-mousse": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1698
+    },
+    "nasturtium-yeti": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1699
+    },
+    "orach-ruby-gold": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1700
+    },
+    "oregano-greek": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1701
+    },
+    "orlaya-white-finch-lace": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1702
+    },
+    "ornamental-grass-broomcorn-millet": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1703
+    },
+    "ornamental-grass-bunny-tails": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1704
+    },
+    "ornamental-grass-feathertop": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1705
+    },
+    "ornamental-grass-frosted-explosion": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1706
+    },
+    "ornamental-grass-quaking-grass": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1707
+    },
+    "ornamental-squash-american-tondo": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1708
+    },
+    "ornamental-squash-autumn-crown": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1019
+    },
+    "ornamental-squash-black-futsu": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1709
+    },
+    "ornamental-squash-blue-delight": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1710
+    },
+    "ornamental-squash-blue-doll": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1711
+    },
+    "ornamental-squash-chirimen": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1712
+    },
+    "ornamental-squash-cinderellas-carriage": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1713
+    },
+    "ornamental-squash-colorado-sunset": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1714
+    },
+    "ornamental-squash-daybreak": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1715
+    },
+    "ornamental-squash-flat-stacker": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1716
+    },
+    "ornamental-squash-flat-white-boer": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1717
+    },
+    "ornamental-squash-flatso": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1718
+    },
+    "ornamental-squash-fools-gold": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1719
+    },
+    "ornamental-squash-fright": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1720
+    },
+    "ornamental-squash-galeux-deysines": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1721
+    },
+    "ornamental-squash-grizzly-bear": {
+      "updated_at": "2026-11-22T03:45:10.354Z",
+      "updated_seq": 4586
+    },
+    "ornamental-squash-indian-doll": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1722
+    },
+    "ornamental-squash-ivory-belle": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1723
+    },
+    "ornamental-squash-jarrahdale": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1724
+    },
+    "ornamental-squash-lady-godiva": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1725
+    },
+    "ornamental-squash-long-island-cheese": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1726
+    },
+    "ornamental-squash-lumina": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1727
+    },
+    "ornamental-squash-lunar-blush": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1728
+    },
+    "ornamental-squash-lunch-lady": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1729
+    },
+    "ornamental-squash-marina-di-chioggia": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1730
+    },
+    "ornamental-squash-milestone": {
+      "updated_at": "2026-11-22T03:45:11.229Z",
+      "updated_seq": 4587
+    },
+    "ornamental-squash-moranga": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1731
+    },
+    "ornamental-squash-mr-fugly": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1732
+    },
+    "ornamental-squash-musquee-de-provence": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1733
+    },
+    "ornamental-squash-newton": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1734
+    },
+    "ornamental-squash-one-too-many": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1735
+    },
+    "ornamental-squash-polar-bear": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1736
+    },
+    "ornamental-squash-porcelain-doll": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1737
+    },
+    "ornamental-squash-red-eye": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1738
+    },
+    "ornamental-squash-rembrandt": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1739
+    },
+    "ornamental-squash-rouge-vif-detampes": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1740
+    },
+    "ornamental-squash-shadow-moon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1741
+    },
+    "ornamental-squash-silver-edged": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1742
+    },
+    "ornamental-squash-speckled-hound": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1743
+    },
+    "ornamental-squash-specter": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1744
+    },
+    "ornamental-squash-strawberry-crown": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1745
+    },
+    "ornamental-squash-tandy": {
+      "updated_at": "2026-11-22T03:45:13.717Z",
+      "updated_seq": 4589
+    },
+    "ornamental-squash-triamble": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1746
+    },
+    "ornamental-squash-troll": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1747
+    },
+    "ornamental-squash-turbino": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1748
+    },
+    "ornamental-squash-turks-turban": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1749
+    },
+    "ornamental-squash-valenciano": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1750
+    },
+    "ornamental-squash-warty-goblin": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1751
+    },
+    "ornamental-squash-warty-sunset": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1752
+    },
+    "ornamental-squash-white-delight": {
+      "updated_at": "2026-11-22T03:43:20.850Z",
+      "updated_seq": 4489
+    },
+    "ornamental-squash-white-patty-pan": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1754
+    },
+    "ornamental-squash-winter-luxury": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1755
+    },
+    "ornamental-squash-yugoslavian-finger-fruit": {
+      "updated_at": "2026-11-22T03:45:11.990Z",
+      "updated_seq": 4588
+    },
+    "ornamental-squash-zapalo-plomo": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1756
+    },
+    "painted-tongue-gloomy-rival": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1757
+    },
+    "pansy-aalsmeer-king-size-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1758
+    },
+    "pansy-acquarelle-flambe-red-shades": {
+      "updated_at": "2026-11-22T03:44:02.747Z",
+      "updated_seq": 4521
+    },
+    "pansy-chianti-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1760
+    },
+    "pansy-cool-wave-blueberry-swirl": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1761
+    },
+    "pansy-dynamite-lavender": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1762
+    },
+    "pansy-envy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1763
+    },
+    "pansy-frizzle-sizzle-raspberry": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1764
+    },
+    "pansy-frizzle-sizzle-yellow-blue-swirl": {
+      "updated_at": "2026-11-22T03:43:37.899Z",
+      "updated_seq": 4502
+    },
+    "pansy-majestic-giants-sherry": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1766
+    },
+    "pansy-nature-antique-shades": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1767
+    },
+    "pansy-panola-pink-shades": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1768
+    },
+    "pansy-rococo-frill-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1769
+    },
+    "pea-amethyst-beauty": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1770
+    },
+    "pea-blue-podded-blauwschokkers": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1771
+    },
+    "pea-blushing-beauty": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1772
+    },
+    "pea-golden-sweet": {
+      "updated_at": "2026-11-22T03:43:21.626Z",
+      "updated_seq": 4490
+    },
+    "pea-magnolia-blossom": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1774
+    },
+    "pea-opal-beauty": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1775
+    },
+    "pea-ruby-beauty": {
+      "updated_at": "2026-11-22T03:43:19.415Z",
+      "updated_seq": 4488
+    },
+    "pea-spring-blush": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1777
+    },
+    "pea-spring-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1778
+    },
+    "phlox-blushing-bride": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1779
+    },
+    "phlox-cherry-caramel": {
+      "updated_at": "2026-11-22T03:43:40.317Z",
+      "updated_seq": 4504
+    },
+    "phlox-creme-brulee": {
+      "updated_at": "2026-11-22T03:45:03.722Z",
+      "updated_seq": 4578
+    },
+    "phlox-dulce-de-leche": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1781
+    },
+    "phlox-leopoldii": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1782
+    },
+    "phlox-phlox-of-sheep": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1783
+    },
+    "phlox-sugar-stars": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1784
+    },
+    "phlox-whipped-cream": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1785
+    },
+    "pincushion-flower-black-knight": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1786
+    },
+    "pincushion-flower-fata-morgana": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1787
+    },
+    "pincushion-flower-ochroleuca": {
+      "updated_at": "2026-11-22T03:45:04.942Z",
+      "updated_seq": 4579
+    },
+    "pincushion-flower-salmon-queen": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1788
+    },
+    "pincushion-flower-snowmaiden": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1789
+    },
+    "pincushion-flower-starflower": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1790
+    },
+    "pincushion-flower-summer-sangria": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1791
+    },
+    "poor-mans-orchid-angels-wings-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1792
+    },
+    "queen-annes-lace-green-mist": {
+      "updated_at": "2026-11-22T03:43:49.351Z",
+      "updated_seq": 4511
+    },
+    "queen-annes-lace-queen-of-africa": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1794
+    },
+    "quinoa-red-head": {
+      "updated_at": "2026-11-22T03:43:35.199Z",
+      "updated_seq": 4500
+    },
+    "red-leaf-hibiscus-mahogany-splendor": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1796
+    },
+    "salvia-rose-queen": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1797
+    },
+    "shirley-poppy-amazing-grey": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 4746
+    },
+    "shirley-poppy-pandora": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1799
+    },
+    "shirley-poppy-supreme": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1800
+    },
+    "shiso-purple-frills": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1801
+    },
+    "silene-blushing-lanterns": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1802
+    },
+    "silene-pink": {
+      "updated_at": "2026-11-22T03:43:41.195Z",
+      "updated_seq": 4505
+    },
+    "silver-lace": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1121
+    },
+    "snapdragon-avignon-bicolor-yellow": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1804
+    },
+    "snapdragon-chantilly-light-pink": {
+      "updated_at": "2026-11-24T01:50:47.772Z",
+      "updated_seq": 4666
+    },
+    "snapdragon-chantilly-light-salmon": {
+      "updated_at": "2026-11-24T01:50:49.967Z",
+      "updated_seq": 4667
+    },
+    "snapdragon-costa-apricot": {
+      "updated_at": "2026-11-22T03:43:46.316Z",
+      "updated_seq": 4508
+    },
+    "snapdragon-costa-silver": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1808
+    },
+    "snapdragon-costa-summer-lavender": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1809
+    },
+    "snapdragon-costa-summer-orange": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1810
+    },
+    "snapdragon-madame-butterfly-bronze": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1811
+    },
+    "snapdragon-madame-butterfly-dark-red": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1812
+    },
+    "snapdragon-madame-butterfly-peaches-n-cream-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1813
+    },
+    "snapdragon-madame-butterfly-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1814
+    },
+    "snapdragon-madame-butterfly-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1815
+    },
+    "snapdragon-monaco-orange": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1816
+    },
+    "snapdragon-opus-early-bronze": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1817
+    },
+    "snapdragon-potomac-appleblossom": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1818
+    },
+    "snapdragon-sherbet-toned-chantilly-mix": {
+      "updated_at": "2026-11-24T01:50:51.504Z",
+      "updated_seq": 4668
+    },
+    "soapwort-beauty-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1820
+    },
+    "soapwort-graciella-white": {
+      "updated_at": "2026-11-22T03:43:36.207Z",
+      "updated_seq": 4501
+    },
+    "statice-light-blue": {
+      "updated_at": "2026-11-22T03:43:26.804Z",
+      "updated_seq": 4494
+    },
+    "statice-pastel-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 4384
+    },
+    "statice-rat-tail": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1824
+    },
+    "statice-sunset-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1825
+    },
+    "stock-antique-pink": {
+      "updated_at": "2026-11-22T03:43:32.176Z",
+      "updated_seq": 4498
+    },
+    "stock-apricot": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1827
+    },
+    "stock-avalanche-supreme": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1828
+    },
+    "stock-buttercream": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1829
+    },
+    "stock-katz-bright-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1830
+    },
+    "stock-katz-lavender-light": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1831
+    },
+    "stock-katz-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1832
+    },
+    "stock-katz-purple": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1833
+    },
+    "stock-malmaison-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1834
+    },
+    "stock-pacific-crimson": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1835
+    },
+    "stock-vintage-brown": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1836
+    },
+    "strawflower-apricot-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1837
+    },
+    "strawflower-candy-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1838
+    },
+    "strawflower-copper-red": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1839
+    },
+    "strawflower-dragon-fire": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1840
+    },
+    "strawflower-frosted-sulphur": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1159
+    },
+    "strawflower-pomegranate": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1841
+    },
+    "strawflower-scarlet": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1842
+    },
+    "strawflower-silvery-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1843
+    },
+    "strawflower-vintage-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1844
+    },
+    "sunflower-frilly": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1845
+    },
+    "sunflower-greenburst": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1846
+    },
+    "sunflower-procut-gold": {
+      "updated_at": "2026-11-22T03:43:33.719Z",
+      "updated_seq": 4499
+    },
+    "sunflower-procut-red": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1848
+    },
+    "sunflower-procut-white-lite": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1849
+    },
+    "sunflower-procut-white-nite": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1850
+    },
+    "sunflower-ruby-eclipse": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1851
+    },
+    "sunflower-sparky": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1852
+    },
+    "sunflower-starburst-panache": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1853
+    },
+    "sunflower-sunrich-gold": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1854
+    },
+    "sweet-pea-albutt-blue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1855
+    },
+    "sweet-pea-alison-valentini": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1856
+    },
+    "sweet-pea-almost-black": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1857
+    },
+    "sweet-pea-anniversary": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1858
+    },
+    "sweet-pea-apricot-queen": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1859
+    },
+    "sweet-pea-april-in-paris": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1860
+    },
+    "sweet-pea-audrey-kirkman": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1861
+    },
+    "sweet-pea-azureus": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1862
+    },
+    "sweet-pea-balmoral": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1863
+    },
+    "sweet-pea-baronscourt": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1864
+    },
+    "sweet-pea-blue-vein": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1865
+    },
+    "sweet-pea-bobbys-girl": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1866
+    },
+    "sweet-pea-brian-haynes": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1867
+    },
+    "sweet-pea-bristol": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1868
+    },
+    "sweet-pea-burlesque": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1869
+    },
+    "sweet-pea-burnished-bronze": {
+      "updated_at": "2026-11-22T03:44:01.739Z",
+      "updated_seq": 4520
+    },
+    "sweet-pea-carlotta": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1871
+    },
+    "sweet-pea-charlies-angel": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1872
+    },
+    "sweet-pea-chelsea-centenary": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1873
+    },
+    "sweet-pea-cheryl-rainey": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1874
+    },
+    "sweet-pea-chloranthus": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1875
+    },
+    "sweet-pea-chocolate-flake": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1876
+    },
+    "sweet-pea-clotted-cream": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1877
+    },
+    "sweet-pea-cold-steel": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1878
+    },
+    "sweet-pea-coquette": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1879
+    },
+    "sweet-pea-daily-mail": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1880
+    },
+    "sweet-pea-dancing-queen": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1881
+    },
+    "sweet-pea-dynasty": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1882
+    },
+    "sweet-pea-earl-grey": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1883
+    },
+    "sweet-pea-edith-flanagan": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1884
+    },
+    "sweet-pea-enchante": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1885
+    },
+    "sweet-pea-erewhon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1886
+    },
+    "sweet-pea-ethel-grace": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1887
+    },
+    "sweet-pea-florencecourt": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1888
+    },
+    "sweet-pea-frances-kate": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1889
+    },
+    "sweet-pea-future-shock": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1890
+    },
+    "sweet-pea-geoff-hughes": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1891
+    },
+    "sweet-pea-glasnevin": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1892
+    },
+    "sweet-pea-grandma-butt": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1893
+    },
+    "sweet-pea-gwendoline": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1894
+    },
+    "sweet-pea-hannah-dale": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1895
+    },
+    "sweet-pea-hannah-macgovern": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1896
+    },
+    "sweet-pea-happy-birthday": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1897
+    },
+    "sweet-pea-high-society": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1898
+    },
+    "sweet-pea-hotham-red": {
+      "updated_at": "2026-11-22T03:43:59.674Z",
+      "updated_seq": 4519
+    },
+    "sweet-pea-jacqueline-ann": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1900
+    },
+    "sweet-pea-jacqueline-heather": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1901
+    },
+    "sweet-pea-jill-walton": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1902
+    },
+    "sweet-pea-jilly": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1903
+    },
+    "sweet-pea-john-grey": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1904
+    },
+    "sweet-pea-joyce-stanton": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1905
+    },
+    "sweet-pea-judith-wilkenson": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1906
+    },
+    "sweet-pea-karen-louise": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1907
+    },
+    "sweet-pea-lady-nicholson": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1908
+    },
+    "sweet-pea-lakeland-blizzard": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1909
+    },
+    "sweet-pea-lavender-flake": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1910
+    },
+    "sweet-pea-len-harrod": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1911
+    },
+    "sweet-pea-limelight": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1912
+    },
+    "sweet-pea-lizbeth": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1913
+    },
+    "sweet-pea-lunar-sea": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1914
+    },
+    "sweet-pea-lynn-davey": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1915
+    },
+    "sweet-pea-maloy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1916
+    },
+    "sweet-pea-marjorie-carrier": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1917
+    },
+    "sweet-pea-mark-harrod": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1918
+    },
+    "sweet-pea-mark-williams": {
+      "updated_at": "2026-11-22T03:45:08.798Z",
+      "updated_seq": 4584
+    },
+    "sweet-pea-memorial-flight": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1919
+    },
+    "sweet-pea-millennium": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1920
+    },
+    "sweet-pea-mr-p": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1921
+    },
+    "sweet-pea-mrs-bernard-jones": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1922
+    },
+    "sweet-pea-mrs-r-penney": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1923
+    },
+    "sweet-pea-naomi-nazareth": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1924
+    },
+    "sweet-pea-nimbus": {
+      "updated_at": "2026-11-22T03:45:07.998Z",
+      "updated_seq": 4583
+    },
+    "sweet-pea-noel-sutton": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1925
+    },
+    "sweet-pea-nora-holman": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1926
+    },
+    "sweet-pea-north-shore": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1927
+    },
+    "sweet-pea-nuance": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1928
+    },
+    "sweet-pea-our-harry": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1929
+    },
+    "sweet-pea-patricia-marilyn": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1930
+    },
+    "sweet-pea-pearl-anniversary": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1931
+    },
+    "sweet-pea-pearl-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1932
+    },
+    "sweet-pea-piggy-sue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1933
+    },
+    "sweet-pea-porlock": {
+      "updated_at": "2026-11-22T03:45:09.535Z",
+      "updated_seq": 4585
+    },
+    "sweet-pea-promise": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1934
+    },
+    "sweet-pea-queen-of-hearts": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1935
+    },
+    "sweet-pea-restormel": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1936
+    },
+    "sweet-pea-richard-judy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1937
+    },
+    "sweet-pea-route-66": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1938
+    },
+    "sweet-pea-sir-jimmy-shand": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1939
+    },
+    "sweet-pea-snowlight": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1940
+    },
+    "sweet-pea-solstice-light-blue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1941
+    },
+    "sweet-pea-solstice-opal": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1942
+    },
+    "sweet-pea-solstice-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1943
+    },
+    "sweet-pea-spring-sunshine-champagne": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1944
+    },
+    "sweet-pea-strawberry-fields": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1945
+    },
+    "sweet-pea-suzy-z": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1946
+    },
+    "sweet-pea-sylvestris": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1947
+    },
+    "sweet-pea-topsy": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1948
+    },
+    "sweet-pea-triple-g": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1949
+    },
+    "sweet-pea-turquoise": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1950
+    },
+    "sweet-pea-valerie-harrod": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1951
+    },
+    "sweet-pea-white-frills": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1952
+    },
+    "sweet-pea-white-supreme": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1953
+    },
+    "sweet-pea-windsor": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1954
+    },
+    "sweet-pea-yvette-ann": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1955
+    },
+    "sweet-rocket-pale-lavender": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1956
+    },
+    "sweet-sultan-imperial-bride-white": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1957
+    },
+    "sweet-william-super-duplex-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1958
+    },
+    "tickseed-incredible": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1959
+    },
+    "tomato-brads-atomic-grape": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1960
+    },
+    "tomato-chocolate-cherry": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1961
+    },
+    "tomato-gardeners-sweetheart": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1962
+    },
+    "tomato-indigo-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1963
+    },
+    "tomato-rapunzel": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1964
+    },
+    "tomato-red-currant": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1965
+    },
+    "tomato-sunpeach": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1966
+    },
+    "viola-brush-strokes": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1967
+    },
+    "viola-gem-apricot-antique": {
+      "updated_at": "2026-11-22T03:43:39.011Z",
+      "updated_seq": 4503
+    },
+    "viola-gem-heavenly-blue": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1969
+    },
+    "viola-gem-pink-antique": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1970
+    },
+    "viola-tiger-eye": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1971
+    },
+    "winged-everlasting": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1972
+    },
+    "xeranthemum": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1973
+    },
+    "yarrow-summer-berries": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1974
+    },
+    "zinnia-alpenglow": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1975
+    },
+    "zinnia-aztec-sunset": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1976
+    },
+    "zinnia-benarys-giant-bright-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1977
+    },
+    "zinnia-benarys-giant-carmine": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1978
+    },
+    "zinnia-benarys-giant-coral": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1979
+    },
+    "zinnia-benarys-giant-deep-red": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1980
+    },
+    "zinnia-benarys-giant-lilac": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1981
+    },
+    "zinnia-benarys-giant-lime": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1982
+    },
+    "zinnia-benarys-giant-orange": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1983
+    },
+    "zinnia-benarys-giant-salmon-rose": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1984
+    },
+    "zinnia-benarys-giant-wine": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1985
+    },
+    "zinnia-candy-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1986
+    },
+    "zinnia-cresto-peaches-and-cream": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1987
+    },
+    "zinnia-cupcakes-pink": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1988
+    },
+    "zinnia-day-glow-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1989
+    },
+    "zinnia-desert-sunset-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1990
+    },
+    "zinnia-dreamin": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1991
+    },
+    "zinnia-golden-hour": {
+      "updated_at": "2026-11-22T03:43:42.764Z",
+      "updated_seq": 4506
+    },
+    "zinnia-isabellina-creamy-yellow": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1993
+    },
+    "zinnia-lilliput-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1994
+    },
+    "zinnia-lilliput-salmon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1995
+    },
+    "zinnia-little-flower-girl": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1996
+    },
+    "zinnia-macarenia": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1997
+    },
+    "zinnia-mazurkia": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1998
+    },
+    "zinnia-oklahoma-carmine": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 1999
+    },
+    "zinnia-oklahoma-ivory": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2000
+    },
+    "zinnia-oklahoma-pink": {
+      "updated_at": "2026-11-22T03:43:54.590Z",
+      "updated_seq": 4515
+    },
+    "zinnia-oklahoma-salmon": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2002
+    },
+    "zinnia-persian-carpet-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2003
+    },
+    "zinnia-precious-metals": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2004
+    },
+    "zinnia-queen-lime": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2005
+    },
+    "zinnia-queen-lime-blush": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2006
+    },
+    "zinnia-queen-lime-orange": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2007
+    },
+    "zinnia-queen-red-lime": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2008
+    },
+    "zinnia-rainbow-eyes": {
+      "updated_at": "2026-11-22T03:43:44.630Z",
+      "updated_seq": 4507
+    },
+    "zinnia-senora": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2010
+    },
+    "zinnia-sunbow-orange": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2011
+    },
+    "zinnia-unicorn-mix": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2012
+    },
+    "zinnia-victorian-wedding": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2013
+    },
+    "zinnia-yell-fire": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2014
+    },
+    "zinnia-zinderella-lilac": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2015
+    },
+    "zinnia-zinderella-peach": {
+      "updated_at": "2026-11-16T19:45:24.435Z",
+      "updated_seq": 2016
+    },
+    "echinacea-paradiso-yellow": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2017
+    },
+    "echinacea-paradiso-tall-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2018
+    },
+    "echinacea-paradiso-super-duper": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2019
+    },
+    "echinacea-cheyenne-spirit": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2020
+    },
+    "echinacea-echinacea-purpurea": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2021
+    },
+    "echinacea-feeling-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2022
+    },
+    "echinacea-powwow-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2023
+    },
+    "echinacea-powwow-wild-berry": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2024
+    },
+    "echinacea-primadonna-deep-rose": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2025
+    },
+    "echinacea-primadonna-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2026
+    },
+    "echinacea-white-swan": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2027
+    },
+    "echinacea-mellow-yellows": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2028
+    },
+    "lisianthus-voyage-2-white-improved": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2029
+    },
+    "lisianthus-voyage-2-yellow-ii": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2030
+    },
+    "lisianthus-voyage-2-pink-improved": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2031
+    },
+    "lisianthus-voyage-2-blue": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2032
+    },
+    "lisianthus-voyage-2-green-ii": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2033
+    },
+    "lisianthus-voyage-2-lavender": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2034
+    },
+    "lisianthus-voyage-2-first-love": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2035
+    },
+    "lisianthus-arena-iii-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2036
+    },
+    "lisianthus-rosanne-2-clear-green": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2037
+    },
+    "lisianthus-mariachi-pure-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2038
+    },
+    "lisianthus-solo-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2039
+    },
+    "lisianthus-viviana-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2040
+    },
+    "delphinium-bellamosum": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2041
+    },
+    "delphinium-casablanca": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2042
+    },
+    "delphinium-cliveden-beauty": {
+      "updated_at": "2026-11-22T03:44:45.504Z",
+      "updated_seq": 4560
+    },
+    "delphinium-belladonna-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2044
+    },
+    "delphinium-magic-fountains-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2045
+    },
+    "delphinium-magic-fountains-sky-blue-white-bee": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2046
+    },
+    "delphinium-magic-fountains-pure-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2047
+    },
+    "delphinium-magic-fountains-lilac-pink-white-bee": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2048
+    },
+    "delphinium-guardian-lavender": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2049
+    },
+    "delphinium-guardian-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2050
+    },
+    "delphinium-candle-lavender-shades": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2051
+    },
+    "delphinium-blue-donna": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2052
+    },
+    "eryngium-blue-glitter": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2053
+    },
+    "eryngium-white-glitter": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2054
+    },
+    "eryngium-blaukappe": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2055
+    },
+    "eryngium-blue-hobbit": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2056
+    },
+    "ageratum-timeless-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2057
+    },
+    "ageratum-tall-blue-planet": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2058
+    },
+    "craspedia-sun-ball": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2059
+    },
+    "craspedia-drumstick": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2060
+    },
+    "trachelium-lake-michigan-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2061
+    },
+    "trachelium-lake-michigan-blue": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2062
+    },
+    "trachelium-lake-michigan-purple": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2063
+    },
+    "trachelium-lake-michigan-violet": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2064
+    },
+    "trachelium-lake-forest-purple": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2065
+    },
+    "flowering-kale-crane-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2066
+    },
+    "flowering-kale-crane-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2067
+    },
+    "flowering-kale-crane-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2068
+    },
+    "flowering-kale-crane-rose": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2069
+    },
+    "flowering-kale-crane-early-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2070
+    },
+    "flowering-kale-crane-early-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2071
+    },
+    "safflower-zanzibar": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2072
+    },
+    "lavender-ellagance-purple": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2073
+    },
+    "lavender-ellagance-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2074
+    },
+    "lavender-munstead-type": {
+      "updated_at": "2026-11-22T03:45:14.802Z",
+      "updated_seq": 4590
+    },
+    "lavender-munstead-type-organic": {
+      "updated_at": "2026-11-22T03:45:15.584Z",
+      "updated_seq": 4591
+    },
+    "verbena-verbena-bonariensis": {
+      "updated_at": "2026-11-22T03:45:16.372Z",
+      "updated_seq": 4592
+    },
+    "verbena-finesse": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2078
+    },
+    "verbena-vanity": {
+      "updated_at": "2026-11-22T03:44:46.445Z",
+      "updated_seq": 4561
+    },
+    "ranunculus-mach-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2080
+    },
+    "ranunculus-mach-orange": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2081
+    },
+    "ranunculus-mach-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2082
+    },
+    "ranunculus-mach-purple": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2083
+    },
+    "ranunculus-mach-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2084
+    },
+    "ranunculus-mach-rose": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2085
+    },
+    "ranunculus-mach-vanilla-rose-bicolour": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2086
+    },
+    "ranunculus-mach-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2087
+    },
+    "ranunculus-mach-yellow": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2088
+    },
+    "ranunculus-elegance-bianco-59-99": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2089
+    },
+    "ranunculus-elegance-clementine-1a16": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2090
+    },
+    "ranunculus-elegance-giallo-21-10": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2091
+    },
+    "ranunculus-elegance-hot-pink-95-08": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2092
+    },
+    "ranunculus-elegance-hot-pink-25-00": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2093
+    },
+    "ranunculus-elegance-pastello-102-14": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2094
+    },
+    "ranunculus-elegance-rosa-chiaro-2p10": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2095
+    },
+    "ranunculus-elegance-rosso-154-10": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2096
+    },
+    "ranunculus-elegance-salmone-06": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2097
+    },
+    "ranunculus-sprinkles-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2098
+    },
+    "ranunculus-magic-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2099
+    },
+    "columbine-mckana-giants-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2100
+    },
+    "columbine-barlow-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2101
+    },
+    "columbine-songbird-bluebird": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2102
+    },
+    "columbine-songbird-cardinal": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2103
+    },
+    "columbine-songbird-nightingale": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2104
+    },
+    "columbine-songbird-robin": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2105
+    },
+    "columbine-songbird-mixture": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2106
+    },
+    "milkweed-pleurisy-root": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2107
+    },
+    "milkweed-swamp-milkweed": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2108
+    },
+    "milkweed-soulmate": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2109
+    },
+    "milkweed-milkmaid": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2110
+    },
+    "milkweed-oscar": {
+      "updated_at": "2026-11-24T01:50:40.350Z",
+      "updated_seq": 4663
+    },
+    "balloon-flower-astra-blue": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2112
+    },
+    "balloon-flower-astra-light-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2113
+    },
+    "balloon-flower-astra-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2114
+    },
+    "balloon-flower-astra-semi-double-blue": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2115
+    },
+    "balloon-flower-astra-semi-double-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2116
+    },
+    "balloon-flower-astra-semi-double-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2117
+    },
+    "balloon-flower-astra-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2118
+    },
+    "balloon-flower-astra-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2119
+    },
+    "cleome-mauve-queen": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2120
+    },
+    "cleome-queen-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2121
+    },
+    "cleome-violet-queen": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2122
+    },
+    "cleome-white-queen": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2123
+    },
+    "cleome-rose-queen": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2124
+    },
+    "cleome-cherry-queen": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2125
+    },
+    "goldenrod-golden-baby": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2126
+    },
+    "goldenrod-canada-goldenrod": {
+      "updated_at": "2026-11-22T03:45:18.520Z",
+      "updated_seq": 4594
+    },
+    "goldenrod-showy-goldenrod": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2128
+    },
+    "honesty-chedglow": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2129
+    },
+    "honesty-albiflora": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2130
+    },
+    "honesty-alba-variegata": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2131
+    },
+    "honesty-honesty": {
+      "updated_at": "2026-11-22T03:45:17.030Z",
+      "updated_seq": 4593
+    },
+    "chinese-lantern-chinese-lantern": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2133
+    },
+    "coleus-wizard-scarlet": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2134
+    },
+    "coleus-wizard-golden": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2135
+    },
+    "coleus-wizard-rose": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2136
+    },
+    "coleus-wizard-velvet-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2137
+    },
+    "coleus-kong-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2138
+    },
+    "coleus-kong-rose": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2139
+    },
+    "coleus-chocolate-covered-cherry": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2140
+    },
+    "wallflower-sunset-apricot": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2141
+    },
+    "wallflower-sunset-primrose": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2142
+    },
+    "wallflower-sunset-orange": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2143
+    },
+    "wallflower-sunset-yellow": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2144
+    },
+    "wallflower-sunset-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2145
+    },
+    "wallflower-sunset-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2146
+    },
+    "wallflower-sunset-purple": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2147
+    },
+    "false-sunflower-summer-sun": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2148
+    },
+    "false-sunflower-bleeding-hearts": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2149
+    },
+    "false-sunflower-false-sunflower": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2150
+    },
+    "paper-daisy-pierrot-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2151
+    },
+    "paper-daisy-pierrot": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2152
+    },
+    "paper-daisy-acroclinium-double-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2153
+    },
+    "paper-daisy-pink-and-white-everlastings": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2154
+    },
+    "perennial-babys-breath-snowflake": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2155
+    },
+    "perennial-babys-breath-perennial-babys-breath": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2156
+    },
+    "anise-hyssop-golden-jubilee": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2157
+    },
+    "anise-hyssop-alabaster": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2158
+    },
+    "anise-hyssop-anise-hyssop": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2159
+    },
+    "mullein-southern-charm": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2160
+    },
+    "mullein-violetta": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2161
+    },
+    "mullein-wedding-candles": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2162
+    },
+    "globe-thistle-veitchs-blue": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2163
+    },
+    "globe-thistle-globe-thistle": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2164
+    },
+    "false-indigo-blue-wild-indigo": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2165
+    },
+    "spike-speedwell-blauteppich": {
+      "updated_at": "2026-11-24T01:50:42.029Z",
+      "updated_seq": 4664
+    },
+    "spike-speedwell-sightseeing": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2167
+    },
+    "masterwort-rosensinfonie": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2168
+    },
+    "masterwort-great-masterwort": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2169
+    },
+    "hollyhock-chaters-double-mix": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2170
+    },
+    "hollyhock-chaters-double-white": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2171
+    },
+    "hollyhock-chaters-double-pink": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2172
+    },
+    "hollyhock-chaters-double-red": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2173
+    },
+    "hollyhock-chaters-double-salmon": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2174
+    },
+    "hollyhock-chaters-double-yellow": {
+      "updated_at": "2026-11-18T05:13:45.000Z",
+      "updated_seq": 2175
+    },
+    "snapdragon-potomac-dark-pink": {
+      "updated_at": "2026-11-22T03:44:05.199Z",
+      "updated_seq": 4523
+    },
+    "snapdragon-potomac-lavender": {
+      "updated_at": "2026-11-22T03:44:06.092Z",
+      "updated_seq": 4524
+    },
+    "snapdragon-potomac-white": {
+      "updated_at": "2026-11-22T03:44:07.508Z",
+      "updated_seq": 4525
+    },
+    "snapdragon-potomac-yellow": {
+      "updated_at": "2026-11-22T03:44:08.487Z",
+      "updated_seq": 4526
+    },
+    "snapdragon-potomac-red": {
+      "updated_at": "2026-11-22T03:44:09.889Z",
+      "updated_seq": 4527
+    },
+    "statice-qis-dark-blue": {
+      "updated_at": "2026-11-22T03:44:55.897Z",
+      "updated_seq": 4569
+    },
+    "statice-qis-lavender": {
+      "updated_at": "2026-11-22T03:44:56.719Z",
+      "updated_seq": 4570
+    },
+    "statice-qis-white": {
+      "updated_at": "2026-11-22T03:44:57.501Z",
+      "updated_seq": 4571
+    },
+    "statice-qis-yellow": {
+      "updated_at": "2026-11-22T03:44:58.267Z",
+      "updated_seq": 4572
+    },
+    "snapdragon-potomac-cherry-rose": {
+      "updated_at": "2026-11-22T03:44:12.549Z",
+      "updated_seq": 4529
+    },
+    "snapdragon-potomac-crimson": {
+      "updated_at": "2026-11-22T03:44:14.020Z",
+      "updated_seq": 4530
+    },
+    "snapdragon-potomac-dark-orange": {
+      "updated_at": "2026-11-22T03:44:14.972Z",
+      "updated_seq": 4531
+    },
+    "snapdragon-potomac-royal": {
+      "updated_at": "2026-11-20T21:50:20.817Z",
+      "updated_seq": 4049
+    },
+    "snapdragon-potomac-mix": {
+      "updated_at": "2026-11-22T03:44:15.590Z",
+      "updated_seq": 4532
+    },
+    "snapdragon-chantilly-purple": {
+      "updated_at": "2026-11-24T01:50:53.856Z",
+      "updated_seq": 4669
+    },
+    "statice-qis-rose": {
+      "updated_at": "2026-11-22T03:44:28.748Z",
+      "updated_seq": 4544
+    },
+    "statice-qis-mix": {
+      "updated_at": "2026-11-22T03:44:29.970Z",
+      "updated_seq": 4545
+    },
+    "snapdragon-chantilly-pink": {
+      "updated_at": "2026-11-24T01:50:56.149Z",
+      "updated_seq": 4670
+    },
+    "snapdragon-potomac-pink": {
+      "updated_at": "2026-11-22T03:44:10.911Z",
+      "updated_seq": 4528
+    },
+    "snapdragon-potomac-ivory-white": {
+      "updated_at": "2026-11-22T03:44:17.023Z",
+      "updated_seq": 4533
+    },
+    "snapdragon-chantilly-bronze-white-throat": {
+      "updated_at": "2026-11-24T01:50:58.283Z",
+      "updated_seq": 4671
+    },
+    "snapdragon-chantilly-cream-yellow": {
+      "updated_at": "2026-11-24T01:51:00.286Z",
+      "updated_seq": 4672
+    },
+    "snapdragon-chantilly-deep-orange": {
+      "updated_at": "2026-11-24T01:51:02.008Z",
+      "updated_seq": 4673
+    },
+    "snapdragon-chantilly-velvet": {
+      "updated_at": "2026-11-24T01:51:03.676Z",
+      "updated_seq": 4674
+    },
+    "snapdragon-chantilly-white": {
+      "updated_at": "2026-11-24T01:51:06.033Z",
+      "updated_seq": 4675
+    },
+    "snapdragon-chantilly-yellow": {
+      "updated_at": "2026-11-24T01:51:07.978Z",
+      "updated_seq": 4676
+    },
+    "milkweed-swamp-milkweed-white": {
+      "updated_at": "2026-11-22T03:44:38.294Z",
+      "updated_seq": 4552
+    },
+    "snapdragon-maryland-appleblossom": {
+      "updated_at": "2026-11-22T21:45:19.812Z",
+      "updated_seq": 4597
+    },
+    "snapdragon-maryland-bright-yellow": {
+      "updated_at": "2026-11-22T21:45:21.871Z",
+      "updated_seq": 4600
+    },
+    "snapdragon-maryland-dark-orange": {
+      "updated_at": "2026-11-22T21:45:25.752Z",
+      "updated_seq": 4603
+    },
+    "snapdragon-maryland-flamingo": {
+      "updated_at": "2026-11-22T21:45:28.990Z",
+      "updated_seq": 4606
+    },
+    "snapdragon-maryland-ivory-white": {
+      "updated_at": "2026-11-22T21:45:32.225Z",
+      "updated_seq": 4609
+    },
+    "snapdragon-maryland-lavender": {
+      "updated_at": "2026-11-22T21:45:35.740Z",
+      "updated_seq": 4612
+    },
+    "snapdragon-maryland-mix": {
+      "updated_at": "2026-11-22T21:45:38.953Z",
+      "updated_seq": 4615
+    },
+    "snapdragon-maryland-orange": {
+      "updated_at": "2026-11-22T21:45:42.300Z",
+      "updated_seq": 4618
+    },
+    "snapdragon-maryland-plumblossom": {
+      "updated_at": "2026-11-23T21:44:15.408Z",
+      "updated_seq": 4642
+    },
+    "snapdragon-maryland-red": {
+      "updated_at": "2026-11-23T21:44:18.683Z",
+      "updated_seq": 4645
+    },
+    "snapdragon-maryland-rose": {
+      "updated_at": "2026-11-23T21:44:22.477Z",
+      "updated_seq": 4648
+    },
+    "snapdragon-maryland-royal": {
+      "updated_at": "2026-11-23T21:44:25.943Z",
+      "updated_seq": 4651
+    },
+    "snapdragon-maryland-shell-pink": {
+      "updated_at": "2026-11-23T21:44:29.802Z",
+      "updated_seq": 4654
+    },
+    "snapdragon-maryland-true-pink": {
+      "updated_at": "2026-11-23T21:44:32.300Z",
+      "updated_seq": 4657
+    },
+    "snapdragon-maryland-yosemite-pink": {
+      "updated_at": "2026-11-23T21:44:36.588Z",
+      "updated_seq": 4660
+    }
+  },
+  "sellers": {
+    "songbird-seed-co": {
+      "updated_at": "2026-11-24T05:18:53.148Z",
+      "updated_seq": 4677
+    },
+    "sunflower-steve-seed-co": {
+      "updated_at": "2026-11-20T18:13:46.713Z",
+      "updated_seq": 4001
+    },
+    "floret": {
+      "updated_at": "2026-11-20T18:13:42.889Z",
+      "updated_seq": 3988
+    },
+    "dawn-creek-farm": {
+      "updated_at": "2026-11-20T18:13:42.583Z",
+      "updated_seq": 3987
+    },
+    "hudson-valley-seed-co": {
+      "updated_at": "2026-11-24T05:18:54.630Z",
+      "updated_seq": 4678
+    },
+    "wild-west-seed": {
+      "updated_at": "2026-11-24T05:18:55.523Z",
+      "updated_seq": 4679
+    },
+    "3-porch-farm": {
+      "updated_at": "2026-11-24T05:18:56.288Z",
+      "updated_seq": 4680
+    },
+    "blomma-flower-farm": {
+      "updated_at": "2026-11-24T05:18:57.051Z",
+      "updated_seq": 4681
+    },
+    "half-moons-farm": {
+      "updated_at": "2026-11-24T05:18:58.310Z",
+      "updated_seq": 4682
+    },
+    "jig-bee-flower-farm": {
+      "updated_at": "2026-11-24T05:18:58.981Z",
+      "updated_seq": 4683
+    },
+    "millay-and-meadowlark-flower-farm": {
+      "updated_at": "2026-11-24T05:19:01.019Z",
+      "updated_seq": 4684
+    },
+    "peace-seedlings": {
+      "updated_at": "2026-11-24T05:19:02.476Z",
+      "updated_seq": 4685
+    },
+    "summertime-seed-co": {
+      "updated_at": "2026-11-24T05:19:42.049Z",
+      "updated_seq": 4686
+    },
+    "sunflower-selections": {
+      "updated_at": "2026-11-24T05:19:43.698Z",
+      "updated_seq": 4687
+    },
+    "three-brothers-blooms": {
+      "updated_at": "2026-11-20T18:13:47.269Z",
+      "updated_seq": 4003
+    },
+    "american-meadows": {
+      "updated_at": "2026-11-24T05:19:45.498Z",
+      "updated_seq": 4688
+    },
+    "botanical-interests": {
+      "updated_at": "2026-11-24T05:19:46.707Z",
+      "updated_seq": 4689
+    },
+    "great-basin-seed": {
+      "updated_at": "2026-11-24T05:19:47.821Z",
+      "updated_seq": 4690
+    },
+    "high-mowing-organic-seeds": {
+      "updated_at": "2026-11-17T02:51:03.713Z",
+      "updated_seq": 2035
+    },
+    "prairie-moon-nursery": {
+      "updated_at": "2026-11-24T05:19:49.390Z",
+      "updated_seq": 4691
+    },
+    "renees-garden": {
+      "updated_at": "2026-11-24T05:19:51.114Z",
+      "updated_seq": 4692
+    },
+    "seed-savers-exchange": {
+      "updated_at": "2026-11-24T05:19:53.141Z",
+      "updated_seq": 4693
+    },
+    "select-seeds": {
+      "updated_at": "2026-11-24T05:19:54.340Z",
+      "updated_seq": 4694
+    },
+    "johnnys-selected-seeds": {
+      "updated_at": "2026-11-24T05:19:55.455Z",
+      "updated_seq": 4695
+    },
+    "the-gardeners-workshop": {
+      "updated_at": "2026-11-24T05:19:56.741Z",
+      "updated_seq": 4696
+    },
+    "davids-garden-seeds": {
+      "updated_at": "2026-11-24T05:19:57.827Z",
+      "updated_seq": 4697
+    },
+    "seedtime": {
+      "updated_at": "2026-11-24T05:19:59.717Z",
+      "updated_seq": 4698
+    },
+    "geoseed": {
+      "updated_at": "2026-11-24T05:20:01.154Z",
+      "updated_seq": 4699
+    },
+    "sweet-pea-gardens": {
+      "updated_at": "2026-11-22T01:23:17.242Z",
+      "updated_seq": 4427
+    },
+    "uprising-seeds": {
+      "updated_at": "2026-11-24T05:20:02.377Z",
+      "updated_seq": 4700
+    },
+    "territorial-seed-company": {
+      "updated_at": "2026-11-24T05:20:04.349Z",
+      "updated_seq": 4701
+    },
+    "outsidepride": {
+      "updated_at": "2026-11-24T05:20:08.609Z",
+      "updated_seq": 4702
+    },
+    "adaptive-seeds": {
+      "updated_at": "2026-11-22T01:23:23.203Z",
+      "updated_seq": 4431
+    },
+    "eden-brothers": {
+      "updated_at": "2026-11-24T05:20:09.726Z",
+      "updated_seq": 4703
+    },
+    "reimer-seeds": {
+      "updated_at": "2026-11-22T01:23:27.670Z",
+      "updated_seq": 4433
+    },
+    "thresh-seed-co": {
+      "updated_at": "2026-11-24T05:20:10.877Z",
+      "updated_seq": 4704
+    },
+    "tomorrowseeds": {
+      "updated_at": "2026-11-24T05:20:12.085Z",
+      "updated_seq": 4705
+    },
+    "south-ga-seed-co": {
+      "updated_at": "2026-11-24T05:20:13.230Z",
+      "updated_seq": 4706
+    },
+    "alliance-of-native-seedkeepers": {
+      "updated_at": "2026-11-24T05:20:15.592Z",
+      "updated_seq": 4707
+    },
+    "osborne-seed": {
+      "updated_at": "2026-11-24T05:20:19.850Z",
+      "updated_seq": 4708
+    },
+    "rupp-seeds": {
+      "updated_at": "2026-11-24T05:20:21.604Z",
+      "updated_seq": 4709
+    },
+    "urban-farmer": {
+      "updated_at": "2026-11-24T05:20:23.293Z",
+      "updated_seq": 4710
+    },
+    "harris-seeds": {
+      "updated_at": "2026-11-24T05:20:24.585Z",
+      "updated_seq": 4711
+    },
+    "park-seed": {
+      "updated_at": "2026-11-22T01:23:42.148Z",
+      "updated_seq": 4442
+    },
+    "fedco-seeds": {
+      "updated_at": "2026-11-24T05:20:26.659Z",
+      "updated_seq": 4712
+    },
+    "trailing-petunia": {
+      "updated_at": "2026-11-24T05:20:36.164Z",
+      "updated_seq": 4713
+    },
+    "epic-gardening": {
+      "updated_at": "2026-11-22T01:23:45.762Z",
+      "updated_seq": 4445
+    },
+    "everwilde-farms": {
+      "updated_at": "2026-11-24T05:20:37.494Z",
+      "updated_seq": 4714
+    },
+    "seedman": {
+      "updated_at": "2026-11-22T01:23:49.352Z",
+      "updated_seq": 4447
+    },
+    "halden-garden": {
+      "updated_at": "2026-11-24T05:20:39.421Z",
+      "updated_seq": 4715
+    },
+    "hirts-gardens": {
+      "updated_at": "2026-11-24T05:20:40.737Z",
+      "updated_seq": 4716
+    },
+    "trf-la": {
+      "updated_at": "2026-11-24T05:20:42.960Z",
+      "updated_seq": 4717
+    },
+    "high-country-gardens": {
+      "updated_at": "2026-11-24T05:20:44.770Z",
+      "updated_seq": 4718
+    },
+    "tomato-growers-supply-co": {
+      "updated_at": "2026-11-24T05:20:45.927Z",
+      "updated_seq": 4719
+    },
+    "true-leaf-market": {
+      "updated_at": "2026-11-24T05:20:47.810Z",
+      "updated_seq": 4720
+    },
+    "bucktown-seed-co": {
+      "updated_at": "2026-11-24T05:20:49.595Z",
+      "updated_seq": 4721
+    },
+    "baker-creek-heirloom-seed-co": {
+      "updated_at": "2026-11-24T05:20:50.724Z",
+      "updated_seq": 4722
+    },
+    "gertens-garden-center": {
+      "updated_at": "2026-11-24T05:20:51.898Z",
+      "updated_seq": 4723
+    },
+    "autumn-prairie-pumpkins": {
+      "updated_at": "2026-11-22T01:24:05.341Z",
+      "updated_seq": 4458
+    },
+    "fellabees-nativeseeds": {
+      "updated_at": "2026-11-24T05:20:52.909Z",
+      "updated_seq": 4724
+    },
+    "grow-organic-peaceful-valley-farm-garden-supply": {
+      "updated_at": "2026-11-24T05:20:54.988Z",
+      "updated_seq": 4725
+    },
+    "homestead-culture": {
+      "updated_at": "2026-11-22T01:24:09.830Z",
+      "updated_seq": 4461
+    },
+    "j-l-hudson-seeds": {
+      "updated_at": "2026-11-22T01:24:11.489Z",
+      "updated_seq": 4462
+    },
+    "plant-good-seed": {
+      "updated_at": "2026-11-24T05:21:21.876Z",
+      "updated_seq": 4740
+    },
+    "sandhill-preservation": {
+      "updated_at": "2026-11-24T05:20:57.329Z",
+      "updated_seq": 4727
+    },
+    "sow-true-seed": {
+      "updated_at": "2026-11-24T05:21:02.543Z",
+      "updated_seq": 4728
+    },
+    "survival-garden-seeds": {
+      "updated_at": "2026-11-22T01:24:17.034Z",
+      "updated_seq": 4466
+    },
+    "ujamaa-seeds": {
+      "updated_at": "2026-11-22T01:24:18.833Z",
+      "updated_seq": 4467
+    },
+    "wild-garden-seed": {
+      "updated_at": "2026-11-24T05:21:04.170Z",
+      "updated_seq": 4729
+    },
+    "san-diego-seed-company": {
+      "updated_at": "2026-11-24T05:21:05.157Z",
+      "updated_seq": 4730
+    },
+    "jerras-garden": {
+      "updated_at": "2026-11-24T05:21:06.657Z",
+      "updated_seq": 4731
+    },
+    "marys-heirloom-seeds": {
+      "updated_at": "2026-11-22T01:24:24.323Z",
+      "updated_seq": 4471
+    },
+    "grow-hoss": {
+      "updated_at": "2026-11-24T05:21:08.402Z",
+      "updated_seq": 4732
+    },
+    "vermont-wildflower-farm": {
+      "updated_at": "2026-11-24T05:21:09.669Z",
+      "updated_seq": 4733
+    },
+    "flower-people": {
+      "updated_at": "2026-11-22T01:24:29.799Z",
+      "updated_seq": 4474
+    },
+    "garden-tree-nursery": {
+      "updated_at": "2026-11-24T05:21:10.783Z",
+      "updated_seq": 4734
+    },
+    "prairie-road-organic-seed": {
+      "updated_at": "2026-11-22T01:24:33.431Z",
+      "updated_seq": 4476
+    },
+    "garden-pro-hub": {
+      "updated_at": "2026-11-22T01:24:34.412Z",
+      "updated_seq": 4477
+    },
+    "southern-seeds": {
+      "updated_at": "2026-11-24T05:21:11.926Z",
+      "updated_seq": 4735
+    },
+    "walnut-creek-supply": {
+      "updated_at": "2026-11-24T05:21:12.953Z",
+      "updated_seq": 4736
+    },
+    "seedway": {
+      "updated_at": "2026-11-24T05:21:15.092Z",
+      "updated_seq": 4737
+    },
+    "deep-harvest-farm": {
+      "updated_at": "2026-11-24T05:21:16.400Z",
+      "updated_seq": 4738
+    },
+    "strictly-medicinal-seeds": {
+      "updated_at": "2026-11-24T05:21:17.528Z",
+      "updated_seq": 4739
+    }
+  },
+  "series": {}
+}
