@@ -52,3 +52,10 @@ Quinn build gate (usability drive in a real browser: a shopper checking stock on
 ## PR body hygiene
 
 Provenance (this brief), the workflow's Build accounting, verify counts (branch + merge-base), the C1–C3 discharges stated, and a Gate record section pre-templated for Quinn + Athene.
+
+## Coordinator addendum (2026-11-23, post-SHOP — read with the brief)
+
+- **The SHOP build has shipped** (PR #66, merged 47e1e67, Worker c046092f) since this brief was held. The seller page no longer renders ledger cards: its listings are the unified `VarietyCard` in **shop context**, which carries the ledger's stock line transferred whole. The stock line the check control lives in now exists in exactly two components: `ListingRow` (variety context — unchanged by SHOP) and `VarietyCard` shop context. **The control, its states, and its announcement behavior attach to the stock line in BOTH.** Where the design set (`stock-check-design/`) speaks of the seller-page ledger card, read the shop-context card's stock line.
+- **Ruling 2's grouped sort is the shipped shop sort** (model: `v2/lib/shop-browse.ts`; the shop results region re-orders in place). The re-order on a stock flip happens inside that region, move-never-remount, per Ada §3.5 as the brief already requires.
+- **Migration numbering:** the next migration is **0019** (0018_seller_shop_contact_locations shipped with SHOP). The `listing_stock_checks` table (with C1's additive success timestamp) + the append-only `stock_check_log` land there, additive only.
+- Everything else in this brief stands exactly as written, including conditions A4, A6, C1–C3 and the Athene second-rater gate.
