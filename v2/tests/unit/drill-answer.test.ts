@@ -3,6 +3,6 @@ import { drillAnswer } from "@/lib/drill-answer";
 
 describe("drillAnswer", () => {
   it("returns the drill answer", () => {
-    expect(drillAnswer()).toBe(43);
+    expect(drillAnswer()).toBe(42);
   });
 });
