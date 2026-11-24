@@ -57,7 +57,7 @@ describe("3.3 — CodeEntry association, lifetime, and spaced paste", () => {
     expect(line.closest("p")?.className).toContain("field-error");
     expect(input.getAttribute("aria-invalid")).toBe("true");
     expect(input.getAttribute("aria-describedby")).toBe("t-code-hint t-code-error");
-    expect(document.activeElement).toBe(input);
+    await waitFor(() => expect(document.activeElement).toBe(input));
   });
 
   it("verifies a pasted spaced code whole: '123 456' submits as 123456", async () => {
@@ -124,7 +124,7 @@ describe("3.3 — create-account form: summary, inline errors, generic fallback,
     expect(document.getElementById("create-name-error")?.textContent).toBe("Enter your name.");
     expect(document.getElementById("create-zip-error")?.textContent).toBe("Enter your ZIP code as 5 digits.");
     expect(fieldInput("create-name").getAttribute("aria-invalid")).toBe("true");
-    expect(document.activeElement).toBe(summary);
+    await waitFor(() => expect(document.activeElement).toBe(summary));
     // Entered data is never the price of an error.
     expect(fieldInput("create-email").value).toBe("kept@example.com");
   });
@@ -136,7 +136,7 @@ describe("3.3 — create-account form: summary, inline errors, generic fallback,
     const line = await screen.findByText("That email already has an account — sign in with your email and phone number instead, or use a different email address.");
     expect(line.closest("p")?.id).toBe("create-email-error");
     expect(screen.queryByRole("alert")).toBeNull();
-    expect(document.activeElement).toBe(fieldInput("create-email"));
+    await waitFor(() => expect(document.activeElement).toBe(fieldInput("create-email")));
     cleanup();
 
     render(<CreateAccountForm siteKey={null} />);
@@ -159,7 +159,7 @@ describe("3.3 — create-account form: summary, inline errors, generic fallback,
     fireEvent.submit(document.querySelector("form")!);
     expect(screen.getByRole("button", { name: "Creating…" })).toBeDefined();
     for (const id of ["create-name", "create-email", "create-phone", "create-zip"]) expect(fieldInput(id).disabled).toBe(false);
-    expect(document.activeElement).not.toBe(document.body);
+    await waitFor(() => expect(document.activeElement).not.toBe(document.body));
     expect(document.querySelector("form")?.getAttribute("aria-busy")).toBe("true");
     resolve(new Response(JSON.stringify({ data: { verification: { email: "sent", phone: null }, next: "/account" } }), { status: 200 }));
     await screen.findByTestId("signup-code-step");
@@ -207,7 +207,7 @@ describe("3.3 — report form: multi-field failures, target placement, success p
       "Please enter a valid email address so we can reply.",
     ]);
     expect(document.getElementById("message-error")?.textContent).toBe("Please add a few words of detail (at least 5 characters, at most 4,000).");
-    expect(document.activeElement).toBe(summary);
+    await waitFor(() => expect(document.activeElement).toBe(summary));
   });
 
   it("attaches unknown_target to the Page address name field", async () => {
@@ -217,7 +217,7 @@ describe("3.3 — report form: multi-field failures, target placement, success p
     const line = await screen.findByText("We couldn’t find a page with that address name. Check the seller or variety and the spelling, then try again.");
     expect(line.closest("p")?.id).toBe("target_ref-error");
     expect(screen.queryByRole("alert")).toBeNull();
-    expect(document.activeElement).toBe(document.getElementById("target_ref"));
+    await waitFor(() => expect(document.activeElement).toBe(document.getElementById("target_ref")));
   });
 
   it("succeeds into a headed panel with the onward link to the reported page", async () => {
@@ -229,7 +229,7 @@ describe("3.3 — report form: multi-field failures, target placement, success p
     expect(heading.closest("p")?.querySelector("svg")).not.toBeNull();
     const onward = screen.getByRole("link", { name: "Back to the seller page" });
     expect(onward.getAttribute("href")).toBe("/seller/songbird-seed-co");
-    expect(document.activeElement).toBe(heading);
+    await waitFor(() => expect(document.activeElement).toBe(heading));
   });
 });
 
@@ -259,7 +259,7 @@ describe("3.3 — account panel: inline field errors and the delete rerouting", 
     const line = await screen.findByText("That email already belongs to another account — use a different email address.");
     expect(line.closest("p")?.id).toBe("change-email-error");
     expect(input.getAttribute("aria-describedby")).toBe("change-email-hint change-email-error");
-    expect(document.activeElement).toBe(input);
+    await waitFor(() => expect(document.activeElement).toBe(input));
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
@@ -272,7 +272,7 @@ describe("3.3 — account panel: inline field errors and the delete rerouting", 
     fireEvent.submit(input.closest("form")!);
     const line = await screen.findByText("That confirmation doesn't match — type DELETE in capitals, exactly as shown, to confirm.");
     expect(line.closest("p")?.id).toBe("delete-confirm-error");
-    expect(document.activeElement).toBe(input);
+    await waitFor(() => expect(document.activeElement).toBe(input));
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
@@ -362,7 +362,7 @@ describe("3.3 — waitlist busy discipline on the current form (3.3-E)", () => {
     expect(await screen.findByRole("button", { name: "Joining…" })).toBeDefined();
     expect(email.disabled).toBe(false);
     expect(fieldInput("waitlist-phone").disabled).toBe(false);
-    expect(document.activeElement).not.toBe(document.body);
+    await waitFor(() => expect(document.activeElement).not.toBe(document.body));
     resolvePost(new Response(JSON.stringify({ status: 400, code: "invalid_json", detail: "body must be JSON" }), { status: 400 }));
     await screen.findByRole("alert");
   });

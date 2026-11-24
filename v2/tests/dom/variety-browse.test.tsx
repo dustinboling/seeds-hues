@@ -245,7 +245,7 @@ describe("hydrated controls (buttons with aria-pressed, stable keys)", () => {
     // No remounts: the same count node and the same chip button, counts refreshed in place.
     expect(countLine()).toBe(countNode);
     expect(chip("Season", `Cool Season Hardy Annuals ${next.counts.season.options.cool} varieties`)).toBe(coolBtn);
-    expect(document.activeElement).toBe(coolBtn);
+    await waitFor(() => expect(document.activeElement).toBe(coolBtn));
   });
 
   it("tapping the active option is a no-op (no fetch, no entry, no change)", () => {
@@ -438,7 +438,7 @@ describe("applied row + Clear all (in place)", () => {
     expect(push.mock.calls[0]?.[2]).toBe("/variety?color_family=pink");
     expect(screen.getByRole("button", { name: "Remove the Hue filter, Pink" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Remove the Hue filter, Peach" })).toBeNull();
-    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Clear all filters" }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Clear all filters" })));
   });
 
   it("Clear all resets every group in one action, entry and announcement; focus lands on the first All", async () => {
@@ -459,7 +459,7 @@ describe("applied row + Clear all (in place)", () => {
     expect(screen.queryByRole("group", { name: "Applied filters" })).toBeNull();
     // Exactly one count-line change for the whole reset — one announcement.
     expect(announcements).toHaveLength(1);
-    expect(document.activeElement).toBe(chip("Season", `All ${next.counts.season.all} varieties`));
+    await waitFor(() => expect(document.activeElement).toBe(chip("Season", `All ${next.counts.season.all} varieties`)));
   });
 
   it("Clear all under an active sort keeps the order: one entry, one fetch, the true phrase", async () => {
@@ -474,7 +474,7 @@ describe("applied row + Clear all (in place)", () => {
     expect(push).toHaveBeenCalledTimes(1);
     expect(push.mock.calls[0]?.[2]).toBe("/variety?sort=availability");
     expect(screen.queryByRole("group", { name: "Applied filters" })).toBeNull();
-    expect(document.activeElement).toBe(chip("Season", `All ${next.counts.season.all} varieties`));
+    await waitFor(() => expect(document.activeElement).toBe(chip("Season", `All ${next.counts.season.all} varieties`)));
   });
 });
 
@@ -497,7 +497,7 @@ describe("zero results (recovery + focus)", () => {
     fireEvent.click(within(emptyState as HTMLElement).getByRole("button", { name: "Clear filters" }));
     await waitFor(() => expect(countLine().textContent).toBe("49 varieties, alphabetical. Page 1 of 3."));
     expect(resultsRegion().textContent).toContain("Test Variety 0");
-    expect(document.activeElement).toBe(chip("Season", `All ${back.counts.season.all} varieties`));
+    await waitFor(() => expect(document.activeElement).toBe(chip("Season", `All ${back.counts.season.all} varieties`)));
   });
 });
 
