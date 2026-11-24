@@ -1,0 +1,63 @@
+{
+  "$comment": "Slice-1 mirror of the @hues ref layer (see SWAP.md). Two namespaces: `design` holds the design-system ref values quoted in the slice brief §3; `seeds` holds seeds' live values from v2/app/globals.css @theme, ported as-is. Namespaces exist so the ink-soft collision (design #71806c vs seeds #4a4438) cannot silently merge.",
+  "design": {
+    "seeds-ground": {
+      "value": "#f8f6ec",
+      "note": "Brief §3: the seeds directory ground. Taken as sys.color.bg per Dustin's Q3 ruling (the conversion's only color delta)."
+    },
+    "seeds-link": {
+      "value": "#1B5E37",
+      "note": "Brief §3: package value for sys.color.link, adopted in theme.seeds.json (live seeds.link #1f5c3d superseded)."
+    },
+    "fern": {
+      "value": "#2D6A4F",
+      "note": "Brief §3: package value for sys.color.accent, adopted in theme.seeds.json (live seeds.leaf-600 #2e6b4f superseded)."
+    },
+    "seeds-deep": {
+      "value": "#1B4332",
+      "note": "Brief §3: package value for sys.color.accent-strong, adopted in theme.seeds.json (live seeds.leaf #1e4634 superseded)."
+    },
+    "seeds-muted": {
+      "value": "#595959",
+      "note": "Brief §3: package value for sys.color.text-muted, adopted in theme.seeds.json (live seeds.muted #6a5f4c superseded)."
+    },
+    "gold-ink": {
+      "value": "#86691f",
+      "note": "Brief §3: package value for sys.color.accent-ink, adopted in theme.seeds.json (live seeds.warn #8a5e08 superseded)."
+    },
+    "ink-soft": {
+      "value": "#71806c",
+      "note": "Brief §3: design-system default for sys.color.border-field. NOT seeds' live ink-soft (#4a4438, refs.seeds.ink-soft) — same stem, different value."
+    }
+  },
+  "seeds": {
+    "paper": {
+      "value": "#f8f1e1",
+      "note": "Live ground (v2 @theme --color-paper), superseded as the ground by design.seeds-ground per Q3. Kept as the audit record of the delta."
+    },
+    "paper-deep": { "value": "#f0e5cb", "note": "v2 @theme --color-paper-deep." },
+    "surface": { "value": "#fffdf6", "note": "v2 @theme --color-surface." },
+    "ink": { "value": "#2e2a23", "note": "v2 @theme --color-ink." },
+    "ink-soft": {
+      "value": "#4a4438",
+      "note": "v2 @theme --color-ink-soft (body text on paper-deep/footer/tab-bar; PB-A filled-field border). NOT design.ink-soft (#71806c)."
+    },
+    "muted": { "value": "#6a5f4c", "note": "v2 @theme --color-muted." },
+    "line": { "value": "#e0d5b8", "note": "v2 @theme --color-line." },
+    "line-strong": { "value": "#91825C", "note": "v2 @theme --color-line-strong." },
+    "leaf": { "value": "#1e4634", "note": "v2 @theme --color-leaf." },
+    "leaf-600": { "value": "#2e6b4f", "note": "v2 @theme --color-leaf-600." },
+    "leaf-50": { "value": "#e3ead8", "note": "v2 @theme --color-leaf-50." },
+    "link": { "value": "#1f5c3d", "note": "v2 @theme --color-link." },
+    "petal": { "value": "#8e2a52", "note": "v2 @theme --color-petal." },
+    "petal-50": { "value": "#f7e8ec", "note": "v2 @theme --color-petal-50." },
+    "warn": { "value": "#8a5e08", "note": "v2 @theme --color-warn." },
+    "warn-50": { "value": "#f7edd3", "note": "v2 @theme --color-warn-50." },
+    "danger": { "value": "#8F1D12", "note": "v2 @theme --color-danger (admin-only)." },
+    "sage": { "value": "#7d9b76", "note": "v2 @theme --color-sage (decorative foliage only)." },
+    "focus": { "value": "#7a3e10", "note": "v2 @theme --color-focus." },
+    "listing": { "value": "#E9DFC2", "note": "v2 @theme --color-listing (Quiet Ledger hairline)." },
+    "visit": { "value": "#DFE9D6", "note": "v2 @theme --color-visit (Visit shop pill fill)." },
+    "stem-rule": { "value": "rgb(151 134 95 / 0.45)", "note": "v2 @theme --color-stem-rule (frozen retired line-strong RGB; do not re-derive)." }
+  }
+}
