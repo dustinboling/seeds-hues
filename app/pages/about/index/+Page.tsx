@@ -1,6 +1,6 @@
-import { ContactLine } from "../../src/components/ContactLine";
-import { ThemeArt } from "../../src/components/ThemeArt";
-import { CONFLICT_OF_INTEREST, TRADEMARK_DISCLAIMER } from "../../src/site";
+import { ContactLine } from "../../../src/components/ContactLine";
+import { ThemeArt } from "../../../src/components/ThemeArt";
+import { CONFLICT_OF_INTEREST, TRADEMARK_DISCLAIMER } from "../../../src/site";
 
 /**
  * /about — ported verbatim from v2/app/about/page.tsx. One standing-rule
