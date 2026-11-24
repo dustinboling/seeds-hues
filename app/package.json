@@ -16,6 +16,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.sw.json",
     "test": "vitest run",
     "verify": "npm run lint && npm run typecheck && npm run test",
+    "gen:sitemap-lastmod": "node scripts/gen-sitemap-lastmod.mjs",
     "gen:tokens-css": "node scripts/gen-tokens-css.mjs",
     "gen:contrast": "node scripts/gen-contrast.mjs",
     "sync:fonts": "node scripts/sync-fonts.mjs"

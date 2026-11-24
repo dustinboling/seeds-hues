@@ -11,7 +11,7 @@
  */
 import { createCatalogApi, type CatalogApi } from "./api";
 import { createDataCache, type DataCache } from "./cache";
-import type { ApiCoverageItem, ApiCrop, ApiRecentItem, CatalogCounts, OpenApiDoc, SyncSnapshotData } from "./types";
+import type { ApiCoverageItem, ApiCrop, ApiRecentItem, ApiSellerItem, CatalogCounts, OpenApiDoc, SyncSnapshotData } from "./types";
 
 export const DEFAULT_API_BASE_URL = "https://seeds.hues.flowers/api/v1";
 
@@ -95,7 +95,7 @@ export interface MachineData {
   counts: CatalogCounts;
   coverage: ApiCoverageItem[];
   crops: ApiCrop[];
-  sellers: { slug: string; name: string; location: string | null }[];
+  sellers: ApiSellerItem[];
   snapshot: SyncSnapshotData;
 }
 

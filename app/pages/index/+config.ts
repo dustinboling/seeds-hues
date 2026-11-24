@@ -1,10 +1,13 @@
 import type { Config } from "vike/types";
+import { homeHead } from "./head";
 
-// The proof route is static content with no live data: prerendered at build
-// time. (Bea's condition on `/` — live counts must be request-time facts —
-// binds the real home template in Slice 2, not this inert proof page.)
+// Prerendered WITH live data: the +data hook loads current counts at build,
+// and the revalidate hook regenerates the page on every catalog write —
+// Bea's condition on `/` (a build-time snapshot of live counts is a stale
+// fact, so "/" regenerates on data-change invalidation).
 const config: Config = {
   prerender: true,
+  title: homeHead.title,
 };
 
 export default config;
