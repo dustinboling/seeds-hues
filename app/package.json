@@ -10,6 +10,8 @@
     "dev": "vike dev",
     "build": "vike build && npm run build:sw",
     "build:sw": "node scripts/build-sw.mjs",
+    "build:server": "node scripts/build-server.mjs",
+    "serve": "node dist-server/serve.mjs",
     "postbuild": "node scripts/assert-pwa.mjs",
     "preview": "vike preview",
     "lint": "eslint .",
@@ -22,8 +24,10 @@
     "sync:fonts": "node scripts/sync-fonts.mjs"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "satori": "^0.63.2",
     "vike": "0.4.270",
     "vike-react": "0.6.32",
     "workbox-core": "7.4.1",

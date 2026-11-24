@@ -7,8 +7,16 @@
 import type {
   ApiCoverageItem,
   ApiCrop,
+  ApiMedia,
+  ApiOgSeller,
+  ApiPlantGuidance,
+  ApiPlantRef,
+  ApiPublicListing,
   ApiRecentItem,
   ApiSellerItem,
+  ApiSellerRef,
+  ApiVarietyDetail,
+  ApiVarietyListItem,
   CatalogCounts,
   LastmodCache,
   OpenApiDoc,
@@ -25,6 +33,12 @@ export interface FakeCatalogState {
   openapi: OpenApiDoc;
   varietyDates: Record<string, string>;
   sellerDates: Record<string, string>;
+  /** Slice 3: variety details by slug (GET /api/v1/varieties/[slug]). */
+  details: Record<string, ApiVarietyDetail>;
+  /** Slice 3: the /varieties list pool (sibling strips filter it by crop). */
+  listItems: ApiVarietyListItem[];
+  /** Slice 3: merged variety slug -> surviving slug. */
+  merged: Record<string, string>;
 }
 
 const crop = (
@@ -43,6 +57,460 @@ const crop = (
   media: [{ url: `/crop/${slug}.webp` }],
 });
 
+const plate = (url: string): ApiMedia => ({ url, licence: "CC BY-NC 4.0", credit: "Hues Floral Park" });
+
+const sweetPeaRef: ApiPlantRef = {
+  slug: "sweet-pea",
+  commonName: "Sweet Pea",
+  latinName: "Lathyrus odoratus",
+  lifeCycle: "Annual",
+  season_class: "cool_season_hardy_annual",
+  season_source_label: "The Gardener's Workshop",
+  sowing_methods: ["direct_sow", "transplant"],
+  sowing_method_source_label: "Floret",
+};
+
+const cosmosRef: ApiPlantRef = {
+  slug: "cosmos",
+  commonName: "Cosmos",
+  latinName: "Cosmos bipinnatus",
+  lifeCycle: "Annual",
+  season_class: "warm_season_tender_annual",
+  season_source_label: "The Gardener's Workshop",
+  sowing_methods: ["direct_sow"],
+  sowing_method_source_label: "Floret",
+};
+
+/** Fixture (v)'s crop: no Latin name anywhere (the Latin "Unknown" branch). */
+const cosmosNoLatinRef: ApiPlantRef = { ...cosmosRef, latinName: null };
+
+const blueRidge: ApiSellerRef = {
+  slug: "blue-ridge-seeds",
+  name: "Blue Ridge Seeds",
+  location: "Portland, OR",
+  region: "OR",
+  country: "US",
+  isSmallFarm: true,
+};
+
+const prairie: ApiSellerRef = {
+  slug: "prairie-seed-house",
+  name: "Prairie Seed House",
+  location: "Lawrence, KS",
+  region: "KS",
+  country: "US",
+  isSmallFarm: false,
+};
+
+const NOT_RATED = { state: "not_yet_rated", average: null, review_count: 0 } as const;
+
+function listing(opts: {
+  id: number;
+  varietySlug: string;
+  varietyName: string;
+  plant: ApiPlantRef;
+  media: ApiMedia[];
+  seller: ApiSellerRef;
+  availability: ApiPublicListing["availability"];
+  lastCheckedAt: string | null;
+  firstSeenAt: string | null;
+  productUrl: string | null;
+  notes: string | null;
+  packetSizes: ApiPublicListing["packetSizes"];
+  provenanceMethod: ApiPublicListing["provenance"]["method"];
+}): ApiPublicListing {
+  return {
+    id: opts.id,
+    variety: {
+      slug: opts.varietySlug,
+      varietyName: opts.varietyName,
+      plant: opts.plant,
+      colorSwatch: null,
+      colorFamily: "pink",
+      media: opts.media,
+      cropMedia: [],
+    },
+    seller: opts.seller,
+    availability: opts.availability,
+    lastCheckedAt: opts.lastCheckedAt,
+    firstSeenAt: opts.firstSeenAt,
+    goUrl: `https://seeds.hues.flowers/go/${opts.id}`,
+    productUrl: opts.productUrl,
+    notes: opts.notes,
+    status: "published",
+    packetSizes: opts.packetSizes,
+    provenance: {
+      source_url: opts.productUrl,
+      retrieved_at: opts.lastCheckedAt,
+      method: opts.provenanceMethod,
+      confidence: 0.95,
+    },
+    sourceLabel: null,
+  };
+}
+
+/**
+ * Fixture (i): WITH sellers — three listings across two sellers (one
+ * Small-Farm-badged), mixed stock (in_stock / sold_out / preorder), packet
+ * sizes, real checked dates, listing notes, a series assignment, complete
+ * facts, one plate. Answer/title/description below are the live builders'
+ * exact outputs for this data (hand-verified against the v2 builders).
+ */
+function kingsRansom(): ApiVarietyDetail {
+  const media = [plate("/artwork/sweet-pea-kings-ransom.webp")];
+  const plant: ApiPlantGuidance = {
+    ...sweetPeaRef,
+    description: "Sweet peas are cool-season annuals grown for cut flowers.",
+    sowingNotes: "Start indoors or sow directly after frost.",
+  };
+  return {
+    slug: "sweet-pea-kings-ransom",
+    varietyName: "King's Ransom",
+    plant,
+    category: { slug: "flowers", name: "Flowers" },
+    subcategory: null,
+    series: { slug: "spencer-mix", name: "Spencer" },
+    colorSwatch: null,
+    colorFamily: "pink",
+    listingCount: 3,
+    sellerCount: 2,
+    inStockCount: 1,
+    lastCheckedAt: "2026-11-20T08:00:00.000Z",
+    indexable: true,
+    rating: { ...NOT_RATED },
+    description: "King's Ransom bears large, ruffled blooms in deep rose on strong stems.",
+    templateDescription:
+      "King's Ransom is a Sweet Pea variety (Lathyrus odoratus). It is listed by 2 seed sellers in this directory.",
+    answer: "As of Nov 20, 2026, 2 sellers list King's Ransom: Blue Ridge Seeds and Prairie Seed House.",
+    sowingNotes: "Sow indoors 4 weeks before last frost.",
+    heightCm: 180,
+    facts: {
+      color_family: "pink",
+      pollination: "open_pollinated",
+      height_cm: { min: 180, max: 180 },
+      days_to_bloom: { min: 70, max: 80 },
+    },
+    tags: ["fragrant"],
+    aliases: ["Ransom"],
+    protection: "none_stated",
+    protectionNote: null,
+    contentLevel: "factual",
+    updatedAt: "2026-11-20T00:00:00.000Z",
+    listings: [
+      listing({
+        id: 1,
+        varietySlug: "sweet-pea-kings-ransom",
+        varietyName: "King's Ransom",
+        plant: sweetPeaRef,
+        media,
+        seller: blueRidge,
+        availability: "in_stock",
+        lastCheckedAt: "2026-11-20T08:00:00.000Z",
+        firstSeenAt: "2026-09-01T00:00:00.000Z",
+        productUrl: "https://shop.example.com/blue-ridge/kings-ransom",
+        notes: "Packet sizes vary by season.",
+        packetSizes: [
+          { label: "25 seeds", seedCount: 25 },
+          { label: "1 g", seedCount: 90 },
+        ],
+        provenanceMethod: "human",
+      }),
+      listing({
+        id: 2,
+        varietySlug: "sweet-pea-kings-ransom",
+        varietyName: "King's Ransom",
+        plant: sweetPeaRef,
+        media,
+        seller: prairie,
+        availability: "sold_out",
+        lastCheckedAt: "2026-11-18T10:30:00.000Z",
+        firstSeenAt: "2026-10-05T00:00:00.000Z",
+        productUrl: "https://shop.example.com/prairie/kings-ransom",
+        notes: null,
+        packetSizes: [{ label: "50 seeds", seedCount: 50 }],
+        provenanceMethod: "exact",
+      }),
+      listing({
+        id: 3,
+        varietySlug: "sweet-pea-kings-ransom",
+        varietyName: "King's Ransom",
+        plant: sweetPeaRef,
+        media,
+        seller: blueRidge,
+        availability: "preorder",
+        lastCheckedAt: null,
+        firstSeenAt: null,
+        productUrl: null,
+        notes: "Treated seed.",
+        packetSizes: [],
+        provenanceMethod: "model",
+      }),
+    ],
+    media,
+  };
+}
+
+/** Fixture (ii): ZERO sellers — the indexable no-seller form with its waitlist block. */
+function lonelyBloom(): ApiVarietyDetail {
+  return {
+    slug: "cosmos-lonely-bloom",
+    varietyName: "Lonely Bloom",
+    plant: { ...cosmosRef, description: null, sowingNotes: null },
+    category: { slug: "flowers", name: "Flowers" },
+    subcategory: null,
+    series: null,
+    colorSwatch: null,
+    colorFamily: "unknown",
+    listingCount: 0,
+    sellerCount: 0,
+    inStockCount: 0,
+    lastCheckedAt: null,
+    indexable: true,
+    rating: { ...NOT_RATED },
+    description: "Lonely Bloom opens single white flowers.",
+    templateDescription: "Lonely Bloom is a Cosmos variety (Cosmos bipinnatus). No seller found selling Lonely Bloom yet.",
+    answer: "No seller found selling Lonely Bloom yet.",
+    sowingNotes: null,
+    heightCm: null,
+    facts: {
+      color_family: "white",
+      pollination: "unknown",
+      height_cm: { min: null, max: null },
+      days_to_bloom: { min: null, max: null },
+    },
+    tags: [],
+    aliases: [],
+    protection: "none_stated",
+    protectionNote: null,
+    contentLevel: "thin",
+    updatedAt: "2026-11-19T00:00:00.000Z",
+    listings: [],
+    media: [],
+  };
+}
+
+/**
+ * Fixture (iii): listings but NO badged seller — the small-farm empty state.
+ * No prose description (the Template B meta description).
+ */
+function candyStripe(): ApiVarietyDetail {
+  return {
+    slug: "cosmos-candy-stripe",
+    varietyName: "Candy Stripe",
+    plant: { ...cosmosRef, description: null, sowingNotes: null },
+    category: { slug: "flowers", name: "Flowers" },
+    subcategory: null,
+    series: null,
+    colorSwatch: null,
+    colorFamily: "pink",
+    listingCount: 2,
+    sellerCount: 1,
+    inStockCount: 1,
+    lastCheckedAt: "2026-11-15T12:00:00.000Z",
+    indexable: true,
+    rating: { ...NOT_RATED },
+    description: null,
+    templateDescription: "Candy Stripe is a Cosmos variety (Cosmos bipinnatus). It is listed by 1 seed seller in this directory.",
+    answer: "As of Nov 15, 2026, 1 seller lists Candy Stripe: Prairie Seed House.",
+    sowingNotes: null,
+    heightCm: 120,
+    facts: {
+      color_family: "pink",
+      pollination: "open_pollinated",
+      height_cm: { min: 120, max: 120 },
+      days_to_bloom: { min: 60, max: 70 },
+    },
+    tags: [],
+    aliases: [],
+    protection: "none_stated",
+    protectionNote: null,
+    contentLevel: "factual",
+    updatedAt: "2026-11-15T00:00:00.000Z",
+    listings: [
+      listing({
+        id: 10,
+        varietySlug: "cosmos-candy-stripe",
+        varietyName: "Candy Stripe",
+        plant: cosmosRef,
+        media: [],
+        seller: prairie,
+        availability: "in_stock",
+        lastCheckedAt: "2026-11-15T12:00:00.000Z",
+        firstSeenAt: "2026-08-20T00:00:00.000Z",
+        productUrl: "https://shop.example.com/prairie/candy-stripe",
+        notes: null,
+        packetSizes: [{ label: "25 seeds", seedCount: 25 }],
+        provenanceMethod: "synonym",
+      }),
+      listing({
+        id: 11,
+        varietySlug: "cosmos-candy-stripe",
+        varietyName: "Candy Stripe",
+        plant: cosmosRef,
+        media: [],
+        seller: prairie,
+        availability: "sold_out",
+        lastCheckedAt: "2026-11-12T09:00:00.000Z",
+        firstSeenAt: "2026-08-20T00:00:00.000Z",
+        productUrl: "https://shop.example.com/prairie/candy-stripe-large",
+        notes: "Check back in spring.",
+        packetSizes: [],
+        provenanceMethod: "exact",
+      }),
+    ],
+    media: [],
+  };
+}
+
+/**
+ * Fixture (v): facts with unknowns — no height, no days-to-bloom, no Latin,
+ * no season, no sowing methods, unknown pollination and color family, no
+ * series. Every unknown renders the word "Unknown" (series renders "None").
+ */
+function mysteryBloom(): ApiVarietyDetail {
+  return {
+    slug: "cosmos-mystery-bloom",
+    varietyName: "Mystery Bloom",
+    plant: {
+      ...cosmosNoLatinRef,
+      season_class: null,
+      season_source_label: null,
+      sowing_methods: [],
+      sowing_method_source_label: null,
+      description: null,
+      sowingNotes: null,
+    },
+    category: { slug: "flowers", name: "Flowers" },
+    subcategory: null,
+    series: null,
+    colorSwatch: null,
+    colorFamily: "unknown",
+    listingCount: 1,
+    sellerCount: 1,
+    inStockCount: 1,
+    lastCheckedAt: "2026-11-19T14:00:00.000Z",
+    indexable: true,
+    rating: { ...NOT_RATED },
+    description: null,
+    templateDescription: "Mystery Bloom is a Cosmos variety. It is listed by 1 seed seller in this directory.",
+    answer: "As of Nov 19, 2026, 1 seller lists Mystery Bloom: Prairie Seed House.",
+    sowingNotes: null,
+    heightCm: null,
+    facts: {
+      color_family: "unknown",
+      pollination: "unknown",
+      height_cm: { min: null, max: null },
+      days_to_bloom: { min: null, max: null },
+    },
+    tags: [],
+    aliases: [],
+    protection: "none_stated",
+    protectionNote: null,
+    contentLevel: "thin",
+    updatedAt: "2026-11-19T00:00:00.000Z",
+    listings: [
+      listing({
+        id: 20,
+        varietySlug: "cosmos-mystery-bloom",
+        varietyName: "Mystery Bloom",
+        plant: cosmosNoLatinRef,
+        media: [],
+        seller: prairie,
+        availability: "in_stock",
+        lastCheckedAt: "2026-11-19T14:00:00.000Z",
+        firstSeenAt: "2026-11-01T00:00:00.000Z",
+        productUrl: "https://shop.example.com/prairie/mystery-bloom",
+        notes: null,
+        packetSizes: [{ label: "25 seeds", seedCount: 25 }],
+        provenanceMethod: "human",
+      }),
+    ],
+    media: [],
+  };
+}
+
+function listItem(opts: {
+  slug: string;
+  varietyName: string;
+  plant: ApiPlantRef;
+  series: ApiVarietyListItem["series"];
+  sellerCount: number;
+  media: ApiMedia[];
+  cropMedia: ApiMedia[];
+}): ApiVarietyListItem {
+  return {
+    slug: opts.slug,
+    varietyName: opts.varietyName,
+    plant: opts.plant,
+    category: { slug: "flowers", name: "Flowers" },
+    subcategory: null,
+    series: opts.series,
+    colorSwatch: null,
+    colorFamily: "pink",
+    listingCount: opts.sellerCount,
+    sellerCount: opts.sellerCount,
+    inStockCount: opts.sellerCount,
+    lastCheckedAt: opts.sellerCount > 0 ? "2026-11-17T00:00:00.000Z" : null,
+    indexable: true,
+    rating: { ...NOT_RATED },
+    media: opts.media,
+    cropMedia: opts.cropMedia,
+  };
+}
+
+/** The sibling pool: three sweet-pea and two cosmos list items. */
+function siblingPool(): ApiVarietyListItem[] {
+  const sweetPeaCrop = [plate("/artwork/crops/sweet-pea.webp")];
+  const cosmosCrop = [plate("/artwork/crops/cosmos.webp")];
+  return [
+    listItem({
+      slug: "sweet-pea-blue-ribbon",
+      varietyName: "Blue Ribbon",
+      plant: sweetPeaRef,
+      series: { slug: "spencer-mix", name: "Spencer" },
+      sellerCount: 2,
+      media: [plate("/artwork/sweet-pea-blue-ribbon.webp")],
+      cropMedia: sweetPeaCrop,
+    }),
+    listItem({
+      slug: "sweet-pea-rose-queen",
+      varietyName: "Rose Queen",
+      plant: sweetPeaRef,
+      series: null,
+      sellerCount: 0,
+      media: [],
+      cropMedia: sweetPeaCrop,
+    }),
+    listItem({
+      slug: "sweet-pea-giant-wave",
+      varietyName: "Giant Wave",
+      plant: sweetPeaRef,
+      series: null,
+      sellerCount: 1,
+      media: [plate("/artwork/sweet-pea-giant-wave.webp")],
+      cropMedia: [],
+    }),
+    listItem({
+      slug: "cosmos-pink-lady",
+      varietyName: "Pink Lady",
+      plant: cosmosRef,
+      series: null,
+      sellerCount: 3,
+      media: [],
+      cropMedia: cosmosCrop,
+    }),
+    listItem({
+      slug: "cosmos-white-night",
+      varietyName: "White Night",
+      plant: cosmosRef,
+      series: null,
+      sellerCount: 1,
+      media: [],
+      cropMedia: [],
+    }),
+  ];
+}
+
 /** The standard fixture: 2 crops, 3 varieties (listed / zero-seller / hidden), 2 sellers. */
 export function fakeCatalogState(): FakeCatalogState {
   return {
@@ -51,8 +519,8 @@ export function fakeCatalogState(): FakeCatalogState {
       crop("cosmos", "Cosmos", 4, 0),
     ],
     sellers: [
-      { slug: "blue-ridge-seeds", name: "Blue Ridge Seeds", location: "Oregon, US", region: "OR", country: "US", varietyCount: 5 },
-      { slug: "prairie-seed-house", name: "Prairie Seed House", location: "Kansas, US", region: "KS", country: "US", varietyCount: 3 },
+      { slug: "blue-ridge-seeds", name: "Blue Ridge Seeds", location: "Portland, OR", region: "OR", country: "US", varietyCount: 5 },
+      { slug: "prairie-seed-house", name: "Prairie Seed House", location: "Lawrence, KS", region: "KS", country: "US", varietyCount: 3 },
     ],
     coverage: [
       { crop: { slug: "sweet-pea", name: "Sweet Pea" }, varieties: 10, varieties_with_sellers: 8, last_updated: "2026-11-20" },
@@ -105,6 +573,15 @@ export function fakeCatalogState(): FakeCatalogState {
       "blue-ridge-seeds": "2026-11-18T00:00:00.000Z",
       "prairie-seed-house": "2026-11-17T00:00:00.000Z",
     },
+    details: {
+      "sweet-pea-kings-ransom": kingsRansom(),
+      "cosmos-lonely-bloom": lonelyBloom(),
+      "cosmos-candy-stripe": candyStripe(),
+      "cosmos-mystery-bloom": mysteryBloom(),
+    },
+    listItems: siblingPool(),
+    // Fixture (iv): a MERGED variety resolving to fixture (i)'s slug.
+    merged: { "sweet-pea-old-ransom": "sweet-pea-kings-ransom" },
   };
 }
 
@@ -158,5 +635,17 @@ export function createFakeCatalogApi(state: FakeCatalogState): CatalogApi {
       return date;
     },
     openapi: async () => state.openapi,
+    getVarietyDetail: async (slug: string) => structuredClone(state.details[slug] ?? null),
+    listVarietyListItems: async (opts: { plant: string[] }) => {
+      const items = state.listItems.filter((item) => opts.plant.includes(item.plant.slug));
+      return { items: structuredClone(items), total: items.length };
+    },
+    mergedVarietyTarget: async (slug: string) => state.merged[slug] ?? null,
+    ogSeller: async (slug: string): Promise<ApiOgSeller | null> => {
+      const seller = state.sellers.find((s) => s.slug === slug);
+      if (!seller) return null;
+      return { slug: seller.slug, name: seller.name, location: seller.location, varietyCount: seller.varietyCount };
+    },
+    ogCrop: async (slug: string) => structuredClone(state.crops.find((c) => c.slug === slug) ?? null),
   } as unknown as CatalogApi;
 }

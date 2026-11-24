@@ -1,0 +1,14 @@
+{
+  "fraunces": {
+    "file": "fraunces-og.ttf",
+    "sha256": "4aba8691279f640c0b82aa4eb27e4d5d3f03c080583a786e0decc60de8767a32",
+    "source": "v2/app/fonts/fraunces-og.ttf (byte-identical; freshness-tested against that source)",
+    "license": "SIL Open Font License 1.1 (Fraunces by Undercase Type)"
+  },
+  "geist": {
+    "file": "geist-regular.ttf",
+    "sha256": "bde046ddd9f20be35b0bd56cc79eb752b967fb6661a3fe76cb067bb09f871d76",
+    "source": "v2/node_modules/next/dist/compiled/@vercel/og/Geist-Regular.ttf — the exact file next/og ships and v2 bundles (copied 2026-11-24; node_modules is not a stable oracle, so the digest pins the bytes and the test fails loudly on substitution)",
+    "license": "SIL Open Font License 1.1 (Geist © 2024 The Geist Project Authors, per the font name table)"
+  }
+}

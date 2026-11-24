@@ -11,7 +11,17 @@
  */
 import { createCatalogApi, type CatalogApi } from "./api";
 import { createDataCache, type DataCache } from "./cache";
-import type { ApiCoverageItem, ApiCrop, ApiRecentItem, ApiSellerItem, CatalogCounts, OpenApiDoc, SyncSnapshotData } from "./types";
+import type {
+  ApiCoverageItem,
+  ApiCrop,
+  ApiRecentItem,
+  ApiSellerItem,
+  ApiVarietyDetail,
+  ApiVarietyListItem,
+  CatalogCounts,
+  OpenApiDoc,
+  SyncSnapshotData,
+} from "./types";
 
 export const DEFAULT_API_BASE_URL = "https://seeds.hues.flowers/api/v1";
 
@@ -89,6 +99,64 @@ export async function loadCropIndexData(api: CatalogApi = getCatalogApi(), cache
 export async function loadApiDocsData(api: CatalogApi = getCatalogApi(), cache: DataCache = getDataCache()): Promise<{ doc: OpenApiDoc }> {
   const doc = await cache.get<OpenApiDoc>("openapi", async () => ({ value: await api.openapi(), paths: ["/api-docs"] }));
   return { doc };
+}
+
+/**
+ * v2's availability comparator (repositories/catalog-read.ts
+ * summaryComparator, verbatim logic): in-stock listings first, then any
+ * listings, then none; within a tier more sellers first, then in-stock
+ * listings, then listings, then name ascending with slug tiebreak. The
+ * public API has no availability sort, so the sibling loader applies this
+ * read-side over the walked set.
+ */
+export function compareVarietyAvailability(a: ApiVarietyListItem, b: ApiVarietyListItem): number {
+  const tier = (r: ApiVarietyListItem): number => (r.inStockCount > 0 ? 0 : r.listingCount > 0 ? 1 : 2);
+  const nameAsc =
+    a.varietyName.toLowerCase().localeCompare(b.varietyName.toLowerCase()) || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0);
+  return (
+    tier(a) - tier(b) ||
+    b.sellerCount - a.sellerCount ||
+    b.inStockCount - a.inStockCount ||
+    b.listingCount - a.listingCount ||
+    nameAsc
+  );
+}
+
+/**
+ * One variety's detail through the shared cache (null included: unknown
+ * slugs are cached negative until max age). The entry renders the variety
+ * page and its small-farms variant, so a variety tag purges both.
+ */
+export async function loadVarietyDetail(
+  slug: string,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<ApiVarietyDetail | null> {
+  return cache.get<ApiVarietyDetail | null>(`variety:detail:${slug}`, async () => ({
+    value: await api.getVarietyDetail(slug),
+    paths: [`/variety/${slug}`, `/variety/${slug}?small_farm=true`],
+  }));
+}
+
+/**
+ * A crop's sibling strip for one variety page: the crop's whole set in
+ * availability order, minus the page itself, capped at six. The cached entry
+ * carries no paths (a sibling strip refreshes on entry max age, like the
+ * edge): the strip's membership spans every page of the crop, which no
+ * single variety tag names — v2 parity, where sibling strips refresh on the
+ * ISR fallback for the same reason.
+ */
+export async function loadVarietySiblings(
+  cropSlug: string,
+  selfSlug: string,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<ApiVarietyListItem[]> {
+  const items = await cache.get<ApiVarietyListItem[]>(`variety:siblings:${cropSlug}`, async () => {
+    const { items: walked } = await api.listVarietyListItems({ plant: [cropSlug] });
+    return { value: [...walked].sort(compareVarietyAvailability), paths: [] };
+  });
+  return items.filter((item) => item.slug !== selfSlug).slice(0, 6);
 }
 
 export interface MachineData {
