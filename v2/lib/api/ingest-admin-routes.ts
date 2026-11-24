@@ -17,6 +17,8 @@ import {
   ListingRemoveBodySchema,
   VarietyColorBodySchema,
   VarietyDescriptionBodySchema,
+  VarietyLatinBodySchema,
+  VarietySeriesBodySchema,
 } from "@/lib/services/admin";
 import { LeaseBodySchema, ObservationsBodySchema, SellerCandidateBodySchema, SourceBodySchema } from "@/lib/services/ingest";
 import { ApproveFarmSchema, FarmOwnerSchema } from "@/lib/services/farms";
@@ -264,6 +266,38 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       const ref = params.id ?? "";
       if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "variety not found");
       const r = await services.admin.varietyDescriptionUpdate(ref, parseBody(VarietyDescriptionBodySchema, body));
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // The variety Latin override write (migration 0017): a string sets, null or empty
+    // clears back to the plant fallback, through the shared varietyLatinUpdate funnel,
+    // beside the description route.
+    method: "POST",
+    pattern: "varieties/:id/latin",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "variety not found");
+      const r = await services.admin.varietyLatinUpdate(ref, parseBody(VarietyLatinBodySchema, body));
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // The variety series write: a series name assigns (the series is created when
+    // missing), null clears to none, through the shared varietySeriesUpdate funnel,
+    // beside the latin route.
+    method: "POST",
+    pattern: "varieties/:id/series",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "variety not found");
+      const r = await services.admin.varietySeriesUpdate(ref, parseBody(VarietySeriesBodySchema, body));
       return { data: r.data, revalidate: r.revalidate };
     },
   },

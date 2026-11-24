@@ -98,6 +98,24 @@ export const VarietyColorBodySchema = z
  */
 export const VarietyDescriptionBodySchema = z.strictObject({ description: z.string().min(1).max(2000).nullable() });
 
+/**
+ * POST /api/v1/admin/varieties/:id/latin — a string sets the variety-level Latin override,
+ * null clears it back to the plant fallback. Unlike the description write, an empty (or
+ * blank) string also clears: the brief prescribes null/empty as the clear, so the two can
+ * never strand a meaningless override. The funnel trims; the 200-char bound fits any
+ * binomial with authority. Stored values are never blank.
+ */
+export const VarietyLatinBodySchema = z.strictObject({ latin_name: z.string().max(200).nullable() });
+
+/**
+ * POST /api/v1/admin/varieties/:id/series — a series name assigns the variety to that
+ * series of its own crop (found by exact (plant, name), created when missing with the
+ * importer's slug); null clears back to none. A name is trimmed and must be non-blank —
+ * blank is a validation error, never a clear: clearing is null's job (the description
+ * rule). The 120-char bound fits any breeder series name.
+ */
+export const VarietySeriesBodySchema = z.strictObject({ series: z.string().trim().min(1).max(120).nullable() });
+
 const PRICE_PATTERNS = [
   /\$\s*\d/,
   /\bUSD\s*\$?\s*\d/i,
@@ -404,12 +422,53 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
     };
   }
 
+  /**
+   * The variety Latin override write: the ONE funnel for latin_name updates, modeled on
+   * varietyDescriptionUpdate. A string sets (trimmed), null or blank clears to NULL; an
+   * unchanged value writes nothing.
+   */
+  async function varietyLatinUpdate(ref: string, body: z.infer<typeof VarietyLatinBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+    const variety = await ingest.varietyForMatch(db, /^\d+$/.test(ref) ? Number(ref) : ref);
+    if (!variety) throw new AdminError(404, "variety_not_found", `variety ${ref} not found`);
+    const latinName = body.latin_name === null || body.latin_name.trim() === "" ? null : body.latin_name.trim();
+    const changed = await admin.updateVarietyLatin(db, variety.id, latinName, iso());
+    return {
+      data: { variety: variety.slug, id: variety.id, changed },
+      revalidate: [`/variety/${variety.slug}`, `/crop/${variety.plantSlug}`, "/variety"],
+    };
+  }
+
+  /**
+   * The variety series write: the ONE funnel for series assignments, modeled on
+   * varietyDescriptionUpdate. A name assigns (the series is created when missing),
+   * null clears to none; an unchanged value writes nothing. A colliding series slug
+   * owned by another series is a 409 naming the slug. Revalidation is the funnel's
+   * three paths plus the joined and left series pages (membership changed there), and
+   * the sitemap when a series row was created (a new public URL exists).
+   */
+  async function varietySeriesUpdate(ref: string, body: z.infer<typeof VarietySeriesBodySchema>): Promise<AdminResult<Record<string, unknown>>> {
+    const variety = await ingest.varietyForMatch(db, /^\d+$/.test(ref) ? Number(ref) : ref);
+    if (!variety) throw new AdminError(404, "variety_not_found", `variety ${ref} not found`);
+    const r = await admin.updateVarietySeries(db, variety.id, body.series, iso());
+    if ("conflict" in r) throw new AdminError(409, "series_slug_conflict", `series slug ${r.conflict} is taken by another series`);
+    const revalidate = [`/variety/${variety.slug}`, `/crop/${variety.plantSlug}`, "/variety"];
+    if (r.series) revalidate.push(`/series/${r.series.slug}`);
+    if (r.oldSeriesSlug && r.oldSeriesSlug !== r.series?.slug) revalidate.push(`/series/${r.oldSeriesSlug}`);
+    if (r.created) revalidate.push("/sitemap.xml");
+    return {
+      data: { variety: variety.slug, id: variety.id, changed: r.changed, series: r.series, created: r.created },
+      revalidate,
+    };
+  }
+
   return {
     removeListing,
     restoreListing,
     removeVariety,
     varietyColorUpdate,
     varietyDescriptionUpdate,
+    varietyLatinUpdate,
+    varietySeriesUpdate,
 
     listReview: (q: z.infer<typeof ReviewListQuerySchema>, limit: number) => admin.listReviewItems(db, { ...q, limit }),
 

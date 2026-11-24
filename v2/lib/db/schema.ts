@@ -218,6 +218,10 @@ export const varieties = sqliteTable(
     subcategoryId: integer("subcategory_id").references(() => subcategories.id),
     description: text("description"),
     sowingNotes: text("sowing_notes"),
+    // Variety-level Latin override (migration 0017): when set, reads prefer it over the
+    // plant's latin_name (coalesce at the read sites); NULL = no override (the plant's
+    // value, or absent when the plant carries none either). Never backfilled.
+    latinName: text("latin_name"),
     heightCm: integer("height_cm"),
     colorSwatch: text("color_swatch"),
     status: text("status", { enum: VARIETY_STATUS }).notNull().default("active"),
