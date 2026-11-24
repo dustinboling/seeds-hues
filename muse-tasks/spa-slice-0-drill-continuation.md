@@ -1,10 +1,10 @@
 # Slice 0 DRILL — continuation (tests start_from + task_ref brief materialization)
 
-**This is a drill, not product work.** This brief was committed to `main` AFTER the drill WIP branch (`muse/wip-45342257212`) forked, so it does not exist in that branch's tree. If you are reading this prompt, the workflow's `task_ref` materialization worked: the brief was read from `main`, not from the checked-out start tree. That is the behaviour being proven (invariant I6, live).
+**This is a drill, not product work.** This brief was committed to `main` AFTER the drill WIP branch (`muse/wip-45345029005`) forked, so it does not exist in that branch's tree. If you are reading this prompt, the workflow's `task_ref` materialization worked: the brief was read from `main`, not from the checked-out start tree. That is the behaviour being proven (invariant I6, live).
 
 ## The change
 
-In `v2/lib/drill-answer.test.ts` (created by the drill you are continuing), change exactly one string: the test name `"returns the drill answer"` becomes `"returns the drill answer (continuation-proven)"`. Nothing else changes — not the expectation, not the function, not any other file.
+In `v2/tests/unit/drill-answer.test.ts` (created by the drill you are continuing; its expectation was repaired to the spec value 42 during that drill's gate), change exactly one string: the test name `"returns the drill answer"` becomes `"returns the drill answer (continuation-proven)"`. Nothing else changes — not the expectation, not the function, not any other file.
 
 ## Working rules
 
