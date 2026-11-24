@@ -7,7 +7,7 @@ import { SearchIcon } from "./icons";
  * the hydrated autocomplete panel is Slice 4's in-place layer, layered on
  * this form without changing its resting markup.
  */
-export function SearchForm({ label }: { label: string }) {
+export function SearchForm({ label, defaultValue = "", autoFocus = false }: { label: string; defaultValue?: string; autoFocus?: boolean }) {
   const id = useId();
   return (
     <form role="search" action="/search" method="get" className="search-form" aria-label={label}>
@@ -23,7 +23,9 @@ export function SearchForm({ label }: { label: string }) {
         autoCapitalize="none"
         spellCheck={false}
         enterKeyHint="search"
+        autoFocus={autoFocus}
         placeholder="Variety, flower or Latin name…"
+        defaultValue={defaultValue}
         maxLength={100}
       />
       <span className="search-form-icon" aria-hidden="true">

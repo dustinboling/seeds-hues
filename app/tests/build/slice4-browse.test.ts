@@ -357,12 +357,22 @@ describe("/variety filtered views (noindex + canonical-to-clean)", () => {
     expect(meta(html, "name", "robots")).toBe("noindex, follow");
     expect(html).toContain(`<link rel="canonical" href="${SITE}/variety"`);
     expect(html).toContain("33 varieties · White · Yellow, alphabetical. Page 1 of 2.");
+    // Page 1 carries the union's head (NN 02–36 at 24/page); page 2 its
+    // tail (NN 38–50) — every originally asserted name stays asserted, on
+    // the page the paging rule puts it.
     const body = decodeHtml(stripScripts(res.text));
-    for (const present of ["Testbloom 03", "Testbloom 02", "Testbloom 48", "Testbloom 50"]) {
+    for (const present of ["Testbloom 03", "Testbloom 02"]) {
       expect(body, `present ${present}`).toContain(present);
     }
     for (const absent of ["Testbloom 01", "Testbloom 04", "Blue Ribbon"]) {
       expect(body, `absent ${absent}`).not.toContain(absent);
+    }
+    const page2 = decodeHtml(stripScripts((await get("/variety?color_family=yellow,white&page=2")).text));
+    for (const present of ["Testbloom 48", "Testbloom 50"]) {
+      expect(page2, `present ${present}`).toContain(present);
+    }
+    for (const absent of ["Testbloom 01", "Testbloom 04", "Blue Ribbon"]) {
+      expect(page2, `absent ${absent}`).not.toContain(absent);
     }
   });
 
@@ -423,7 +433,13 @@ describe("/variety sort (?sort= is an ordering, not a filter group)", () => {
       const html = decodeHtml((await get(`/variety${query}`)).text);
       expect(meta(html, "name", "robots"), query).toBe("index, follow");
       expect(html, query).toContain(`<link rel="canonical" href="${SITE}/variety"`);
-      expect(html, query).not.toContain("sort=");
+      // The CANONICAL is sort-free (the test's stated intent, same as the
+      // facet audit below): the page body necessarily carries ?sort= links
+      // — the sort control this suite requires at "renders filter + sort
+      // controls as real links" — so the whole-HTML assertion could never
+      // pass alongside it.
+      const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)?.[1];
+      expect(canonical, query).not.toContain("sort=");
     }
   });
 
