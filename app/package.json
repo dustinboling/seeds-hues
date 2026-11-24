@@ -1,0 +1,51 @@
+{
+  "name": "seeds-hues-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "vike dev",
+    "build": "vike build && npm run build:sw",
+    "build:sw": "node scripts/build-sw.mjs",
+    "postbuild": "node scripts/assert-pwa.mjs",
+    "preview": "vike preview",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.sw.json",
+    "test": "vitest run",
+    "verify": "npm run lint && npm run typecheck && npm run test",
+    "gen:tokens-css": "node scripts/gen-tokens-css.mjs",
+    "gen:contrast": "node scripts/gen-contrast.mjs",
+    "sync:fonts": "node scripts/sync-fonts.mjs"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vike": "0.4.270",
+    "vike-react": "0.6.32",
+    "workbox-core": "7.4.1",
+    "workbox-precaching": "7.4.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@fontsource/source-sans-3": "5.3.1",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "esbuild": "0.28.2",
+    "eslint": "9.39.5",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.14.0",
+    "jsdom": "31.0.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.74.0",
+    "vite": "8.3.8",
+    "vitest": "5.1.1",
+    "workbox-build": "7.4.1"
+  }
+}

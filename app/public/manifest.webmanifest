@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "seeds.hues.flowers — Seed Directory",
+  "short_name": "Seed Directory",
+  "description": "Search a hard-to-find variety, see US sellers who have it — with stock state as last seen, the date each listing was checked, and a direct link to the seller.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f6ec",
+  "theme_color": "#f8f6ec",
+  "lang": "en-US",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "/icons/hues-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/hues-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/hues-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/hues-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
