@@ -8,6 +8,14 @@
 # and the Muse run starts from the repo root; dependencies are installed
 # in `v2/` first so Muse can run the app's tests itself.
 #
+# The brief the agent executes is materialized to runner temp before the
+# run, outside the working tree, so the executed copy can never be
+# committed or appear in a PR diff. By default it is copied from the
+# checked-out tree; when the `task_ref` input names a ref, it is read
+# from that ref instead — so a repair dispatch names `task_ref: main`
+# and gets the current brief even when the `start_from` branch holds a
+# different or missing copy of the task file.
+#
 # The Meta API key comes from this repository's Secrets (secrets.META_API_KEY)
 # and is passed to the run only as the META_API_KEY environment variable.
 # It is never printed, committed, or passed as a command-line flag.
@@ -18,19 +26,39 @@
 # the Muse run, and no pull request is created unless that gate passes
 # in full.
 #
-# Before that gate runs, the workflow pushes the run's work-in-progress
-# to a scratch branch, `muse/wip-<run_id>`, so a failed gate's work
-# survives for a repair dispatch (which names that branch in the
-# `start_from` input) instead of being discarded with the build. The
-# WIP branch is scratch only: it is never a pull request, never
-# reviewed, and never merged. The gate rule above stands unchanged —
-# no pull request is created unless that gate passes in full. Stale
-# WIP branches are deleted by a human once their item ships or is
-# abandoned; no automation deletes them.
+# The gate is an in-job verify→repair loop: up to 4 verify attempts with
+# up to 3 `muse exec` repair turns between them, each repair prompted
+# with the failing verify output's tail and a fix-only discipline. After
+# the loop breaks green, the gate re-runs `npm run verify` once more on
+# the final tree, and the PR step's build accounting comes from that final
+# run — so the "verify passed in the workflow" claim is certified against
+# the exact tree being shipped, not an earlier loop state. No pull request
+# is created when the loop exhausts its repair turns red, or when the
+# final re-run is red.
 #
-# The run is bounded two ways: the job timeout (60 minutes) and the
+# After the agent turn and after every repair turn, the workflow
+# checkpoints the run's work-in-progress to a scratch branch,
+# `muse/wip-<run_id>`, so a red gate's work survives for a repair
+# dispatch (which names that branch in the `start_from` input) instead
+# of being discarded with the build. Every checkpoint is a plain push —
+# never a force-push — so a ref collision fails visibly instead of
+# overwriting. The WIP branch is scratch only: it is never a pull
+# request, never reviewed, and never merged. The gate rule above stands
+# unchanged — no pull request is created unless that gate passes in
+# full. Stale WIP branches are deleted by a human once their item ships
+# or is abandoned; no automation deletes them.
+#
+# A run that produced nothing fails visibly before the gate: the
+# no-changes check compares against the checkout base commit, so a
+# builder that committed all of its own work (HEAD moved, tree clean)
+# passes and ships, while a builder that produced literally nothing
+# still fails instead of opening an empty PR.
+#
+# The run is bounded two ways: the job timeout (120 minutes) and the
 # `max_model_steps` input passed to `muse exec`. A headless run cannot
 # answer approval prompts, so the run uses `--approval-mode never`.
+# Concurrency is per task file with queueing on, so dispatches of
+# different tasks never eat each other.
 #
 # The Muse bubblewrap sandbox is DISABLED for this run
 # (`--disable-sandbox`), deliberately. GitHub-hosted `ubuntu-latest`
@@ -72,20 +100,26 @@ on:
         type: string
         required: false
         default: ""
+      task_ref:
+        description: "Ref (branch/tag/SHA) to read the task file from; empty reads it from the checked-out tree"
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: muse-code
+  group: muse-code-${{ inputs.task_file }}
+  queue: max
   cancel-in-progress: false
 
 jobs:
   muse-task:
     name: Muse task
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Check out the repository
         if: inputs.start_from == ''
@@ -96,6 +130,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.start_from }}
+
+      - name: Record the checkout base commit
+        run: |
+          # Every "did anything change" judgement below compares against
+          # this base — never against porcelain status alone — so work
+          # the builder committed itself still ships.
+          echo "BASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -114,22 +155,44 @@ jobs:
         working-directory: v2
         run: npm ci
 
+      - name: Materialize the task brief
+        run: |
+          # The brief the agent executes is materialized OUTSIDE the
+          # working tree, so the executed copy can never be committed or
+          # appear in a PR diff. With `task_ref` set, it is read from
+          # that ref (a repair dispatch names `task_ref: main` and gets
+          # the current brief even when the `start_from` branch holds a
+          # different or missing copy); otherwise it is copied from the
+          # checked-out tree.
+          mkdir -p "${{ runner.temp }}/bench"
+          if [ -n "${{ inputs.task_ref }}" ]; then
+            git fetch origin "${{ inputs.task_ref }}"
+            git show "FETCH_HEAD:${{ inputs.task_file }}" > "${{ runner.temp }}/bench/task-brief.md"
+          else
+            cp "${{ inputs.task_file }}" "${{ runner.temp }}/bench/task-brief.md"
+          fi
+
       - name: Run the Muse task
         env:
           META_API_KEY: ${{ secrets.META_API_KEY }}
         run: |
           set -o pipefail
           muse exec \
-            --prompt-file "${{ inputs.task_file }}" \
+            --prompt-file "${{ runner.temp }}/bench/task-brief.md" \
             --approval-mode never \
             --disable-sandbox \
             --max-model-steps ${{ inputs.max_model_steps }} \
-            --json | tee muse-run.jsonl
+            --json | tee "${{ runner.temp }}/bench/muse-run.jsonl"
 
       - name: Fail if Muse made no changes
         run: |
           # muse-run.jsonl is a run log, not work product — ignore it here.
-          if [ -z "$(git status --porcelain -- . ':(exclude)muse-run.jsonl')" ]; then
+          # The check compares against the checkout base: it fails only
+          # when HEAD is still at the base AND the tree is clean, so a
+          # builder that committed all of its own work passes and ships,
+          # while a builder that produced literally nothing still fails
+          # visibly instead of opening an empty PR.
+          if [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] && [ -z "$(git status --porcelain -- . ':(exclude)muse-run.jsonl')" ]; then
             echo "::error::Muse finished but the working tree has no changes. Failing visibly instead of opening an empty PR."
             exit 1
           fi
@@ -140,59 +203,127 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: muse-run-log
-          path: muse-run.jsonl
+          path: ${{ runner.temp }}/bench/muse-run.jsonl
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Push a work-in-progress branch (pre-gate)
+      - name: Gate on the repo's own tests
+        env:
+          META_API_KEY: ${{ secrets.META_API_KEY }}
         run: |
-          # Scratch push BEFORE the gate: if the gate fails, the work
-          # survives on `muse/wip-<run_id>` for a repair dispatch
-          # (`start_from`) instead of being discarded. This pushes a
-          # branch and nothing else — never a pull request.
-          #
-          # The commit below is undone locally afterwards (soft reset
-          # to BASE), restoring the tree to the state the PR step
-          # expects, so that step runs byte-identical to before.
-          rm -f muse-run.jsonl
-          BASE="$(git rev-parse HEAD)"
+          # In-job verify→repair loop: up to 4 verify attempts with up to
+          # 3 `muse exec` repair turns between them. The run's work is
+          # checkpointed to the scratch WIP branch after the agent turn
+          # and after every repair turn (this subsumes the old pre-gate
+          # WIP step); after the loop breaks green, the gate re-runs
+          # `npm run verify` once more on the final tree, and that final
+          # run's output feeds the PR body. No PR is created unless the
+          # final re-run passes in full.
+          set -o pipefail
+          BENCH="${{ runner.temp }}/bench"
+          VERIFY_OUT="$BENCH/verify-output.txt"
+          mkdir -p "$BENCH"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "Work is already committed at HEAD; pushing HEAD as-is."
-          else
-            git commit -m "Muse WIP (pre-gate): $(basename "${{ inputs.task_file }}") — run ${{ github.run_id }}"
-          fi
-          # Plain push only — never force-push: a collision (e.g. a
-          # re-run reusing a run id) must fail visibly, not overwrite.
-          git push origin "HEAD:refs/heads/muse/wip-${{ github.run_id }}"
-          git reset --soft "$BASE"
 
-      - name: Gate on the repo's own tests
-        working-directory: v2
-        run: |
-          # pipefail keeps verify's exit code decisive through the tee.
-          # The captured output feeds the PR body's build accounting
-          # (verify summary below) — it is deleted before the commit in
-          # the PR step, exactly like the run log, so it can never be
-          # committed.
-          set -o pipefail
-          npm run verify 2>&1 | tee "$GITHUB_WORKSPACE/verify-output.txt"
+          # checkpoint() is the old pre-gate WIP push as a reusable
+          # operation: sweep the run artifacts out of the tree (BOTH
+          # names, so even a builder-created copy can never be
+          # committed), commit whatever is staged, and plain-push HEAD
+          # to the scratch WIP branch (never force-push: a collision
+          # fails visibly, never overwrites). When nothing is staged and
+          # HEAD already differs from the base, the work is committed at
+          # HEAD and is pushed as-is. Checkpoints stack, so every plain
+          # push fast-forwards; the single soft reset to BASE_SHA at the
+          # end of this step restores the tree state the PR step expects.
+          # (Resetting inside checkpoint() would sibling-diverge every
+          # repair-round commit off the base, so the second plain push
+          # would be rejected non-fast-forward and the loop could never
+          # checkpoint twice — verified against real git 2026-11-24.)
+          checkpoint() {
+            rm -f muse-run.jsonl verify-output.txt
+            git add -A
+            if git diff --cached --quiet; then
+              echo "Nothing new staged; pushing HEAD as-is."
+            else
+              git commit -m "Muse WIP ($1): $(basename "${{ inputs.task_file }}") — run ${{ github.run_id }}"
+            fi
+            # Plain push only — never force-push: a collision (e.g. a
+            # re-run reusing a run id) must fail visibly, not overwrite.
+            git push origin "HEAD:refs/heads/muse/wip-${{ github.run_id }}"
+          }
+
+          # First checkpoint: the agent turn's work, whatever state the
+          # builder left it in.
+          checkpoint "pre-gate"
+
+          ATTEMPT=1
+          while [ "$ATTEMPT" -le 4 ]; do
+            echo "=== Verify attempt $ATTEMPT of 4 ==="
+            if (cd v2 && npm run verify 2>&1 | tee "$VERIFY_OUT"); then
+              echo "Verify passed on attempt $ATTEMPT."
+              break
+            fi
+            if [ "$ATTEMPT" -eq 4 ]; then
+              echo "::error::Verify is still red after 4 attempts (3 repair turns spent). No PR will be created; the WIP branch stands with every checkpoint."
+              tail -n 100 "$VERIFY_OUT"
+              exit 1
+            fi
+            {
+              echo "# Repair turn $ATTEMPT for \`${{ inputs.task_file }}\`"
+              echo ""
+              echo "Read the task brief at \`$BENCH/task-brief.md\` (materialized from \`${{ inputs.task_file }}\`) for the task scope. The verify gate is red; fix ONLY what the verify output below reports. Do not widen scope or start new work, and do not modify the task brief itself."
+              echo ""
+              echo "Dependencies are already installed, and you can run \`npm run verify\` in \`v2/\` yourself to check your fixes."
+              echo ""
+              echo "Finish every function you reference; leave no unused imports. You may fix a test file only where the test itself is broken (a syntax or runtime error in the test) — never weaken or delete an assertion to make the gate pass."
+              echo ""
+              echo "Verify output (last 300 lines):"
+              echo ""
+              echo '```'
+              tail -n 300 "$VERIFY_OUT"
+              echo '```'
+            } > "$BENCH/fix-prompt.md"
+            if muse exec \
+              --prompt-file "$BENCH/fix-prompt.md" \
+              --approval-mode never \
+              --disable-sandbox \
+              --max-model-steps ${{ inputs.max_model_steps }} \
+              --json >> "$BENCH/muse-run.jsonl"; then
+              echo "Repair turn $ATTEMPT finished."
+            else
+              echo "::warning::Repair turn $ATTEMPT agent exited non-zero; checkpointing partial work and re-verifying."
+            fi
+            checkpoint "repair round $ATTEMPT"
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+          # Final gate re-run: certify the exact tree being shipped, not
+          # an earlier loop state. This run's output feeds the PR body.
+          echo "=== Final gate re-run ==="
+          if ! (cd v2 && npm run verify 2>&1 | tee "$VERIFY_OUT"); then
+            echo "::error::Final gate re-run is red. No PR will be created."
+            exit 1
+          fi
+
+          # Restore the tree state the PR step expects: HEAD back at the
+          # checkout base with the full accumulated set staged.
+          git reset --soft "$BASE_SHA"
 
       - name: Open a pull request with the changes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Build accounting is extracted BEFORE the commit, into /tmp,
-          # so the PR body ships it natively (Quinn flagged stub PR
-          # bodies twice — gate accounting used to be appended by hand
-          # pre-merge). The verify summary comes from the gate step's
-          # captured output; the file census comes from the staged diff.
-          # Both source files live in the tree only during this run and
-          # are deleted before staging, so neither can ever be committed.
-          if [ -f verify-output.txt ]; then
-            grep -E "Test Files|Tests " verify-output.txt | tail -2 > /tmp/verify-summary.txt || true
+          # Build accounting ships natively in the PR body (Quinn flagged
+          # stub PR bodies twice — gate accounting used to be appended by
+          # hand pre-merge). The verify summary comes from the gate
+          # step's captured output in runner temp; the file census comes
+          # from the full change set against the checkout base, measured
+          # after the commit below. Neither source file lives in the
+          # tree, so neither can ever be committed.
+          if [ -f "${{ runner.temp }}/bench/verify-output.txt" ]; then
+            grep -E "Test Files|Tests " "${{ runner.temp }}/bench/verify-output.txt" | tail -2 > /tmp/verify-summary.txt || true
           fi
           if [ ! -s /tmp/verify-summary.txt ]; then
             echo "verify passed (summary lines not captured)" > /tmp/verify-summary.txt
@@ -200,7 +331,8 @@ jobs:
 
           # The run log was already uploaded as an artifact above.
           # Delete it — and the captured verify output — so neither can
-          # ever be committed.
+          # ever be committed (this also sweeps builder-created copies
+          # of either file out of the tree before staging).
           rm -f muse-run.jsonl verify-output.txt
 
           git config user.name "github-actions[bot]"
@@ -210,23 +342,33 @@ jobs:
           git switch -c "$BRANCH"
           git add -A
 
+          # Committed-at-HEAD work ships as-is: the branch created above
+          # already points at it. Refuse only a genuinely empty PR —
+          # nothing staged AND HEAD still at the checkout base.
           if git diff --cached --quiet; then
-            echo "::error::Nothing staged after removing the run log. Refusing to open an empty PR."
-            exit 1
+            if [ "$(git rev-parse HEAD)" = "$BASE_SHA" ]; then
+              echo "::error::Nothing staged after removing the run log. Refusing to open an empty PR."
+              exit 1
+            fi
+            echo "Work is already committed at HEAD; shipping it as-is."
+          else
+            git commit -m "Muse: $(basename "${{ inputs.task_file }}")"
           fi
 
-          git diff --cached --stat > /tmp/diff-stat.txt
-          FILES_CHANGED="$(git diff --cached --name-only | wc -l | tr -d ' ')"
-          INSERTIONS="$(git diff --cached --numstat | awk '{s+=$1} END {print s+0}')"
-          DELETIONS="$(git diff --cached --numstat | awk '{s+=$2} END {print s+0}')"
+          # Census vs the checkout base: the full change set on this
+          # branch, committed-at-HEAD work included (a staged-only census
+          # undercounts when the builder committed part of its own work).
+          git diff "$BASE_SHA" --stat > /tmp/diff-stat.txt
+          FILES_CHANGED="$(git diff "$BASE_SHA" --name-only | wc -l | tr -d ' ')"
+          INSERTIONS="$(git diff "$BASE_SHA" --numstat | awk '{s+=$1} END {print s+0}')"
+          DELETIONS="$(git diff "$BASE_SHA" --numstat | awk '{s+=$2} END {print s+0}')"
 
-          git commit -m "Muse: $(basename "${{ inputs.task_file }}")"
           git push origin "$BRANCH"
 
           # The PR title comes from the task file itself: its first H1
           # line ("# ..."), stripped of the "# " prefix. If the task file
           # has no H1, fall back to the file's basename.
-          PR_TITLE="$(grep -m 1 '^# ' "${{ inputs.task_file }}" | sed 's/^# //')"
+          PR_TITLE="$(grep -m 1 '^# ' "${{ runner.temp }}/bench/task-brief.md" | sed 's/^# //')"
           if [ -z "$PR_TITLE" ]; then
             PR_TITLE="$(basename "${{ inputs.task_file }}")"
           fi
