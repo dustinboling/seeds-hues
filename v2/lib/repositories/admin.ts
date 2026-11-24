@@ -13,6 +13,7 @@ import {
   listings,
   plants,
   reviewItems,
+  sellerLocations,
   sellerNotes,
   sellers,
   series,
@@ -971,6 +972,92 @@ export async function sellerVisibleVarietySlugs(db: Db, sellerId: number): Promi
     .innerJoin(varieties, eq(varieties.id, listings.varietyId))
     .where(and(eq(listings.sellerId, sellerId), inArray(listings.status, [...VISIBLE_LISTING_STATUS]), isNull(listings.deletedAt)));
   return rows.map((r) => r.slug).sort();
+}
+
+/**
+ * The seller-as-shop contact write: the published customer-service phone and/or email.
+ * Same conventions as updateSellerFields (diffed against the stored row, seq bump,
+ * updatedAt, the changed-field list back); an unchanged save writes nothing. Never
+ * touches the private contact_email — it is not even selected here.
+ */
+export async function updateSellerContact(
+  db: Db,
+  sellerId: number,
+  patch: { customerServicePhone?: string | null; customerServiceEmail?: string | null },
+  at: string,
+): Promise<("customerServicePhone" | "customerServiceEmail")[]> {
+  const [cur] = await db
+    .select({ customerServicePhone: sellers.customerServicePhone, customerServiceEmail: sellers.customerServiceEmail })
+    .from(sellers)
+    .where(eq(sellers.id, sellerId))
+    .limit(1);
+  if (!cur) return [];
+  const set: Record<string, string | null> = {};
+  if (patch.customerServicePhone !== undefined && patch.customerServicePhone !== cur.customerServicePhone) {
+    set.customerServicePhone = patch.customerServicePhone;
+  }
+  if (patch.customerServiceEmail !== undefined && patch.customerServiceEmail !== cur.customerServiceEmail) {
+    set.customerServiceEmail = patch.customerServiceEmail;
+  }
+  const changed = Object.keys(set) as ("customerServicePhone" | "customerServiceEmail")[];
+  if (changed.length === 0) return [];
+  await atomic(db, [...nextSeq(db), db.update(sellers).set({ ...set, updatedAt: at, updatedSeq: currentSeq() }).where(eq(sellers.id, sellerId)) as unknown as AtomicOp]);
+  return changed;
+}
+
+/** One row of a seller_locations replacement set (validated by SellerLocationsBodySchema). */
+export interface SellerLocationPatch {
+  kind: "physical" | "warehouse" | "mailing" | null;
+  street: string | null;
+  city: string;
+  state: string;
+  zip: string | null;
+  isPrimary: boolean;
+  sourceUrl: string;
+  checkedDate: string;
+}
+
+const locationValueKey = (l: SellerLocationPatch): string =>
+  JSON.stringify([l.kind, l.street, l.city, l.state, l.zip, l.isPrimary, l.sourceUrl, l.checkedDate]);
+
+/**
+ * The seller-as-shop location-set write (SPEC-LOCATIONS F-L1): replaces the seller's whole
+ * location set with the given set (an empty set clears all rows). The set is diffed by
+ * value first, so re-applying the stored set writes nothing at all — replacement is the
+ * idempotent shape. The seller row's updatedAt/seq bump travels in the same atomic batch,
+ * so the catalog invalidation matches every other seller write.
+ */
+export async function replaceSellerLocations(db: Db, sellerId: number, set: SellerLocationPatch[], at: string): Promise<{ replaced: boolean }> {
+  const current = await db
+    .select({
+      kind: sellerLocations.kind,
+      street: sellerLocations.street,
+      city: sellerLocations.city,
+      state: sellerLocations.state,
+      zip: sellerLocations.zip,
+      isPrimary: sellerLocations.isPrimary,
+      sourceUrl: sellerLocations.sourceUrl,
+      checkedDate: sellerLocations.checkedDate,
+    })
+    .from(sellerLocations)
+    .where(eq(sellerLocations.sellerId, sellerId));
+  const same =
+    current.length === set.length &&
+    current.map(locationValueKey).sort().join("\n") === set.map(locationValueKey).sort().join("\n");
+  if (same) return { replaced: false };
+  await atomic(db, [
+    db.delete(sellerLocations).where(eq(sellerLocations.sellerId, sellerId)) as unknown as AtomicOp,
+    ...(set.length
+      ? [
+          db.insert(sellerLocations).values(
+            set.map((l) => ({ sellerId, ...l, createdAt: at, updatedAt: at })),
+          ) as unknown as AtomicOp,
+        ]
+      : []),
+    ...nextSeq(db),
+    db.update(sellers).set({ updatedAt: at, updatedSeq: currentSeq() }).where(eq(sellers.id, sellerId)) as unknown as AtomicOp,
+  ]);
+  return { replaced: true };
 }
 
 /**

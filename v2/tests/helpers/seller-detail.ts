@@ -29,6 +29,9 @@ export function fakeSellerDetail(overrides: Partial<SellerDetail> = {}): SellerD
     shipsTo: ["US"],
     isSiteOwner: false,
     listings: [],
+    customerServicePhone: null,
+    customerServiceEmail: null,
+    locations: [],
     ...overrides,
   };
 }

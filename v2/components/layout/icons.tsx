@@ -125,3 +125,30 @@ export const FieldSuccessIcon = ({ className = "" }: { className?: string }) => 
     <path d="m8.4 12.3 2.5 2.5 4.9-5.4" />
   </svg>
 );
+/**
+ * Phone mark (seller-as-shop, UI-DESIGN §4.4): a handset — the platform-conventional
+ * receiver — drawn to the family rules (24px grid, 20px live area, stroke 1.8,
+ * currentColor, no fill). Not a mobile-phone rectangle: the channel is a voice line.
+ * A redundant channel beside the row's label + number, always aria-hidden. The caller
+ * sizes it (the contact rows render it at 20px via size-5). Fallback (the
+ * ProtectionIcon precedent): if this glyph fails the family-hand check at the gate, the
+ * rows ship without it — the usage is a single removable line.
+ */
+export const PhoneIcon = ({ className = "" }: { className?: string }) => (
+  <svg {...base} className={className}>
+    <path d="M20.5 15.9v2.2c0 1-.8 1.9-1.9 1.9C10.7 20 4 13.3 4 5.4c0-1 .8-1.9 1.9-1.9h2.2c.8 0 1.5.5 1.8 1.3l1 2.6c.3.7.1 1.6-.5 2.1l-1.6 1.6c1.1 2.6 3 4.5 5.6 5.6l1.6-1.6c.5-.6 1.4-.8 2.1-.5l2.6 1c.8.3 1.3 1 1.3 1.8Z" />
+  </svg>
+);
+/**
+ * Mail mark (seller-as-shop, UI-DESIGN §4.4): an envelope — rectangle with the family's
+ * diagonal flap lines — drawn to the family rules. The most learned glyph in the set;
+ * no invention. A redundant channel beside the row's label + address, always
+ * aria-hidden. The caller sizes it (the contact rows render it at 20px via size-5).
+ * Same fallback as PhoneIcon: each usage is one removable line.
+ */
+export const MailIcon = ({ className = "" }: { className?: string }) => (
+  <svg {...base} className={className}>
+    <path d="M3.5 6.5h17v11h-17Z" />
+    <path d="m3.5 7 8.5 6 8.5-6" />
+  </svg>
+);

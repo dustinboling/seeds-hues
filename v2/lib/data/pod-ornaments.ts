@@ -32,3 +32,14 @@ export const POD_ART_BY_PLANT: Record<string, PodArt> = Object.fromEntries(
 export function podArtForPlant(slug: string | null | undefined): PodArt | undefined {
   return slug && Object.hasOwn(POD_ART_BY_PLANT, slug) ? POD_ART_BY_PLANT[slug] : undefined;
 }
+
+/**
+ * The directory's generic seed-pod device (Elena ART-GRID-CARD §2, the tier-4
+ * replacement): the ripe breadseed-poppy pod mark's derived web file, in the shipped
+ * 480×480 motif family, served through lib/images like the other pod motifs. The frame
+ * holds this — decorative, on paper-deep — where a variety has no plate of its own, its
+ * crop has no plate, and its crop has no pod device. If this asset ever fails the
+ * sizing sanity check, the fallback is the empty paper-deep frame — never the stem,
+ * never another crop's pod.
+ */
+export const GENERIC_POD_MOTIF = "/ornaments/motif-poppy.webp";

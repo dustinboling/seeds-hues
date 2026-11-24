@@ -37,6 +37,7 @@ import {
   media,
   plants,
   plantSowingMethods,
+  sellerLocations,
   sellers,
   series,
   sources,
@@ -68,6 +69,8 @@ const plantRefCols = {
   seasonSourceLabel: seasonSources.label,
   sowingMethods: sql<string | null>`(SELECT group_concat(psm.method) FROM ${plantSowingMethods} psm WHERE psm.plant_id = ${plants.id})`,
   sowingMethodSourceLabel: sql<string | null>`(SELECT ms.label FROM ${sources} ms WHERE ms.id = ${plants.sowingMethodSourceId})`,
+  /** The life-cycle text (PlantRef.lifeCycle); buckets derive via lifeCycleBuckets(). */
+  lifeCycle: plants.lifeCycle,
 };
 
 /** Plants having ANY of the given sowing methods (subquery on plant_sowing_methods). */
@@ -238,9 +241,11 @@ export interface VarietySummaryRow {
   colorSwatch: string | null;
   colorFamily: string;
   indexable: boolean;
+  plantId: number;
   plantSlug: string;
   commonName: string;
   latinName: string | null;
+  lifeCycle: string | null;
   seasonClass: SeasonClass | null;
   seasonSourceLabel: string | null;
   sowingMethods: string | null;
@@ -355,6 +360,8 @@ export async function listVarietySummaryRows(
         colorSwatch: varieties.colorSwatch,
         colorFamily: varieties.colorFamily,
         indexable: varieties.indexable,
+        /** Internal row field only (crop-media lookup in summaries()); never in the public schema. */
+        plantId: plants.id,
         plantSlug: plants.slug,
         commonName: plants.commonName,
         latinName: effectiveVarietyLatin,
@@ -688,6 +695,8 @@ const listingSelect = {
   varietySlug: varieties.slug,
   varietyName: varieties.varietyName,
   colorSwatch: varieties.colorSwatch,
+  /** The Hue facet's value (VarietyRef.colorFamily; 'unknown' when unfiled). */
+  colorFamily: varieties.colorFamily,
   plantSlug: plants.slug,
   commonName: plants.commonName,
   latinName: effectiveVarietyLatin,
@@ -841,6 +850,8 @@ const sellerSelect = (svc: ReturnType<typeof sellerVarietyCountsSq>) => ({
   shipsTo: sellers.shipsTo,
   isSiteOwner: sellers.isSiteOwner,
   isSmallFarm: sellers.isSmallFarm,
+  customerServicePhone: sellers.customerServicePhone,
+  customerServiceEmail: sellers.customerServiceEmail,
   updatedAt: sellers.updatedAt,
   importedRatingSource: sellers.importedRatingSource,
   importedRatingPlaceName: sellers.importedRatingPlaceName,
@@ -900,6 +911,33 @@ export async function sellerRow(db: Db, slug: string) {
     .where(and(eq(sellers.slug, slug), visibleSeller))
     .limit(1);
   return row ?? null;
+}
+
+/**
+ * One seller's QUALIFYING recorded locations (seller-as-shop, SPEC-LOCATIONS §5): kind
+ * determined (kind-undetermined rows are stored but never rendered and never shipped —
+ * the page needs nothing about them to count the §5.4 minimum), in §5.2 order: the
+ * primary first, then kind physical/warehouse/mailing, then state, then city A–Z. The
+ * page renders its Locations area from exactly this set.
+ */
+export async function sellerLocationRows(db: Db, sellerId: number) {
+  return db
+    .select({
+      kind: sellerLocations.kind,
+      street: sellerLocations.street,
+      city: sellerLocations.city,
+      state: sellerLocations.state,
+      zip: sellerLocations.zip,
+      isPrimary: sellerLocations.isPrimary,
+    })
+    .from(sellerLocations)
+    .where(and(eq(sellerLocations.sellerId, sellerId), isNotNull(sellerLocations.kind)))
+    .orderBy(
+      desc(sellerLocations.isPrimary),
+      sql`CASE ${sellerLocations.kind} WHEN 'physical' THEN 0 WHEN 'warehouse' THEN 1 WHEN 'mailing' THEN 2 ELSE 3 END`,
+      asc(sellerLocations.state),
+      asc(sellerLocations.city),
+    );
 }
 
 /** Eligibility of any seller by slug (visible or not) — drives the 410 for removed sellers. */
@@ -1001,7 +1039,6 @@ const plantSelect = {
   ...plantRefCols,
   // Grower guide (crop detail only; the service parses the JSON text). The source id is
   // internal provenance and deliberately not selected.
-  lifeCycle: plants.lifeCycle,
   hardiness: plants.hardiness,
   growerGuide: plants.growerGuide,
   categorySlug: categories.slug,
@@ -1050,6 +1087,19 @@ export async function listPlantRows(db: Db, page: Page, filters: PlantListFilter
     rows: rows.map((r) => ({ ...r, coverage: cov.get(r.id) ?? { varieties: 0, withSellers: 0, lastUpdated: null } })),
     total: t?.n ?? 0,
   };
+}
+
+/**
+ * Every live crop's slug + common name (seller-as-shop: the shop Crop group's global
+ * vocabulary — a ?crop= value is valid iff it is in this set; a valid slug the shop does
+ * not stock renders the zero-combination state, never a 404). One small query, no counts.
+ */
+export async function plantSlugNameRows(db: Db): Promise<{ slug: string; commonName: string }[]> {
+  return db
+    .select({ slug: plants.slug, commonName: plants.commonName })
+    .from(plants)
+    .where(isNull(plants.deletedAt))
+    .orderBy(sql`lower(${plants.commonName})`, asc(plants.slug));
 }
 
 export async function plantRow(db: Db, slug: string) {

@@ -10,7 +10,7 @@ import * as ingest from "@/lib/repositories/ingest";
 import * as farmRepo from "@/lib/repositories/farm-submissions";
 import { demandStats, rollupDay } from "@/lib/repositories/events";
 import { resolveReport } from "@/lib/repositories/reports";
-import { AVAILABILITY, REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE, SELLER_PLATFORMS, SELLER_TYPES } from "@/lib/db/schema";
+import { AVAILABILITY, REVIEW_ITEM_STATUS, REVIEW_ITEM_TYPE, SELLER_LOCATION_KINDS, SELLER_PLATFORMS, SELLER_TYPES } from "@/lib/db/schema";
 import { hostOf, hostOnDomain, normalizeName } from "@/lib/names";
 import { COLOR_FAMILIES } from "@/lib/validators";
 import { stateByCode, US_STATES } from "@/lib/data/states";
@@ -57,6 +57,51 @@ export const SellerDescriptionBodySchema = z.strictObject({ description: z.strin
 
 /** POST /api/v1/admin/sellers/{ref}/location — required, non-blank, max 200 (the D3 location width). */
 export const SellerLocationBodySchema = z.strictObject({ location: z.string().trim().min(1).max(200) });
+
+/**
+ * POST /api/v1/admin/sellers/:id/contact (seller-as-shop): the seller's PUBLISHED
+ * customer-service channels, as collected by the location sweep. Each key is independent
+ * (the variety-color partial-update convention): an absent key leaves that field
+ * untouched; present-and-null clears it to NULL. At least one key is required. Phone is
+ * the number as published (display form, stored verbatim — non-blank, max 40); the tel:
+ * href derives from it at render. Email is the full address. This route NEVER touches the
+ * private contact_email.
+ */
+export const SellerContactBodySchema = z
+  .strictObject({
+    customer_service_phone: z.string().trim().min(1).max(40).nullable().optional(),
+    customer_service_email: z.email().max(320).nullable().optional(),
+  })
+  .refine((b) => b.customer_service_phone !== undefined || b.customer_service_email !== undefined, {
+    message: "set customer_service_phone and/or customer_service_email",
+  });
+
+/**
+ * POST /api/v1/admin/sellers/:id/locations (seller-as-shop, SPEC-LOCATIONS F-L1): replaces
+ * the seller's whole location set with the body's set (replacement is the idempotent
+ * shape; an empty set clears all rows). Per location: kind in the enum or null (null is
+ * the recorded "undetermined" state), city + state required (state a USPS code), street
+ * and ZIP optional, exactly one is_primary in a non-empty set, provenance required.
+ */
+export const SellerLocationEntrySchema = z.strictObject({
+  kind: z.enum(SELLER_LOCATION_KINDS).nullable(),
+  street: z.string().trim().min(1).max(200).nullable().optional(),
+  city: z.string().trim().min(1).max(200),
+  state: z
+    .string()
+    .regex(/^[A-Z]{2}$/, "state must be a USPS code")
+    .refine((s) => stateByCode(s) !== null, "unknown USPS code"),
+  zip: z.string().trim().min(1).max(20).nullable().optional(),
+  is_primary: z.boolean(),
+  source_url: z.string().url().max(2000),
+  checked_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "checked_date must be YYYY-MM-DD"),
+});
+
+export const SellerLocationsBodySchema = z
+  .strictObject({ locations: z.array(SellerLocationEntrySchema).max(60) })
+  .refine((b) => b.locations.length === 0 || b.locations.filter((l) => l.is_primary).length === 1, {
+    message: "exactly one location must be primary",
+  });
 
 const STATE_NAME_TO_CODE = new Map(US_STATES.map((s) => [s.name.toLowerCase(), s.code]));
 
@@ -705,6 +750,62 @@ export function createAdminService(db: Db, opts: { now?: () => Date } = {}) {
       const varietySlugs = await admin.sellerVisibleVarietySlugs(db, seller.id);
       return {
         data: { seller: seller.slug, id: seller.id, changed },
+        revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
+      };
+    },
+
+    /**
+     * Seller-as-shop: the published customer-service channels. The route validates the body
+     * (SellerContactBodySchema: absent leaves untouched, null clears); this funnel resolves
+     * the seller, guards removed sellers, and returns the family's seller-write revalidation
+     * set. Never touches the private contact_email.
+     */
+    async sellerContactUpdate(
+      ref: string,
+      patch: { customerServicePhone?: string | null; customerServiceEmail?: string | null },
+    ): Promise<AdminResult<Record<string, unknown>>> {
+      const seller = await ingest.sellerByRef(db, ref);
+      if (!seller) throw new AdminError(404, "seller_not_found", `seller ${ref} not found`);
+      if (seller.eligibility === "removed_by_request") throw new AdminError(409, "seller_removed", `${seller.slug} was removed at its request`);
+      const changed = await admin.updateSellerContact(db, seller.id, patch, iso());
+      const varietySlugs = await admin.sellerVisibleVarietySlugs(db, seller.id);
+      return {
+        data: { seller: seller.slug, id: seller.id, changed },
+        revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
+      };
+    },
+
+    /**
+     * Seller-as-shop (SPEC-LOCATIONS F-L1): replaces the seller's whole location set with
+     * the given set — validated by SellerLocationsBodySchema (exactly one primary in a
+     * non-empty set; an empty set clears). Same seller resolution, removed-seller guard,
+     * and revalidation set as the family's seller writes.
+     */
+    async sellerLocationsReplace(
+      ref: string,
+      locations: z.infer<typeof SellerLocationsBodySchema>["locations"],
+    ): Promise<AdminResult<Record<string, unknown>>> {
+      const seller = await ingest.sellerByRef(db, ref);
+      if (!seller) throw new AdminError(404, "seller_not_found", `seller ${ref} not found`);
+      if (seller.eligibility === "removed_by_request") throw new AdminError(409, "seller_removed", `${seller.slug} was removed at its request`);
+      const { replaced } = await admin.replaceSellerLocations(
+        db,
+        seller.id,
+        locations.map((l) => ({
+          kind: l.kind,
+          street: l.street ?? null,
+          city: l.city,
+          state: l.state,
+          zip: l.zip ?? null,
+          isPrimary: l.is_primary,
+          sourceUrl: l.source_url,
+          checkedDate: l.checked_date,
+        })),
+        iso(),
+      );
+      const varietySlugs = await admin.sellerVisibleVarietySlugs(db, seller.id);
+      return {
+        data: { seller: seller.slug, id: seller.id, locations: locations.length, replaced },
         revalidate: [`/seller/${seller.slug}`, "/seller", "/sitemap.xml", ...varietySlugs.map((s) => `/variety/${s}`)],
       };
     },

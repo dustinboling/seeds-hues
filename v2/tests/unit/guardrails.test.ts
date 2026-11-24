@@ -212,7 +212,7 @@ describe("policy guardrails", () => {
       "components/crop/CropCardImage.tsx": [/src=\{imageUrl\(m\.url, \{ width: 480 \}\)\}/],
       // Pod-ornament delta: without media, the card placeholder shows the crop's decorative pod
       // motif (lib/data/pod-ornaments.ts stored /ornaments/ paths).
-      "components/variety/VarietyCardImage.tsx": [/src=\{imageUrl\(m\.url, \{ width: 480 \}\)\}/, /src=\{imageUrl\(motif, \{ width: 480 \}\)\}/],
+      "components/variety/VarietyCardImage.tsx": [/src=\{imageUrl\(plate\.url, \{ width: 480 \}\)\}/, /src=\{imageUrl\(motif, \{ width: 480 \}\)\}/],
       "components/ui/ThemeArt.tsx": [/src=\{imageUrl\(art\.src, \{ width: art\.width \}\)\}/],
       // Branding delta: the Hues wordmark renders only in components/layout/HuesLogo.tsx, from
       // this app's own /brand/ asset (the owner's master artwork, self-hosted, stays local).
@@ -232,9 +232,9 @@ describe("policy guardrails", () => {
       // State-plates delta (2026-11-19): the state-flower plate on seller + state pages, from the
       // stored /artwork/states/{slug}.webp paths in lib/data/state-plates.ts, at width 640.
       "components/seller/StatePlate.tsx": [/src=\{imageUrl\(plate\.path, \{ width: 640 \}\)\}/],
-      // Seller-listing rail (2026-11-20): the resolved plate (the variety's own, else its
-      // crop's) or the crop's decorative pod motif — stored own-work paths via lib/images.
-      "components/variety/ListingArtwork.tsx": [/src=\{imageUrl\(plate\.url, \{ width: 480 \}\)\}/, /src=\{imageUrl\(motif, \{ width: 480 \}\)\}/],
+      // Seller-listing rail (2026-11-20) had an entry here until the seller-as-shop
+      // build retired it outright (SPEC-GRID-CARD G-4: its tier logic moved into the
+      // unified card); an <img> outside this table fails the scan below, as it should.
     };
     const allowed = Object.keys(IMG_FILES);
     expect(offenders(ui, /<img\b/, allowed)).toEqual([]);
@@ -250,7 +250,7 @@ describe("policy guardrails", () => {
     // The other rendered image attributes are pinned to helper calls too: srcsets (variety card,
     // hero, theme wide source) and the state-flower <image href>.
     const SRCSET_FILES: Record<string, RegExp> = {
-      "components/variety/VarietyCardImage.tsx": /imageSrcSet\(m\.url, \[480, 768\]\)/,
+      "components/variety/VarietyCardImage.tsx": /imageSrcSet\(plate\.url, \[480, 768\]\)/,
       "components/variety/VarietyHeroImage.tsx": /imageSrcSet\(media\.url, \[768, 1120\]\)/,
       "components/ui/ThemeArt.tsx": /srcSet=\{imageUrl\(art\.wide, \{ width: 1600 \}\)\}/,
       "components/ui/HomeMotifDivider.tsx": /imageSrcSet\("\/theme\/divider-home\.webp", \[720, 1080, 1440\]\)/,

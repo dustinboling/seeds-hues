@@ -3,25 +3,33 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { Pagination } from "@/components/ui/Pagination";
 import { RatingDisplay } from "@/components/ui/RatingDisplay";
-import { OutboundLink } from "@/components/ui/OutboundLink";
-import { ListingRow } from "@/components/variety/ListingRow";
 import { StateShape } from "@/components/seller/StateShape";
 import { StatePlate } from "@/components/seller/StatePlate";
 import { ImportedRatingPanel } from "@/components/seller/ImportedRatingPanel";
 import { SmallFarmBadge } from "@/components/seller/SmallFarmBadge";
+import { SellerContactBlock } from "@/components/seller/SellerContactBlock";
+import { SellerLocations } from "@/components/seller/SellerLocations";
+import { ShopBrowse, type ShopBrowseInitial } from "@/components/seller/ShopBrowse";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServices } from "@/lib/services/context";
 import { ogImage, pageMetadata, sellerDescription, sellerTitle } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, itemListJsonLd, organizationJsonLd } from "@/lib/seo/jsonld";
-import { assertPageInRange, pagePath, pageTitleSuffix, parsePage, totalPages } from "@/lib/paging";
-import { hostOf, plural, sellerTypeLabel } from "@/lib/format";
+import { assertPageInRange, pagePath, parsePage } from "@/lib/paging";
+import { sellerTypeLabel } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/config";
 import { stateByCode } from "@/lib/data/states";
 import { statePlateFor } from "@/lib/data/state-plates";
 import { SMALL_FARM_LEGEND } from "@/lib/small-farm";
-import { SELLER_NO_LISTINGS } from "@/lib/zero-seller";
+import {
+  hasActiveShopState,
+  readShopBrowseFilters,
+  shopBrowseTitle,
+  shopCountsFor,
+  shopCropsFor,
+  shopViewListings,
+  type ShopCrop,
+} from "@/lib/shop-browse";
 import type { SellerDetail } from "@/lib/validators";
 import { SellerSkeleton } from "./skeleton";
 
@@ -35,19 +43,29 @@ type Props = {
 const load = cache(async (slug: string) => {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return null;
   const { catalog } = await getServices();
-  return catalog.getSeller(slug);
+  const s = await catalog.getSeller(slug);
+  if (!s) return null;
+  const crops = await catalog.cropCatalog();
+  return { s, crops };
 });
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
-  const s = await load(slug);
-  if (!s) return { title: "Seller not found", robots: { index: false, follow: true } };
+  const loaded = await load(slug);
+  if (!loaded) return { title: "Seller not found", robots: { index: false, follow: true } };
+  const { s, crops } = loaded;
+  // Filtered, searched, and sorted shop views are noindexed with the canonical set to
+  // the unfiltered shop URL (S-11 — the /variety discipline, extended); the unfiltered
+  // shop keeps its current indexing. The title never changes with state.
+  const state = readShopBrowseFilters(sp, crops);
+  const stated = hasActiveShopState(state) || sp.sort !== undefined;
   return pageMetadata({
-    title: `${sellerTitle(s)}${pageTitleSuffix(page)}`,
+    title: shopBrowseTitle(sellerTitle(s), page),
     description: sellerDescription(s),
-    path: pagePath(`/seller/${s.slug}`, page),
+    path: stated ? `/seller/${s.slug}` : pagePath(`/seller/${s.slug}`, page),
     og: ogImage("seller", s.slug, s.name),
+    noindex: stated,
   });
 }
 
@@ -57,23 +75,34 @@ export default async function SellerPage({ params, searchParams }: Props) {
   // Suspense fallback — the page's single loading announcement.
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const page = parsePage(sp.page);
-  const s = await load(slug);
+  const loaded = await load(slug);
   // A removed seller answers 410 from middleware.ts; this notFound() is the backstop.
-  if (!s) notFound();
-  const total = s.listings.length;
+  if (!loaded) notFound();
+  const { s, crops } = loaded;
+  // The shop view for the URL's state, from the seller's complete listing set — every
+  // shop state server-renders correctly from its URL alone (the no-JS floor). Bounds
+  // hold against the NARROWED total: an out-of-range page under a filter or query
+  // answers a true 404, as the unfiltered shop already does.
+  const state = readShopBrowseFilters(sp, crops);
+  const view = shopViewListings(s.listings, state);
+  const total = view.length;
   if (total > 0) assertPageInRange(page, total);
   else if (page > 1) notFound();
+  const initial: ShopBrowseInitial = {
+    state,
+    counts: shopCountsFor(s.listings, state, shopCropsFor(s.listings)),
+    items: view.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    total,
+    page,
+  };
   return (
     <Suspense fallback={<SellerSkeleton />}>
-      <SellerContent s={s} page={page} />
+      <SellerContent s={s} page={page} initial={initial} crops={crops} />
     </Suspense>
   );
 }
 
-function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
-  const total = s.listings.length;
-  const pages = totalPages(total);
-  const shown = s.listings.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+function SellerContent({ s, page, initial, crops }: { s: SellerDetail; page: number; initial: ShopBrowseInitial; crops: ShopCrop[] }) {
   const crumbs = [
     { name: "Home", href: "/" },
     { name: "Sellers", href: "/seller" },
@@ -92,7 +121,7 @@ function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
       <JsonLd
         data={itemListJsonLd(
           `Varieties listed by ${s.name}`,
-          shown.map((l) => ({ name: l.variety.varietyName, href: `/variety/${l.variety.slug}` })),
+          initial.items.map((l) => ({ name: l.variety.varietyName, href: `/variety/${l.variety.slug}` })),
           (page - 1) * PAGE_SIZE + 1,
         )}
       />
@@ -141,15 +170,7 @@ function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
                 </dd>
               </div>
             </dl>
-            {s.homepage ? (
-              <p className="mt-4">
-                <OutboundLink href={s.homepage} seller={s.slug} className="btn btn-primary">
-                  Visit {s.name} ({hostOf(s.homepage)})
-                </OutboundLink>
-              </p>
-            ) : (
-              <p className="mt-4 text-sm text-muted">No website on file for this seller.</p>
-            )}
+            <SellerContactBlock slug={s.slug} homepage={s.homepage} phone={s.customerServicePhone} email={s.customerServiceEmail} />
             {s.isSiteOwner ? (
               <p className="mt-3 text-sm text-muted">Disclosure: this seller is Hues Floral Park, which owns and operates this site.</p>
             ) : null}
@@ -158,6 +179,8 @@ function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
               eager (first viewport) with no fetchPriority — the <h1> stays the LCP (§A.5.3). */}
           {state && plate ? <StatePlate code={state.code} plate={plate} loading="eager" /> : null}
         </header>
+
+        <SellerLocations name={s.name} locations={s.locations} />
 
         {s.description || s.orderingNotes ? (
           <section aria-labelledby="seller-about" className="mt-6 max-w-3xl">
@@ -178,27 +201,7 @@ function SellerContent({ s, page }: { s: SellerDetail; page: number }) {
         {s.importedRating ? <ImportedRatingPanel rating={s.importedRating} /> : null}
 
         <section aria-labelledby="seller-varieties" className="mt-8">
-          <h2 id="seller-varieties" className="text-2xl font-semibold">
-            Listings at {s.name}
-          </h2>
-          <p className="mt-1 text-muted">
-            {plural(total, "listing")}
-            {pages > 1 ? ` · page ${page} of ${pages}` : ""}
-          </p>
-          {shown.length === 0 ? (
-            <p className="mt-3 text-muted">
-              {SELLER_NO_LISTINGS} <Link href="/variety">Browse all varieties</Link>.
-            </p>
-          ) : (
-            <ul className="mt-3 flex flex-col gap-3 lg:grid lg:grid-cols-2">
-              {shown.map((l) => (
-                <li key={l.id} className="h-full">
-                  <ListingRow listing={l} context="seller" />
-                </li>
-              ))}
-            </ul>
-          )}
-          <Pagination basePath={`/seller/${s.slug}`} page={page} totalPages={pages} label={`${s.name} listing pages`} />
+          <ShopBrowse basePath={`/seller/${s.slug}`} sellerName={s.name} baseTitle={sellerTitle(s)} initial={initial} full={s.listings} crops={crops} />
         </section>
 
         <p className="mt-8">

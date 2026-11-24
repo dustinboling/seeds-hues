@@ -39,12 +39,14 @@ const listing = (over: Partial<PublicListing> = {}): PublicListing => ({
       slug: "sweet-pea",
       commonName: "Sweet Pea",
       latinName: "Lathyrus odoratus",
+      lifeCycle: null,
       season_class: null,
       season_source_label: null,
       sowing_methods: [],
       sowing_method_source_label: null,
     },
     colorSwatch: null,
+    colorFamily: "unknown",
     media: [],
     cropMedia: [],
   },
@@ -62,8 +64,7 @@ const listing = (over: Partial<PublicListing> = {}): PublicListing => ({
   ...over,
 });
 
-const html = (l: PublicListing, context: "variety" | "seller" = "variety") =>
-  renderToStaticMarkup(createElement(ListingRow, { listing: l, context }));
+const html = (l: PublicListing) => renderToStaticMarkup(createElement(ListingRow, { listing: l }));
 
 const anchor = (h: string, hrefPart: string) =>
   h.match(new RegExp(`<a [^>]*href="${hrefPart.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*>`))?.[0] ?? "";
@@ -224,19 +225,6 @@ describe("ListingRow — Quiet Ledger card", () => {
       expect(html(listing())).not.toContain("Small farm");
     });
 
-    it("renders no badge in seller context even for a badged seller (the header carries it there)", () => {
-      expect(html(badgedListing(), "seller")).not.toContain("data-small-farm-badge");
-    });
-  });
-
-  it("seller context: variety is the heading, the same calmed card and shop treatment apply", () => {
-    const h = html(listing(), "seller");
-    expect(anchor(h, "/variety/sweet-pea-blue-vein")).not.toBe("");
-    expect(h).toContain(">Blue Vein</a>");
-    expect(h).toContain("Sweet Pea");
-    expect(h).toContain("Visit shop →");
-    expect(h).toContain('<span class="sr-only">Shop at Songbird Seed Co. (opens in a new tab)</span>');
-    expect(h).not.toContain("data-small-farm-badge");
   });
 });
 

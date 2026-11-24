@@ -82,6 +82,7 @@ const CROP: CropDetail = {
   slug: "test-crop",
   commonName: "Test Crop",
   latinName: null,
+  lifeCycle: null,
   season_class: null,
   season_source_label: null,
   sowing_methods: [],

@@ -76,3 +76,18 @@ export function hostOf(url: string): string {
     return url;
   }
 }
+
+/**
+ * The dialable tel: href for a published customer-service phone number (seller-as-shop):
+ * digits with country code, derived from the display form at render — the href and the
+ * visible text always describe the same number. A leading + is honored; a 10-digit US
+ * number gains +1; an 11-digit 1-led number gains +; anything else is prefixed with +
+ * as the best-effort dialable form.
+ */
+export function telHref(display: string): string {
+  const digits = display.replace(/\D/g, "");
+  if (display.trimStart().startsWith("+")) return `tel:+${digits}`;
+  if (digits.length === 10) return `tel:+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `tel:+${digits}`;
+  return `tel:+${digits}`;
+}

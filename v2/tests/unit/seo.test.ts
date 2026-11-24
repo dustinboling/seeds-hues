@@ -18,7 +18,7 @@ import { fakeSellerDetail } from "../helpers/seller-detail";
 
 const listing = (id: number, sellerSlug: string, sellerName: string, checked: string): PublicListing => ({
   id,
-  variety: { slug: "test-variety", varietyName: "Test", plant: { slug: "p", commonName: "Sweet Pea", latinName: "Lathyrus odoratus", season_class: null, season_source_label: null, sowing_methods: [], sowing_method_source_label: null }, colorSwatch: null, media: [], cropMedia: [] },
+  variety: { slug: "test-variety", varietyName: "Test", plant: { slug: "p", commonName: "Sweet Pea", latinName: "Lathyrus odoratus", lifeCycle: null, season_class: null, season_source_label: null, sowing_methods: [], sowing_method_source_label: null }, colorSwatch: null, colorFamily: "unknown", media: [], cropMedia: [] },
   seller: { slug: sellerSlug, name: sellerName, location: null, region: "WA", country: "US", isSmallFarm: false },
   availability: "in_stock",
   lastCheckedAt: checked,
@@ -36,7 +36,7 @@ function variety(listings: PublicListing[]): VarietyDetail {
   return {
     slug: "test-variety",
     varietyName: "Test",
-    plant: { slug: "p", commonName: "Sweet Pea", latinName: "Lathyrus odoratus", season_class: null, season_source_label: null, sowing_methods: [], sowing_method_source_label: null, description: null, sowingNotes: null },
+    plant: { slug: "p", commonName: "Sweet Pea", latinName: "Lathyrus odoratus", lifeCycle: null, season_class: null, season_source_label: null, sowing_methods: [], sowing_method_source_label: null, description: null, sowingNotes: null },
     category: { slug: "flowers", name: "Flowers" },
     subcategory: null,
     series: null,

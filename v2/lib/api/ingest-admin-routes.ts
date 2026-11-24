@@ -11,8 +11,10 @@ import {
   ReviewListQuerySchema,
   SellerActionBodySchema,
   SellerBadgeBodySchema,
+  SellerContactBodySchema,
   SellerDescriptionBodySchema,
   SellerLocationBodySchema,
+  SellerLocationsBodySchema,
   regionForLocation,
   ListingRemoveBodySchema,
   VarietyColorBodySchema,
@@ -213,6 +215,44 @@ export const ADMIN_ROUTES: RouteSpec[] = [
       const b = parseBody(SellerLocationBodySchema, body);
       const region = regionForLocation(b.location);
       const r = await services.admin.sellerUpdate(ref, region ? { location: b.location, region } : { location: b.location });
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // Seller-as-shop: the seller's published customer-service phone and/or email, as
+    // collected by the location sweep — through the dedicated sellerContactUpdate funnel
+    // (the variety-color partial-update convention: absent leaves untouched, null clears).
+    // Never touches the private contact_email.
+    method: "POST",
+    pattern: "sellers/:id/contact",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "seller not found");
+      const b = parseBody(SellerContactBodySchema, body);
+      const r = await services.admin.sellerContactUpdate(ref, {
+        ...(b.customer_service_phone !== undefined ? { customerServicePhone: b.customer_service_phone } : {}),
+        ...(b.customer_service_email !== undefined ? { customerServiceEmail: b.customer_service_email } : {}),
+      });
+      return { data: r.data, revalidate: r.revalidate };
+    },
+  },
+  {
+    // Seller-as-shop (SPEC-LOCATIONS F-L1): replaces the seller's whole location set with
+    // the body's set (an empty set clears all rows) through the dedicated
+    // sellerLocationsReplace funnel — exactly one primary in a non-empty set, or 400.
+    method: "POST",
+    pattern: "sellers/:id/locations",
+    scope: "admin",
+    bucket: null,
+    idempotent: true,
+    handler: async ({ services, params, body }) => {
+      const ref = params.id ?? "";
+      if (!/^(\d{1,12}|[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(ref)) throw new Problem(404, "not_found", "seller not found");
+      const b = parseBody(SellerLocationsBodySchema, body);
+      const r = await services.admin.sellerLocationsReplace(ref, b.locations);
       return { data: r.data, revalidate: r.revalidate };
     },
   },

@@ -92,6 +92,7 @@ const plant = {
   slug: "sweet-pea",
   commonName: "Sweet Pea",
   latinName: "Lathyrus odoratus",
+  lifeCycle: null,
   season_class: null,
   season_source_label: null,
   sowing_methods: [],
@@ -115,6 +116,7 @@ function varietyItem(i: number): VarietyListItem {
     indexable: true,
     rating: { state: "not_yet_rated", average: null, review_count: 0 },
     media: [],
+    cropMedia: [],
   };
 }
 
@@ -144,6 +146,7 @@ function listingItem(id: number): PublicListing {
       varietyName: `Test Variety ${id}`,
       plant: { ...plant, sowing_methods: [] },
       colorSwatch: null,
+      colorFamily: "unknown",
       media: [],
       cropMedia: [],
     },
@@ -172,6 +175,7 @@ const CROP: CropDetail = {
   slug: "test-crop",
   commonName: "Test Crop",
   latinName: null,
+  lifeCycle: null,
   season_class: null,
   season_source_label: null,
   sowing_methods: [],

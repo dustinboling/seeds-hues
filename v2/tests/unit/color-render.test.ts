@@ -82,6 +82,7 @@ function detailFixture(over: { slug: string; varietyName: string; colorFamily: s
       slug: "zinnia",
       commonName: "Zinnia",
       latinName: "Zinnia elegans",
+      lifeCycle: null,
       season_class: null,
       season_source_label: null,
       sowing_methods: [],

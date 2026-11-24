@@ -228,7 +228,7 @@ export function SellerFilterSection({
           <ul key={smallFarmOnly ? "small-farms" : "all"} className={`mt-3 flex flex-col gap-3${filterTouched ? " listing-swap" : ""}`}>
             {sortedListings.map((l) => (
               <li key={l.id}>
-                <ListingRow listing={l} context="variety" />
+                <ListingRow listing={l} />
               </li>
             ))}
           </ul>
