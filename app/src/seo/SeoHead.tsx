@@ -19,7 +19,7 @@ export function SeoHead({ tags }: { tags: HeadTags }) {
       <meta property="og:site_name" content="seeds.hues.flowers" />
       <meta property="og:url" content={tags.og.url} />
       <meta property="og:description" content={tags.og.description} />
-      <meta property="og:image" content={tags.og.url} />
+      <meta property="og:image" content={tags.og.image} />
       <meta property="og:image:width" content={String(tags.og.width)} />
       <meta property="og:image:height" content={String(tags.og.height)} />
       <meta property="og:image:alt" content={tags.og.alt} />
