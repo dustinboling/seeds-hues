@@ -28,14 +28,30 @@ export function ogImage(kind: "variety" | "seller" | "crop" | "site", slug: stri
   return { url: `${SITE_URL}/og/${kind}/${slug}`, width: 1200, height: 630, alt, type: "image/png" };
 }
 
-/** Plain head tags for one page (rendered by the route's +Head). */
+/**
+ * Plain head tags for one page (rendered by the route's +Head). og:url (the
+ * page's canonical) and og:image (the share image) stay separate fields —
+ * v2's openGraph.url vs images[0].url — so the two can never collapse.
+ */
 export interface HeadTags {
   /** Full document title, template already applied. */
   title: string;
   description: string;
   canonical: string;
   robots: string;
-  og: OgImage & { title: string; description: string; url: string };
+  og: {
+    /** The page's canonical URL (og:url). */
+    url: string;
+    /** The share image URL (og:image) — never the canonical. */
+    image: string;
+    width: number;
+    height: number;
+    alt: string;
+    /** MIME type; omitted when the served format is negotiated (image CDN, format=auto). */
+    type?: string;
+    title: string;
+    description: string;
+  };
   twitter: { card: "summary_large_image"; title: string; description: string; image: string };
 }
 
@@ -57,7 +73,16 @@ export function pageHead(opts: {
     description: opts.description,
     canonical,
     robots,
-    og: { ...image, title: opts.title, description: opts.description, url: canonical },
+    og: {
+      url: canonical,
+      image: image.url,
+      width: image.width,
+      height: image.height,
+      alt: image.alt,
+      ...(image.type ? { type: image.type } : {}),
+      title: opts.title,
+      description: opts.description,
+    },
     twitter: { card: "summary_large_image", title: opts.title, description: opts.description, image: image.url },
   };
 }
