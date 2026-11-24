@@ -27,6 +27,7 @@ import { SELLER_UPDATE_FIELDS, type BadgeFilter, type ListingStateFilter, type S
 import type { ListingChip } from "@/lib/admin/listings";
 import { normalizeName, slugify } from "@/lib/names";
 import { atomic, type AtomicOp } from "./atomic";
+import { effectiveVarietyLatin } from "./catalog-read";
 import { roleAuditFor } from "./admin-auth";
 import { farmOwnerAuditFor } from "./accounts";
 import { ensureIngestSource, recomputeIndexable } from "./ingest";
@@ -588,7 +589,7 @@ export async function varietyDetailById(db: Db, id: number): Promise<VarietyDeta
       status: varieties.status,
       plantSlug: plants.slug,
       commonName: plants.commonName,
-      latinName: plants.latinName,
+      latinName: effectiveVarietyLatin,
       seriesName: series.name,
     })
     .from(varieties)
@@ -1393,7 +1394,7 @@ export async function varietyDetailBySlugAdmin(db: Db, slug: string): Promise<Ad
       status: varieties.status,
       plantSlug: plants.slug,
       commonName: plants.commonName,
-      latinName: plants.latinName,
+      latinName: effectiveVarietyLatin,
       seriesName: series.name,
     })
     .from(varieties)
@@ -1469,6 +1470,101 @@ export async function updateVarietyDescription(db: Db, varietyId: number, descri
     db.update(varieties).set({ description, updatedAt: at, updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
   ]);
   return ["description"];
+}
+
+/**
+ * The admin-key variety Latin override write (migration 0017): sets the override (null
+ * clears it back to the plant fallback) and reports the changed-field list back. Same
+ * conventions as updateVarietyDescription (seq bump, updatedAt, the changed list); an
+ * unchanged save writes nothing. The caller normalizes empty input to null first.
+ */
+export async function updateVarietyLatin(db: Db, varietyId: number, latinName: string | null, at: string): Promise<["latin_name"] | []> {
+  const [cur] = await db
+    .select({ latinName: varieties.latinName })
+    .from(varieties)
+    .where(eq(varieties.id, varietyId))
+    .limit(1);
+  if (!cur) return [];
+  if (latinName === cur.latinName) return [];
+  await atomic(db, [
+    ...nextSeq(db),
+    db.update(varieties).set({ latinName, updatedAt: at, updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
+  ]);
+  return ["latin_name"];
+}
+
+export interface VarietySeriesResult {
+  changed: ["series"] | [];
+  /** The variety's series after the write (null = none assigned). */
+  series: { slug: string; name: string } | null;
+  /** True when this write created the series row. */
+  created: boolean;
+  /** Slug of the series the variety left, when it left one (for revalidation). */
+  oldSeriesSlug: string | null;
+}
+
+/**
+ * The admin-key variety series write: assign the variety to the named series of its own
+ * crop (null clears back to none) and report the changed-field list back. The series is
+ * found by exact (plant, name) — the importer's identity — and created when missing, with
+ * the importer's slug (`<crop>-<series>`, canonical §2); a colliding slug owned by a
+ * different series reports `{ conflict }` instead of writing. Same conventions as the
+ * sibling writes (seq bump per changed row, updatedAt, the changed list); re-assigning the
+ * current series, or clearing an already-empty one, writes nothing.
+ */
+export async function updateVarietySeries(
+  db: Db,
+  varietyId: number,
+  seriesName: string | null,
+  at: string,
+): Promise<VarietySeriesResult | { conflict: string }> {
+  const [v] = await db
+    .select({
+      plantId: varieties.plantId,
+      plantSlug: plants.slug,
+      seriesId: varieties.seriesId,
+      seriesSlug: series.slug,
+    })
+    .from(varieties)
+    .innerJoin(plants, eq(plants.id, varieties.plantId))
+    .leftJoin(series, eq(series.id, varieties.seriesId))
+    .where(eq(varieties.id, varietyId))
+    .limit(1);
+  if (!v) return { changed: [], series: null, created: false, oldSeriesSlug: null };
+  if (seriesName === null) {
+    if (v.seriesId === null) return { changed: [], series: null, created: false, oldSeriesSlug: null };
+    await atomic(db, [
+      ...nextSeq(db),
+      db.update(varieties).set({ seriesId: null, updatedAt: at, updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
+    ]);
+    return { changed: ["series"], series: null, created: false, oldSeriesSlug: v.seriesSlug };
+  }
+  const [found] = await db
+    .select({ id: series.id, slug: series.slug, name: series.name })
+    .from(series)
+    .where(and(eq(series.plantId, v.plantId), eq(series.name, seriesName), isNull(series.deletedAt)))
+    .limit(1);
+  if (found) {
+    if (v.seriesId === found.id) return { changed: [], series: { slug: found.slug, name: found.name }, created: false, oldSeriesSlug: null };
+    await atomic(db, [
+      ...nextSeq(db),
+      db.update(varieties).set({ seriesId: found.id, updatedAt: at, updatedSeq: currentSeq() }).where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
+    ]);
+    return { changed: ["series"], series: { slug: found.slug, name: found.name }, created: false, oldSeriesSlug: v.seriesSlug };
+  }
+  const slug = `${v.plantSlug}-${slugify(seriesName)}`;
+  const [clash] = await db.select({ id: series.id }).from(series).where(eq(series.slug, slug)).limit(1);
+  if (clash) return { conflict: slug };
+  await atomic(db, [
+    ...nextSeq(db),
+    db.insert(series).values({ slug, name: seriesName, plantId: v.plantId, createdAt: at, updatedAt: at, updatedSeq: currentSeq() }) as unknown as AtomicOp,
+    ...nextSeq(db),
+    db
+      .update(varieties)
+      .set({ seriesId: sql<number>`(SELECT id FROM series WHERE slug = ${slug})`, updatedAt: at, updatedSeq: currentSeq() })
+      .where(eq(varieties.id, varietyId)) as unknown as AtomicOp,
+  ]);
+  return { changed: ["series"], series: { slug, name: seriesName }, created: true, oldSeriesSlug: v.seriesSlug };
 }
 
 /** A variety ref for writes: a numeric id or a slug (removed varieties resolve too — the effect itself reports already_removed). */
