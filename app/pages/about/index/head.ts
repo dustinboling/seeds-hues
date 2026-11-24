@@ -1,4 +1,4 @@
-import { pageHead } from "../../src/seo/meta";
+import { pageHead } from "../../../src/seo/meta";
 
 export const aboutHead = pageHead({
   title: "About the directory",

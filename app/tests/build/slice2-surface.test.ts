@@ -2,7 +2,8 @@
  * Slice 2 surface contract (the F5 cure's teeth): builds the real app once
  * and asserts the built output contains every deliverable — each route's
  * complete primary content markers, the generated machine files with Bea's
- * rules, robots byte parity, and og separation on every template. This test
+ * rules, robots byte parity, og separation on every template, and exactly
+ * one head block per template (occurrence counts, not first-match). This test
  * fails on any tree where the surface does not exist (it failed on both
  * prior PRs' trees by construction: no routes, no files, no markers).
  */
@@ -378,6 +379,17 @@ describe("Slice 2 built surface", () => {
       expect(meta(html, "name", "twitter:image")).toBe(image);
       expect(html).toContain(`<link rel="canonical" href="${canonical}"`);
       expect(html).not.toContain('"price"');
+    });
+
+    it.each(TEMPLATES)("emits exactly one head block (%s)", (rel, canonical) => {
+      // F6 cure: Vike cumulates +Head down the route tree, so presence and
+      // first-match reads cannot see a duplicate block — count occurrences.
+      const html = read(rel);
+      expect(html.match(/<link rel="canonical"/g) ?? [], "canonical count").toHaveLength(1);
+      expect(html.match(/<meta name="description"/g) ?? [], "description count").toHaveLength(1);
+      expect(html.match(/<meta property="og:url"/g) ?? [], "og:url count").toHaveLength(1);
+      expect(html.match(/<meta property="og:image"/g) ?? [], "og:image count").toHaveLength(1);
+      expect(html).toContain(`<link rel="canonical" href="${canonical}"`);
     });
   });
 });
