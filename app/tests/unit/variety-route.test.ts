@@ -8,15 +8,15 @@
 import { describe, expect, it } from "vitest";
 import { createDataCache } from "../../src/data/cache";
 import { pathsForTag } from "../../src/data/revalidate";
-import { isVarietySlug, legacySlug, redirectForUrl } from "../../src/server/redirects";
+import { isSlug, legacySlug, redirectForUrl } from "../../src/server/redirects";
 import { resolveVarietyRoute } from "../../src/server/variety-route";
 import { createFakeCatalogApi, fakeCatalogState } from "./fake-catalog";
 
 describe("slug validation", () => {
   it("accepts kebab-case slugs and rejects everything else", () => {
-    for (const slug of ["a", "a-1", "sweet-pea-kings-ransom", "cosmos2"]) expect(isVarietySlug(slug)).toBe(true);
+    for (const slug of ["a", "a-1", "sweet-pea-kings-ransom", "cosmos2"]) expect(isSlug(slug)).toBe(true);
     for (const slug of ["", "UPPER", "Bad_Slug", "-lead", "trail-", "a--b", "with space", "dot.slug", "Ünïcodé"]) {
-      expect(isVarietySlug(slug), JSON.stringify(slug)).toBe(false);
+      expect(isSlug(slug), JSON.stringify(slug)).toBe(false);
     }
   });
 

@@ -18,6 +18,15 @@
  */
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import type { FakeCatalogState } from "../unit/fake-catalog";
+import {
+  stubSearch,
+  stubSellerMatches,
+  stubSortSellers,
+  stubSortVarieties,
+  stubVarietyMatches,
+  type StubSeriesSeed,
+  type StubVarietySort,
+} from "./catalog-filter";
 import { rederive } from "./derived";
 
 const GENERATED_AT = "2026-11-24T00:00:00.000Z";
@@ -43,6 +52,34 @@ function one(data: unknown) {
 function notFound(what: string) {
   return { data: null, error: { code: "not_found", message: `${what} not found` } };
 }
+
+function validationError(message: string) {
+  return { data: null, error: { code: "validation_error", message } };
+}
+
+/** Repeatable and/or comma-separated list param (v2's listParam vocabulary). */
+function listValues(search: URLSearchParams, key: string): string[] {
+  return search
+    .getAll(key)
+    .flatMap((v) => v.split(","))
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0);
+}
+
+/** v2's boolParam: true|1 → true, false|0 → false, anything else → 400. */
+function boolParam(search: URLSearchParams, key: string): boolean | undefined | "invalid" {
+  const raw = search.get(key);
+  if (raw === null || raw === "") return undefined;
+  if (raw === "true" || raw === "1") return true;
+  if (raw === "false" || raw === "0") return false;
+  return "invalid";
+}
+
+const VARIETY_SORTS = ["name", "-name", "recently_checked", "-recently_checked", "listing_count", "-listing_count"] as const;
+const SEASONS = ["cool", "warm"] as const;
+const METHODS = ["direct", "trays"] as const;
+const LIFE_CYCLES = ["annual", "biennial", "perennial"] as const;
+const SEARCH_TYPES = ["variety", "series", "crop", "seller"] as const;
 
 function paged(items: unknown[], search: URLSearchParams) {
   const limit = Math.max(1, Math.min(Number(search.get("limit") ?? "24") || 24, 100));
@@ -78,7 +115,21 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
         return;
       }
       if (path === "/api/v1/sellers") {
-        send(200, paged(state.sellers, url.searchParams));
+        const q = url.searchParams.get("q")?.trim() ?? undefined;
+        if (q && q.length > 100) {
+          send(400, validationError("q must be at most 100 characters"));
+          return;
+        }
+        const smallFarm = boolParam(url.searchParams, "small_farm");
+        if (smallFarm === "invalid") {
+          send(400, validationError("small_farm must be true or false"));
+          return;
+        }
+        const regions = listValues(url.searchParams, "region").map((r) => r.toUpperCase());
+        const items = stubSortSellers(
+          state.sellers.filter((s) => stubSellerMatches(s, { region: regions, q, smallFarmOnly: smallFarm })),
+        );
+        send(200, paged(items, url.searchParams));
         return;
       }
       if (path === "/api/v1/coverage") {
@@ -96,9 +147,99 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
         return;
       }
       if (path === "/api/v1/varieties") {
-        const plants = url.searchParams.get("plant")?.split(",").filter(Boolean) ?? url.searchParams.get("crop")?.split(",").filter(Boolean) ?? [];
-        const pool = plants.length > 0 ? state.listItems.filter((item) => plants.includes(item.plant.slug)) : state.listItems;
+        const sortRaw = url.searchParams.get("sort") ?? "name";
+        if (!(VARIETY_SORTS as readonly string[]).includes(sortRaw)) {
+          // Live-faithful: "availability" is deliberately NOT in VARIETY_SORTS
+          // — the app sorts it read-side and must never send it.
+          send(400, validationError(`sort must be one of ${VARIETY_SORTS.join(", ")}`));
+          return;
+        }
+        const seasonRaw = url.searchParams.get("season");
+        if (seasonRaw !== null && !(SEASONS as readonly string[]).includes(seasonRaw)) {
+          send(400, validationError(`season has an invalid value "${seasonRaw.slice(0, 40)}"`));
+          return;
+        }
+        const methods = listValues(url.searchParams, "method");
+        if (methods.length > 10 || methods.some((m) => !(METHODS as readonly string[]).includes(m))) {
+          send(400, validationError("method has an invalid value"));
+          return;
+        }
+        const lifeCycle = listValues(url.searchParams, "life_cycle");
+        if (lifeCycle.length > 10 || lifeCycle.some((b) => !(LIFE_CYCLES as readonly string[]).includes(b))) {
+          send(400, validationError("life_cycle has an invalid value"));
+          return;
+        }
+        const smallFarm = boolParam(url.searchParams, "small_farm");
+        if (smallFarm === "invalid") {
+          send(400, validationError("small_farm must be true or false"));
+          return;
+        }
+        const plants = listValues(url.searchParams, "plant").concat(listValues(url.searchParams, "crop"));
+        const colors = listValues(url.searchParams, "color_family");
+        const smallFarmSlugs = new Set(state.smallFarmVarieties);
+        const pool = stubSortVarieties(
+          state.listItems.filter((item) =>
+            stubVarietyMatches(
+              item,
+              {
+                plant: plants,
+                season: seasonRaw ?? undefined,
+                methods,
+                lifeCycle,
+                colorFamily: colors,
+                smallFarmOnly: smallFarm || undefined,
+              },
+              smallFarmSlugs,
+            ),
+          ),
+          sortRaw as StubVarietySort,
+        );
         send(200, paged(pool, url.searchParams));
+        return;
+      }
+      if (path === "/api/v1/search") {
+        const q = url.searchParams.get("q") ?? "";
+        const limitRaw = url.searchParams.get("limit");
+        if (limitRaw !== null && !/^-?\d+$/.test(limitRaw.trim())) {
+          send(400, validationError("limit must be an integer"));
+          return;
+        }
+        const types = listValues(url.searchParams, "type");
+        if (types.some((t) => !(SEARCH_TYPES as readonly string[]).includes(t))) {
+          send(400, validationError("type has an invalid value"));
+          return;
+        }
+        const seasonRaw = url.searchParams.get("season");
+        if (seasonRaw !== null && !(SEASONS as readonly string[]).includes(seasonRaw)) {
+          send(400, validationError(`season has an invalid value "${seasonRaw.slice(0, 40)}"`));
+          return;
+        }
+        const methods = listValues(url.searchParams, "method");
+        if (methods.some((m) => !(METHODS as readonly string[]).includes(m))) {
+          send(400, validationError("method has an invalid value"));
+          return;
+        }
+        const seasonClass =
+          seasonRaw === "cool" ? "cool_season_hardy_annual" : seasonRaw === "warm" ? "warm_season_tender_annual" : undefined;
+        const methodClasses = methods.map((m) => (m === "direct" ? "direct_sow" : "transplant"));
+        const response = stubSearch(
+          {
+            varieties: state.listItems,
+            smallFarmSlugs: new Set(state.smallFarmVarieties),
+            crops: state.crops,
+            series: state.seriesCatalog,
+            sellers: state.sellers,
+          },
+          q,
+          {
+            limit: limitRaw === null ? 10 : Number.parseInt(limitRaw, 10),
+            types: types as ("variety" | "series" | "crop" | "seller")[],
+            season: seasonClass,
+            methods: methodClasses,
+            colorFamily: listValues(url.searchParams, "color_family"),
+          },
+        );
+        send(200, one(response));
         return;
       }
       const varietyDetail = /^\/api\/v1\/varieties\/([^/]+)$/.exec(path);
@@ -131,6 +272,39 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
           return;
         }
         send(200, one(crop));
+        return;
+      }
+      const seriesDetail = /^\/api\/v1\/series\/([^/]+)$/.exec(path);
+      if (seriesDetail) {
+        const seed: StubSeriesSeed | undefined = state.seriesCatalog.find((s) => s.slug === seriesDetail[1]);
+        const crop = seed ? state.crops.find((c) => c.slug === seed.plantSlug) : undefined;
+        if (!seed || !crop) {
+          send(404, notFound("series"));
+          return;
+        }
+        // The SeriesDetail's crop is the full plant ref; its variety set is
+        // the pool's members (honest counts, not placeholders).
+        const members = state.listItems.filter((item) => item.series?.slug === seed.slug);
+        send(
+          200,
+          one({
+            slug: seed.slug,
+            name: seed.name,
+            crop: {
+              slug: crop.slug,
+              commonName: crop.commonName,
+              latinName: crop.latinName,
+              lifeCycle: crop.lifeCycle,
+              season_class: crop.season_class,
+              season_source_label: null,
+              sowing_methods: crop.sowing_methods,
+              sowing_method_source_label: null,
+            },
+            varietyCount: members.length,
+            varietiesWithSellers: members.filter((m) => m.listingCount > 0).length,
+            varieties: members,
+          }),
+        );
         return;
       }
       if (path === "/api/v1/openapi.json") {

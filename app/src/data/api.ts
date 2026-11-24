@@ -25,8 +25,12 @@ import type {
   ApiPublicListing,
   ApiRating,
   ApiRecentItem,
+  ApiSearchResponse,
+  ApiSearchResult,
   ApiSellerItem,
   ApiSellerRef,
+  ApiSellerType,
+  ApiSeriesCrop,
   ApiVarietyDetail,
   ApiVarietyFacts,
   ApiVarietyListItem,
@@ -60,6 +64,8 @@ export class ApiShapeError extends Error {
 type FetchImpl = typeof fetch;
 
 const AVAILABILITY: ReadonlySet<string> = new Set(["in_stock", "sold_out", "preorder", "shop_closed", "unknown"]);
+const SEASON_CLASSES: ReadonlySet<string> = new Set(["cool_season_hardy_annual", "warm_season_tender_annual"]);
+const SOWING_METHODS: ReadonlySet<string> = new Set(["direct_sow", "transplant"]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -109,12 +115,25 @@ function reqRecord(row: Record<string, unknown>, key: string, what: string): Rec
   return value;
 }
 
+function parseSowingMethods(row: Record<string, unknown>, key: string, what: string): ApiSowingMethod[] {
+  const methods = reqArray(row, key, what);
+  for (const method of methods) {
+    if (typeof method !== "string" || !SOWING_METHODS.has(method)) {
+      throw new ApiShapeError(`${what}: unknown sowing method ${JSON.stringify(method)}`);
+    }
+  }
+  return methods as ApiSowingMethod[];
+}
+
 function parseCrop(row: unknown): ApiCrop {
   if (!isRecord(row)) throw new ApiShapeError("crop: row must be an object");
   return {
     slug: reqString(row, "slug", "crop"),
     commonName: reqString(row, "commonName", "crop"),
     latinName: optString(row, "latinName", "crop"),
+    lifeCycle: optString(row, "lifeCycle", "crop"),
+    season_class: optEnum<ApiSeasonClass>(row, "season_class", "crop", SEASON_CLASSES),
+    sowing_methods: parseSowingMethods(row, "sowing_methods", "crop"),
     varietyCount: reqNumber(row, "varietyCount", "crop"),
     varietiesWithSellers: reqNumber(row, "varietiesWithSellers", "crop"),
     lastUpdated: optString(row, "lastUpdated", "crop"),
@@ -167,15 +186,20 @@ function parseRecentItem(row: unknown): ApiRecentItem {
   };
 }
 
+const SELLER_TYPES: ReadonlySet<string> = new Set(["wholesale", "retail", "specialty"]);
+
 function parseSellerItem(row: unknown): ApiSellerItem {
   if (!isRecord(row)) throw new ApiShapeError("seller: row must be an object");
   return {
     slug: reqString(row, "slug", "seller"),
     name: reqString(row, "name", "seller"),
+    type: reqEnum<ApiSellerType>(row, "type", "seller", SELLER_TYPES),
     location: optString(row, "location", "seller"),
     region: optString(row, "region", "seller"),
     country: reqString(row, "country", "seller"),
     varietyCount: reqNumber(row, "varietyCount", "seller"),
+    ratingCount: reqNumber(row, "ratingCount", "seller"),
+    isSmallFarm: reqBoolean(row, "isSmallFarm", "seller"),
   };
 }
 
@@ -190,8 +214,6 @@ const POLLINATION: ReadonlySet<string> = new Set(["open_pollinated", "f1_hybrid"
 const PROTECTION: ReadonlySet<string> = new Set(["pvp_us", "utility_patent_us", "pbr", "none_stated", "unknown"]);
 const CONTENT_LEVELS: ReadonlySet<string> = new Set(["thin", "factual"]);
 const MATCH_METHODS: ReadonlySet<string> = new Set(["exact", "synonym", "model", "human"]);
-const SEASON_CLASSES: ReadonlySet<string> = new Set(["cool_season_hardy_annual", "warm_season_tender_annual"]);
-const SOWING_METHODS: ReadonlySet<string> = new Set(["direct_sow", "transplant"]);
 
 function reqEnum<T extends string>(row: Record<string, unknown>, key: string, what: string, allowed: ReadonlySet<string>): T {
   const value = reqString(row, key, what);
@@ -456,6 +478,47 @@ function parseOgSeller(row: unknown): ApiOgSeller {
   };
 }
 
+const SEARCH_TYPES: ReadonlySet<string> = new Set(["variety", "series", "crop", "seller"]);
+
+function parseSearchResult(row: unknown): ApiSearchResult {
+  if (!isRecord(row)) throw new ApiShapeError("search result: row must be an object");
+  const type = reqString(row, "type", "search result");
+  if (!SEARCH_TYPES.has(type)) throw new ApiShapeError(`search result: unknown type ${JSON.stringify(type)}`);
+  const href = reqString(row, "href", "search result");
+  if (!href.startsWith("/")) throw new ApiShapeError("search result: href must be a site path");
+  return {
+    type: type as ApiSearchResult["type"],
+    slug: reqString(row, "slug", "search result"),
+    title: reqString(row, "title", "search result"),
+    subtitle: reqString(row, "subtitle", "search result"),
+    href,
+    matchedAlias: optString(row, "matchedAlias", "search result"),
+  };
+}
+
+function parseSearchResponse(row: unknown): ApiSearchResponse {
+  if (!isRecord(row)) throw new ApiShapeError("search: response must be an object");
+  const list = (key: "results" | "varieties" | "series" | "crops" | "sellers"): ApiSearchResult[] =>
+    reqArray(row, key, "search").map(parseSearchResult);
+  return {
+    query: reqString(row, "query", "search"),
+    results: list("results"),
+    varieties: list("varieties"),
+    series: list("series"),
+    crops: list("crops"),
+    sellers: list("sellers"),
+  };
+}
+
+function parseSeriesCrop(row: unknown): ApiSeriesCrop {
+  if (!isRecord(row)) throw new ApiShapeError("series: row must be an object");
+  return {
+    slug: reqString(row, "slug", "series"),
+    name: reqString(row, "name", "series"),
+    plant: parsePlantRef(reqRecord(row, "crop", "series")),
+  };
+}
+
 function parseVarietyStatus(row: unknown): ApiVarietyStatus {
   if (!isRecord(row)) throw new ApiShapeError("variety status: row must be an object");
   const status = reqString(row, "status", "variety status");
@@ -667,6 +730,87 @@ export function createCatalogApi(options: CatalogApiOptions) {
      */
     async listVarietyListItems(opts: { plant: string[] }): Promise<{ items: ApiVarietyListItem[]; total: number }> {
       return walkList("/varieties", { limit: "100", plant: opts.plant.join(",") }, parseVarietyListItem);
+    },
+    /**
+     * Slice 4 browse reads. The live API's cursors are opaque (offset +
+     * query fingerprint — v2's pagination.ts), so no caller can jump to an
+     * arbitrary page: every read walks from offset 0 and the loader slices,
+     * sorts, and counts read-side over the walked set.
+     *
+     * sort is the v1 vocabulary only ("name" | "-recently_checked" here —
+     * the browse surface's two server sorts): "availability" is deliberately
+     * NOT in VARIETY_SORTS (the live API 400s it), so the loader applies
+     * v2's availability comparator read-side over the walked set.
+     */
+    async walkVarieties(
+      filters: { season?: string; methods?: string[]; lifeCycle?: string[]; colorFamily?: string[]; smallFarmOnly?: boolean },
+      sort: "name" | "-recently_checked",
+    ): Promise<{ items: ApiVarietyListItem[]; total: number }> {
+      const params: Record<string, string> = { limit: "100", sort };
+      if (filters.season) params.season = filters.season;
+      if (filters.methods?.length) params.method = filters.methods.join(",");
+      if (filters.lifeCycle?.length) params.life_cycle = filters.lifeCycle.join(",");
+      if (filters.colorFamily?.length) params.color_family = filters.colorFamily.join(",");
+      if (filters.smallFarmOnly) params.small_farm = "true";
+      return walkList("/varieties", params, parseVarietyListItem);
+    },
+    /** The filtered variety total (one limit=1 read — the counts matrix's out-of-walk cells). */
+    async countVarieties(filters: {
+      season?: string;
+      methods?: string[];
+      lifeCycle?: string[];
+      colorFamily?: string[];
+      smallFarmOnly?: boolean;
+    }): Promise<number> {
+      const params: Record<string, string> = { limit: "1" };
+      if (filters.season) params.season = filters.season;
+      if (filters.methods?.length) params.method = filters.methods.join(",");
+      if (filters.lifeCycle?.length) params.life_cycle = filters.lifeCycle.join(",");
+      if (filters.colorFamily?.length) params.color_family = filters.colorFamily.join(",");
+      if (filters.smallFarmOnly) params.small_farm = "true";
+      const res = await getRaw(`/varieties?${new URLSearchParams(params).toString()}`);
+      return parseEnvelope(await res.json(), "/varieties", (row) => row).meta.total ?? 0;
+    },
+    /**
+     * Every visible seller, optionally narrowed to USPS regions (the seller
+     * index's one walk — the state cloud, its counts, and the page window
+     * all derive read-side from this set).
+     */
+    async walkSellers(filters: { region?: string[] } = {}): Promise<{ items: ApiSellerItem[]; total: number }> {
+      const params: Record<string, string> = { limit: "100" };
+      if (filters.region?.length) params.region = filters.region.join(",");
+      return walkList("/sellers", params, parseSellerItem);
+    },
+    /**
+     * The /search read: one UNFILTERED grouped response (limit 50 — the live
+     * caps are then 50 varieties, 5 per other group, exactly v2's
+     * browseSearch caps). v1's search takes no life_cycle filter and no
+     * hue-per-group semantics, so the loader applies every filter read-side
+     * over this response — the same matches v2's count matrix recomputes
+     * per state, computed once and filtered locally.
+     */
+    async searchWide(q: string): Promise<ApiSearchResponse> {
+      const res = await getRaw(`/search?${new URLSearchParams({ q, limit: "50" }).toString()}`);
+      const json = await res.json();
+      if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError("/search: response must be an object");
+      return parseSearchResponse(json.data);
+    },
+    /**
+     * A series' crop (GET /api/v1/series/[slug] subset — the plant-level
+     * fields the /search read-side filter needs for series results). Read
+     * once per matched series slug (≤5 per search, cached). Unknown slugs
+     * 404 at the API and resolve null.
+     */
+    async seriesCrop(slug: string): Promise<ApiSeriesCrop | null> {
+      try {
+        const res = await getRaw(`/series/${slug}`);
+        const json = await res.json();
+        if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError(`/series/${slug}: detail must be an object`);
+        return parseSeriesCrop(json.data);
+      } catch (error) {
+        if (error instanceof ApiRequestError && error.status === 404) return null;
+        throw error;
+      }
     },
     /**
      * The merged-variety lookup (GET /api/internal/variety-status/[slug]):

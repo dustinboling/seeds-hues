@@ -9,6 +9,11 @@ export function plural(n: number, one: string, many = `${one}s`): string {
   return `${n} ${n === 1 ? one : many}`;
 }
 
+/** Seller-kind label for cards (ported from v2/lib/format.ts, same strings). */
+export function sellerTypeLabel(t: "wholesale" | "retail" | "specialty"): string {
+  return { wholesale: "Wholesale farm seed", retail: "Retail seed shop", specialty: "Specialty grower" }[t];
+}
+
 export function formatHeight(cm: number): string {
   const inches = Math.round(cm / 2.54);
   return `${cm} cm (about ${inches} in)`;
