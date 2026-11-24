@@ -1,4 +1,4 @@
-# seeds-hues app (Vike + React SPA) — Slice 2
+# seeds-hues app (Vike + React SPA) — Slice 3
 
 The Seed Directory's conversion from Next.js to a Vike + React SPA. This tree
 holds the new app; the live site is `../v2/` (Next.js).
@@ -19,10 +19,25 @@ links above.
 
 ## Layout
 
-- `pages/` — Vike routes, explicit Route Strings + per-route `prerender: true`:
-  `/`, `/about`, `/about/data`, `/about/bot`, `/api-docs`, `/privacy`,
-  `/terms`, `/crop` (each with `+Page.tsx`, `+Head.tsx`, `head.ts`,
-  `+config.ts`, `+route.ts`; data pages add a `+data.ts` hook), `_error/`.
+- `pages/` — Vike routes, explicit Route Strings + per-route rendering
+  config: `/`, `/about`, `/about/data`, `/about/bot`, `/api-docs`,
+  `/privacy`, `/terms`, `/crop` (prerendered; each with `+Page.tsx`,
+  `+Head.tsx`, `head.ts`, `+config.ts`, `+route.ts`; data pages add a
+  `+data.ts` hook), `/variety/@slug` (on-demand SSR + edge cache, incl. the
+  `?small_farm=true` variant; data-driven `+Head`), `+onBeforeRoute.ts`
+  (the static 301 map: plural legacy paths, legacy `?v=`, the internal
+  small-farms path), `_error/` (404 vs 500).
+- `server/` — the Node preview/test server (`serve.ts`, bundled to
+  `dist-server/` by `npm run build:server`): static `dist/client`, Vike
+  `renderPage` with the shared catalog client + data cache, the
+  `/og/[kind]/[slug]` image route, `POST /internal/revalidate`, and an
+  in-memory edge mock for variety 200s (the `?small_farm=true` variant
+  keys separately). The production Worker mounts the same handlers.
+- `src/og/` — the OG card model (`card.ts`), PNG renderer (`render.ts`,
+  Satori + resvg), route handler (`serve.ts`), and bundled fonts
+  (`fonts/`, byte-identical to v2's per `PROVENANCE.json`).
+- `src/variety.css` — the variety template's styles (listing cards, filter
+  chips, badges, sibling cards, waitlist floor, 404 page).
 - `src/design-system/` — the @hues mirror point: token layers
   (`tokens/*.json`), the seeds→@hues `token-mapping.json`, typed access
   (`tokens.ts`), contrast math + table (`contrast*.ts`, `CONTRAST.md`), fonts
@@ -32,10 +47,17 @@ links above.
 - `src/data/` — catalog read path over the live public API (`api.ts`,
   `load.ts` loaders, `cache.ts`, `revalidate.ts` tag fan-out, `sitemap.ts`,
   `robots.ts`, `llms.ts`, `lastmod.ts` + the committed `sitemap-lastmod.json`).
+  Slice 3 adds the variety-detail read (`getVarietyDetail`), the sibling
+  walk (`listVarietyListItems`, availability order applied read-side — the
+  public sort vocabulary has no availability sort), the merged lookup
+  (`mergedVarietyTarget`, via the app-internal variety-status mount), and
+  the OG card's minimal seller/crop reads.
 - `src/server/` — the single machine-file generator (`machine-files.ts`,
-  called by the build plugin and the revalidation regeneration) and the
+  called by the build plugin and the revalidation regeneration), the
   Worker-ready revalidate handler (`revalidate-handler.ts`, POST
-  /internal/revalidate mount contract).
+  /internal/revalidate mount contract), the static redirect map
+  (`redirects.ts`, pure URL function), and the variety route resolver
+  (`variety-route.ts`, the +data decisions).
 - `src/lib/` — tested utilities (`jsonld-guard.ts`: the no-price JSON-LD guard).
 - `src/sw/` — Workbox `injectManifest` service-worker skeleton (own tsconfig).
 - `src/site.ts`, `src/pwa.ts`, `src/shell.css` — site constants, SW registration
@@ -45,8 +67,11 @@ links above.
   machine-file build plugin (`vite-plugin-machine-files.ts`), and
   `gen-sitemap-lastmod.mjs` (refreshes `src/data/sitemap-lastmod.json`).
 - `tests/` — `unit/` (mapping, contrast, fonts, guard, PWA, sitemap/robots/og
-  rules, machine files, invalidation loop), `dom/` (shell), `build/`
-  (gate-covered production build + PWA proof, Slice 2 surface contract).
+  rules, machine files, invalidation loop, variety builders/routes/components,
+  price guard, OG cards/fonts), `dom/` (shell, filter hydration),
+  `stub/` (the hermetic catalog API stub + read-time derivation), `build/`
+  (gate-covered production build + PWA proof, Slice 2 surface contract,
+  Slice 3 variety HTTP contract).
 
 ## Run
 
@@ -71,6 +96,21 @@ cd app
 npm run dev     # vike dev server
 npm run build   # vike build + SW bundle/inject + post-build PWA proof
 ```
+
+Serve the built app over HTTP (SSR, OG images, revalidate; the Slice 3
+contract suite drives this entry):
+
+```sh
+cd app
+npm run build && npm run build:server
+PORT=3000 SEEDS_API_BASE=https://seeds.hues.flowers/api/v1 SEEDS_REVALIDATE_SECRET=... npm run serve
+```
+
+`SEEDS_API_BASE` points the SSR reads at any catalog API (the contract
+suite points it at the hermetic stub); `PORT=0` picks an ephemeral port
+and prints the listening URL. The merged-slug lookup reads
+`{origin}/api/internal/variety-status/[slug]` on the same deployment
+(Slice 9 mounts it from D1; the stub serves it in tests).
 
 Regenerate derived files (each has a freshness test — never hand-edit outputs):
 

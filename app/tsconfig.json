@@ -16,6 +16,6 @@
     "incremental": true,
     "types": ["vite/client", "vike-react", "node"]
   },
-  "include": ["pages/**/*.ts", "pages/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json", "tests/**/*.ts", "tests/**/*.tsx", "scripts/**/*.mjs", "vite.config.ts", "vitest.config.ts"],
+  "include": ["pages/**/*.ts", "pages/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json", "tests/**/*.ts", "tests/**/*.tsx", "server/**/*.ts", "scripts/**/*.mjs", "vite.config.ts", "vitest.config.ts"],
   "exclude": ["node_modules", "dist", "coverage", "public", "src/sw"]
 }

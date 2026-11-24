@@ -12,6 +12,8 @@ import { imageUrl } from "../lib/images";
 const ART = {
   hero: { src: "/theme/hero-cutting-garden-960.webp", wide: "/theme/hero-cutting-garden-1600.webp", width: 960, height: 640 },
   "about-data": { src: "/theme/about-data.webp", wide: null, width: 1400, height: 933 },
+  "empty-no-sellers": { src: "/theme/empty-no-sellers.webp", wide: null, width: 880, height: 1000 },
+  "offline-path": { src: "/theme/offline-path.webp", wide: null, width: 880, height: 1373 },
 } as const;
 
 export type ThemeArtName = keyof typeof ART;
