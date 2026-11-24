@@ -10,12 +10,33 @@
  * (which fans out to both paths) purges it.
  */
 import { createCatalogApi, type CatalogApi } from "./api";
+import {
+  compareVarietyAvailability,
+  filterSearchGroups,
+  joinsFromCorpus,
+  orderVarieties,
+  searchBrowseCounts,
+  sellersInState,
+  suggestCorrection,
+  varietyBrowseCounts,
+  varietyFieldsOf,
+  varietyMatchesGroups,
+} from "./browse";
 import { createDataCache, type DataCache } from "./cache";
+import { BROWSE_SORT_REPO, type BrowseFilterState } from "../lib/browse";
+import { pageWindow, totalPages } from "../lib/paging";
+import type { SellerBrowseState, SellerStateOption } from "../lib/seller-browse";
+import { stateByCode } from "../lib/states";
+import { PAGE_SIZE } from "../site";
 import type {
+  ApiBrowseCounts,
   ApiCoverageItem,
   ApiCrop,
   ApiRecentItem,
+  ApiSearchResult,
+  ApiSellerBrowseCounts,
   ApiSellerItem,
+  ApiSeriesCrop,
   ApiVarietyDetail,
   ApiVarietyListItem,
   CatalogCounts,
@@ -101,26 +122,7 @@ export async function loadApiDocsData(api: CatalogApi = getCatalogApi(), cache: 
   return { doc };
 }
 
-/**
- * v2's availability comparator (repositories/catalog-read.ts
- * summaryComparator, verbatim logic): in-stock listings first, then any
- * listings, then none; within a tier more sellers first, then in-stock
- * listings, then listings, then name ascending with slug tiebreak. The
- * public API has no availability sort, so the sibling loader applies this
- * read-side over the walked set.
- */
-export function compareVarietyAvailability(a: ApiVarietyListItem, b: ApiVarietyListItem): number {
-  const tier = (r: ApiVarietyListItem): number => (r.inStockCount > 0 ? 0 : r.listingCount > 0 ? 1 : 2);
-  const nameAsc =
-    a.varietyName.toLowerCase().localeCompare(b.varietyName.toLowerCase()) || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0);
-  return (
-    tier(a) - tier(b) ||
-    b.sellerCount - a.sellerCount ||
-    b.inStockCount - a.inStockCount ||
-    b.listingCount - a.listingCount ||
-    nameAsc
-  );
-}
+export { compareVarietyAvailability };
 
 /**
  * One variety's detail through the shared cache (null included: unknown
@@ -179,4 +181,227 @@ export async function loadMachineData(api: CatalogApi = getCatalogApi(), cache: 
     loadSnapshot(api, cache),
   ]);
   return { counts, coverage, crops: crops.crops, sellers, snapshot };
+}
+
+/* ── Slice 4 browse/search loaders ── */
+
+/**
+ * The /variety browse snapshot: one page window, the filtered total, and
+ * the per-option counts matrix — the identical contract v2's server page
+ * and /api/browse/varieties share, computed here from one walked API set
+ * (the /api/browse endpoints are internal Next routes, not public API).
+ */
+export interface VarietyBrowseData {
+  state: BrowseFilterState;
+  counts: ApiBrowseCounts;
+  items: ApiVarietyListItem[];
+  total: number;
+  page: number;
+  pages: number;
+}
+
+const stableWalkFilters = (state: BrowseFilterState): string =>
+  JSON.stringify([state.season, state.method, state.lifeCycle, [...state.hue].sort(), state.smallFarm, state.sort]);
+
+/**
+ * One walked variety set, shared by every filter state with the same
+ * smallFarm flag and server sort: smallFarm is the one group no read-side
+ * predicate can answer (list items carry no badged-seller flag), so the
+ * walk applies it server-side and every other group filters read-side.
+ * Paths ["/variety"]: variety and list:variety tags purge it.
+ */
+async function loadVarietyWalk(
+  smallFarmOnly: boolean,
+  serverSort: "name" | "-recently_checked",
+  api: CatalogApi,
+  cache: DataCache,
+): Promise<ApiVarietyListItem[]> {
+  return cache.get<ApiVarietyListItem[]>(`browse:variety:walk:${smallFarmOnly ? 1 : 0}:${serverSort}`, async () => {
+    const { items } = await api.walkVarieties(smallFarmOnly ? { smallFarmOnly: true } : {}, serverSort);
+    return { value: items, paths: ["/variety"] };
+  });
+}
+
+export async function loadVarietyBrowse(
+  filters: BrowseFilterState,
+  page: number,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<VarietyBrowseData> {
+  const repoSort = BROWSE_SORT_REPO[filters.sort];
+  const serverSort = repoSort === "availability" ? "name" : repoSort;
+  const cacheKey = `browse:variety:result:${stableWalkFilters(filters)}:${page}`;
+  return cache.get<VarietyBrowseData>(cacheKey, async () => {
+    const walked = await loadVarietyWalk(filters.smallFarm, serverSort, api, cache);
+    const matching = walked.filter((v) => varietyMatchesGroups(varietyFieldsOf(v), filters));
+    const ordered = orderVarieties(matching, filters);
+    const { offset, limit } = pageWindow(page, PAGE_SIZE);
+    // The one cell no walk answers: the smallFarm total under the OPPOSITE
+    // flag (same flag reads off the walked set).
+    const opposite = await api.countVarieties({
+      season: filters.season ?? undefined,
+      methods: filters.method ? [filters.method] : undefined,
+      lifeCycle: filters.lifeCycle ? [filters.lifeCycle] : undefined,
+      colorFamily: filters.hue.length ? [...filters.hue] : undefined,
+      smallFarmOnly: filters.smallFarm ? undefined : true,
+    });
+    const total = matching.length;
+    return {
+      value: {
+        state: filters,
+        counts: varietyBrowseCounts(walked, filters, opposite),
+        items: ordered.slice(offset, offset + limit),
+        total,
+        page,
+        pages: totalPages(total, PAGE_SIZE),
+      },
+      paths: ["/variety"],
+    };
+  });
+}
+
+/**
+ * US states with at least one visible seller, alphabetical by name, with
+ * counts — v2's catalog.listSellerStates() rule, derived read-side from
+ * the walked seller set (no public list-states endpoint exists). Regions
+ * that are not a US state code (or non-US sellers) are left out.
+ */
+export async function loadSellerStates(
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<SellerStateOption[]> {
+  return cache.get<SellerStateOption[]>("browse:seller:states", async () => {
+    const { items } = await api.walkSellers();
+    const counts = new Map<string, number>();
+    for (const s of items) {
+      if (s.country !== "US") continue;
+      const st = stateByCode(s.region);
+      if (st && s.region === st.code) counts.set(st.code, (counts.get(st.code) ?? 0) + 1);
+    }
+    const states = [...counts]
+      .map(([code, sellerCount]) => {
+        const st = stateByCode(code)!;
+        return { code, name: st.name, slug: st.slug, sellerCount };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return { value: states, paths: ["/seller"] };
+  });
+}
+
+/** The /seller browse snapshot: one page window, the total, the cloud options, and its counts. */
+export interface SellerBrowseData {
+  state: SellerBrowseState;
+  counts: ApiSellerBrowseCounts;
+  items: ApiSellerItem[];
+  total: number;
+  page: number;
+  pages: number;
+  states: SellerStateOption[];
+}
+
+export async function loadSellerBrowse(
+  filters: SellerBrowseState,
+  page: number,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<SellerBrowseData> {
+  const cacheKey = `browse:seller:result:${filters.state ?? "all"}:${page}`;
+  return cache.get<SellerBrowseData>(cacheKey, async () => {
+    const [walked, states] = await Promise.all([
+      cache.get<ApiSellerItem[]>("browse:seller:walk", async () => {
+        const { items } = await api.walkSellers();
+        return { value: items, paths: ["/seller"] };
+      }),
+      loadSellerStates(api, cache),
+    ]);
+    const matching = sellersInState(walked, filters.state);
+    const { offset, limit } = pageWindow(page, PAGE_SIZE);
+    const total = matching.length;
+    return {
+      value: {
+        state: filters,
+        counts: {
+          all: walked.length,
+          options: Object.fromEntries(states.map((s) => [s.code, walked.filter((w) => w.region === s.code).length])),
+        },
+        items: matching.slice(offset, offset + limit),
+        total,
+        page,
+        pages: totalPages(total, PAGE_SIZE),
+        states,
+      },
+      paths: ["/seller"],
+    };
+  });
+}
+
+/** The /search snapshot: grouped results under the filter state, the grouped total, counts, and did-you-mean. */
+export interface SearchBrowseData {
+  q: string;
+  state: BrowseFilterState;
+  counts: ApiBrowseCounts;
+  crops: ApiSearchResult[];
+  series: ApiSearchResult[];
+  varieties: ApiSearchResult[];
+  sellers: ApiSearchResult[];
+  total: number;
+  /** Did-you-mean: the zero-results state's single near-match, or null (computed only at total 0). */
+  suggestion: { name: string; href: string } | null;
+}
+
+/**
+ * The /search read: one unfiltered v1 response (limit 50 — the live caps
+ * are then exactly v2's browseSearch caps), filtered read-side per group
+ * with joins from the walked variety set, the crops list, and per-series
+ * detail reads (≤5, cached per slug). Paths ["/search"]: Bea §9's fan-out
+ * names no search purge, so these entries refresh on max age — the
+ * documented no-fan-out.
+ */
+export async function loadSearchResults(
+  q: string,
+  filters: BrowseFilterState,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<SearchBrowseData> {
+  const cacheKey = `browse:search:result:${encodeURIComponent(q)}:${stableWalkFilters(filters)}`;
+  return cache.get<SearchBrowseData>(cacheKey, async () => {
+    const wide = await cache.get(`browse:search:wide:${encodeURIComponent(q)}`, async () => ({
+      value: await api.searchWide(q),
+      paths: ["/search"],
+    }));
+    const [corpus, { crops }] = await Promise.all([
+      loadVarietyWalk(false, "name", api, cache),
+      loadCropIndexData(api, cache),
+    ]);
+    // Series joins for every matched series (≤5, cached per slug): the
+    // read-side filter needs each series' crop, and a series missing from
+    // the joins drops like v2's ids-join — so unfiltered searches need the
+    // joins too, or the group would wrongly empty.
+    const seriesDetails = await Promise.all(
+      [...new Set(wide.series.map((r) => r.slug))].map((slug) =>
+        cache.get<ApiSeriesCrop | null>(`browse:search:series:${slug}`, async () => ({
+          value: await api.seriesCrop(slug),
+          paths: ["/search"],
+        })),
+      ),
+    );
+    const joins = joinsFromCorpus(
+      corpus,
+      crops,
+      seriesDetails.filter((d): d is ApiSeriesCrop => d !== null),
+    );
+    const groups = filterSearchGroups(wide, joins, filters);
+    const suggestion =
+      groups.total === 0 ? suggestCorrection(q, corpus, crops) : null;
+    return {
+      value: {
+        q,
+        state: filters,
+        counts: searchBrowseCounts(wide, joins, filters, "single"),
+        ...groups,
+        suggestion: suggestion ? { name: suggestion, href: `/search?q=${encodeURIComponent(suggestion)}` } : null,
+      },
+      paths: ["/search"],
+    };
+  });
 }

@@ -10,7 +10,7 @@ import type { DataCache } from "../data/cache";
 import { getCatalogApi, getDataCache, loadVarietyDetail, loadVarietySiblings } from "../data/load";
 import type { ApiVarietyDetail, ApiVarietyListItem } from "../data/types";
 import { smallFarmOnlyFromSearch } from "../lib/small-farm";
-import { isVarietySlug } from "./redirects";
+import { isSlug } from "./redirects";
 
 export type VarietyRouteResult =
   | { kind: "ok"; detail: ApiVarietyDetail; siblings: ApiVarietyListItem[]; smallFarmOnly: boolean }
@@ -22,7 +22,7 @@ export async function resolveVarietyRoute(
   cache: DataCache = getDataCache(),
   request: { slug: string; search: string },
 ): Promise<VarietyRouteResult> {
-  if (!isVarietySlug(request.slug)) return { kind: "notFound" };
+  if (!isSlug(request.slug)) return { kind: "notFound" };
   const detail = await loadVarietyDetail(request.slug, api, cache);
   if (!detail) {
     const target = await api.mergedVarietyTarget(request.slug);

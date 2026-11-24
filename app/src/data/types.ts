@@ -20,11 +20,19 @@ export interface ApiEnvelope<T> {
   error: null | { code: string; message: string };
 }
 
-/** One crop with its coverage counts (GET /api/v1/crops item). */
+/**
+ * One crop with its coverage counts (GET /api/v1/crops item — the
+ * CropListItem's plant half plus coverage; the category the live shape
+ * carries is not read by any template and stays unmodeled).
+ */
 export interface ApiCrop {
   slug: string;
   commonName: string;
   latinName: string | null;
+  /** The crop's life-cycle text; filter buckets derive via lifeCycleBuckets(). */
+  lifeCycle: string | null;
+  season_class: ApiSeasonClass | null;
+  sowing_methods: ApiSowingMethod[];
   varietyCount: number;
   varietiesWithSellers: number;
   lastUpdated: string | null;
@@ -54,14 +62,100 @@ export interface ApiRecentItem {
   };
 }
 
-/** One seller row (GET /api/v1/sellers item — the visible-seller set). */
+/** A seller's kind (v2's SELLER_TYPES, verbatim). */
+export type ApiSellerType = "wholesale" | "retail" | "specialty";
+
+/**
+ * One seller row (GET /api/v1/sellers item — the SellerSummary slice the
+ * seller index card renders, plus the list's variety count).
+ */
 export interface ApiSellerItem {
   slug: string;
   name: string;
+  type: ApiSellerType;
   location: string | null;
   region: string | null;
   country: string;
   varietyCount: number;
+  /** Visitor ratings submitted; the display stays "Not yet rated" (R7). */
+  ratingCount: number;
+  /** The seller carries the "Small farm" badge. */
+  isSmallFarm: boolean;
+}
+
+/** A US state with at least one visible seller (the /seller state cloud). */
+export interface ApiSellerState {
+  /** USPS code, = seller.region */
+  code: string;
+  name: string;
+  slug: string;
+  sellerCount: number;
+}
+
+/** Per-option seller counts for the /seller State cloud. */
+export interface ApiSellerBrowseCounts {
+  all: number;
+  options: Record<string, number>;
+}
+
+/** One search hit (GET /api/v1/search item — v2's SearchResult, verbatim). */
+export interface ApiSearchResult {
+  type: "variety" | "series" | "crop" | "seller";
+  slug: string;
+  title: string;
+  subtitle: string;
+  href: string;
+  /** Set when the match came through a synonym: "also sold as {alias}". */
+  matchedAlias: string | null;
+}
+
+/**
+ * GET /api/v1/search response: the flat ranked list (autocomplete) plus the
+ * grouped layout (the /search page). Group caps are the live service's (50
+ * varieties, 5 per other group at limit 50).
+ */
+export interface ApiSearchResponse {
+  query: string;
+  /** Flat, ranked list (autocomplete). */
+  results: ApiSearchResult[];
+  varieties: ApiSearchResult[];
+  series: ApiSearchResult[];
+  crops: ApiSearchResult[];
+  sellers: ApiSearchResult[];
+}
+
+/**
+ * The series fields the /search read-side filter needs (GET
+ * /api/v1/series/[slug] subset — the same names as the full SeriesDetail,
+ * the Slice 2 minimal-slice pattern, not a second shape).
+ */
+export interface ApiSeriesCrop {
+  slug: string;
+  name: string;
+  plant: ApiPlantRef;
+}
+
+/**
+ * Per-option counts for the /variety browse filters (v2's BrowseCounts,
+ * verbatim): every chip's count under the current state — each group's
+ * "All" with that group cleared, each option with that option applied
+ * (hue: toggled from its current state), every other group held. The app
+ * computes these read-side over one walked set; the /api/browse endpoints
+ * that serve them in v2 are internal Next routes, not public API.
+ */
+export interface ApiBrowseCounts {
+  season: { all: number; options: { cool: number; warm: number } };
+  method: { all: number; options: { direct: number; trays: number } };
+  lifeCycle: { all: number; options: { annual: number; biennial: number; perennial: number } };
+  hue: {
+    all: number;
+    options: Record<
+      | "white" | "blush" | "pink" | "peach" | "orange" | "yellow" | "red" | "burgundy" | "purple" | "blue" | "green"
+      | "chocolate" | "mix",
+      number
+    >;
+  };
+  smallFarm: { all: number; on: number };
 }
 
 /** Catalog totals for the coverage line and llms.txt. */

@@ -56,3 +56,41 @@ export function ProtectionIcon() {
     </Base>
   );
 }
+
+/** Chevron icons — the filter strip's scroll buttons. The buttons carry the accessible names. */
+export function ChevronLeftIcon() {
+  return (
+    <Base>
+      <path d="M14.5 5.5 8 12l6.5 6.5" />
+    </Base>
+  );
+}
+
+export function ChevronRightIcon() {
+  return (
+    <Base>
+      <path d="M9.5 5.5 16 12l-6.5 6.5" />
+    </Base>
+  );
+}
+
+/** Remover cross — the applied row's remover chips. The chip's aria-label carries the meaning. */
+export function ChipRemoveIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={`chip-remove-glyph${className ? ` ${className}` : ""}`}
+      width={14}
+      height={14}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.4}
+      strokeLinecap="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M6 6l12 12" />
+      <path d="M18 6 6 18" />
+    </svg>
+  );
+}

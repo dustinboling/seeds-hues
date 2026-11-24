@@ -39,6 +39,18 @@ export interface FakeCatalogState {
   listItems: ApiVarietyListItem[];
   /** Slice 3: merged variety slug -> surviving slug. */
   merged: Record<string, string>;
+  /**
+   * Slice 4: the series catalog (slug, display name, owning crop) behind
+   * /api/v1/search's Series group and /api/v1/series/[slug]. The public API
+   * has no series LIST endpoint, so this table lives only in the stub.
+   */
+  seriesCatalog: { slug: string; name: string; plantSlug: string }[];
+  /**
+   * Slice 4: variety slugs with ≥1 visible listing from a Small-farm-badged
+   * seller. VarietyListItem carries no such field (v1-faithful), so the
+   * stub's small_farm filter reads this side table.
+   */
+  smallFarmVarieties: string[];
 }
 
 const crop = (
@@ -51,6 +63,9 @@ const crop = (
   slug,
   commonName,
   latinName,
+  lifeCycle: "Annual",
+  season_class: slug === "cosmos" ? "warm_season_tender_annual" : "cool_season_hardy_annual",
+  sowing_methods: slug === "cosmos" ? ["direct_sow"] : ["direct_sow", "transplant"],
   varietyCount,
   varietiesWithSellers,
   lastUpdated: "2026-11-20",
@@ -519,8 +534,28 @@ export function fakeCatalogState(): FakeCatalogState {
       crop("cosmos", "Cosmos", 4, 0),
     ],
     sellers: [
-      { slug: "blue-ridge-seeds", name: "Blue Ridge Seeds", location: "Portland, OR", region: "OR", country: "US", varietyCount: 5 },
-      { slug: "prairie-seed-house", name: "Prairie Seed House", location: "Lawrence, KS", region: "KS", country: "US", varietyCount: 3 },
+      {
+        slug: "blue-ridge-seeds",
+        name: "Blue Ridge Seeds",
+        type: "retail",
+        location: "Portland, OR",
+        region: "OR",
+        country: "US",
+        varietyCount: 5,
+        ratingCount: 0,
+        isSmallFarm: true,
+      },
+      {
+        slug: "prairie-seed-house",
+        name: "Prairie Seed House",
+        type: "wholesale",
+        location: "Lawrence, KS",
+        region: "KS",
+        country: "US",
+        varietyCount: 3,
+        ratingCount: 0,
+        isSmallFarm: false,
+      },
     ],
     coverage: [
       { crop: { slug: "sweet-pea", name: "Sweet Pea" }, varieties: 10, varieties_with_sellers: 8, last_updated: "2026-11-20" },
@@ -582,6 +617,8 @@ export function fakeCatalogState(): FakeCatalogState {
     listItems: siblingPool(),
     // Fixture (iv): a MERGED variety resolving to fixture (i)'s slug.
     merged: { "sweet-pea-old-ransom": "sweet-pea-kings-ransom" },
+    seriesCatalog: [{ slug: "spencer-mix", name: "Spencer", plantSlug: "sweet-pea" }],
+    smallFarmVarieties: [],
   };
 }
 

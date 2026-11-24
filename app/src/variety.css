@@ -668,6 +668,78 @@ button.chip-filter[aria-pressed="true"] {
   overflow: hidden;
 }
 
+/*
+ * In-place browse pending cue (Tranche 3, SPEC §2.5.3 as amended 2026-11-23 —
+ * ported from v2/app/globals.css): while a filter/sort/remover/Clear-all
+ * commit is in flight, the results region carries this class (applied ~200ms
+ * after the tap so instant updates never flash it; cleared on every settle
+ * path). Two parts, both pseudo-elements so the resting DOM is untouched and
+ * nothing shifts: a leaf progress hairline pulsing across the region's top
+ * edge, and a leaf-50 wash over the stale results so the grid reads as
+ * mid-update at a glance. Tokens only; no new color, no spinner, no
+ * skeleton. Token mapping: v2 --color-leaf (#1e4634) →
+ * --sys-color-accent-strong (#1B4332, the mapped leaf-deep); v2
+ * --color-leaf-50 → --sys-color-accent-tint (the same #e3ead8). The cue is
+ * decorative — pseudo-elements never enter the accessibility tree — so
+ * assistive tech gets the region's aria-busy and the count line still
+ * changes exactly once per commit (§2.5.9 stands). Under reduced motion the
+ * hairline holds still; under forced-colors the wash drops and the hairline
+ * takes the system Highlight.
+ */
+.browse-pending {
+  position: relative;
+}
+
+.browse-pending::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--sys-color-accent-strong);
+  pointer-events: none;
+  animation: browse-pending-bar 1.6s ease-in-out infinite;
+}
+
+@keyframes browse-pending-bar {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.browse-pending::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--sys-color-accent-tint) 60%, transparent);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browse-pending::before {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .browse-pending::after {
+    display: none;
+  }
+
+  .browse-pending::before {
+    background: Highlight;
+    animation: none;
+  }
+}
+
 /* ---------- Waitlist floor ---------- */
 
 .waitlist-block {
