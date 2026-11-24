@@ -21,6 +21,7 @@ import {
   POLLINATION,
   PROTECTION,
   SEASON_CLASSES,
+  SELLER_LOCATION_KINDS,
   SELLER_TYPES,
   SOWING_METHODS,
 } from "@/lib/db/schema";
@@ -90,6 +91,8 @@ export const PlantRefSchema = z
     slug,
     commonName: z.string().min(1),
     latinName: z.string().min(1).nullable(),
+    /** The crop's life-cycle text (plants.life_cycle); buckets derive via lifeCycleBuckets(). */
+    lifeCycle: z.string().nullable(),
     season_class: SeasonClassSchema.nullable(),
     /** Label of the source the season class came from; null when unclassified. */
     season_source_label: z.string().nullable(),
@@ -146,6 +149,8 @@ export const VarietyRefSchema = z
     varietyName: z.string().min(1),
     plant: PlantRefSchema,
     colorSwatch: hex.nullable(),
+    /** The variety's color family (the Hue facet's value; 'unknown' when unfiled). */
+    colorFamily: z.string().min(1),
     /** The variety's own plates, media-id order; [] when none, never omitted. */
     media: z.array(MediaSchema),
     /** Its plant's (crop's) plates, media-id order; [] when none, never omitted. */
@@ -262,6 +267,8 @@ export const VarietyFactsSchema = z
  */
 export const VarietyListItemSchema = VarietySummarySchema.extend({
   media: z.array(MediaSchema),
+  /** Its plant's (crop's) plates, media-id order; [] when none, never omitted. */
+  cropMedia: z.array(MediaSchema),
 }).meta({ id: "VarietyListItem" });
 
 const nonnegInt = z.number().int().nonnegative();
@@ -355,6 +362,22 @@ export const SellerListItemSchema = SellerSummarySchema.safeExtend({
   varietyCount: z.number().int().nonnegative(),
 }).meta({ id: "SellerListItem" });
 
+/**
+ * One qualifying recorded location (seller_locations with a determined kind — the set the
+ * shop page's Locations area renders, in §5.2 order: primary first, then kind
+ * physical/warehouse/mailing, then state, then city). Address lines verbatim as published.
+ */
+export const SellerLocationSchema = z
+  .object({
+    kind: z.enum(SELLER_LOCATION_KINDS),
+    street: z.string().min(1).nullable(),
+    city: z.string().min(1),
+    state: z.string().min(1),
+    zip: z.string().min(1).nullable(),
+    isPrimary: z.boolean(),
+  })
+  .meta({ id: "SellerLocation" });
+
 export const SellerDetailSchema = SellerSummarySchema.safeExtend({
   description: z.string().nullable(),
   orderingNotes: z.string().nullable(),
@@ -365,6 +388,12 @@ export const SellerDetailSchema = SellerSummarySchema.safeExtend({
   /** true only for Hues itself (disclosure). */
   isSiteOwner: z.boolean(),
   listings: z.array(PublicListingSchema),
+  /** The published customer-service phone (display form); null when unpublished. Never omitted. */
+  customerServicePhone: z.string().nullable(),
+  /** The published customer-service email, in full; null when unpublished. Never omitted. */
+  customerServiceEmail: z.string().nullable(),
+  /** The seller's qualifying recorded locations, in §5.2 order; [] when none. */
+  locations: z.array(SellerLocationSchema),
 }).meta({ id: "SellerDetail" });
 
 /** A US state with at least one visible seller (/seller?state= chips, /state/{slug} pages). */
@@ -801,6 +830,7 @@ export type VarietyMedia = Media;
 export type VarietyDetail = z.infer<typeof VarietyDetailSchema>;
 export type SellerListItem = z.infer<typeof SellerListItemSchema>;
 export type SellerDetail = z.infer<typeof SellerDetailSchema>;
+export type SellerLocation = z.infer<typeof SellerLocationSchema>;
 export type ImportedRating = z.infer<typeof ImportedRatingSchema>;
 export type SellerState = z.infer<typeof SellerStateSchema>;
 export type Category = z.infer<typeof CategorySchema>;

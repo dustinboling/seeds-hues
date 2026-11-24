@@ -15,6 +15,7 @@ const plant = {
   slug: "sweet-pea",
   commonName: "Sweet Pea",
   latinName: "Lathyrus odoratus",
+  lifeCycle: null,
   season_class: null,
   season_source_label: null,
   sowing_methods: [],
@@ -24,7 +25,7 @@ const plant = {
 function listing(id: number, sellerSlug: string, sellerName: string, availability: PublicListing["availability"]): PublicListing {
   return {
     id,
-    variety: { slug: "sweet-pea-kings-ransom", varietyName: "King's Ransom", plant: { ...plant, sowing_methods: [] }, colorSwatch: null, media: [], cropMedia: [] },
+    variety: { slug: "sweet-pea-kings-ransom", varietyName: "King's Ransom", plant: { ...plant, sowing_methods: [] }, colorSwatch: null, colorFamily: "pink", media: [], cropMedia: [] },
     seller: { slug: sellerSlug, name: sellerName, location: null, region: "WA", country: "US", isSmallFarm: false },
     availability,
     lastCheckedAt: "2026-11-15",
@@ -63,6 +64,7 @@ function summary(over: Partial<VarietyListItem> = {}): VarietyListItem {
     indexable: true,
     rating: { state: "not_yet_rated", average: null, review_count: 0 },
     media: [],
+    cropMedia: [],
     ...over,
   };
 }

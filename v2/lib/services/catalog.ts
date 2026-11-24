@@ -75,6 +75,7 @@ import {
   SellerBrowseCountsSchema,
   SellerDetailSchema,
   SellerListItemSchema,
+  SellerLocationSchema,
   SellerStateSchema,
   SeriesDetailSchema,
   VarietyDetailSchema,
@@ -186,6 +187,7 @@ function plantRefOf(r: {
   plantSlug: string;
   commonName: string;
   latinName: string | null;
+  lifeCycle: string | null;
   seasonClass: SeasonClass | null;
   seasonSourceLabel: string | null;
   sowingMethods: string | null;
@@ -196,6 +198,7 @@ function plantRefOf(r: {
     slug: r.plantSlug,
     commonName: r.commonName,
     latinName: r.latinName,
+    lifeCycle: r.lifeCycle,
     season_class: r.seasonClass,
     season_source_label: r.seasonClass ? r.seasonSourceLabel : null,
     sowing_methods: methods,
@@ -276,6 +279,7 @@ function mapListing(l: PublicListingRow, packets: PacketSize[], media: Media[] =
         varietyName: l.varietyName,
         plant: plantRefOf(l),
         colorSwatch: l.colorSwatch,
+        colorFamily: l.colorFamily,
         media,
         cropMedia,
       },
@@ -709,20 +713,27 @@ export function createCatalogService(db: Db) {
    * Variety summaries without media. Used directly only where list media is never shown: search
    * (maps to SearchResult) and getVariety (fetches its own media). Everything else uses summaries().
    */
-  async function baseSummaries(filters: VarietyFilters, sort: VarietyBrowseSort, page: Page): Promise<Paged<VarietySummary> & { ids: number[] }> {
+  async function baseSummaries(filters: VarietyFilters, sort: VarietyBrowseSort, page: Page): Promise<Paged<VarietySummary> & { ids: number[]; plantIds: number[] }> {
     const { rows, total } = await repo.listVarietySummaryRows(db, filters, sort, page);
-    return { items: rows.map(summaryFrom), ids: rows.map((r) => r.id), total };
+    return { items: rows.map(summaryFrom), ids: rows.map((r) => r.id), plantIds: rows.map((r) => r.plantId), total };
   }
 
-  /** List items: the page's summaries plus each variety's media (one batched media query). */
+  /** List items: the page's summaries plus each variety's media and its crop's media (two batched media queries — no N+1). */
   async function summaries(filters: VarietyFilters, sort: VarietyBrowseSort, page: Page): Promise<Paged<VarietyListItem> & { ids: number[] }> {
-    const { items, ids, total } = await baseSummaries(filters, sort, page);
-    const mediaByVariety = await repo.listMediaForVarieties(db, ids);
+    const { items, ids, plantIds, total } = await baseSummaries(filters, sort, page);
+    const [mediaByVariety, mediaByPlant] = await Promise.all([
+      repo.listMediaForVarieties(db, ids),
+      repo.listMediaForPlants(db, plantIds),
+    ]);
     return {
       items: items.map((v, i) =>
         parse(
           VarietyListItemSchema,
-          { ...v, media: (mediaByVariety.get(ids[i]!) ?? []).map(toMedia) },
+          {
+            ...v,
+            media: (mediaByVariety.get(ids[i]!) ?? []).map(toMedia),
+            cropMedia: (mediaByPlant.get(plantIds[i]!) ?? []).map(toMedia),
+          },
           "variety list item",
         ),
       ),
@@ -961,7 +972,7 @@ export function createCatalogService(db: Db) {
     async getSeller(slug: string): Promise<SellerDetail | null> {
       const r = await repo.sellerRow(db, slug);
       if (!r) return null;
-      const ls = await listings({ sellerId: r.id });
+      const [ls, locRows] = await Promise.all([listings({ sellerId: r.id }), repo.sellerLocationRows(db, r.id)]);
       const detail: SellerDetail = {
         ...sellerBase(r),
         description: r.description,
@@ -972,6 +983,9 @@ export function createCatalogService(db: Db) {
         shipsTo: parseShipsTo(r.shipsTo),
         isSiteOwner: r.isSiteOwner,
         listings: ls,
+        customerServicePhone: r.customerServicePhone,
+        customerServiceEmail: r.customerServiceEmail,
+        locations: locRows.map((l) => parse(SellerLocationSchema, l, "seller location")),
       };
       return parse(SellerDetailSchema, detail, "seller detail");
     },
@@ -1005,6 +1019,12 @@ export function createCatalogService(db: Db) {
     async listCrops(page: Page, opts: PlantListFilters = {}): Promise<Paged<CropListItem>> {
       return cropListItems(page, opts);
     },
+
+    /**
+     * Every live crop's slug + common name (seller-as-shop: the shop Crop group's global
+     * vocabulary for ?crop= parsing and remover labels). One small query, no counts.
+     */
+    cropCatalog: (): Promise<{ slug: string; commonName: string }[]> => repo.plantSlugNameRows(db),
 
     /**
      * The crop browse payload (Tranche 3.1b): the crop window plus the per-option counts

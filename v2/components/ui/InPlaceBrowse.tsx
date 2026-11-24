@@ -93,8 +93,12 @@ import {
 import type { InPlacePayloadCore, InPlaceSnapshot } from "@/lib/in-place";
 import type { BrowseCounts } from "@/lib/validators";
 
-/** Where an unmounting action hands focus: the row's Clear all if the row survives, else the first All. */
-export type InPlaceFocusTarget = "first-all" | "clear-all";
+/**
+ * Where an unmounting action hands focus: the row's Clear all if the row survives, else
+ * the first All — or the shop heading ("heading") on surfaces whose landing is a heading
+ * (seller-as-shop, Ada Ruling 7: the shop <h2>, never the first All).
+ */
+export type InPlaceFocusTarget = "first-all" | "clear-all" | "heading";
 
 /** One applied-row remover: stable key, visible label, accessible name, clearing transition. */
 export interface InPlaceRemover<S> {
@@ -115,14 +119,31 @@ export interface InPlaceRemover<S> {
 export interface InPlaceConfig<S, P, C = BrowseCounts> {
   /** Route path of the surface (history entries + popstate ownership). */
   basePath: string;
-  /** Payload endpoint path (fetch). */
-  apiPath: string;
+  /** Payload endpoint path (fetch). Unused when computeLocal is set. */
+  apiPath?: string;
   /** Extra params carried on history entries and fetch queries (q on /search). */
   params: Record<string, string>;
   /** The failure line's wording (each surface's shipped copy). */
   failureMessage: string;
+  /** The failure line's dress. Default keeps every existing surface identical. */
+  failureClassName?: string;
+  /** Clear All's label for a state. Default is the shipped "Clear all filters". */
+  clearAllLabel?: (state: S) => string;
+  /**
+   * Where an unmounting action hands focus when the applied row is removed: the first
+   * All by default; the shop heading on surfaces whose landing is a heading (Ada
+   * Ruling 7). The row-survives landing stays Clear all everywhere.
+   */
+  emptyRowFocus?: InPlaceFocusTarget;
   /** Strict payload narrowing: the commit core, or null for the failure path. */
   readPayload: (json: unknown) => InPlacePayloadCore<P, C> | null;
+  /**
+   * Local commit computation (seller-as-shop's settled exception): when set, commits
+   * compute the core from data in hand instead of fetching — the same discipline
+   * (last-selection-wins, one history entry, popstate, adoption, failure path, focus,
+   * title sync), no network. A throw or null takes the §2.5.6 failure path.
+   */
+  computeLocal?: (state: S) => InPlacePayloadCore<P, C> | null;
   /** URL → filter state, or null when the URL is not this layer's (true navigation). */
   readSearch: (search: string) => S | null;
   /** ?page= from a live search string (missing/garbage → 1). */
@@ -137,8 +158,8 @@ export interface InPlaceConfig<S, P, C = BrowseCounts> {
   removersFor: (state: S) => InPlaceRemover<S>[];
   /** Shareable URL for a state (page dropped, extras kept). */
   hrefFor: (state: S) => string;
-  /** Fetch URL for a state. */
-  apiUrlFor: (state: S) => string;
+  /** Fetch URL for a state. Unused when computeLocal is set. */
+  apiUrlFor?: (state: S) => string;
   /** History state value pushed per commit. */
   historyValueFor: (state: S) => unknown;
   /**
@@ -255,9 +276,26 @@ export interface InPlaceBrowse<S, P, C = BrowseCounts> {
    * swapped results.
    */
   pendingCue: boolean;
-  select: (compute: (current: S) => S, focus?: InPlaceFocusTarget | null) => void;
+  /**
+   * One deliberate selection: optimistic control state, then the commit; the entry and
+   * the results swap land together on success. `push` false replaces the current entry
+   * instead of pushing (as-you-type search: replaceState while typing, pushState on the
+   * deliberate act). Tapping the already-active option is a no-op either way.
+   */
+  select: (compute: (current: S) => S, focus?: InPlaceFocusTarget | null, push?: boolean) => void;
+  /**
+   * Push the current intent as a history entry even though nothing changed (a search
+   * submit or blur whose query already settled via replaceState still owes its entry).
+   */
+  pushCurrent: () => void;
   firstAllRef: RefObject<HTMLButtonElement | null>;
   clearAllRef: RefObject<HTMLButtonElement | null>;
+  /**
+   * The heading landing for "heading" focus targets. Attach with a callback ref
+   * (`ref={(el) => { browse.headingRef.current = el; }}`) — the landing element's type
+   * is the surface's, so a direct object-ref attach would not typecheck.
+   */
+  headingRef: RefObject<HTMLElement | null>;
 }
 
 /**
@@ -297,6 +335,7 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
   const focusRef = useRef<InPlaceFocusTarget | null>(null);
   const firstAllRef = useRef<HTMLButtonElement | null>(null);
   const clearAllRef = useRef<HTMLButtonElement | null>(null);
+  const headingRef = useRef<HTMLElement | null>(null);
   // Effect-maintained config mirror: handler identities stay stable (no ref access during
   // render) while the fetch and popstate paths always read the latest surface config.
   const configRef = useRef(config);
@@ -344,22 +383,14 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
     }
   }, [committed]);
 
-  // The one fetch path (taps and popstate share it): last id wins; stale responses — success
-  // or failure — are discarded. Pushes exactly one history entry per committed tap; popstate
-  // commits without pushing (the entry already exists).
+  // The one commit path (taps and popstate share it): last id wins; stale responses —
+  // success or failure — are discarded. Pushes exactly one history entry per committed
+  // tap (or replaces the current entry for push:false); popstate commits without pushing
+  // (the entry already exists). With computeLocal the core is computed from data in hand
+  // instead of fetched — same discipline, no network.
   const fetchCommitted = useCallback(async (next: S, push: boolean): Promise<void> => {
     const id = ++requestRef.current;
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    try {
-      const res = await fetch(configRef.current.apiUrlFor(next), {
-        signal: controller.signal,
-        headers: { Accept: "application/json" },
-      });
-      if (!res.ok) throw new Error(`browse fetch answered ${res.status}`);
-      const json: unknown = await res.json();
-      const core = configRef.current.readPayload(json);
+    const settle = (core: InPlacePayloadCore<P, C> | null): void => {
       if (!core) throw new Error("browse payload failed its shape check");
       if (id !== requestRef.current) return;
       const snapshot: InPlaceSnapshot<S, P, C> = {
@@ -373,14 +404,23 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
       setCommitted(snapshot);
       setPending(null);
       setPendingCue(false);
-      if (push) window.history.pushState(configRef.current.historyValueFor(next), "", configRef.current.hrefFor(next));
+      if (push) {
+        window.history.pushState(configRef.current.historyValueFor(next), "", configRef.current.hrefFor(next));
+      } else {
+        // A replaced entry carries the marker: surfaces that mix replace and push
+        // (as-you-type search) read it back to tell a settled-but-unpushed query from
+        // a pushed one. Only push:false commits (the shop's typing path) ever write it.
+        const v = configRef.current.historyValueFor(next);
+        window.history.replaceState(typeof v === "object" && v !== null ? { ...v, replaced: true } : v, "", configRef.current.hrefFor(next));
+      }
       // Title sync (B-1 item 3): the committed state's server title, once, in step with
       // the visible swap and the history entry — no flicker through intermediate states.
-      // A fetch commit always resets to page 1, so the page echo is 1 by construction.
+      // A commit always resets to page 1, so the page echo is 1 by construction.
       const title = configRef.current.titleFor?.(next, 1);
       if (title != null) document.title = title;
-    } catch {
-      if (controller.signal.aborted || id !== requestRef.current) return;
+    };
+    const fail = (aborted: boolean): void => {
+      if (aborted || id !== requestRef.current) return;
       // Failure path (§2.5.6): the prior results, counts and URL stand untouched; the control
       // reverts to the committed state; one error line renders with the applied row.
       intentRef.current = committedRef.current.state;
@@ -388,6 +428,29 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
       setPending(null);
       setPendingCue(false);
       setFailed(true);
+    };
+    const compute = configRef.current.computeLocal;
+    if (compute) {
+      try {
+        settle(compute(next));
+      } catch {
+        fail(false);
+      }
+      return;
+    }
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    try {
+      const res = await fetch(configRef.current.apiUrlFor!(next), {
+        signal: controller.signal,
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) throw new Error(`browse fetch answered ${res.status}`);
+      const json: unknown = await res.json();
+      settle(configRef.current.readPayload(json));
+    } catch {
+      fail(controller.signal.aborted);
     }
   }, []);
 
@@ -433,24 +496,32 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
   // request, so focus stays on the tapped control.
   useEffect(() => {
     if (focusRef.current === null) return;
-    const target = focusRef.current === "clear-all" ? clearAllRef.current : firstAllRef.current;
+    const target =
+      focusRef.current === "clear-all" ? clearAllRef.current : focusRef.current === "heading" ? headingRef.current : firstAllRef.current;
     focusRef.current = null;
     target?.focus();
   }, [committed]);
 
-  // One deliberate selection: optimistic control state, then the fetch; the entry and the
+  // One deliberate selection: optimistic control state, then the commit; the entry and the
   // results swap land together on success. Tapping the already-active option is a no-op: no
-  // entry, no fetch, no change. The transition computes from the latest intent (not the
+  // entry, no commit, no change. The transition computes from the latest intent (not the
   // render's state), so rapid taps compose instead of clobbering each other.
-  const select = (compute: (current: S) => S, focus: InPlaceFocusTarget | null = null): void => {
+  const select = (compute: (current: S) => S, focus: InPlaceFocusTarget | null = null, push = true): void => {
     const next = compute(intentRef.current);
     if (config.equalStates(next, intentRef.current)) return;
     intentRef.current = next;
     focusRef.current = focus;
     setPending(next);
     setFailed(false);
-    void fetchCommitted(next, true);
+    void fetchCommitted(next, push);
   };
+
+  // Push the current intent as a history entry even though nothing changed (a search
+  // submit or blur whose query already settled via replaceState still owes its entry).
+  const pushCurrent = useCallback((): void => {
+    const next = intentRef.current;
+    window.history.pushState(configRef.current.historyValueFor(next), "", configRef.current.hrefFor(next));
+  }, []);
 
   return {
     hydrated,
@@ -460,8 +531,10 @@ export function useInPlaceBrowse<S, P, C = BrowseCounts>(
     failed,
     pendingCue,
     select,
+    pushCurrent,
     firstAllRef,
     clearAllRef,
+    headingRef,
   };
 }
 
@@ -528,7 +601,9 @@ export function InPlaceFilters<P>({
  * failure line needs its slot. Server floor: working links; hydrated: buttons.
  * `showClearAll` (default true) omits the Clear All control when false — the §2.6.2
  * bounded exception for single-group surfaces whose All chip remains the reset.
- * Surface-generic: a boolean prop, no surface branch.
+ * The row-removal focus landing, Clear All's label, and the failure line's dress ride
+ * the config's emptyRowFocus / clearAllLabel / failureClassName — every default keeps
+ * the shipped surfaces identical. Surface-generic: props and config, no surface branch.
  */
 export function InPlaceAppliedRow<S, P, C = BrowseCounts>({
   config,
@@ -543,6 +618,8 @@ export function InPlaceAppliedRow<S, P, C = BrowseCounts>({
   const removers: InPlaceRemover<S>[] = config.removersFor(shown);
   // Absent when nothing is active — unless the failure line needs its slot.
   if (removers.length === 0 && !failed) return null;
+  const emptiedFocus = config.emptyRowFocus ?? "first-all";
+  const clearLabel = config.clearAllLabel ? config.clearAllLabel(shown) : "Clear all filters";
   const removerControl = (r: InPlaceRemover<S>) =>
     hydrated ? (
       <button
@@ -550,7 +627,7 @@ export function InPlaceAppliedRow<S, P, C = BrowseCounts>({
         className="chip-filter chip-removable"
         aria-label={r.removeLabel}
         data-filter-remove={r.key}
-        onClick={() => select(r.clear, config.hasActive(r.clear(shown)) ? "clear-all" : "first-all")}
+        onClick={() => select(r.clear, config.hasActive(r.clear(shown)) ? "clear-all" : emptiedFocus)}
       >
         {r.label}
         <ChipRemoveIcon className="size-(--chip-removable-glyph-size)" />
@@ -578,17 +655,17 @@ export function InPlaceAppliedRow<S, P, C = BrowseCounts>({
       ) : null}
       {removers.length > 0 && showClearAll ? (
         hydrated ? (
-          <button ref={clearAllRef} type="button" className="chip-filter" onClick={() => select((s) => config.clearAll(s), "first-all")}>
-            Clear all filters
+          <button ref={clearAllRef} type="button" className="chip-filter" onClick={() => select((s) => config.clearAll(s), emptiedFocus)}>
+            {clearLabel}
           </button>
         ) : (
           <Link href={config.hrefFor(config.clearAll(shown))} scroll={false} className="chip-filter">
-            Clear all filters
+            {clearLabel}
           </Link>
         )
       ) : null}
       {failed ? (
-        <p role="alert" className="font-medium text-warn">
+        <p role="alert" className={config.failureClassName ?? "font-medium text-warn"}>
           {config.failureMessage}
         </p>
       ) : null}

@@ -121,6 +121,7 @@ const plant = {
   slug: "stock",
   commonName: "Stock",
   latinName: "Matthiola incana",
+  lifeCycle: null,
   season_class: null,
   season_source_label: null,
   sowing_methods: [],
@@ -139,6 +140,7 @@ function listing(
       varietyName: "Katz Mix",
       plant: { ...plant, sowing_methods: [] },
       colorSwatch: null,
+      colorFamily: "unknown",
       media: [],
       cropMedia: [],
     },
@@ -432,6 +434,7 @@ describe("one canonical zero-seller sentence (Batch 0.2)", () => {
           indexable: true,
           rating: { state: "not_yet_rated", average: null, review_count: 0 },
           media: [],
+          cropMedia: [],
         },
       }) as ReactElement,
     );
@@ -457,6 +460,9 @@ describe("one canonical zero-seller sentence (Batch 0.2)", () => {
       shipsTo: ["US"],
       isSiteOwner: false,
       listings: [],
+      customerServicePhone: null,
+      customerServiceEmail: null,
+      locations: [],
     };
     const h = renderToStaticMarkup(
       (await SellerPage({ params: Promise.resolve({ slug: "hollyhock-test-farm" }), searchParams: Promise.resolve({}) })) as ReactElement,

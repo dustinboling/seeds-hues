@@ -32,16 +32,18 @@ describe("pod ornaments", () => {
     );
   });
 
-  it("card placeholder shows the pod motif when the crop has one, the divider stem otherwise", () => {
-    const withArt = renderToStaticMarkup(createElement(VarietyCardImage, { media: [], varietyName: "Benary's Giant Lime", plantSlug: "zinnia" }));
+  it("card placeholder shows the pod motif when the crop has one, the generic pod otherwise (never the stem)", () => {
+    const withArt = renderToStaticMarkup(createElement(VarietyCardImage, { media: [], cropMedia: [], varietyName: "Benary's Giant Lime", cropName: "Zinnia", plantSlug: "zinnia" }));
     expect(withArt).toContain('data-testid="variety-card-placeholder"');
     expect(withArt).toContain(
       '<img src="https://images.seeds.hues.flowers/cdn-cgi/image/width=480,quality=80,format=auto,fit=scale-down/ornaments/motif-zinnia.png" alt="" aria-hidden="true" width="480" height="480" loading="lazy"',
     );
     expect(withArt).not.toContain("divider-stem");
-    const without = renderToStaticMarkup(createElement(VarietyCardImage, { media: [], varietyName: "Café au Lait", plantSlug: "dahlia" }));
+    const without = renderToStaticMarkup(createElement(VarietyCardImage, { media: [], cropMedia: [], varietyName: "Café au Lait", cropName: "Dahlia", plantSlug: "dahlia" }));
     expect(without).toContain('data-testid="variety-card-placeholder"');
-    expect(without).toContain('<span aria-hidden="true" class="divider-stem w-full opacity-50"></span>');
-    expect(without).not.toContain("<img");
+    expect(without).toContain(
+      '<img src="https://images.seeds.hues.flowers/cdn-cgi/image/width=480,quality=80,format=auto,fit=scale-down/ornaments/motif-poppy.png" alt="" aria-hidden="true"',
+    );
+    expect(without).not.toContain("divider-stem");
   });
 });

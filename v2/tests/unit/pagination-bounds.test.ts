@@ -92,6 +92,7 @@ const plant = {
   slug: "sweet-pea",
   commonName: "Sweet Pea",
   latinName: "Lathyrus odoratus",
+  lifeCycle: null,
   season_class: null,
   season_source_label: null,
   sowing_methods: [],
@@ -115,6 +116,7 @@ function varietyItem(i: number): VarietyListItem {
     indexable: true,
     rating: { state: "not_yet_rated", average: null, review_count: 0 },
     media: [],
+    cropMedia: [],
   };
 }
 
@@ -144,6 +146,7 @@ function listingItem(id: number): PublicListing {
       varietyName: `Test Variety ${id}`,
       plant: { ...plant, sowing_methods: [] },
       colorSwatch: null,
+      colorFamily: "unknown",
       media: [],
       cropMedia: [],
     },
@@ -172,6 +175,7 @@ const CROP: CropDetail = {
   slug: "test-crop",
   commonName: "Test Crop",
   latinName: null,
+  lifeCycle: null,
   season_class: null,
   season_source_label: null,
   sowing_methods: [],
@@ -464,7 +468,9 @@ describe("control routes (already true-404; proof only — this change must not 
     const last = totalPages(L_LISTINGS);
     const h = await renderSellerDetail("hollyhock-test-farm", { page: String(last) });
     expect(h).toContain(`page ${last} of ${last}`);
-    expect(h).toContain(`Test Variety ${L_LISTINGS}`);
+    // The shop's grouped resting order (all in_stock → pure A–Z): "Test Variety 9" sorts
+    // after every two-digit name, so it is the last of the 49, alone on page 3.
+    expect(h).toContain("Test Variety 9");
     const slug = { slug: "hollyhock-test-farm" };
     await expect(
       SellerPage({ params: Promise.resolve(slug), searchParams: Promise.resolve({ page: String(last + 1) }) }),

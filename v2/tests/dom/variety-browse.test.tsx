@@ -54,6 +54,7 @@ function item(i: number): VarietyListItem {
       slug: "sweet-pea",
       commonName: "Sweet Pea",
       latinName: "Lathyrus odoratus",
+      lifeCycle: null,
       season_class: null,
       season_source_label: null,
       sowing_methods: [],
@@ -71,6 +72,7 @@ function item(i: number): VarietyListItem {
     indexable: true,
     rating: { state: "not_yet_rated", average: null, review_count: 0 },
     media: [],
+    cropMedia: [],
   };
 }
 

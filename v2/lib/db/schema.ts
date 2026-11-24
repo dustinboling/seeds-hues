@@ -35,6 +35,8 @@ export const LISTING_POLICY = ["full", "no_prices", "removed"] as const;
 export const SELLER_PLATFORMS = ["shopify", "woocommerce", "squarespace", "other"] as const;
 /** Third-party aggregate ratings imported per seller (brief #4). Never our own rating. */
 export const IMPORTED_RATING_SOURCES = ["Google"] as const;
+/** Seller-location kinds (seller-as-shop, migration 0018). NULL = recorded "undetermined". */
+export const SELLER_LOCATION_KINDS = ["physical", "warehouse", "mailing"] as const;
 /** Legacy curated values (active/inactive/unverified) + canonical §2 values. 'active' = published. */
 export const LISTING_STATUS = [
   "active",
@@ -356,6 +358,13 @@ export const sellers = sqliteTable(
     isSmallFarm: integer("is_small_farm", { mode: "boolean" }).notNull().default(false),
     /** Private — never in any public payload. */
     contactEmail: text("contact_email"),
+    // Seller-as-shop (migration 0018): the seller's PUBLISHED customer-service channels,
+    // as collected by the location sweep — separate from the private contact_email above,
+    // which stays private and untouched. NULL = unpublished (absence, never a placeholder).
+    /** The customer-service phone as published (display form); the tel: href derives from it at render. */
+    customerServicePhone: text("customer_service_phone"),
+    /** The published customer-service email address, in full. */
+    customerServiceEmail: text("customer_service_email"),
     updatedSeq: integer("updated_seq").notNull().default(0),
     deletedAt: text("deleted_at"),
     // Imported third-party aggregate (brief #4, migration 0007): all six set or all NULL. Kept
@@ -385,6 +394,40 @@ export const sellers = sqliteTable(
     check("sellers_imported_rating_source_chk", sql`imported_rating_source IS NULL OR ${inList("imported_rating_source", IMPORTED_RATING_SOURCES)}`),
     check("sellers_imported_rating_value_chk", sql`imported_rating_value IS NULL OR (imported_rating_value >= 0 AND imported_rating_value <= 5)`),
     check("sellers_imported_rating_count_chk", sql`imported_rating_count IS NULL OR imported_rating_count >= 0`),
+  ],
+);
+
+/**
+ * One seller's recorded location set (seller-as-shop, migration 0018 — SPEC-LOCATIONS
+ * F-L1). Address lines as published (street/PO Box nullable; city + state are the minimum
+ * granularity); kind NULL is the recorded "undetermined" state (stored, never rendered);
+ * exactly one primary per seller (enforced in the write path); provenance is the sweep
+ * dataset's standard (source URL + checked date). F-L2: sellers.location/region remain the
+ * primary and the ONLY values the header, index, filing, and schema read — nothing else
+ * reads this table.
+ */
+export const sellerLocations = sqliteTable(
+  "seller_locations",
+  {
+    id: integer("id").primaryKey(),
+    sellerId: integer("seller_id")
+      .notNull()
+      .references(() => sellers.id),
+    kind: text("kind", { enum: SELLER_LOCATION_KINDS }),
+    street: text("street"),
+    city: text("city").notNull(),
+    state: text("state").notNull(),
+    zip: text("zip"),
+    isPrimary: integer("is_primary", { mode: "boolean" }).notNull().default(false),
+    sourceUrl: text("source_url").notNull(),
+    checkedDate: text("checked_date").notNull(),
+    createdAt: text("created_at").notNull().$defaultFn(nowIso),
+    updatedAt: text("updated_at").notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    index("seller_locations_seller_idx").on(t.sellerId),
+    // NULL passes (SQLite CHECK fails only on FALSE): NULL is the stored "undetermined" kind.
+    check("seller_locations_kind_chk", inList("kind", SELLER_LOCATION_KINDS)),
   ],
 );
 

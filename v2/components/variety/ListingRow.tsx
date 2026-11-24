@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { AVAILABILITY_LABEL } from "./Availability";
-import { ListingArtwork } from "./ListingArtwork";
 import { PacketList } from "./PacketList";
 import { SmallFarmBadge } from "@/components/seller/SmallFarmBadge";
 import { formatCheckedDate } from "@/lib/format";
@@ -8,7 +7,11 @@ import type { Availability, PublicListing } from "@/lib/validators";
 
 /**
  * One listing — Quiet Ledger card (Direction A, Dustin's pick 2026-11-20; spec in
- * card-redesign-2026-11-19/DIRECTIONS.md + a-quiet-ledger.html).
+ * card-redesign-2026-11-19/DIRECTIONS.md + a-quiet-ledger.html). Variety context only:
+ * the seller page's seller-context cards were replaced by the unified variety card's
+ * shop context (seller-as-shop, SPEC-GRID-CARD G-1/G-2/G-4), and the seller branch plus
+ * the artwork rail (ListingArtwork, retired with no remaining caller) were removed.
+ * What renders here is byte-for-byte the variety-context card it always was.
  *
  * A separate surface card, not a row on a shared sheet: seller name loudest (Fraunces 600,
  * 20 px, underlined, linking to the seller page), location under it, then a quiet status
@@ -20,23 +23,19 @@ import type { Availability, PublicListing } from "@/lib/validators";
  * paper, the shadow softens, and the pill keeps working through /go/{id} with its fill
  * removed (outline only) — never disabled, never removed. No price is ever shown (R1).
  *
- * `context` decides which side of the listing is the heading (variety page → seller;
- * seller page → variety) and gets the same calmed card treatment.
- *
- * In seller context the card gains the artwork rail (ListingArtwork: the variety's plate, else
- * the crop's plate, else the pod motif, else the divider stem) in a top-aligned grid beside the
- * text column; the stem rule and footer span the full width below. Variety context renders no
- * artwork and no grid wrapper — byte-for-byte the card it always was.
- *
  * SMALL-FARM BADGE: the shared SmallFarmBadge component (components/seller), rendered
- * inline after the seller name on the name row in variety context only — the placement
- * Quinn gated for this card — and only when the seller's real `isSmallFarm` flag is true
- * (PublicListing's seller now always carries it; the badge/filter build shipped it).
- * There is no negative or placeholder state.
+ * inline after the seller name on the name row — the placement Quinn gated for this
+ * card — and only when the seller's real `isSmallFarm` flag is true (PublicListing's
+ * seller now always carries it; the badge/filter build shipped it). There is no
+ * negative or placeholder state.
  */
 
-/** Dot + word tones for the status line: in stock = leaf (R-2), sold out = petal. */
-const STATUS_TONE: Record<Availability, { dot: string; word: string }> = {
+/**
+ * Dot + word tones for the status line: in stock = leaf (R-2), sold out = petal.
+ * Shared with the unified variety card's shop context, which transfers the ledger's
+ * stock line without invention — the map itself is never altered per context.
+ */
+export const STATUS_TONE: Record<Availability, { dot: string; word: string }> = {
   in_stock: { dot: "bg-leaf", word: "text-leaf" },
   sold_out: { dot: "bg-petal", word: "text-petal" },
   preorder: { dot: "bg-leaf-600", word: "text-leaf-600" },
@@ -44,17 +43,15 @@ const STATUS_TONE: Record<Availability, { dot: string; word: string }> = {
   unknown: { dot: "bg-warn", word: "text-warn" },
 };
 
-export function ListingRow({ listing: l, context }: { listing: PublicListing; context: "variety" | "seller" }) {
+export function ListingRow({ listing: l }: { listing: PublicListing }) {
   const soldOut = l.availability === "sold_out";
   const checked = formatCheckedDate(l.lastCheckedAt);
   const region = [l.seller.region, l.seller.country].filter(Boolean).join(", ");
   const reportHref = `/report?type=correct&seller=${l.seller.slug}&variety=${l.variety.slug}`;
   const tone = STATUS_TONE[l.availability];
-  // The badge names the seller, so it sits on the name row only where the seller is the heading.
-  const showBadge = context === "variety" && l.seller.isSmallFarm;
-  // The text column, shared by both contexts: heading row → subline → status → packets/notes.
-  // In variety context it renders flat, exactly as it always has; in seller context it sits
-  // beside the artwork rail inside the grid below.
+  // The badge names the seller, so it sits on the name row where the seller is the heading.
+  const showBadge = l.seller.isSmallFarm;
+  // The text column: heading row → subline → status → packets/notes — flat, exactly as it always has.
   const body = (
     <>
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
@@ -62,26 +59,17 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
           id={`listing-${l.id}`}
           className="font-display text-[20px] font-semibold leading-[1.2] tracking-[-0.01em]"
         >
-          {context === "variety" ? (
-            <Link
-              href={`/seller/${l.seller.slug}`}
-              className="text-ink underline decoration-ink-soft decoration-[1px] underline-offset-[3px]"
-            >
-              {l.seller.name}
-            </Link>
-          ) : (
-            <Link
-              href={`/variety/${l.variety.slug}`}
-              className="text-ink underline decoration-ink-soft decoration-[1px] underline-offset-[3px]"
-            >
-              {l.variety.varietyName}
-            </Link>
-          )}
+          <Link
+            href={`/seller/${l.seller.slug}`}
+            className="text-ink underline decoration-ink-soft decoration-[1px] underline-offset-[3px]"
+          >
+            {l.seller.name}
+          </Link>
         </h3>
         {showBadge ? <SmallFarmBadge /> : null}
       </div>
       <p className="mt-listing-subline text-base text-muted">
-        {context === "variety" ? (l.seller.location ?? (region || "Location unknown")) : l.variety.plant.commonName}
+        {l.seller.location ?? (region || "Location unknown")}
       </p>
       <p className="mt-listing-status font-sans text-[13px] text-muted">
         <span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-[1px] ${tone.dot}`} />
@@ -98,7 +86,7 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
   );
   return (
     <article
-      className={`rounded-card border px-4 pb-3 pt-listing-top${context === "seller" ? " h-full" : ""} ${
+      className={`rounded-card border px-4 pb-3 pt-listing-top ${
         soldOut
           ? "listing-card-soldout border-line bg-paper shadow-listing-flat"
           : "border-listing bg-surface shadow-listing-raised"
@@ -106,20 +94,7 @@ export function ListingRow({ listing: l, context }: { listing: PublicListing; co
       aria-labelledby={`listing-${l.id}`}
       data-availability={l.availability}
     >
-      {context === "seller" ? (
-        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 sm:gap-4">
-          <ListingArtwork
-            media={l.variety.media}
-            cropMedia={l.variety.cropMedia}
-            varietyName={l.variety.varietyName}
-            commonName={l.variety.plant.commonName}
-            plantSlug={l.variety.plant.slug}
-          />
-          <div className="min-w-0">{body}</div>
-        </div>
-      ) : (
-        body
-      )}
+      {body}
       <div aria-hidden="true" className="listing-stem-rule">
         <span />
       </div>

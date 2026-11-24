@@ -28,5 +28,11 @@ export type ServicesOverrides = {
 };
 
 export function fakeServices(overrides: ServicesOverrides = {}): Services {
-  return { ...overrides } as Services;
+  // The seller page reads the global crop vocabulary on every load (seller-as-shop:
+  // ?crop= validity + remover labels), so a faked catalog answers it with the empty
+  // vocabulary unless the file overrides it — behavior-neutral where ?crop= is not in
+  // play, and explicit crops stay one override away.
+  if (!overrides.catalog) return { ...overrides } as Services;
+  const { catalog, ...rest } = overrides;
+  return { catalog: { cropCatalog: async () => [], ...catalog }, ...rest } as Services;
 }

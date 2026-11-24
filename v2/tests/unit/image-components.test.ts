@@ -21,7 +21,7 @@ const img = (h: string) => /<img\b[^>]*>/.exec(h)?.[0] ?? "";
 
 describe("variety card image", () => {
   it("variety artwork: 480 transformation src + 480w/768w srcset of the mapped .png original", () => {
-    const tag = img(renderToStaticMarkup(createElement(VarietyCardImage, { media: [media("/artwork/amaranth-mira.webp")], varietyName: "Mira" })));
+    const tag = img(renderToStaticMarkup(createElement(VarietyCardImage, { media: [media("/artwork/amaranth-mira.webp")], cropMedia: [], varietyName: "Mira", cropName: "Amaranth" })));
     expect(attr(tag, "src")).toBe(T(480, "artwork/amaranth-mira-v2.png"));
     expect(attr(tag, "srcSet") ?? attr(tag, "srcset")).toBe(`${T(480, "artwork/amaranth-mira-v2.png")} 480w, ${T(768, "artwork/amaranth-mira-v2.png")} 768w`);
     expect(attr(tag, "width")).toBe("480");
@@ -31,7 +31,7 @@ describe("variety card image", () => {
   });
 
   it("crop media on a card: the 480 transformation as src (no longer the full file), no srcset", () => {
-    const tag = img(renderToStaticMarkup(createElement(VarietyCardImage, { media: [media("/artwork/crops/zinnia.webp")], varietyName: "Zinnia" })));
+    const tag = img(renderToStaticMarkup(createElement(VarietyCardImage, { media: [media("/artwork/crops/zinnia.webp")], cropMedia: [], varietyName: "Zinnia", cropName: "Zinnia" })));
     expect(attr(tag, "src")).toBe(T(480, "artwork/crops/zinnia.webp"));
     expect(attr(tag, "srcSet") ?? attr(tag, "srcset")).toBeNull();
   });

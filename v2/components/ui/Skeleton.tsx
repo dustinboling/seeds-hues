@@ -58,13 +58,13 @@ export function FilterGroupsSkeleton({ groups }: { groups: { legendWidth: number
   );
 }
 
-/** VarietyCard stand-in: exact card anatomy — 1:2 art frame, mini-stem bar, fixed h-[6.25rem] name zone. Not a link. */
+/** VarietyCard stand-in: exact card anatomy — 1:2 art frame, then the grown zone (Latin bar first, no stem bar). Not a link. */
 export function VarietyCardSkeleton() {
   return (
     <div className="card packet flex h-full flex-col items-center p-4 text-center">
       <Bar className="card-image mb-2 aspect-[1/2] w-full rounded-inner" />
-      <Bar className="mt-1 h-3 w-10" />
-      <div className="flex h-[6.25rem] flex-col items-center justify-center gap-2">
+      <div className="flex min-h-[9.75rem] flex-col items-center justify-center gap-2">
+        <Bar className="h-5 w-3/5" />
         <Bar className="h-5 w-4/5" />
         <Bar className="h-4 w-1/2" />
         <Bar className="h-4 w-2/5" />
@@ -73,8 +73,36 @@ export function VarietyCardSkeleton() {
   );
 }
 
-/** VarietyGrid stand-in: the grid's real classes, both variants. `count` per §1.4. */
-export function VarietyGridSkeleton({ wide = false, count }: { wide?: boolean; count: number }) {
+/**
+ * Shop-context card stand-in: the shop card's flow anatomy in bars — frame, Latin, name,
+ * crop, stock, packets, then the footer row (Report + pill bars, no rule bar above it).
+ */
+export function ShopCardSkeleton() {
+  return (
+    <div className="card packet flex h-full flex-col items-center p-4 text-center">
+      <Bar className="card-image mb-2 aspect-[1/2] w-full rounded-inner" />
+      <div className="flex w-full flex-col items-center gap-2">
+        <Bar className="h-5 w-3/5" />
+        <Bar className="h-5 w-4/5" />
+        <Bar className="h-4 w-1/2" />
+        <Bar className="h-4 w-3/5" />
+        <Bar className="h-4 w-2/3" />
+      </div>
+      <div className="mt-4 flex w-full items-center justify-between gap-3">
+        <Bar className="h-4 w-24" />
+        <Bar className="h-11 w-32 shrink-0 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * VarietyGrid stand-in: the grid's real classes, both variants. `count` per §1.4.
+ * `context="shop"` renders shop-context card skeletons (the seller route's results
+ * skeleton); browse surfaces keep the default.
+ */
+export function VarietyGridSkeleton({ wide = false, count, context = "browse" }: { wide?: boolean; count: number; context?: "browse" | "shop" }) {
+  const Card = context === "shop" ? ShopCardSkeleton : VarietyCardSkeleton;
   return (
     <ul
       className={
@@ -83,7 +111,7 @@ export function VarietyGridSkeleton({ wide = false, count }: { wide?: boolean; c
     >
       {Array.from({ length: count }, (_, i) => (
         <li key={i} className="h-full">
-          <VarietyCardSkeleton />
+          <Card />
         </li>
       ))}
     </ul>
