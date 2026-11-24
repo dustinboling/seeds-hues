@@ -1,11 +1,14 @@
 /**
  * Token-mapping guard: fails if any live seeds color token is unmapped, if any
- * mapped value differs from the source, or if the conversion grows a second
- * color delta. A silent token miss renders as an unstyled surface; this test
- * is what catches it.
+ * mapped value differs from the source, if any of the seven ruled sys slots
+ * drifts from the adopted @hues package values, or if a `replaced` entry
+ * appears outside the ruled six. A silent token miss renders as an unstyled
+ * surface; this test is what catches it.
  *
- * Source of truth: the `@theme` block of v2/app/globals.css, parsed live, so a
- * value change on the live side breaks this test until the mirror follows it.
+ * Sources of truth: the `@theme` block of v2/app/globals.css, parsed live, so
+ * a value change on the live side breaks this test until the mirror follows
+ * it — and the brief §3 / @hues package theme.seeds.json resolution below,
+ * which fails if any ruled slot is reverted to its old live value.
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -20,6 +23,7 @@ import {
   sysValue,
   themeFrom,
 } from "../../src/design-system/tokens.js";
+import compJson from "../../src/design-system/tokens/tokens.comp.json";
 
 const GLOBALS_CSS = fileURLToPath(new URL("../../../v2/app/globals.css", import.meta.url));
 
@@ -65,11 +69,18 @@ describe("token mapping", () => {
     }
   });
 
-  it("ports every value as-is except the single ruled Q3 delta", () => {
+  it("supersedes exactly the six ruled live values with the adopted package values", () => {
     const replaced = entries.filter((entry) => entry.status === "replaced");
-    expect(replaced.map((entry) => entry.seeds)).toEqual(["paper"]);
-    expect(replaced[0]?.themeValue).toBe(refValue("design.seeds-ground"));
-    expect(replaced[0]?.themeValue).toBe("#f8f6ec");
+    expect(replaced.map((entry) => entry.seeds).sort()).toEqual(
+      ["leaf", "leaf-600", "link", "muted", "paper", "warn"].sort(),
+    );
+    for (const entry of replaced) {
+      // A replaced entry renders the package ref value, never the live value.
+      expect(entry.huesRefValue).not.toBeNull();
+      expect(entry.themeValue).toBe(entry.huesRefValue);
+      expect(entry.themeValue).toBe(refValue(entry.huesRef as string));
+      expect(entry.themeValue, `live value leaked into "${entry.seeds}"`).not.toBe(entry.sourceValue);
+    }
     for (const entry of entries.filter((entry) => entry.status === "mapped")) {
       expect(entry.themeValue, `as-is violation for "${entry.seeds}"`).toBe(entry.sourceValue);
     }
@@ -102,24 +113,32 @@ describe("token mapping", () => {
     }
   });
 
-  it("records the hues ref endpoints the brief quotes (design defaults, not taken)", () => {
-    const bySeeds = new Map(entries.map((entry) => [entry.seeds, entry]));
-    const quoted: Array<[string, string, string]> = [
-      ["paper", "design.seeds-ground", "#f8f6ec"],
-      ["muted", "design.seeds-muted", "#595959"],
-      ["leaf", "design.seeds-deep", "#1B4332"],
-      ["leaf-600", "design.fern", "#2D6A4F"],
-      ["link", "design.seeds-link", "#1B5E37"],
-      ["warn", "design.gold-ink", "#86691f"],
+  it("resolves the seven ruled sys slots to the briefed package values", () => {
+    // Brief §3 / @hues package theme.seeds.json (QUINN-GATE-spa-slice-1 F1
+    // cure). Reverting any slot to its old live value must fail this test.
+    const ruled: Array<[string, string, string]> = [
+      ["sys.color.bg", "design.seeds-ground", "#f8f6ec"],
+      ["sys.color.link", "design.seeds-link", "#1B5E37"],
+      ["sys.color.accent", "design.fern", "#2D6A4F"],
+      ["sys.color.accent-strong", "design.seeds-deep", "#1B4332"],
+      ["sys.color.text-muted", "design.seeds-muted", "#595959"],
+      ["sys.color.accent-ink", "design.gold-ink", "#86691f"],
+      ["sys.color.border-field", "design.ink-soft", "#71806c"],
     ];
-    for (const [seeds, ref, value] of quoted) {
-      const entry = bySeeds.get(seeds);
-      expect(entry?.huesRef).toBe(ref);
-      expect(entry?.huesRefValue).toBe(value);
-      expect(refValue(ref)).toBe(value);
+    for (const [slot, ref, value] of ruled) {
+      expect(refValue(ref), `ref drift for "${ref}"`).toBe(value);
+      expect(sysValue(slot), `slot drift for "${slot}"`).toBe(value);
+      expect(themeFrom(slot), `broken from-chain for "${slot}"`).toBe(ref);
     }
-    // The border-field ref exists in the mirror even though no seeds token feeds it.
-    expect(refValue("design.ink-soft")).toBe("#71806c");
-    expect(sysValue("sys.color.border-field")).toBe("#71806c");
+  });
+
+  it("wires the field border to sys.color.border-field (not held unreferenced)", () => {
+    // Resolved value first: the old wiring rendered line-strong (#91825C).
+    expect(compValue("comp.field.border")).toBe(sysValue("sys.color.border-field"));
+    expect(compValue("comp.field.border")).toBe("#71806c");
+    // Then the pointer itself: re-pointing the alias at any other slot must
+    // fail even if values ever coincided.
+    const table = compJson as unknown as Record<string, { sys?: string }>;
+    expect(table["comp.field.border"]?.sys).toBe("sys.color.border-field");
   });
 });

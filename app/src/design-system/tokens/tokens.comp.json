@@ -8,7 +8,7 @@
   "comp.button.primary.hover-background": { "sys": "sys.color.accent", "live": ".btn-primary:hover background (leaf-600)" },
   "comp.button.primary.text": { "literal": "#ffffff", "live": ".btn-primary color (a live literal in globals.css, not a token)" },
   "comp.field.background": { "sys": "sys.color.surface", "live": ".field background" },
-  "comp.field.border": { "sys": "sys.color.border-strong", "live": ".field border (ReportForm: line-strong, never line)" },
+  "comp.field.border": { "sys": "sys.color.border-field", "live": ".field border (package theme field border; live v2 rule used line-strong)" },
   "comp.field.text": { "sys": "sys.color.text", "live": ".field inherits body ink" },
   "comp.field.placeholder": { "sys": "sys.color.text-muted", "live": ".field::placeholder" },
   "comp.field.filled-border": { "sys": "sys.color.text-soft", "live": ".field-filled border (PB-A ink-soft filled border)" },
