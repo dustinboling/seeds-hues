@@ -210,7 +210,11 @@ export async function handleDecide(serviceFetch: ServiceFetch, input: { raw: Rec
   // The sheet's select + note compose into the one stored reason (v2's
   // composeReason) — the service records exactly this string.
   const sheetReason = composeReason(textOf(raw.reason_select), textOf(raw.reason_note));
-  const forwarded: Record<string, unknown> = { action, kind, id, queue, show: String(show) };
+  // Verbatim forwarding (BusyForm): queue/show ride only when the caller
+  // sent them — the service never needs the redirect's normalized pair.
+  const forwarded: Record<string, unknown> = { action, kind, id };
+  if (raw.queue !== undefined) forwarded.queue = queue;
+  if (raw.show !== undefined) forwarded.show = String(show);
   if (createdAt) forwarded.created_at = createdAt;
   const directReason = textOf(raw.reason);
   if (sheetReason) forwarded.reason = sheetReason;
@@ -469,11 +473,11 @@ export function gateSignIn(me: AdminMe, next: string): GateResult | { kind: "sho
 }
 
 /** No-access: privileged strays home; a bare visit signs in first. */
-export function gateNoAccess(me: AdminMe, email: string | null): GateResult | { kind: "show"; name: string; email: string } {
+export function gateNoAccess(me: AdminMe, email: string | null, name?: string | null): GateResult | { kind: "show"; name: string; email: string } {
   if (me.signedIn && me.user) {
     if (isPrivileged(me.user.role)) return { kind: "redirect", location: "/admin" };
     return { kind: "show", name: me.user.name, email: me.user.email };
   }
   if (!email) return { kind: "redirect", location: "/admin/sign-in" };
-  return { kind: "show", name: email, email };
+  return { kind: "show", name: name?.trim() ? name.trim() : email, email };
 }
