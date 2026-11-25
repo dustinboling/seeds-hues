@@ -1,0 +1,49 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Preview Worker for the converted app (Dustin's pre-production
+  // inspection): a separate Worker on its workers.dev URL, wired to the
+  // live catalog API. Deployed by the coordinator from the merged tree
+  // (`npm run build:worker`, then `npm run deploy:preview`). Never
+  // routed, never a custom domain; production is untouched.
+  "name": "seeds-hues-preview",
+  // The built Worker bundle (`npm run build:worker` emits it; the build
+  // itself bundles from server/worker.ts via the worker Vite config's
+  // plugin override — this path is what `wrangler deploy -c` uploads).
+  "main": "dist-worker/worker/index.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "51080ac04974bef5a30d7ceb5b79e9e2",
+  "workers_dev": true,
+  "assets": {
+    "directory": "dist-worker/client",
+    "binding": "ASSETS",
+    // The Worker runs first on every request: only then do the edge
+    // header set, the preview shield, and the robots.txt intercept apply
+    // to asset responses too (otherwise matching assets bypass the entry
+    // entirely). Unmatched paths 404 from the binding and fall through
+    // to Vike in the entry — never an SPA fallback.
+    "run_worker_first": true,
+    "not_found_handling": "none"
+  },
+  "d1_databases": [
+    {
+      // Production catalog database — read by the variety-status mount
+      // only (SELECT). No other D1 use anywhere in the entry.
+      "binding": "DB",
+      "database_name": "seeds-hues",
+      "database_id": "dcc6098e-e48c-4906-ac79-72cc77e04042"
+    }
+  ],
+  "vars": {
+    "SEEDS_API_BASE": "https://seeds.hues.flowers/api/v1",
+    // The public Turnstile site key (the value of v2/wrangler.jsonc's
+    // TURNSTILE_SITE_KEY, under the name the app reads).
+    "SEEDS_TURNSTILE_SITE_KEY": "0x4AAAAAAGE35WdI5cJcSOVu",
+    // Preview SEO shield: every response carries
+    // X-Robots-Tag: noindex, nofollow, and /robots.txt disallows all.
+    "SEEDS_PREVIEW": "1"
+  },
+  // No secrets in this file. SEEDS_REVALIDATE_SECRET is deliberately
+  // unset: POST /internal/revalidate answers not-configured in preview.
+  "observability": { "enabled": true }
+}

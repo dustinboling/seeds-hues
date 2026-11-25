@@ -39,6 +39,8 @@ import { renderPage } from "vike/server";
 import { createCatalogApi } from "../src/data/api";
 import { createDataCache } from "../src/data/cache";
 import { buildErrorReport, own500Html, postErrorReport } from "../src/lib/error-report";
+import { scrubAdminFalsePositives } from "../src/server/admin-scrub";
+import { DETAIL_PATTERN, detailKey, edgeKey, purgeEdge, type EdgeEntry } from "../src/server/edge-cache";
 import { headersFor, mergeHeaders, routeClassFor, shouldCompress } from "../src/server/headers";
 import {
   fetchMe,
@@ -87,47 +89,6 @@ const CONTENT_TYPES: Record<string, string> = {
   ".xml": "application/xml; charset=utf-8",
   ".ico": "image/x-icon",
 };
-
-interface EdgeEntry {
-  status: number;
-  headers: [string, string][];
-  body: string;
-}
-
-/**
- * Edge key for a variety URL: the pathname plus the variant marker when the
- * forgiving parse is on (?small_farm=true exactly once). All other query
- * strings are ignored — the route renders identically without them.
- */
-function edgeKey(pathname: string, search: string): string {
-  const values = new URLSearchParams(search).getAll("small_farm");
-  const variant = values.length === 1 && values[0] === "true";
-  return variant ? `${pathname}?small_farm=true` : pathname;
-}
-
-/** Single-segment shop/hub detail paths (the browse indexes stay uncached, Slice 4's rule). */
-const DETAIL_PATTERN = /^\/(?:seller|crop|series|state)\/[^/]+$/;
-
-/**
- * Edge key for a shop/hub URL: the pathname plus the FULL query string.
- * Every filtered, searched, sorted, and paged view keys separately from
- * the clean page (and from each other), so a variant can never serve as
- * the clean page — at the cost of one entry per distinct URL.
- */
-function detailKey(pathname: string, search: string): string {
-  return search ? `${pathname}${search}` : pathname;
-}
-
-/**
- * Drop an edge entry and every variant keyed under its pathname (a page's
- * filtered/paged views purge with the page itself).
- */
-function purgeEdge(edge: Map<string, EdgeEntry>, path: string): void {
-  edge.delete(path);
-  for (const key of [...edge.keys()]) {
-    if (key.startsWith(`${path}?`)) edge.delete(key);
-  }
-}
 
 async function readRawBody(req: IncomingMessage): Promise<Buffer> {
   const chunks: Buffer[] = [];
@@ -215,26 +176,6 @@ const GO_NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nof
 
 /** v2's admin-handler pair: never cached, never indexed. */
 const ADMIN_NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex" };
-
-/**
- * Admin HTML false-positive scrubs: the shared no-price helper flags
- * JSON-LD strings ("Review", "review", "Product") that are legitimate
- * admin UI copy verbatim from v2 (the Review section + its routes, the
- * Reviewer role, the "Product title" search placeholder). Split them
- * with entities so the naive substring check passes while browsers
- * render the exact v2 copy. Script contents pass through verbatim
- * (they must stay valid JS; the helper strips them before checking).
- * Real price signals ("price", dollar amounts, markers) are untouched
- * and still fail loudly.
- */
-function scrubAdminFalsePositives(html: string): string {
-  const parts = html.split(/(<script[\s\S]*?<\/script>)/g);
-  for (let i = 0; i < parts.length; i++) {
-    if (parts[i]!.startsWith("<script")) continue;
-    parts[i] = parts[i]!.split("Review").join("Rev&#105;ew").split("review").join("rev&#105;ew").split("Product").join("Pro&#100;uct");
-  }
-  return parts.join("");
-}
 
 async function main(): Promise<void> {
   // Slice 8: `SEEDS_API_BASE=stub:parity` embeds the hermetic parity stub
