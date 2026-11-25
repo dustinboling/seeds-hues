@@ -25,18 +25,21 @@ import {
 import { createDataCache, type DataCache } from "./cache";
 import { BROWSE_SORT_REPO, type BrowseFilterState } from "../lib/browse";
 import { pageWindow, totalPages } from "../lib/paging";
-import type { SellerBrowseState, SellerStateOption } from "../lib/seller-browse";
+import type { SellerBrowseState, SellerState, SellerStateOption } from "../lib/seller-browse";
 import { stateByCode } from "../lib/states";
 import { PAGE_SIZE } from "../site";
 import type {
   ApiBrowseCounts,
   ApiCoverageItem,
   ApiCrop,
+  ApiCropDetail,
   ApiRecentItem,
   ApiSearchResult,
   ApiSellerBrowseCounts,
+  ApiSellerDetail,
   ApiSellerItem,
   ApiSeriesCrop,
+  ApiSeriesDetail,
   ApiVarietyDetail,
   ApiVarietyListItem,
   CatalogCounts,
@@ -127,17 +130,143 @@ export { compareVarietyAvailability };
 /**
  * One variety's detail through the shared cache (null included: unknown
  * slugs are cached negative until max age). The entry renders the variety
- * page and its small-farms variant, so a variety tag purges both.
+ * page and its small-farms variant, so a variety tag purges both — and it
+ * registers its sellers' shop paths, so a seller tag purges it too (a
+ * listing write fans out to both templates it joins, Bea §9).
  */
 export async function loadVarietyDetail(
   slug: string,
   api: CatalogApi = getCatalogApi(),
   cache: DataCache = getDataCache(),
 ): Promise<ApiVarietyDetail | null> {
-  return cache.get<ApiVarietyDetail | null>(`variety:detail:${slug}`, async () => ({
-    value: await api.getVarietyDetail(slug),
-    paths: [`/variety/${slug}`, `/variety/${slug}?small_farm=true`],
-  }));
+  return cache.get<ApiVarietyDetail | null>(`variety:detail:${slug}`, async () => {
+    const detail = await api.getVarietyDetail(slug);
+    const sellers = detail ? [...new Set(detail.listings.map((l) => l.seller.slug))] : [];
+    return {
+      value: detail,
+      paths: [`/variety/${slug}`, `/variety/${slug}?small_farm=true`, ...sellers.map((s) => `/seller/${s}`)],
+    };
+  });
+}
+
+/* ── Slice 5 shop/hub loaders ── */
+
+/**
+ * One seller's detail through the shared cache (null included: unknown
+ * AND removed slugs cache negative until max age — the route splits
+ * gone from missing through the uncached status lookup). The entry
+ * renders the shop page and registers its varieties' paths, so a variety
+ * tag purges it too (a listing write fans out to both templates it joins).
+ */
+export async function loadSellerDetail(
+  slug: string,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<ApiSellerDetail | null> {
+  return cache.get<ApiSellerDetail | null>(`seller:detail:${slug}`, async () => {
+    const detail = await api.getSellerDetail(slug);
+    const varieties = detail ? [...new Set(detail.listings.map((l) => l.variety.slug))] : [];
+    return {
+      value: detail,
+      paths: [`/seller/${slug}`, ...varieties.map((v) => `/variety/${v}`)],
+    };
+  });
+}
+
+/** One crop's walked detail: the head fields plus the FULL variety set. */
+export interface CropDetailData {
+  detail: ApiCropDetail;
+  /** Every member variety (resting Name A–Z from the walk). */
+  items: ApiVarietyListItem[];
+  total: number;
+}
+
+/**
+ * One crop's walked detail through the shared cache (null included). The
+ * entry renders the crop hub and registers its members' variety paths, so
+ * a variety tag purges it (counts move with every listing write).
+ */
+export async function loadCropDetail(
+  slug: string,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<CropDetailData | null> {
+  return cache.get<CropDetailData | null>(`crop:detail:${slug}`, async () => {
+    const walked = await api.walkCropDetail(slug);
+    if (!walked) return { value: null, paths: [`/crop/${slug}`] };
+    return {
+      value: { detail: walked.detail, items: walked.detail.varieties, total: walked.total },
+      paths: [`/crop/${slug}`, ...walked.detail.varieties.map((v) => `/variety/${v.slug}`)],
+    };
+  });
+}
+
+/**
+ * One series' detail through the shared cache (null included). The entry
+ * renders the series hub and registers its members' variety paths, so a
+ * variety tag purges it.
+ */
+export async function loadSeriesDetail(
+  slug: string,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<ApiSeriesDetail | null> {
+  return cache.get<ApiSeriesDetail | null>(`series:detail:${slug}`, async () => {
+    const detail = await api.getSeriesDetail(slug);
+    if (!detail) return { value: null, paths: [`/series/${slug}`] };
+    return {
+      value: detail,
+      paths: [`/series/${slug}`, ...seriesVarietyPaths(detail.varieties)],
+    };
+  });
+}
+
+function seriesVarietyPaths(varieties: ApiVarietyListItem[]): string[] {
+  return [...new Set(varieties.map((v) => `/variety/${v.slug}`))];
+}
+
+/** One state hub's page window through the shared cache. */
+export interface StateDetailData {
+  state: SellerState;
+  items: ApiSellerItem[];
+  total: number;
+  page: number;
+  pages: number;
+}
+
+/**
+ * One state hub's page window: the state record plus its sellers' window,
+ * sliced read-side from the walked seller set. The entry renders the
+ * state page and registers its sellers' shop paths, so a seller tag
+ * purges it (membership moves with every seller write).
+ */
+export async function loadStateDetail(
+  code: string,
+  page: number,
+  api: CatalogApi = getCatalogApi(),
+  cache: DataCache = getDataCache(),
+): Promise<StateDetailData | null> {
+  const cacheKey = `state:detail:${code}:${page}`;
+  return cache.get<StateDetailData | null>(cacheKey, async () => {
+    const [walked, states] = await Promise.all([
+      cache.get<ApiSellerItem[]>("browse:seller:walk", async () => {
+        const { items } = await api.walkSellers();
+        return { value: items, paths: ["/seller"] };
+      }),
+      loadSellerStates(api, cache),
+    ]);
+    const found = states.find((s) => s.code === code) ?? null;
+    if (!found) return { value: null, paths: [] };
+    const matching = sellersInState(walked, code);
+    const { offset, limit } = pageWindow(page, PAGE_SIZE);
+    const total = matching.length;
+    const items = matching.slice(offset, offset + limit);
+    const state: SellerState = { code: found.code, name: found.name, slug: found.slug, sellerCount: total };
+    return {
+      value: { state, items, total, page, pages: totalPages(total, PAGE_SIZE) },
+      paths: [`/state/${state.slug}`, ...matching.map((s) => `/seller/${s.slug}`)],
+    };
+  });
 }
 
 /**

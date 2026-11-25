@@ -77,3 +77,25 @@ export function formatFriendlyDate(value: string | null): string | null {
   if (month < 1 || month > 12 || day < 1 || day > 31) return null;
   return `${MONTH_SHORT[month - 1]} ${day}, ${year}`;
 }
+
+export function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * The dialable tel: href for a published customer-service phone number:
+ * digits with country code, derived from the display form at render — the
+ * href and the visible number can never disagree. Ported from
+ * v2/lib/format.ts.
+ */
+export function telHref(display: string): string {
+  const digits = display.replace(/\D/g, "");
+  if (display.trimStart().startsWith("+")) return `tel:+${digits}`;
+  if (digits.length === 10) return `tel:+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `tel:+${digits}`;
+  return `tel:+${digits}`;
+}

@@ -37,6 +37,11 @@ export interface SellerStateOption {
   slug: string;
 }
 
+/** A US state with at least one visible seller, with its seller count (the /state/{slug} record). */
+export interface SellerState extends SellerStateOption {
+  sellerCount: number;
+}
+
 /** No filter active (All states). */
 export function clearSellerBrowseFilters(): SellerBrowseState {
   return { state: null };

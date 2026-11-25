@@ -6,8 +6,9 @@ import { SITE_NAME } from "../../src/site";
 // not present themselves as canonical anything.
 export function Head() {
   const pageContext = usePageContext();
+  const gone = pageContext.abortStatusCode === 410;
   const notFound = pageContext.is404 || pageContext.abortStatusCode === 404;
-  const title = notFound ? "Page not found" : "Something went wrong";
+  const title = gone ? "Seller removed" : notFound ? "Page not found" : "Something went wrong";
   return (
     <>
       <title>{`${title} | ${SITE_NAME}`}</title>

@@ -74,6 +74,49 @@ export function ChevronRightIcon() {
   );
 }
 
+/** Phone handset — the seller contact block's phone row. The row's label + number carry the meaning. */
+export function PhoneIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width={20}
+      height={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M20.5 15.9v2.2c0 1-.8 1.9-1.9 1.9C10.7 20 4 13.3 4 5.4c0-1 .8-1.9 1.9-1.9h2.2c.8 0 1.5.5 1.8 1.3l1 2.6c.3.7.1 1.6-.5 2.1l-1.6 1.6c1.1 2.6 3 4.5 5.6 5.6l1.6-1.6c.5-.6 1.4-.8 2.1-.5l2.6 1c.8.3 1.3 1 1.3 1.8Z" />
+    </svg>
+  );
+}
+
+/** Mail mark — the seller contact block's email row. The row's label + address carry the meaning. */
+export function MailIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width={20}
+      height={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M3.5 6.5h17v11h-17Z" />
+      <path d="m3.5 7 8.5 6 8.5-6" />
+    </svg>
+  );
+}
+
 /** Remover cross — the applied row's remover chips. The chip's aria-label carries the meaning. */
 export function ChipRemoveIcon({ className = "" }: { className?: string }) {
   return (

@@ -3,29 +3,23 @@
  * (plural legacy paths, legacy ?v= slugs, the internal small-farms path);
  * Slice 4 extends the same module — never a fork — with the seller rows
  * (plural legacy paths, legacy ?s= slugs) and the ?page=1 rule for the two
- * index routes. Pure URL function — no data, so the Vike +onBeforeRoute
- * hook throws these before routing, and the production edge mirrors the
- * same rows. Every permanent redirect this tree ships is 301, one hop
- * (Bea §8.4's recommendation, matching the program spec).
- *
- * Detail-template ?page=1 rows (/seller/[slug], /crop/[slug], /state/[slug])
- * land with Slice 5's routes — this module grows by pathname, one row set
- * per slice.
+ * index routes; Slice 5 adds the crop plural rows (/plants, /categories)
+ * and the detail-template ?page=1 rows (/seller/[slug], /crop/[slug],
+ * /state/[slug] — series has no pagination, so no row). Pure URL function
+ * — no data, so the Vike +onBeforeRoute hook throws these before routing,
+ * and the production edge mirrors the same rows. Every permanent redirect
+ * this tree ships is 301, one hop (Bea §8.4's recommendation, matching the
+ * program spec).
  */
+import { legacySlug } from "../lib/legacy";
+
+export { legacySlug };
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** The catalog slug rule (`^[a-z0-9]+(?:-[a-z0-9]+)*$`), shared by variety/seller pages and redirects. */
 export function isSlug(slug: string): boolean {
   return SLUG_PATTERN.test(slug);
-}
-
-/** v1 query-string slugs (`?v=`) — ported from v2/lib/legacy.ts. */
-export function legacySlug(raw: string | string[] | undefined): string | null {
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  if (!value) return null;
-  const slug = value.trim().toLowerCase();
-  return SLUG_PATTERN.test(slug) && slug.length <= 160 ? slug : null;
 }
 
 /**
@@ -42,6 +36,13 @@ export function redirectForUrl(url: string): string | null {
   if (pathname === "/sellers") return "/seller";
   const sellerPlural = /^\/sellers\/([^/]+)$/.exec(pathname);
   if (sellerPlural && isSlug(sellerPlural[1]!)) return `/seller/${sellerPlural[1]}`;
+  if (pathname === "/plants" || pathname === "/categories") return "/crop";
+  const cropPlural = /^\/(?:plants|categories)\/([^/]+)$/.exec(pathname);
+  if (cropPlural && isSlug(cropPlural[1]!)) return `/crop/${cropPlural[1]}`;
+  // Detail-template ?page=1 (§4.1): any single-segment shop/crop/state path
+  // (slug validity is the route's job after the redirect — unknown slugs
+  // 301 to the clean URL, then 404).
+  if (/^\/(?:seller|crop|state)\/[^/]+$/.test(pathname)) return pageOneRedirect(parsed);
   if (pathname === "/variety") {
     const legacy = legacySlug(parsed.searchParams.get("v") ?? undefined);
     if (legacy) return `/variety/${legacy}`;

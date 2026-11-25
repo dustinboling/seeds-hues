@@ -6,7 +6,7 @@
  * their slices.
  */
 import { imageUrl } from "../lib/images";
-import { shortCommonName } from "../lib/format";
+import { formatFriendlyDate, proseCommonName, shortCommonName } from "../lib/format";
 import { ZERO_SELLER_TITLE } from "../lib/zero-seller";
 import { SITE_NAME, SITE_URL } from "../site";
 
@@ -223,4 +223,71 @@ export function varietyDescription(v: {
   }
   if (joined(base, DIRECTORY_CLAUSE).length <= DESCRIPTION_MAX) return clip(joined(base, DIRECTORY_CLAUSE));
   return clip(base);
+}
+
+export function sellerTitle(s: { name: string }): string {
+  return `${s.name} — Flower Seed Seller`;
+}
+
+/**
+ * Seller meta/OG/Twitter description (Bea §3.3 + the m-5 port item): the
+ * head sentence plus the description's first sentence whole when it fits
+ * — composed to a complete sentence, never the mid-word clip. Both
+ * branches end at a sentence boundary by construction (clip() is never
+ * called: the m-5 clip is structurally impossible).
+ */
+export function sellerDescription(s: {
+  name: string;
+  location: string | null;
+  varietyCount: number;
+  description: string | null;
+}): string {
+  const where = s.location ? ` in ${s.location}` : "";
+  const head = `${s.name}${where}: ${s.varietyCount} flower seed ${s.varietyCount === 1 ? "variety" : "varieties"} listed, each with its stock state and the date it was last checked.`;
+  const prose = s.description ? firstSentence(s.description) : null;
+  if (prose && `${head} ${prose}`.length <= DESCRIPTION_MAX) return `${head} ${prose}`;
+  return head;
+}
+
+/**
+ * Crop meta/OG/Twitter description (v2's crop generateMetadata, verbatim):
+ * counts with the Latin name and the trustworthy last-updated date where
+ * the data carries one. Always ends at a sentence boundary.
+ */
+export function cropDescription(c: {
+  varietyCount: number;
+  commonName: string;
+  latinName: string | null;
+  varietiesWithSellers: number;
+  lastUpdated: string | null;
+}): string {
+  const lastUpdatedFriendly = formatFriendlyDate(c.lastUpdated);
+  return `${c.varietyCount === 1 ? "1 variety" : `${c.varietyCount} varieties`} of ${proseCommonName(c.commonName)}${c.latinName ? ` (${c.latinName})` : ""} cataloged; ${c.varietiesWithSellers} sold by sellers in the directory.${lastUpdatedFriendly ? ` Last updated ${lastUpdatedFriendly}.` : ""}`;
+}
+
+export function seriesTitle(s: { name: string; cropCommonName: string; varietyCount: number; varietiesWithSellers: number }): string {
+  const crop = shortCommonName(s.cropCommonName);
+  return `${s.name} ${crop} Series — ${s.varietyCount === 1 ? "1 Variety" : `${s.varietyCount} Varieties`}, ${s.varietiesWithSellers} With Sellers`;
+}
+
+export function seriesDescription(s: {
+  name: string;
+  cropCommonName: string;
+  latinName: string | null;
+  varietyCount: number;
+  varietiesWithSellers: number;
+}): string {
+  return `The ${s.name} series of ${proseCommonName(s.cropCommonName)}${s.latinName ? ` (${s.latinName})` : ""}: ${s.varietyCount === 1 ? "1 variety" : `${s.varietyCount} varieties`} cataloged, ${s.varietiesWithSellers} sold by sellers in the directory.`;
+}
+
+/** /state/{slug}: an absolute title (no site-name template suffix). */
+export function stateTitle(st: { code: string; name: string; slug: string; sellerCount: number }): string {
+  return `Seed sellers in ${st.name} — Seed Directory`;
+}
+
+export function stateDescription(st: { code: string; name: string; slug: string; sellerCount: number }): string {
+  const n = st.sellerCount;
+  return clip(
+    `${n} ${n === 1 ? "farm or seed company" : "farms and seed companies"} in ${st.name} ${n === 1 ? "lists" : "list"} flower seed with the Seed Directory, with the varieties each one carries and when each listing was last checked.`,
+  );
 }

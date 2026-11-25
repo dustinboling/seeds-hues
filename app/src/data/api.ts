@@ -12,7 +12,10 @@ import type {
   ApiContentLevel,
   ApiCoverageItem,
   ApiCrop,
+  ApiCropDetail,
   ApiEnvelope,
+  ApiGrowerGuide,
+  ApiImportedRating,
   ApiMatchMethod,
   ApiMedia,
   ApiOgSeller,
@@ -27,10 +30,15 @@ import type {
   ApiRecentItem,
   ApiSearchResponse,
   ApiSearchResult,
+  ApiSellerDetail,
   ApiSellerItem,
+  ApiSellerLocation,
+  ApiSellerLocationKind,
   ApiSellerRef,
+  ApiSellerStatus,
   ApiSellerType,
   ApiSeriesCrop,
+  ApiSeriesDetail,
   ApiVarietyDetail,
   ApiVarietyFacts,
   ApiVarietyListItem,
@@ -535,6 +543,183 @@ function parseVarietyStatus(row: unknown): ApiVarietyStatus {
   return { status, merged_into: null };
 }
 
+// --- Shop/hub details (Slice 5): the same JSON GET /api/v1/sellers/[slug],
+// GET /api/v1/crops/[slug], and GET /api/v1/series/[slug] serve. ---
+
+const SELLER_LOCATION_KINDS: ReadonlySet<string> = new Set(["physical", "warehouse", "mailing"]);
+const CLAIM_STATUSES: ReadonlySet<string> = new Set(["unclaimed", "claimed"]);
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+function reqNonnegInt(row: Record<string, unknown>, key: string, what: string): number {
+  const value = reqNumber(row, key, what);
+  if (!Number.isInteger(value) || value < 0) throw new ApiShapeError(`${what}: ${key} must be a non-negative integer`);
+  return value;
+}
+
+function reqStrings(row: Record<string, unknown>, key: string, what: string): string[] {
+  const values = reqArray(row, key, what);
+  for (const v of values) {
+    if (typeof v !== "string") throw new ApiShapeError(`${what}: ${key} must be an array of strings`);
+  }
+  return values as string[];
+}
+
+function parseSellerLocation(row: unknown): ApiSellerLocation {
+  if (!isRecord(row)) throw new ApiShapeError("seller location: row must be an object");
+  return {
+    kind: reqEnum<ApiSellerLocationKind>(row, "kind", "seller location", SELLER_LOCATION_KINDS),
+    street: optString(row, "street", "seller location"),
+    city: reqString(row, "city", "seller location"),
+    state: reqString(row, "state", "seller location"),
+    zip: optString(row, "zip", "seller location"),
+    isPrimary: reqBoolean(row, "isPrimary", "seller location"),
+  };
+}
+
+function parseImportedRating(row: unknown): ApiImportedRating {
+  if (!isRecord(row)) throw new ApiShapeError("imported rating: row must be an object");
+  const source = reqString(row, "source", "imported rating");
+  if (source !== "Google") throw new ApiShapeError(`imported rating: unknown source ${JSON.stringify(source)}`);
+  const rating = reqNumber(row, "rating", "imported rating");
+  if (rating < 0 || rating > 5) throw new ApiShapeError("imported rating: rating must be 0–5");
+  const fetchedDate = reqString(row, "fetchedDate", "imported rating");
+  if (!DATE_ONLY.test(fetchedDate)) throw new ApiShapeError("imported rating: fetchedDate must be YYYY-MM-DD");
+  return {
+    source,
+    placeName: reqString(row, "placeName", "imported rating"),
+    placeId: reqString(row, "placeId", "imported rating"),
+    rating,
+    reviewCount: reqNonnegInt(row, "reviewCount", "imported rating"),
+    fetchedDate,
+  };
+}
+
+function parseSellerDetail(row: unknown): ApiSellerDetail {
+  if (!isRecord(row)) throw new ApiShapeError("seller detail: row must be an object");
+  const imported = row.importedRating;
+  if (imported !== null && !isRecord(imported)) throw new ApiShapeError("seller detail: importedRating must be an object or null");
+  return {
+    slug: reqString(row, "slug", "seller detail"),
+    name: reqString(row, "name", "seller detail"),
+    type: reqEnum(row, "type", "seller detail", SELLER_TYPES),
+    location: optString(row, "location", "seller detail"),
+    region: optString(row, "region", "seller detail"),
+    country: reqString(row, "country", "seller detail"),
+    homepage: optHttpUrl(row, "homepage", "seller detail"),
+    ratingCount: reqNonnegInt(row, "ratingCount", "seller detail"),
+    ratingAverage: optNumber(row, "ratingAverage", "seller detail"),
+    rating: parseRating(reqRecord(row, "rating", "seller detail")),
+    importedRating: imported ? parseImportedRating(imported) : null,
+    isSmallFarm: reqBoolean(row, "isSmallFarm", "seller detail"),
+    description: optString(row, "description", "seller detail"),
+    orderingNotes: optString(row, "orderingNotes", "seller detail"),
+    varietyCount: reqNonnegInt(row, "varietyCount", "seller detail"),
+    updatedAt: reqDateish(row, "updatedAt", "seller detail"),
+    claimStatus: reqEnum(row, "claimStatus", "seller detail", CLAIM_STATUSES),
+    shipsTo: reqStrings(row, "shipsTo", "seller detail"),
+    isSiteOwner: reqBoolean(row, "isSiteOwner", "seller detail"),
+    listings: reqArray(row, "listings", "seller detail").map(parsePublicListing),
+    customerServicePhone: optString(row, "customerServicePhone", "seller detail"),
+    customerServiceEmail: optString(row, "customerServiceEmail", "seller detail"),
+    locations: reqArray(row, "locations", "seller detail").map(parseSellerLocation),
+  };
+}
+
+function parseSellerStatus(row: unknown): ApiSellerStatus {
+  if (!isRecord(row)) throw new ApiShapeError("seller status: row must be an object");
+  const status = reqString(row, "status", "seller status");
+  if (status !== "ok" && status !== "gone" && status !== "missing") {
+    throw new ApiShapeError(`seller status: unknown status ${JSON.stringify(status)}`);
+  }
+  return { status };
+}
+
+function optGuideText(row: Record<string, unknown>, key: string, what: string): string | null {
+  const value = row[key];
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string") throw new ApiShapeError(`${what}: ${key} must be a string or null`);
+  return value;
+}
+
+function parseGrowerGuide(row: unknown): ApiGrowerGuide | null {
+  if (row === null || row === undefined) return null;
+  if (!isRecord(row)) throw new ApiShapeError("grower guide: row must be an object or null");
+  const growing = row.growing;
+  const seedSaving = row.seed_saving;
+  if (growing !== null && growing !== undefined && !isRecord(growing)) {
+    throw new ApiShapeError("grower guide: growing must be an object or null");
+  }
+  if (seedSaving !== null && seedSaving !== undefined && !isRecord(seedSaving)) {
+    throw new ApiShapeError("grower guide: seed_saving must be an object or null");
+  }
+  return {
+    growing:
+      growing == null
+        ? null
+        : {
+            sowing: optGuideText(growing, "sowing", "grower guide"),
+            germination: optGuideText(growing, "germination", "grower guide"),
+            transplanting: optGuideText(growing, "transplanting", "grower guide"),
+            days_to_bloom: optGuideText(growing, "days_to_bloom", "grower guide"),
+            spacing: optGuideText(growing, "spacing", "grower guide"),
+            growing: optGuideText(growing, "growing", "grower guide"),
+            harvest_for_cutting: optGuideText(growing, "harvest_for_cutting", "grower guide"),
+            good_to_know: reqStrings(growing, "good_to_know", "grower guide"),
+          },
+    seed_saving:
+      seedSaving == null
+        ? null
+        : {
+            difficulty: optGuideText(seedSaving, "difficulty", "grower guide"),
+            when_to_harvest: optGuideText(seedSaving, "when_to_harvest", "grower guide"),
+            how_to_collect: optGuideText(seedSaving, "how_to_collect", "grower guide"),
+            cleaning: optGuideText(seedSaving, "cleaning", "grower guide"),
+            drying: optGuideText(seedSaving, "drying", "grower guide"),
+            storage: optGuideText(seedSaving, "storage", "grower guide"),
+            pollination_notes: optGuideText(seedSaving, "pollination_notes", "grower guide"),
+          },
+  };
+}
+
+function parseCropDetail(row: unknown): ApiCropDetail {
+  if (!isRecord(row)) throw new ApiShapeError("crop detail: row must be an object");
+  const series = reqArray(row, "series", "crop detail");
+  return {
+    slug: reqString(row, "slug", "crop detail"),
+    commonName: reqString(row, "commonName", "crop detail"),
+    latinName: optString(row, "latinName", "crop detail"),
+    lifeCycle: optString(row, "lifeCycle", "crop detail"),
+    season_class: optEnum<ApiSeasonClass>(row, "season_class", "crop detail", SEASON_CLASSES),
+    sowing_methods: parseSowingMethods(row, "sowing_methods", "crop detail"),
+    varietyCount: reqNonnegInt(row, "varietyCount", "crop detail"),
+    varietiesWithSellers: reqNonnegInt(row, "varietiesWithSellers", "crop detail"),
+    lastUpdated: optString(row, "lastUpdated", "crop detail"),
+    media: reqArray(row, "media", "crop detail").map((m) => {
+      if (!isRecord(m)) throw new ApiShapeError("crop detail media: row must be an object");
+      return { url: reqString(m, "url", "crop detail media") };
+    }),
+    description: optString(row, "description", "crop detail"),
+    sowingNotes: optString(row, "sowingNotes", "crop detail"),
+    life_cycle: optString(row, "life_cycle", "crop detail"),
+    hardiness: optString(row, "hardiness", "crop detail"),
+    grower_guide: parseGrowerGuide(row.grower_guide),
+    series: series.map((s) => parseCategoryRef(s, "crop detail series")),
+    varieties: reqArray(row, "varieties", "crop detail").map(parseVarietyListItem),
+  };
+}
+
+function parseSeriesDetail(row: unknown): ApiSeriesDetail {
+  if (!isRecord(row)) throw new ApiShapeError("series detail: row must be an object");
+  return {
+    slug: reqString(row, "slug", "series detail"),
+    name: reqString(row, "name", "series detail"),
+    plant: parsePlantRef(reqRecord(row, "crop", "series detail")),
+    varietyCount: reqNonnegInt(row, "varietyCount", "series detail"),
+    varietiesWithSellers: reqNonnegInt(row, "varietiesWithSellers", "series detail"),
+    varieties: reqArray(row, "varieties", "series detail").map(parseVarietyListItem),
+  };
+}
+
 export interface CatalogApiOptions {
   /** Base URL of the API, e.g. https://seeds.hues.flowers/api/v1 (no trailing slash). */
   baseUrl: string;
@@ -807,6 +992,88 @@ export function createCatalogApi(options: CatalogApiOptions) {
         const json = await res.json();
         if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError(`/series/${slug}: detail must be an object`);
         return parseSeriesCrop(json.data);
+      } catch (error) {
+        if (error instanceof ApiRequestError && error.status === 404) return null;
+        throw error;
+      }
+    },
+    /**
+     * One seller with its full listing set, contacts, and locations (GET
+     * /api/v1/sellers/[slug]) — the shop page's one read. Unknown slugs
+     * 404 and removed sellers 410 at the API; both resolve null here and
+     * the route splits gone from missing through sellerStatus, below (the
+     * status lookup is the source of truth, like v2's middleware).
+     */
+    async getSellerDetail(slug: string): Promise<ApiSellerDetail | null> {
+      try {
+        const res = await getRaw(`/sellers/${slug}`);
+        const json = await res.json();
+        if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError(`/sellers/${slug}: detail must be an object`);
+        return parseSellerDetail(json.data);
+      } catch (error) {
+        if (error instanceof ApiRequestError && (error.status === 404 || error.status === 410)) return null;
+        throw error;
+      }
+    },
+    /**
+     * The removed-seller lookup (GET /api/internal/seller-status/[slug] —
+     * v2's shipped precedent): ok/gone/missing. Non-200s throw (fail
+     * closed, like the variety-status lookup): a silent 404 for a removed
+     * seller would corrupt the index signal.
+     */
+    async sellerStatus(slug: string): Promise<ApiSellerStatus> {
+      const res = await fetchImpl(`${internalBase}/api/internal/seller-status/${slug}`, {
+        headers: { "User-Agent": userAgent },
+      });
+      if (!res.ok) throw new ApiRequestError(`GET /api/internal/seller-status/${slug} -> HTTP ${res.status}`, res.status);
+      return parseSellerStatus((await res.json()) as unknown);
+    },
+    /**
+     * One crop with its FULL variety set: the public crops/[slug] endpoint
+     * serves resting Name A–Z windows (cursor-paged, no filter params), so
+     * this walks every window and assembles the set the hub filters,
+     * sorts, and paginates read-side. Unknown slugs 404 at the API and
+     * resolve null.
+     */
+    async walkCropDetail(slug: string): Promise<{ detail: ApiCropDetail; total: number } | null> {
+      let cursor: string | null = null;
+      let head: ApiCropDetail | null = null;
+      const varieties: ApiVarietyListItem[] = [];
+      for (;;) {
+        const query = new URLSearchParams({ limit: "100", ...(cursor ? { cursor } : {}) });
+        let res;
+        try {
+          res = await getRaw(`/crops/${slug}?${query.toString()}`);
+        } catch (error) {
+          if (error instanceof ApiRequestError && error.status === 404) return null;
+          throw error;
+        }
+        const json = await res.json();
+        if (!isRecord(json) || !isRecord(json.data)) {
+          throw new ApiShapeError(`/crops/${slug}: detail must be an object`);
+        }
+        const window = parseCropDetail(json.data);
+        if (!head) head = window;
+        varieties.push(...window.varieties);
+        const pageInfo = reqRecord(json, "page", `/crops/${slug} envelope`);
+        const next = typeof pageInfo.next_cursor === "string" ? pageInfo.next_cursor : null;
+        if (pageInfo.has_more !== true || !next) break;
+        cursor = next;
+      }
+      if (!head) return null;
+      return { detail: { ...head, varieties }, total: varieties.length };
+    },
+    /**
+     * One series with ALL its varieties (GET /api/v1/series/[slug]) — the
+     * series hub's one read (no pagination on this template). Unknown
+     * slugs 404 at the API and resolve null.
+     */
+    async getSeriesDetail(slug: string): Promise<ApiSeriesDetail | null> {
+      try {
+        const res = await getRaw(`/series/${slug}`);
+        const json = await res.json();
+        if (!isRecord(json) || !isRecord(json.data)) throw new ApiShapeError(`/series/${slug}: detail must be an object`);
+        return parseSeriesDetail(json.data);
       } catch (error) {
         if (error instanceof ApiRequestError && error.status === 404) return null;
         throw error;

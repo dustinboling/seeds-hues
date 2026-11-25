@@ -12,9 +12,12 @@
  *   DataCache passed via pageContextInit — ONE instance per process, so the
  *   revalidate purge reaches the same cache the +data hooks read (a second
  *   bundle copy would make the purge silently miss);
- * - a minimal in-memory edge mock for /variety/* 200s, keyed per the §9
- *   contract (the ?small_farm=true variant keys separately), purged by the
- *   revalidate paths. Only 200s are stored; redirects and errors bypass.
+ * - a minimal in-memory edge mock for the detail routes' 200s
+ *   (/variety/*, /seller/*, /crop/*, /series/*, /state/*), keyed per the
+ *   §9 contract (the ?small_farm=true variant and every filtered/paged
+ *   view keys separately, so a variant can never serve as the clean
+ *   page), purged by the revalidate paths plus the purged entries'
+ *   related paths. Only 200s are stored; redirects and errors bypass.
  *
  * Env: PORT (0 = ephemeral; the listening URL prints on stdout),
  * SEEDS_API_BASE (default: the live API), SEEDS_REVALIDATE_SECRET
@@ -67,6 +70,30 @@ function edgeKey(pathname: string, search: string): string {
   return variant ? `${pathname}?small_farm=true` : pathname;
 }
 
+/** Single-segment shop/hub detail paths (the browse indexes stay uncached, Slice 4's rule). */
+const DETAIL_PATTERN = /^\/(?:seller|crop|series|state)\/[^/]+$/;
+
+/**
+ * Edge key for a shop/hub URL: the pathname plus the FULL query string.
+ * Every filtered, searched, sorted, and paged view keys separately from
+ * the clean page (and from each other), so a variant can never serve as
+ * the clean page — at the cost of one entry per distinct URL.
+ */
+function detailKey(pathname: string, search: string): string {
+  return search ? `${pathname}${search}` : pathname;
+}
+
+/**
+ * Drop an edge entry and every variant keyed under its pathname (a page's
+ * filtered/paged views purge with the page itself).
+ */
+function purgeEdge(edge: Map<string, EdgeEntry>, path: string): void {
+  edge.delete(path);
+  for (const key of [...edge.keys()]) {
+    if (key.startsWith(`${path}?`)) edge.delete(key);
+  }
+}
+
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
@@ -96,11 +123,26 @@ async function main(): Promise<void> {
         }
         const body = await readJsonBody(req);
         try {
+          // Capture related-entity paths BEFORE the data purge deletes the
+          // entries that register them (a seller tag drops the variety
+          // pages behind its listings even though the tag names only its
+          // own — relatedPaths after invalidate would see an empty cache).
+          let related: string[] = [];
           const result = await handleRevalidateHttpRequest(
             { authorization: req.headers.authorization ?? null, body },
-            { expectedSecret: secret, invalidatePaths: (paths) => cache.invalidatePaths(paths) },
+            {
+              expectedSecret: secret,
+              invalidatePaths: (paths) => {
+                related = cache.relatedPaths(paths);
+                return cache.invalidatePaths(paths);
+              },
+            },
           );
-          for (const p of result.paths) edge.delete(p);
+          // The tag's own paths plus the purged entries' related-entity
+          // paths (a one-tag revalidate drops every affected page even
+          // though the tag names only its own — e.g. a seller tag drops
+          // the variety pages behind its listings).
+          for (const p of new Set([...result.paths, ...related])) purgeEdge(edge, p);
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(result));
         } catch (error) {
@@ -139,9 +181,13 @@ async function main(): Promise<void> {
         }
       }
 
-      // Edge mock: serve a stored variety 200, else render and maybe store.
-      const cacheable = req.method === "GET" && pathname.startsWith("/variety/");
-      const key = cacheable ? edgeKey(pathname, url.search) : null;
+      // Edge mock: serve a stored detail 200, else render and maybe store.
+      const cacheable = req.method === "GET" && (pathname.startsWith("/variety/") || DETAIL_PATTERN.test(pathname));
+      const key = cacheable
+        ? pathname.startsWith("/variety/")
+          ? edgeKey(pathname, url.search)
+          : detailKey(pathname, url.search)
+        : null;
       const hit = key ? edge.get(key) : undefined;
       if (hit) {
         res.writeHead(hit.status, Object.fromEntries(hit.headers));

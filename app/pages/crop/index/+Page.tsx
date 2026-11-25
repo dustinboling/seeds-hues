@@ -1,9 +1,9 @@
 import { useData } from "vike-react/useData";
-import { Breadcrumbs } from "../../src/components/Breadcrumbs";
-import { CropCardImage } from "../../src/components/CropCardImage";
-import { JsonLd } from "../../src/seo/JsonLd";
-import { breadcrumbJsonLd, itemListJsonLd } from "../../src/seo/jsonld";
-import { plural, proseCommonName } from "../../src/lib/format";
+import { Breadcrumbs } from "../../../src/components/Breadcrumbs";
+import { CropCardImage } from "../../../src/components/CropCardImage";
+import { JsonLd } from "../../../src/seo/JsonLd";
+import { breadcrumbJsonLd, itemListJsonLd } from "../../../src/seo/jsonld";
+import { plural, proseCommonName } from "../../../src/lib/format";
 import type { Data } from "./+data";
 
 /**
