@@ -39,8 +39,14 @@ export function redirectForUrl(url: string): string | null {
   const sellerPlural = /^\/sellers\/([^/]+)$/.exec(pathname);
   if (sellerPlural && isSlug(sellerPlural[1]!)) return `/seller/${sellerPlural[1]}`;
   if (pathname === "/plants" || pathname === "/categories") return "/crop";
-  const cropPlural = /^\/(?:plants|categories)\/([^/]+)$/.exec(pathname);
-  if (cropPlural && isSlug(cropPlural[1]!)) return `/crop/${cropPlural[1]}`;
+  // Live-faithful asymmetry (v2/next.config.ts, measured live 2026-11-25):
+  // /plants/:slug keeps its slug (/crop/:slug) but /categories/:slug
+  // drops it (/crop). Ported exactly — the /crop/:slug target the port
+  // shipped for /categories/* was a parity bug (Slice 8 find).
+  const plantsSlug = /^\/plants\/([^/]+)$/.exec(pathname);
+  if (plantsSlug && isSlug(plantsSlug[1]!)) return `/crop/${plantsSlug[1]}`;
+  const categoriesSlug = /^\/categories\/([^/]+)$/.exec(pathname);
+  if (categoriesSlug && isSlug(categoriesSlug[1]!)) return "/crop";
   // Detail-template ?page=1 (§4.1): any single-segment shop/crop/state path
   // (slug validity is the route's job after the redirect — unknown slugs
   // 301 to the clean URL, then 404).

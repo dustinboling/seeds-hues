@@ -1,0 +1,14 @@
+User-Agent: *
+Allow: /
+Disallow: /go/
+Disallow: /admin
+Disallow: /api/v1/ingest/
+Disallow: /api/v1/admin/
+Disallow: /api/internal/
+Disallow: /api/v1/internal/
+Disallow: /api/v1/account
+Disallow: /account
+Disallow: /unsubscribe
+
+Host: https://seeds.hues.flowers
+Sitemap: https://seeds.hues.flowers/sitemap.xml

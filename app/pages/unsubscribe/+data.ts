@@ -42,7 +42,11 @@ async function describeToken(origin: string, token: string): Promise<Unsubscribe
 export async function data(pageContext: PageContextServer): Promise<{ token: string; scope: UnsubscribeScope | null }> {
   const search = new URLSearchParams(pageContext.urlParsed.searchOriginal ?? "");
   const token = search.get("token") ?? "";
-  return { token, scope: await describeToken(apiOrigin(apiBaseUrl()), token) };
+  // The server's translated origin first (hermetic `stub:parity` serving
+  // resolves the describe mount through the embedded stub); the process
+  // env is the fallback for prerender builds, which set no pageContext.
+  const origin = pageContext.adminApiBase ?? apiOrigin(apiBaseUrl());
+  return { token, scope: await describeToken(origin, token) };
 }
 
 export type Data = Awaited<ReturnType<typeof data>>;

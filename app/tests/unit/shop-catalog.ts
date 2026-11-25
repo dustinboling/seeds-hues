@@ -49,6 +49,7 @@ import type {
   ApiSellerRef,
   ApiSellerStatus,
   ApiSeriesDetail,
+  ApiVarietyDetail,
   ApiVarietyListItem,
 } from "../../src/data/types";
 import type { CatalogApi } from "../../src/data/api";
@@ -176,6 +177,79 @@ function shopListing(opts: {
 }
 
 const packets25 = [{ label: "25 seeds", seedCount: 25 }];
+
+/**
+ * Slice 8: a valid variety detail synthesized from a sunflower list row —
+ * every snapshot variety needs a servable detail read (production always
+ * has one; the snapshot rows without reads were sitemap 404s — the parity
+ * find). Listings cycle the four stocked sellers (approximate shop↔variety
+ * identity, documented in tests/parity/parity-catalog.ts); the zero-seller
+ * members carry empty listings like the curated lonely-bloom form.
+ */
+function sunflowerDetail(item: ApiVarietyListItem, sellers: ApiSellerRef[], idBase: number): ApiVarietyDetail {
+  const availability: ApiPublicListing["availability"][] = ["in_stock", "sold_out", "preorder", "in_stock"];
+  const listings: ApiPublicListing[] = [];
+  for (let k = 0; k < item.sellerCount; k++) {
+    const seller = sellers[(idBase + k) % sellers.length]!;
+    const state = availability[(idBase + k) % availability.length]!;
+    const checked = `2026-11-${String(10 + ((idBase + k) % 15)).padStart(2, "0")}T08:00:00.000Z`;
+    listings.push(
+      shopListing({
+        id: idBase + k,
+        seller,
+        plant: SUNFLOWER,
+        varietyName: item.varietyName,
+        colorFamily: item.colorFamily,
+        availability: state,
+        lastCheckedAt: checked,
+        packetSizes: packets25,
+      }),
+    );
+  }
+  const sellerCount = new Set(listings.map((l) => l.seller.slug)).size;
+  return {
+    slug: item.slug,
+    varietyName: item.varietyName,
+    plant: {
+      ...structuredClone(SUNFLOWER),
+      description: "Sunflowers turn their faces to the sun and give armloads of cutting stems.",
+      sowingNotes: "Sow after frost; sunflowers dislike transplanting.",
+    },
+    category: { slug: "flowers", name: "Flowers" },
+    subcategory: null,
+    series: item.series ? { ...item.series } : null,
+    colorSwatch: null,
+    colorFamily: item.colorFamily,
+    listingCount: listings.length,
+    sellerCount,
+    inStockCount: listings.filter((l) => l.availability === "in_stock").length,
+    lastCheckedAt: listings[0]?.lastCheckedAt ?? null,
+    indexable: true,
+    rating: { ...NOT_RATED },
+    description: `${item.varietyName} is a sunflower variety with golden blooms for cutting.`,
+    templateDescription: `${item.varietyName} is a Sunflower variety (Helianthus annuus).`,
+    answer:
+      sellerCount === 0
+        ? `No seller found selling ${item.varietyName} yet.`
+        : `${sellerCount} seller${sellerCount === 1 ? "" : "s"} list${sellerCount === 1 ? "s" : ""} ${item.varietyName}.`,
+    sowingNotes: "Sow 1 inch deep after frost.",
+    heightCm: 150,
+    facts: {
+      color_family: item.colorFamily,
+      pollination: "open_pollinated",
+      height_cm: { min: 150, max: 150 },
+      days_to_bloom: { min: 70, max: 90 },
+    },
+    tags: [],
+    aliases: [],
+    protection: "none_stated",
+    protectionNote: null,
+    contentLevel: "factual",
+    updatedAt: "2026-11-21T00:00:00.000Z",
+    listings,
+    media: structuredClone(item.media),
+  };
+}
 
 /**
  * Blue Ridge's 28 synthesized listings (ids 100–127 join the shared ids 1
@@ -591,8 +665,15 @@ export function shopCatalogState(): FakeCatalogState {
   // (v) The removed seller: known to the status source only — no list row, no detail.
   state.removedSellers = ["shuttered-seed-co"];
 
+  // Slice 8: servable detail reads for every sunflower member (the snapshot
+  // rows below always listed them — without reads their sitemap URLs 404d).
+  for (const v of members) {
+    state.details[v.slug] = sunflowerDetail(v, [BLUE_RIDGE, PRAIRIE, TWO_ROADS, FARAWAY], 5000 + members.indexOf(v) * 4);
+  }
+
   // The snapshot stays coherent with the served lists (one row per new
-  // variety/seller, one listing row per with-seller sunflower variety).
+  // variety/seller, one listing row per with-seller sunflower variety, the
+  // crop + series rows the sitemap segments need).
   const varietyRows = members.map((v, i) => ({ id: 200 + i, slug: v.slug, indexable: true, updated_seq: 300 + i }));
   const sellerRows = extraSellers.map((s, i) => ({
     id: 10 + i,
@@ -609,6 +690,12 @@ export function shopCatalogState(): FakeCatalogState {
     varieties: [...state.snapshot.varieties, ...varietyRows],
     sellers: [...state.snapshot.sellers, ...sellerRows],
     listings: [...state.snapshot.listings, ...listingRows],
+    crops: [...state.snapshot.crops, { id: 3, slug: SUNFLOWER_CROP.slug, updated_seq: 12 }],
+    series: [
+      ...state.snapshot.series,
+      { id: 2, slug: "sunbeam", updated_seq: 13 },
+      { id: 3, slug: "moonshadow", updated_seq: 14 },
+    ],
   };
   return state;
 }

@@ -67,7 +67,7 @@ const TESTBLOOM_COSMOS: ApiPlantRef = {
 const pad2 = (n: number): string => String(n).padStart(2, "0");
 
 /** NN 01–50 → hue (pink/yellow/white cycle) + counts + dates, all deterministic. */
-function testbloomVariety(nn: number): ApiVarietyListItem {
+export function testbloomVariety(nn: number): ApiVarietyListItem {
   const n = pad2(nn);
   const sellerCount = nn % 4;
   return {
@@ -92,7 +92,7 @@ function testbloomVariety(nn: number): ApiVarietyListItem {
 
 const SELLER_TYPES = ["retail", "wholesale", "specialty"] as const;
 
-function testbloomSeller(nn: number): ApiSellerItem {
+export function testbloomSeller(nn: number): ApiSellerItem {
   const n = pad2(nn);
   const region = nn <= 8 ? "OR" : nn <= 16 ? "KS" : "CA";
   const location = region === "OR" ? "Portland, OR" : region === "KS" ? "Lawrence, KS" : "Davis, CA";
@@ -109,7 +109,7 @@ function testbloomSeller(nn: number): ApiSellerItem {
   };
 }
 
-const TESTBLOOM_CROP: ApiCrop = {
+export const TESTBLOOM_CROP: ApiCrop = {
   slug: "testbloom",
   commonName: "Testbloom",
   latinName: "Testbloomia fictitious",
@@ -122,7 +122,7 @@ const TESTBLOOM_CROP: ApiCrop = {
   media: [],
 };
 
-const TESTBLOOM_SERIES: StubSeriesSeed = { slug: "testbloom-cascade", name: "Testbloom Cascade", plantSlug: "testbloom" };
+export const TESTBLOOM_SERIES: StubSeriesSeed = { slug: "testbloom-cascade", name: "Testbloom Cascade", plantSlug: "testbloom" };
 
 /**
  * The 7-variety small-farm-only subset (every member has ≥1 listing — a

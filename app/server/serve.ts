@@ -34,9 +34,12 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { readFile } from "node:fs/promises";
 import { join, extname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { gzipSync } from "node:zlib";
 import { renderPage } from "vike/server";
 import { createCatalogApi } from "../src/data/api";
 import { createDataCache } from "../src/data/cache";
+import { buildErrorReport, own500Html, postErrorReport } from "../src/lib/error-report";
+import { headersFor, mergeHeaders, routeClassFor, shouldCompress } from "../src/server/headers";
 import {
   fetchMe,
   gateNoAccess,
@@ -155,6 +158,58 @@ function socketIp(req: IncomingMessage): string | null {
   return req.socket.remoteAddress ?? null;
 }
 
+/**
+ * Slice 8: merge the edge header set (v2's ported base + the hardening
+ * additions, per route class) UNDER a response's own headers — Vike's
+ * per-route Cache-Control and the relayed backend's headers survive —
+ * and force no-store on every error status.
+ */
+function edged(pathname: string, status: number, own: Record<string, string | string[]>): Record<string, string | string[]> {
+  const contentTypeValue = own["Content-Type"] ?? own["content-type"] ?? null;
+  const contentType = typeof contentTypeValue === "string" ? contentTypeValue : null;
+  const merged = mergeHeaders(headersFor(routeClassFor(pathname), { status, contentType, pathname }), own);
+  if (status >= 400) merged["Cache-Control"] = "no-store";
+  return merged;
+}
+
+function acceptsGzip(req: IncomingMessage): boolean {
+  return req.headers["accept-encoding"]?.includes("gzip") ?? false;
+}
+
+/**
+ * Slice 8: the single responder — edge headers, then gzip for worthwhile
+ * textual bodies (≥1 KB, client accepts it), then the write. HEAD
+ * responses carry headers only.
+ */
+function respond(
+  res: ServerResponse,
+  req: IncomingMessage,
+  pathname: string,
+  status: number,
+  own: Record<string, string | string[]>,
+  body?: string | Buffer,
+): void {
+  const merged = edged(pathname, status, own);
+  const buf = body === undefined ? undefined : Buffer.isBuffer(body) ? body : Buffer.from(body);
+  const headOnly = req.method === "HEAD";
+  const contentTypeValue = merged["Content-Type"] ?? merged["content-type"] ?? null;
+  if (
+    buf &&
+    buf.length >= 1024 &&
+    acceptsGzip(req) &&
+    shouldCompress(typeof contentTypeValue === "string" ? contentTypeValue : null, req.method ?? "GET")
+  ) {
+    const gzipped = gzipSync(buf);
+    merged["Content-Encoding"] = "gzip";
+    delete merged["Content-Length"];
+    res.writeHead(status, merged);
+    res.end(headOnly ? undefined : gzipped);
+    return;
+  }
+  res.writeHead(status, merged);
+  res.end(headOnly ? undefined : buf);
+}
+
 /** v2's /go NO_STORE pair, mirrored on every /go answer the app serves. */
 const GO_NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" };
 
@@ -182,8 +237,23 @@ function scrubAdminFalsePositives(html: string): string {
 }
 
 async function main(): Promise<void> {
-  const apiBaseUrl = (process.env.SEEDS_API_BASE ?? "https://seeds.hues.flowers/api/v1").replace(/\/+$/, "");
+  // Slice 8: `SEEDS_API_BASE=stub:parity` embeds the hermetic parity stub
+  // (the same fixture catalog the verify gate's parity crawl runs
+  // against — no network, no production reads). Lighthouse CI serves
+  // this mode; production never sets it.
+  let apiBaseUrl = (process.env.SEEDS_API_BASE ?? "https://seeds.hues.flowers/api/v1").replace(/\/+$/, "");
+  if (apiBaseUrl === "stub:parity") {
+    const [{ startStubApi }, { parityCatalogState }] = await Promise.all([
+      import("../tests/stub/api-server"),
+      import("../tests/parity/parity-catalog"),
+    ]);
+    const stub = await startStubApi(parityCatalogState());
+    apiBaseUrl = `${stub.url}/api/v1`;
+  }
   const secret = process.env.SEEDS_REVALIDATE_SECRET ?? "";
+  // Slice 8: the error-monitoring sink (client + server capture). Empty =
+  // unconfigured: capture is skipped, serving never waits on it.
+  const errorSinkUrl = process.env.SEEDS_ERROR_SINK_URL ?? "";
   // The Turnstile site key, passed per render via pageContextInit (the
   // Worker-safe path — +data hooks never read process.env directly).
   const siteKey = process.env.SEEDS_TURNSTILE_SITE_KEY ?? null;
@@ -200,8 +270,7 @@ async function main(): Promise<void> {
 
       if (req.method === "POST" && pathname === "/internal/revalidate") {
         if (!secret) {
-          res.writeHead(500, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: "revalidate not configured: set SEEDS_REVALIDATE_SECRET" }));
+          respond(res, req, pathname, 500, { "Content-Type": "application/json" }, JSON.stringify({ error: "revalidate not configured: set SEEDS_REVALIDATE_SECRET" }));
           return;
         }
         const body = await readJsonBody(req);
@@ -226,13 +295,11 @@ async function main(): Promise<void> {
           // though the tag names only its own — e.g. a seller tag drops
           // the variety pages behind its listings).
           for (const p of new Set([...result.paths, ...related])) purgeEdge(edge, p);
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify(result));
+          respond(res, req, pathname, 200, { "Content-Type": "application/json" }, JSON.stringify(result));
         } catch (error) {
           const auth = error instanceof Error && error.name === "RevalidateAuthError";
           const validation = error instanceof Error && error.name === "RevalidateValidationError";
-          res.writeHead(auth ? 401 : validation ? 400 : 500, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: error instanceof Error ? error.message : "revalidate failed" }));
+          respond(res, req, pathname, auth ? 401 : validation ? 400 : 500, { "Content-Type": "application/json" }, JSON.stringify({ error: error instanceof Error ? error.message : "revalidate failed" }));
         }
         return;
       }
@@ -268,8 +335,7 @@ async function main(): Promise<void> {
         const floorBody = await floorRender.httpResponse.getBody();
         const floorHeaders = new Headers(floorRender.httpResponse.headers);
         if (!floorHeaders.has("content-type")) floorHeaders.set("content-type", "text/html; charset=utf-8");
-        res.writeHead(floorRender.httpResponse.statusCode, Object.fromEntries([...floorHeaders.entries()]));
-        res.end(floorBody);
+        respond(res, req, pathname, floorRender.httpResponse.statusCode, Object.fromEntries([...floorHeaders.entries()]), floorBody);
         return;
       }
 
@@ -282,8 +348,7 @@ async function main(): Promise<void> {
         // Bea §1.7). Always no-store.
         const id = go[1]!;
         if (!isGoId(id)) {
-          res.writeHead(404, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
-          res.end("Listing not found");
+          respond(res, req, pathname, 404, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" }, "Listing not found");
           return;
         }
         let out;
@@ -297,23 +362,19 @@ async function main(): Promise<void> {
             socketIp: socketIp(req),
           });
         } catch {
-          res.writeHead(502, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
-          res.end("Bad Gateway");
+          respond(res, req, pathname, 502, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" }, "Bad Gateway");
           return;
         }
         const mapped = mapGoStatus(out.status);
         if (mapped === 302 && typeof out.headers.location === "string" && out.headers.location) {
-          res.writeHead(302, { ...GO_NO_STORE, "Referrer-Policy": "origin", Location: rewriteGoLocation(out.headers.location) });
-          res.end();
+          respond(res, req, pathname, 302, { ...GO_NO_STORE, "Referrer-Policy": "origin", Location: rewriteGoLocation(out.headers.location) });
           return;
         }
         if (mapped === 404 || mapped === 410) {
-          res.writeHead(mapped, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
-          res.end(Buffer.from(out.body));
+          respond(res, req, pathname, mapped, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" }, Buffer.from(out.body));
           return;
         }
-        res.writeHead(502, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
-        res.end("Bad Gateway");
+        respond(res, req, pathname, 502, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" }, "Bad Gateway");
         return;
       }
 
@@ -326,8 +387,7 @@ async function main(): Promise<void> {
       if (adminAction && req.method === "POST") {
         const origin = req.headers.origin;
         if (typeof origin === "string" && origin !== url.origin) {
-          res.writeHead(403, { ...ADMIN_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
-          res.end("Forbidden");
+          respond(res, req, pathname, 403, { ...ADMIN_NO_STORE, "Content-Type": "text/plain; charset=utf-8" }, "Forbidden");
           return;
         }
         const rawBody = await readRawBody(req);
@@ -377,17 +437,14 @@ async function main(): Promise<void> {
           for (const p of new Set([...result.revalidate, ...related])) purgeEdge(edge, p);
         }
         if (result.kind === "redirect") {
-          res.writeHead(303, { ...ADMIN_NO_STORE, Location: result.location, ...(result.setCookie ? { "Set-Cookie": result.setCookie } : {}) });
-          res.end();
+          respond(res, req, pathname, 303, { ...ADMIN_NO_STORE, Location: result.location, ...(result.setCookie ? { "Set-Cookie": result.setCookie } : {}) });
           return;
         }
         if (result.kind === "json") {
-          res.writeHead(result.status, { ...ADMIN_NO_STORE, "Content-Type": "application/json; charset=utf-8", ...(result.setCookie ? { "Set-Cookie": result.setCookie } : {}) });
-          res.end(JSON.stringify(result.body));
+          respond(res, req, pathname, result.status, { ...ADMIN_NO_STORE, "Content-Type": "application/json; charset=utf-8", ...(result.setCookie ? { "Set-Cookie": result.setCookie } : {}) }, JSON.stringify(result.body));
           return;
         }
-        res.writeHead(result.status, { ...ADMIN_NO_STORE, "Content-Type": "text/html; charset=utf-8" });
-        res.end(result.body);
+        respond(res, req, pathname, result.status, { ...ADMIN_NO_STORE, "Content-Type": "text/html; charset=utf-8" }, result.body);
         return;
       }
 
@@ -424,29 +481,25 @@ async function main(): Promise<void> {
             const next = safeAdminNext(url.searchParams.get("next")) ?? "/admin";
             const gate = gateSignIn(me, next);
             if (gate.kind === "redirect") {
-              res.writeHead(303, { ...ADMIN_NO_STORE, Location: gate.location });
-              res.end();
+              respond(res, req, pathname, 303, { ...ADMIN_NO_STORE, Location: gate.location });
               return;
             }
           } else if (pathname === "/admin/sign-in/code") {
             const next = safeAdminNext(url.searchParams.get("next")) ?? "/admin";
             const gate = gateSignIn(me, next);
             if (gate.kind === "redirect") {
-              res.writeHead(303, { ...ADMIN_NO_STORE, Location: gate.location });
-              res.end();
+              respond(res, req, pathname, 303, { ...ADMIN_NO_STORE, Location: gate.location });
               return;
             }
             if (!url.searchParams.get("email")) {
               const to = next === "/admin" ? "/admin/sign-in" : `/admin/sign-in?next=${encodeURIComponent(next)}`;
-              res.writeHead(303, { ...ADMIN_NO_STORE, Location: to });
-              res.end();
+              respond(res, req, pathname, 303, { ...ADMIN_NO_STORE, Location: to });
               return;
             }
           } else if (pathname === "/admin/no-access") {
             const gate = gateNoAccess(me, url.searchParams.get("email"), url.searchParams.get("name"));
             if (gate.kind === "redirect") {
-              res.writeHead(303, { ...ADMIN_NO_STORE, Location: gate.location });
-              res.end();
+              respond(res, req, pathname, 303, { ...ADMIN_NO_STORE, Location: gate.location });
               return;
             }
           } else if (pathname === "/admin/waitlist") {
@@ -454,18 +507,15 @@ async function main(): Promise<void> {
             // (the gate still refuses signed-out + unauthorized first).
             const gate = gateProtected(me, req.url ?? pathname);
             if (gate.kind === "redirect") {
-              res.writeHead(303, { ...ADMIN_NO_STORE, Location: gate.location });
-              res.end();
+              respond(res, req, pathname, 303, { ...ADMIN_NO_STORE, Location: gate.location });
               return;
             }
-            res.writeHead(404, { ...ADMIN_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
-            res.end("Not found");
+            respond(res, req, pathname, 404, { ...ADMIN_NO_STORE, "Content-Type": "text/plain; charset=utf-8" }, "Not found");
             return;
           } else {
             const gate = gateProtected(me, req.url ?? pathname);
             if (gate.kind === "redirect") {
-              res.writeHead(303, { ...ADMIN_NO_STORE, Location: gate.location });
-              res.end();
+              respond(res, req, pathname, 303, { ...ADMIN_NO_STORE, Location: gate.location });
               return;
             }
           }
@@ -487,11 +537,12 @@ async function main(): Promise<void> {
             socketIp: socketIp(req),
           });
         } catch {
-          res.writeHead(502, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: "backend unreachable" }));
+          respond(res, req, pathname, 502, { "Content-Type": "application/json" }, JSON.stringify({ error: "backend unreachable" }));
           return;
         }
-        res.writeHead(out.status, out.headers);
+        // Relayed verbatim (the backend owns bytes AND encoding — no gzip
+        // here), with the edge set merged under for the robots tag + base.
+        res.writeHead(out.status, edged(pathname, out.status, out.headers));
         res.end(Buffer.from(out.body));
         return;
       }
@@ -514,12 +565,76 @@ async function main(): Promise<void> {
             socketIp: socketIp(req),
           });
         } catch {
-          res.writeHead(502, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: "backend unreachable" }));
+          respond(res, req, pathname, 502, { "Content-Type": "application/json" }, JSON.stringify({ error: "backend unreachable" }));
           return;
         }
-        res.writeHead(out.status, out.headers);
+        // Relayed verbatim (the backend owns bytes AND encoding), edge set merged under.
+        res.writeHead(out.status, edged(pathname, out.status, out.headers));
         res.end(Buffer.from(out.body));
+        return;
+      }
+
+      // Slice 8: the uptime hook. 200 + {"ok":true}, never cached, never
+      // indexed. The production Worker serves the identical mount.
+      if (pathname === "/healthz" && (req.method === "GET" || req.method === "HEAD")) {
+        respond(res, req, pathname, 200, { "Content-Type": "application/json; charset=utf-8" }, '{"ok":true}');
+        return;
+      }
+
+      // Slice 8: POST /api/track, ported from v2/app/api/track/route.ts —
+      // the internal view/click beacon. Always 204 (a beacon can never
+      // affect navigation; measurement never fails loudly); anything but
+      // POST is 405. This harness records nothing (it has no D1); the
+      // production Worker validates the same shapes and writes to the
+      // click service (Slice 9 mount behavior, same wire contract).
+      if (pathname === "/api/track") {
+        if (req.method !== "POST") {
+          respond(res, req, pathname, 405, { Allow: "POST", "X-Robots-Tag": "noindex" });
+          return;
+        }
+        const raw = await readRawBody(req);
+        if (raw.length <= 4096) {
+          try {
+            JSON.parse(raw.toString("utf8"));
+          } catch {
+            // Unparseable bodies 204 like everything else.
+          }
+        }
+        respond(res, req, pathname, 204, { "X-Robots-Tag": "noindex", "Cache-Control": "no-store" });
+        return;
+      }
+
+      // Slice 8: POST /api/client-errors — the client ErrorReporter's
+      // same-origin relay. The payload is redacted and forwarded to the
+      // configured sink; the response is always 204 (a beacon, like
+      // /api/track). Anything but POST is 405.
+      if (pathname === "/api/client-errors") {
+        if (req.method !== "POST") {
+          respond(res, req, pathname, 405, { Allow: "POST", "X-Robots-Tag": "noindex" });
+          return;
+        }
+        const raw = await readRawBody(req);
+        if (errorSinkUrl && raw.length > 0 && raw.length <= 8192) {
+          try {
+            const payload = JSON.parse(raw.toString("utf8")) as { name?: unknown; message?: unknown; stack?: unknown; url?: unknown; extra?: unknown };
+            const report = buildErrorReport(
+              {
+                name: typeof payload.name === "string" ? payload.name : "Error",
+                message: typeof payload.message === "string" ? payload.message : "",
+                stack: typeof payload.stack === "string" ? payload.stack : undefined,
+              },
+              {
+                url: typeof payload.url === "string" ? payload.url : "/",
+                userAgent: req.headers["user-agent"],
+                extra: payload.extra,
+              },
+            );
+            await postErrorReport(errorSinkUrl, report);
+          } catch {
+            // Monitoring must not break serving: fall through to the 204.
+          }
+        }
+        respond(res, req, pathname, 204, { "X-Robots-Tag": "noindex", "Cache-Control": "no-store" });
         return;
       }
 
@@ -527,12 +642,10 @@ async function main(): Promise<void> {
       if (og && (req.method === "GET" || req.method === "HEAD")) {
         const result = await serveOgImage(og[1]!, og[2]!, { catalog: api, fontDir: OG_FONTS_DIR });
         if (result.status === 404 || !result.body) {
-          res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-          res.end("Not found");
+          respond(res, req, pathname, 404, { "Content-Type": "text/plain; charset=utf-8" }, "Not found");
           return;
         }
-        res.writeHead(200, result.headers);
-        res.end(req.method === "HEAD" ? undefined : result.body);
+        respond(res, req, pathname, 200, result.headers, result.body);
         return;
       }
 
@@ -541,8 +654,7 @@ async function main(): Promise<void> {
         if (filePath.startsWith(CLIENT_DIST)) {
           try {
             const body = await readFile(filePath);
-            res.writeHead(200, { "Content-Type": CONTENT_TYPES[extname(filePath)] ?? "application/octet-stream" });
-            res.end(req.method === "HEAD" ? undefined : body);
+            respond(res, req, pathname, 200, { "Content-Type": CONTENT_TYPES[extname(filePath)] ?? "application/octet-stream" }, body);
             return;
           } catch {
             // Not a static file — fall through to the renderer.
@@ -562,14 +674,30 @@ async function main(): Promise<void> {
           : detailKey(pathname, url.search)
         : null;
       const hit = key ? edge.get(key) : undefined;
-      if (hit) {
-        res.writeHead(hit.status, Object.fromEntries(hit.headers));
-        res.end(hit.body);
+      if (key && hit) {
+        // Stored raw; re-edged + compressed per request (the merge is idempotent).
+        respond(res, req, key.split("?")[0]!, hit.status, Object.fromEntries(hit.headers), hit.body);
         return;
       }
 
       const pageContext = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, turnstileSiteKey: siteKey, adminApiBase: new URL(apiBaseUrl).origin, requestCookie: req.headers.cookie ?? null });
       const { httpResponse } = pageContext;
+      // Slice 8: server 5xx capture — a Vike error render reports its
+      // redacted failure to the sink (when configured) before serving.
+      if (httpResponse.statusCode >= 500 && errorSinkUrl) {
+        const failure = (pageContext as { errorWhileRendering?: unknown }).errorWhileRendering;
+        const message =
+          failure instanceof Error
+            ? `${failure.name}: ${failure.message}`
+            : `render failed with status ${httpResponse.statusCode}`;
+        await postErrorReport(
+          errorSinkUrl,
+          buildErrorReport(
+            { name: "RenderError", message, stack: failure instanceof Error ? failure.stack : undefined },
+            { url: pathname, userAgent: req.headers["user-agent"] },
+          ),
+        );
+      }
       let body = await httpResponse.getBody();
       const headers = new Headers(httpResponse.headers);
       if (!headers.has("content-type")) headers.set("content-type", "text/html; charset=utf-8");
@@ -580,13 +708,35 @@ async function main(): Promise<void> {
       if (key && httpResponse.statusCode === 200) {
         edge.set(key, { status: 200, headers: headerList, body });
       }
-      res.writeHead(httpResponse.statusCode, Object.fromEntries(headerList));
-      res.end(body);
+      respond(res, req, pathname, httpResponse.statusCode, Object.fromEntries(headerList), body);
     } catch (error) {
-      // A server that cannot render says why, once.
+      // Catastrophic (renderPage itself threw — past Vike's _error page):
+      // report the redacted failure, then serve the app's own 500 page.
       console.error("serve: render failed", error);
-      if (!res.headersSent) res.writeHead(500, { "Content-Type": "text/plain" });
-      res.end("Internal Server Error");
+      if (!res.headersSent) {
+        try {
+          const url = new URL(req.url ?? "/", "http://app");
+          if (errorSinkUrl) {
+            await postErrorReport(
+              errorSinkUrl,
+              buildErrorReport(
+                {
+                  name: "RenderError",
+                  message: error instanceof Error ? `${error.name}: ${error.message}` : "render failed",
+                  stack: error instanceof Error ? error.stack : undefined,
+                },
+                { url: url.pathname, userAgent: req.headers["user-agent"] },
+              ),
+            );
+          }
+          respond(res, req, url.pathname, 500, { "Content-Type": "text/html; charset=utf-8" }, own500Html());
+        } catch {
+          if (!res.headersSent) {
+            res.writeHead(500, { "Content-Type": "text/plain" });
+            res.end("Internal Server Error");
+          }
+        }
+      }
     }
   });
 

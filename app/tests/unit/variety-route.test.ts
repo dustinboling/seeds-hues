@@ -5,7 +5,9 @@
  * (+onBeforeRoute, +data) are thin throws over these; the HTTP suite proves
  * the wire behavior on the built artifact.
  */
+import { createServer } from "node:http";
 import { describe, expect, it } from "vitest";
+import { ApiRequestError, createCatalogApi } from "../../src/data/api";
 import { createDataCache } from "../../src/data/cache";
 import { pathsForTag } from "../../src/data/revalidate";
 import { isSlug, legacySlug, redirectForUrl } from "../../src/server/redirects";
@@ -129,6 +131,33 @@ describe("variety route resolver", () => {
     expect(
       await resolveVarietyRoute(api, cache, { slug: "sweet-pea-old-ransom", search: "?small_farm=yes" }),
     ).toEqual({ kind: "redirect", location: "/variety/sweet-pea-kings-ransom" });
+  });
+
+  it("fails closed when the variety-status mount is unmounted: the lookup throws, the route propagates", async () => {
+    // Until Slice 9 mounts GET /api/internal/variety-status/[slug], the
+    // backend answers 404 (or nothing at all) — a merged slug must never
+    // 404 or redirect-wrong on that fault. The lookup throws (no silent
+    // null) and the route lets the throw propagate (the +data hook's throw
+    // becomes the app's own 500, never a wrong 404/301).
+    const dead = createServer((_req, res) => {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "no such mount" }));
+    });
+    await new Promise<void>((resolve) => dead.listen(0, "127.0.0.1", resolve));
+    const address = dead.address();
+    if (!address || typeof address === "string") throw new Error("dead mount: could not bind");
+    try {
+      const origin = `http://127.0.0.1:${address.port}`;
+      const api = createCatalogApi({ baseUrl: `${origin}/api/v1`, internalBaseUrl: origin, paceMs: 0 });
+      await expect(api.mergedVarietyTarget("sweet-pea-old-ransom")).rejects.toBeInstanceOf(ApiRequestError);
+      const { api: fake, cache } = setup();
+      const faulted = { ...fake, mergedVarietyTarget: () => api.mergedVarietyTarget("sweet-pea-old-ransom") };
+      await expect(resolveVarietyRoute(faulted, cache, { slug: "sweet-pea-old-ransom", search: "" })).rejects.toBeInstanceOf(
+        ApiRequestError,
+      );
+    } finally {
+      await new Promise<void>((resolve, reject) => dead.close((error) => (error ? reject(error) : resolve())));
+    }
   });
 
   it("reads through the shared cache: stale until the variety tag purges, fresh after", async () => {
