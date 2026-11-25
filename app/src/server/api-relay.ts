@@ -3,8 +3,10 @@
  * The app Worker serves pages and handlers itself and reverse-proxies
  * the backend-owned paths (the /api/* form/account reads and writes; the
  * backend's /go/[id]) to the API origin. /go answers are rewritten on
- * relay: the Bea m-3 utm_source rename and the brief's 410→404 mapping.
- * The production Worker mounts the same helpers at Slice 9 (carry).
+ * relay only for the Bea m-3 utm_source rename; statuses pass through
+ * (302, unknown/unpublished/removed-listing 404, removed-seller 410 —
+ * v2's route, Bea §1.7/§7.1). The production Worker mounts the same
+ * helpers at Slice 9 (carry).
  */
 
 /** The backend URL for a backend-owned path: the API origin + path + query. */
@@ -59,13 +61,16 @@ export function rewriteGoLocation(location: string): string {
 }
 
 /**
- * The brief's /go status mapping on relay: 302 passes through;
- * unknown/unpublished (404) and removed (410) both answer 404 — never a
- * redirect. A backend fault is a 502, loudly, not a silent 404.
+ * The /go status mapping on relay: 302 passes through, missing (404) and
+ * gone (410) pass through — v2 answers 410 for a removed seller's links
+ * (Bea §1.7) and 404 for unknown/unpublished/removed listings (the
+ * brief's unknown/removed 404); neither ever redirects. A backend fault
+ * is a 502, loudly, not a silent 404.
  */
-export function mapGoStatus(status: number): 302 | 404 | 502 {
+export function mapGoStatus(status: number): 302 | 404 | 410 | 502 {
   if (status === 302) return 302;
-  if (status === 404 || status === 410) return 404;
+  if (status === 404) return 404;
+  if (status === 410) return 410;
   return 502;
 }
 

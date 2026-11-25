@@ -13,7 +13,7 @@
  *   the /api/v1/* reverse-proxy to the API origin (verbatim status,
  *   headers, and bytes, including the 303-only no-JS form endpoints);
  *   GET /go/[id] (numeric ids relay the backend handler with the m-3
- *   utm_source rename and the brief's 410→404 mapping);
+ *   utm_source rename; 404/410 pass through, v2 + Bea §1.7);
  * - everything else through Vike renderPage with the shared CatalogApi +
  *   DataCache passed via pageContextInit — ONE instance per process, so the
  *   revalidate purge reaches the same cache the +data hooks read (a second
@@ -146,6 +146,9 @@ const GO_NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nof
 async function main(): Promise<void> {
   const apiBaseUrl = (process.env.SEEDS_API_BASE ?? "https://seeds.hues.flowers/api/v1").replace(/\/+$/, "");
   const secret = process.env.SEEDS_REVALIDATE_SECRET ?? "";
+  // The Turnstile site key, passed per render via pageContextInit (the
+  // Worker-safe path — +data hooks never read process.env directly).
+  const siteKey = process.env.SEEDS_TURNSTILE_SITE_KEY ?? null;
   // The process's ONE catalog client + data cache, shared by every render
   // (via pageContextInit) and every revalidate POST (inline purge).
   const api = createCatalogApi({ baseUrl: apiBaseUrl });
@@ -223,7 +226,7 @@ async function main(): Promise<void> {
         const formOutcome = isReport
           ? reportFloorOutcome(result, reportValuesFromSubmission(payload))
           : farmFloorOutcome(result, farmValuesFromSubmission(payload));
-        const floorRender = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, formOutcome });
+        const floorRender = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, formOutcome, turnstileSiteKey: siteKey });
         const floorBody = await floorRender.httpResponse.getBody();
         const floorHeaders = new Headers(floorRender.httpResponse.headers);
         if (!floorHeaders.has("content-type")) floorHeaders.set("content-type", "text/html; charset=utf-8");
@@ -236,8 +239,9 @@ async function main(): Promise<void> {
       if (go && req.method === "GET") {
         // GET /go/[id]: numeric ids relay the backend's handler (anything
         // else 404s without a backend call — v2's route rule), the
-        // retired utm_source is renamed on relay (Bea m-3), and removed
-        // (410) maps to 404 per the brief. Always no-store.
+        // retired utm_source is renamed on relay (Bea m-3), and the
+        // backend's 404/410 pass through (removed seller stays 410, v2 +
+        // Bea §1.7). Always no-store.
         const id = go[1]!;
         if (!isGoId(id)) {
           res.writeHead(404, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
@@ -265,8 +269,8 @@ async function main(): Promise<void> {
           res.end();
           return;
         }
-        if (mapped === 404) {
-          res.writeHead(404, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
+        if (mapped === 404 || mapped === 410) {
+          res.writeHead(mapped, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
           res.end(Buffer.from(out.body));
           return;
         }
@@ -347,7 +351,7 @@ async function main(): Promise<void> {
         return;
       }
 
-      const pageContext = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache });
+      const pageContext = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, turnstileSiteKey: siteKey });
       const { httpResponse } = pageContext;
       const body = await httpResponse.getBody();
       const headers = new Headers(httpResponse.headers);

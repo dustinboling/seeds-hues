@@ -60,7 +60,8 @@ export interface FormsWaitlistEntry {
 }
 
 export interface FormsGoListing {
-  status: "active" | "removed" | "unpublished";
+  /** Listing-level removal 404s; seller-level removal 410s (v2's route). */
+  status: "active" | "removed" | "seller_removed" | "unpublished";
   target: string;
 }
 
@@ -160,13 +161,15 @@ export function fakeFormsState(): FormsState {
     },
     turnstileSiteKey: "test-site-key",
     goListings: {
-      // Fixture (iii): active listing 1 -> Blue Ridge product URL; 2 is
-      // removed (the backend 410s — the app maps it to 404 per the brief);
+      // Fixture (iii): active listing 1 -> Blue Ridge product URL; 2 is a
+      // removed listing (backend 404s — the brief's unknown/removed 404);
+      // 5 belongs to a removed seller (backend 410s — v2 + Bea §1.7);
       // 999 is unknown (backend 404s).
       1: { status: "active", target: "https://shop.example.com/blue-ridge/kings-ransom" },
       2: { status: "removed", target: "https://shop.example.com/prairie/kings-ransom" },
       3: { status: "active", target: "https://shop.example.com/blue-ridge/kings-ransom?color=red" },
       4: { status: "active", target: "https://shop.example.com/blue-ridge/kings-ransom?utm_source=newsletter" },
+      5: { status: "seller_removed", target: "https://shop.example.com/shuttered/kings-ransom" },
       7: { status: "unpublished", target: "https://shop.example.com/prairie/draft" },
     },
     clicks: [],

@@ -1246,7 +1246,7 @@ function routeFormsGet(url: URL, req: IncomingMessage, send: SendJson, sendRaw: 
   // The backend's own /go/[id] (v2's route, stub-faithful): numeric ids
   // only, logging that never blocks the redirect, 302 with the backend's
   // stale utm_source (the app applies the m-3 rename on relay), 404 for
-  // unknown/unpublished, 410 for removed (the app maps it to 404).
+  // unknown/unpublished/removed listings, 410 for a removed seller.
   const go = /^\/go\/([^/]+)$/.exec(path);
   if (go) {
     const id = go[1]!;
@@ -1255,11 +1255,11 @@ function routeFormsGet(url: URL, req: IncomingMessage, send: SendJson, sendRaw: 
       return true;
     }
     const listing = state.forms.goListings[Number(id)];
-    if (!listing || listing.status === "unpublished") {
+    if (!listing || listing.status === "unpublished" || listing.status === "removed") {
       sendRaw(404, { ...GO_HEADERS, "Content-Type": "text/plain; charset=utf-8" }, "Listing not found");
       return true;
     }
-    if (listing.status === "removed") {
+    if (listing.status === "seller_removed") {
       sendRaw(410, { ...GO_HEADERS, "Content-Type": "text/plain; charset=utf-8" }, "This seller asked to be removed from the directory.");
       return true;
     }

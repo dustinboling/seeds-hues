@@ -67,11 +67,12 @@ describe("rewriteGoLocation (Bea m-3, applied on relay)", () => {
 });
 
 describe("mapGoStatus", () => {
-  it("passes 302 through, maps gone/missing to 404, backend faults to 502", () => {
+  it("passes 302/404/410 through (gone stays gone, v2 + Bea §1.7), backend faults to 502", () => {
     expect(mapGoStatus(302)).toBe(302);
     expect(mapGoStatus(404)).toBe(404);
-    // The brief's explicit mapping: removed listings 404 (never redirect).
-    expect(mapGoStatus(410)).toBe(404);
+    // A removed seller's /go/ link 410s — the brief's unknown/removed-listing
+    // 404 is the listing-level case; neither ever redirects.
+    expect(mapGoStatus(410)).toBe(410);
     expect(mapGoStatus(500)).toBe(502);
   });
 });
