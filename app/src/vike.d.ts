@@ -15,6 +15,10 @@ declare global {
       turnstileSiteKey?: string | null;
       /** A floor POST's outcome, passed to the POST render only (report/farm forms). */
       formOutcome?: unknown;
+      /** The admin service origin (the backend's internal admin endpoints), passed per render. */
+      adminApiBase?: string;
+      /** The request's Cookie header, passed per render for the admin gate. */
+      requestCookie?: string | null;
     }
   }
 }

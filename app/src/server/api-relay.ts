@@ -31,6 +31,8 @@ export function forwardHeaders(headers: Headers): Record<string, string> {
     "x-client",
     "x-forwarded-for",
     "cf-connecting-ip",
+    // Slice 7: the key-authenticated admin API reads its credential here.
+    "x-admin-key",
   ]);
   const out: Record<string, string> = {};
   headers.forEach((value, key) => {
