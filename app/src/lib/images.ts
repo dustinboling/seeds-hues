@@ -1,7 +1,9 @@
 /**
  * Image URLs for every rendered illustration (R2 + Cloudflare Image
- * Transformations). Ported verbatim from v2/lib/images.ts; the manifest it
- * reads is synced from v2 by scripts/sync-image-keys.mjs (freshness-tested).
+ * Transformations). Ported from v2/lib/images.ts; the manifest it reads is
+ * synced from v2 by scripts/sync-image-keys.mjs in a closed-world encoding
+ * (png twins + overrides — behavior-identical, half the client bytes) and
+ * pinned equivalent by tests/unit/image-manifest.test.ts.
  *
  * Stored paths stay canonical everywhere else; only rendering converts them,
  * here. Each path maps to ONE full-quality original in R2 bucket
@@ -11,7 +13,7 @@
  *
  * fit=scale-down ONLY: illustrations always show WHOLE with aspect preserved.
  */
-import { IMAGE_KEYS } from "./images-data";
+import { KEY_OVERRIDES, PNG_TWIN_PATHS } from "./images-data";
 
 /** Public origin of the image bucket (our own zone; read-only public serving). */
 export const IMAGE_ORIGIN = "https://images.seeds.hues.flowers";
@@ -32,14 +34,22 @@ function assertStoredPath(path: string): void {
 }
 
 /**
- * R2 key of the original for a stored path: the manifest lookup, else the
- * path without its leading "/" (identity) for unmapped paths. Throws on
- * anything that is not a root-relative public path, so a bad value can never
- * be turned into a fetch through our image zone.
+ * R2 key of the original for a stored path: the override table first, then
+ * the .png twin for listed .webp paths, else the path without its leading
+ * "/" (identity) for unmapped paths. Throws on anything that is not a
+ * root-relative public path, so a bad value can never be turned into a
+ * fetch through our image zone.
+ *
+ * Closed-world encoding of v2's manifest (see images-data.ts): unlisted
+ * .webp paths resolve to identity, never to a guessed .png twin — only
+ * listed paths map. Resolves identically to v2's table for every v2
+ * entry (pinned by tests/unit/image-manifest.test.ts).
  */
 export function originalKey(path: string): string {
   assertStoredPath(path);
-  return Object.hasOwn(IMAGE_KEYS, path) ? IMAGE_KEYS[path]! : path.slice(1);
+  if (Object.hasOwn(KEY_OVERRIDES, path)) return KEY_OVERRIDES[path]!;
+  if (path.endsWith(".webp") && PNG_TWIN_PATHS.has(path)) return `${path.slice(1, -".webp".length)}.png`;
+  return path.slice(1);
 }
 
 const isSvg = (key: string): boolean => key.toLowerCase().endsWith(".svg");
