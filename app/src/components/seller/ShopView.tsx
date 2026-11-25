@@ -15,7 +15,6 @@ import { Breadcrumbs } from "../Breadcrumbs";
 import { RatingDisplay } from "../RatingDisplay";
 import { JsonLd } from "../../seo/JsonLd";
 import { breadcrumbJsonLd, itemListJsonLd, organizationJsonLd } from "../../seo/jsonld";
-import type { ApiSellerDetail } from "../../data/types";
 import { sellerTypeLabel } from "../../lib/format";
 import { stateByCode } from "../../lib/states";
 import { statePlateFor } from "../../lib/state-plates";

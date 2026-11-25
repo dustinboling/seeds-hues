@@ -72,7 +72,7 @@ export type ShopRouteResult =
       total: number;
       page: number;
       pages: number;
-      /** Filters/search/sort shape the view (noindex + clean canonical). */
+      /** Filters/search shape the view (noindex + clean canonical). ?sort= is an ordering, not state. */
       stated: boolean;
       /** The global crop vocabulary (?crop= validity + remover labels). */
       crops: ShopCrop[];
@@ -117,7 +117,7 @@ export async function resolveShopRoute(
     total,
     page,
     pages: totalPages(total, PAGE_SIZE),
-    stated: hasActiveShopState(state) || sp.sort !== undefined,
+    stated: hasActiveShopState(state),
     crops: crops.map((c) => ({ slug: c.slug, commonName: c.commonName })),
   };
 }

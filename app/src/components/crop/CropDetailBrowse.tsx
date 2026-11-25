@@ -87,7 +87,7 @@ export function CropDetailBrowse({
     titleFor: (_state, page) => cropDetailDocumentTitle({ commonName, latinName, varietyCount, varietiesWithSellers }, page),
     navigateFn,
   });
-  const { hydrated, committed, pending, pendingCue, shown, select } = browse;
+  const { hydrated, pending, pendingCue, shown, select } = browse;
   const seriesName = (s: string): string => series.find((r) => r.slug === s)?.name ?? titleCaseTag(s);
   const pages = totalPages(initial.total);
   const short = shortCommonName(commonName);

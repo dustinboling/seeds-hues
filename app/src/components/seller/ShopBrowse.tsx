@@ -54,7 +54,6 @@ import {
   shopBrowseHref,
   shopCountFor,
   shopCountLine,
-  shopCountsFor,
   shopCountStateFor,
   shopCropOptions,
   shopCropsFor,

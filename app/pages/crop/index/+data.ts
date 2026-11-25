@@ -1,4 +1,4 @@
-import { loadCropIndexData } from "../../src/data/load";
+import { loadCropIndexData } from "../../../src/data/load";
 
 // https://vike.dev/data — the crop list renders from the live API through the
 // shared data cache (the "crops" entry, purged by variety/seller/crop tags).

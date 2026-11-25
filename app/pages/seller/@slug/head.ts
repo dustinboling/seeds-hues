@@ -6,10 +6,12 @@ import { ogImage, pageHead, sellerDescription, sellerTitle, type HeadTags } from
 /**
  * The shop page's head tags (ported from v2/app/seller/[slug]/page.tsx
  * generateMetadata): the seller title + page suffix, the sentence-composed
- * description (m-5), the generated seller card. Filtered, searched, and
- * sorted views are noindexed with the canonical set to the unfiltered shop
- * URL; the unfiltered shop keeps its indexing. The title never changes
- * with state.
+ * description (m-5), the generated seller card. Filtered and searched
+ * views are noindexed with the canonical set to the unfiltered shop URL;
+ * the unfiltered shop keeps its indexing. ?sort= is an ordering, not a
+ * filter group, so sort-only views stay indexable with a sort-free
+ * canonical (the /variety discipline; robots.txt carries the ?sort=
+ * disallow). The title never changes with state.
  */
 export function shopHead(seller: ApiSellerDetail, page: number, stated: boolean): HeadTags {
   return pageHead({
