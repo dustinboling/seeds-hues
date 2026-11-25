@@ -3,7 +3,7 @@
  * Regenerate with `npm run images:data`.
  *
  * Stored image path (media.r2_key / the app's asset tables) → key of the full-quality original in
- * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1062 entries.
+ * R2 bucket seeds-hues-images, served at images.seeds.hues.flowers. 1076 entries.
  * Read through lib/images.ts only.
  */
 export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
@@ -694,6 +694,13 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-chantilly-velvet.webp": "artwork/snapdragon-chantilly-velvet.png",
   "/artwork/snapdragon-chantilly-white.webp": "artwork/snapdragon-chantilly-white.png",
   "/artwork/snapdragon-chantilly-yellow.webp": "artwork/snapdragon-chantilly-yellow.png",
+  "/artwork/snapdragon-cool-crimson.webp": "artwork/snapdragon-cool-crimson.png",
+  "/artwork/snapdragon-cool-mix.webp": "artwork/snapdragon-cool-mix.png",
+  "/artwork/snapdragon-cool-orange.webp": "artwork/snapdragon-cool-orange.png",
+  "/artwork/snapdragon-cool-pink.webp": "artwork/snapdragon-cool-pink.png",
+  "/artwork/snapdragon-cool-rose.webp": "artwork/snapdragon-cool-rose.png",
+  "/artwork/snapdragon-cool-white.webp": "artwork/snapdragon-cool-white.png",
+  "/artwork/snapdragon-cool-yellow.webp": "artwork/snapdragon-cool-yellow.png",
   "/artwork/snapdragon-costa-apricot.webp": "artwork/snapdragon-costa-apricot.png",
   "/artwork/snapdragon-costa-silver.webp": "artwork/snapdragon-costa-silver.png",
   "/artwork/snapdragon-costa-summer-lavender.webp": "artwork/snapdragon-costa-summer-lavender.png",
@@ -713,6 +720,13 @@ export const IMAGE_KEYS: Readonly<Record<string, string>> = Object.freeze({
   "/artwork/snapdragon-maryland-lavender.webp": "artwork/snapdragon-maryland-lavender.png",
   "/artwork/snapdragon-maryland-mix.webp": "artwork/snapdragon-maryland-mix.png",
   "/artwork/snapdragon-maryland-orange.webp": "artwork/snapdragon-maryland-orange.png",
+  "/artwork/snapdragon-maryland-plumblossom.webp": "artwork/snapdragon-maryland-plumblossom.png",
+  "/artwork/snapdragon-maryland-red.webp": "artwork/snapdragon-maryland-red.png",
+  "/artwork/snapdragon-maryland-rose.webp": "artwork/snapdragon-maryland-rose.png",
+  "/artwork/snapdragon-maryland-royal.webp": "artwork/snapdragon-maryland-royal.png",
+  "/artwork/snapdragon-maryland-shell-pink.webp": "artwork/snapdragon-maryland-shell-pink.png",
+  "/artwork/snapdragon-maryland-true-pink.webp": "artwork/snapdragon-maryland-true-pink.png",
+  "/artwork/snapdragon-maryland-yosemite-pink.webp": "artwork/snapdragon-maryland-yosemite-pink.png",
   "/artwork/snapdragon-monaco-orange.webp": "artwork/snapdragon-monaco-orange.png",
   "/artwork/snapdragon-opus-early-bronze.webp": "artwork/snapdragon-opus-early-bronze.png",
   "/artwork/snapdragon-orange-wonder.webp": "artwork/snapdragon-orange-wonder.png",

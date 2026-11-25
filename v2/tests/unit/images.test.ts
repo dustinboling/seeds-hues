@@ -123,7 +123,7 @@ describe("lib/images imageSrcSet", () => {
 });
 
 describe("lib/images-data (generated)", () => {
-  it("matches the migration manifest's shape: 1062 entries, valid paths and keys", () => {
+  it("matches the migration manifest's shape: 1076 entries, valid paths and keys", () => {
     const entries = Object.entries(IMAGE_KEYS);
     // 759 at the 2026-11-18 migration; +1 for divider motif B (2026-11-19);
     // +10 for the crop-painting redraw Batch 1 + Snapdragon/Silene v2 (2026-11-19);
@@ -302,7 +302,14 @@ describe("lib/images-data (generated)", () => {
     // product photographs saved into batch-25/references/)
     // and Quinn's re-check CONFIRMED both (2026-11-23).
     // 'Luminosity Mix' remains held (name provenance).
-    expect(entries).toHaveLength(1062);
+    // +14 for the scout-addition snapdragon batches 37 + 38:
+    // Snapdragon Maryland Plumblossom / Red / Rose / Royal /
+    // Shell Pink / True Pink / Yosemite Pink (Batch 37) and
+    // Cool Crimson / Mix / Orange / Pink / Rose / White /
+    // Yellow (Batch 38) — the varieties the scout added
+    // 2026-11-23/24, painted under the standing scout pairing
+    // (2026-11-24, Quinn PASS WITH NOTES both batches).
+    expect(entries).toHaveLength(1076);
     expect(IMAGE_KEYS["/ornaments/motif-divider-b.webp"]).toBe("ornaments/motif-divider-b.webp");
     for (const [path, key] of entries) {
       expect(path).toMatch(/^\/(?:artwork|theme|ornaments)\/[a-z0-9/._-]+\.(?:webp|svg)$/);
