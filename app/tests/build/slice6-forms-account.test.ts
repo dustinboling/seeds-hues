@@ -256,8 +256,9 @@ describe("/report SSR (raw HTML, no JavaScript)", () => {
     expect(html).toContain("Correct, claim or remove");
     expect(html).toContain("within 48 hours");
     expect(html).toContain('href="/about/data"');
-    // A real form posting form-encoded to the page itself.
-    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/report"/);
+    // A real form posting form-encoded to the page itself. Either
+    // attribute order: React 19 serializes action before method.
+    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/report"|<form[^>]*action="\/report"[^>]*method="post"/);
     // The three intents v2 offers, the About select, and every field named.
     expect(html).toContain('value="correct"');
     expect(html).toContain('value="claim"');
@@ -398,7 +399,7 @@ describe("/add-your-farm SSR (raw HTML, no JavaScript)", () => {
     const html = decodeHtml((await get("/add-your-farm")).text);
     expect(html).toContain("Add Your Farm");
     expect(html).toContain("reviewed by a person");
-    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/add-your-farm"/);
+    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/add-your-farm"|<form[^>]*action="\/add-your-farm"[^>]*method="post"/);
     for (const name of [
       "farm_name",
       "contact_name",
@@ -570,7 +571,7 @@ describe("waitlist floor states on the zero-seller variety page", () => {
     expect(canonicalOf(html)).toBe(`${SITE}${ZERO}`);
     expect(html).toContain("Check your email for a code");
     expect(html).toContain("You're on the waiting list for Lonely Bloom.");
-    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/api\/v1\/account\/waitlist\/verify-form"/);
+    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/api\/v1\/account\/waitlist\/verify-form"|<form[^>]*action="\/api\/v1\/account\/waitlist\/verify-form"[^>]*method="post"/);
     expect(html).toContain('name="code"');
     expect(html).toContain("It works for 30 minutes.");
     expectHeadExclusivity(res.text);
@@ -610,7 +611,7 @@ describe("waitlist floor states on the zero-seller variety page", () => {
   it("a bogus floor value degrades to the resting floor (still noindexed — transient state)", async () => {
     const html = decodeHtml((await get(`${ZERO}?waitlist=bogus`)).text);
     expect(meta(html, "name", "robots")).toBe("noindex, follow");
-    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/api\/v1\/account\/waitlist\/join-form"/);
+    expect(html).toMatch(/<form[^>]*method="post"[^>]*action="\/api\/v1\/account\/waitlist\/join-form"|<form[^>]*action="\/api\/v1\/account\/waitlist\/join-form"[^>]*method="post"/);
     expect(html).toContain("Join the waiting list");
   });
 

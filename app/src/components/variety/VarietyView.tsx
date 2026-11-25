@@ -18,6 +18,7 @@ import { VarietyGrid } from "./VarietyCard";
 import { VarietyHeroImage } from "./VarietyHeroImage";
 import { ViewBeacon } from "./ViewBeacon";
 import { WaitlistBlock } from "./WaitlistBlock";
+import { RESTING_FLOOR, type FloorState } from "../../lib/waitlist-floor";
 
 /**
  * The variety detail page, shared by its two SSR forms:
@@ -58,10 +59,13 @@ export function VarietyView({
   detail: v,
   siblings,
   smallFarmOnly,
+  floor = RESTING_FLOOR,
 }: {
   detail: ApiVarietyDetail;
   siblings: ApiVarietyListItem[];
   smallFarmOnly: boolean;
+  /** The no-JS waitlist floor state (?waitlist=…), resting when absent. */
+  floor?: FloorState;
 }) {
   const common = shortCommonName(v.plant.commonName);
   const label = `${v.varietyName} ${common}`;
@@ -169,7 +173,7 @@ export function VarietyView({
               <a href={`/crop/${v.plant.slug}`}>{common.toLowerCase()} varieties</a>. Know a seller who
               sells it? <a href={`/report?type=correct&variety=${v.slug}`}>Tell us</a>.
             </p>
-            <WaitlistBlock varietySlug={v.slug} varietyName={v.varietyName} />
+            <WaitlistBlock varietySlug={v.slug} varietyName={v.varietyName} floor={floor} />
             </>
           ) : (
             <>

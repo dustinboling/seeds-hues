@@ -5,7 +5,9 @@
  * (plural legacy paths, legacy ?s= slugs) and the ?page=1 rule for the two
  * index routes; Slice 5 adds the crop plural rows (/plants, /categories)
  * and the detail-template ?page=1 rows (/seller/[slug], /crop/[slug],
- * /state/[slug] — series has no pagination, so no row). Pure URL function
+ * /state/[slug] — series has no pagination, so no row); Slice 6 adds the
+ * internal /variety/[slug]/waitlist row (back to the public URL, query
+ * intact). Pure URL function
  * — no data, so the Vike +onBeforeRoute hook throws these before routing,
  * and the production edge mirrors the same rows. Every permanent redirect
  * this tree ships is 301, one hop (Bea §8.4's recommendation, matching the
@@ -60,6 +62,14 @@ export function redirectForUrl(url: string): string | null {
     const params = new URLSearchParams(parsed.search);
     params.set("small_farm", "true");
     return `/variety/${internal[1]}?${params.toString()}`;
+  }
+  const waitlistInternal = /^\/variety\/([^/]+)\/waitlist$/.exec(pathname);
+  if (waitlistInternal && isSlug(waitlistInternal[1]!)) {
+    // Slice 6: v2's middleware semantics for the internal floor path,
+    // ported to the uniform 301 — back to the public URL, query intact
+    // (the floor state rides the query, never the path). One hop: the
+    // target carries no /waitlist segment, so this row cannot refire.
+    return parsed.search ? `/variety/${waitlistInternal[1]}${parsed.search}` : `/variety/${waitlistInternal[1]}`;
   }
   return null;
 }
