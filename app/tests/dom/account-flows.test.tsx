@@ -230,6 +230,38 @@ describe("AccountPage session + panel", () => {
     expect(calls.filter((c) => c.url === "/api/v1/account/sign-out")).toHaveLength(1);
   });
 
+  it("phone-less end-to-end: code request → verify → the signed-in panel with its waitlists", async () => {
+    mockTurnstile();
+    const { calls } = mockFetch({
+      "/api/v1/account/me": [
+        { status: 200, json: { data: { signed_in: false } } },
+        { status: 200, json: { data: { signed_in: true, user: WILLA } } },
+      ],
+      "/api/v1/account/sign-in/code": { status: 200, json: { data: { delivery: "sent" } } },
+      "/api/v1/account/sign-in/verify": { status: 200, json: { data: { next: "/account" } } },
+      "/api/v1/account/alerts": { status: 200, json: { data: ALERTS } },
+    });
+    render(<AccountPage siteKey="test-site-key" deleted={false} />);
+    await flushWidget();
+    await screen.findByText("Already have one? Sign in");
+
+    fireEvent.change(field("signin-email"), { target: { value: "phoneless@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Email me a code instead" }));
+    await screen.findByText("Check your email for a code");
+    expect(calls.filter((c) => c.url === "/api/v1/account/sign-in/code")[0]!.body).toMatchObject({ email: "phoneless@example.com" });
+
+    fireEvent.change(field("signin-code-code"), { target: { value: "654321" } });
+    fireEvent.submit(field("signin-code-code").closest("form")!);
+    await screen.findByText("Hello, Willa");
+    expect(calls.filter((c) => c.url === "/api/v1/account/sign-in/verify")[0]!.body).toEqual({
+      email: "phoneless@example.com",
+      code: "654321",
+    });
+    expect(screen.getByText("Found")).toBeDefined();
+    expect(screen.getByText("Waiting · active")).toBeDefined();
+    expect(screen.getByText("Held")).toBeDefined();
+  });
+
   it("the session persists across a client-side route change (remount, no reload)", async () => {
     mockTurnstile();
     const { calls, fn } = mockFetch({

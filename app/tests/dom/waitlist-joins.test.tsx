@@ -147,6 +147,30 @@ describe("WaitlistBlock join states", () => {
     expect(verifies[0]!.body).toEqual({ email: "willa@example.com", code: "123456" });
   });
 
+  it("a join rejection renders the mapped errors with the typed values preserved", async () => {
+    mockTurnstile();
+    mockFetch({
+      "/api/v1/account/waitlist": {
+        status: 200,
+        json: { data: { signed_in: false, variety: VARIETY, on_list: false, turnstile_site_key: "test-site-key" } },
+      },
+      "/api/v1/account": { status: 400, json: { code: "validation_error", detail: "email: enter a valid email address; phone: enter your phone number" } },
+    });
+    render(<WaitlistBlock varietySlug={VARIETY.slug} varietyName={VARIETY.name} />);
+    await screen.findByText(/A quick check from Cloudflare/);
+    await flushWidget();
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "bad" } });
+    fireEvent.click(screen.getByLabelText(/Email and text/));
+    fireEvent.change(screen.getByLabelText("Phone number"), { target: { value: "123" } });
+    fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
+
+    await screen.findByText("Some fields need attention before joining the waiting list.");
+    expect(screen.getAllByText("Enter a valid email address.")).toHaveLength(2);
+    expect(screen.getAllByText("Enter your phone number as a 10-digit US number.")).toHaveLength(2);
+    expect((screen.getByLabelText("Email") as HTMLInputElement).value).toBe("bad");
+    expect((screen.getByLabelText("Phone number") as HTMLInputElement).value).toBe("123");
+  });
+
   it("a join that races a listing states the good news (the API's message, verbatim)", async () => {
     mockTurnstile();
     const race = "Good news — Lonely Bloom is already listed by a seller. Reload the page to see where to buy it.";

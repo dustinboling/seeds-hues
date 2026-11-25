@@ -802,11 +802,21 @@ describe("/go/[id] handler", () => {
     }
   });
 
-  it("a removed listing 404s (the brief's mapping; the backend answers 410)", async () => {
+  it("a removed listing 404s (the brief's unknown/removed 404 — never a redirect)", async () => {
     const res = await get("/go/2", undefined, false);
     expect(res.status).toBe(404);
     expect(res.headers.get("location")).toBeNull();
     expect(res.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(res.text).toContain("Listing not found");
+  });
+
+  it("a removed seller's listing 410s (v2-faithful, Bea §1.7 — never a redirect)", async () => {
+    const res = await get("/go/5", undefined, false);
+    expect(res.status).toBe(410);
+    expect(res.headers.get("location")).toBeNull();
+    expect(res.headers.get("cache-control")).toBe("no-store");
+    expect(res.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(res.text).toContain("This seller asked to be removed from the directory.");
   });
 
   it("outbound shop links keep the nofollow/noopener posture", async () => {
