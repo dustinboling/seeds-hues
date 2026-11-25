@@ -1,0 +1,74 @@
+# Lighthouse CI — the Seed Directory Vike app's lab performance gate (Slice 8).
+#
+# This workflow is Slice 8's one sanctioned .github/workflows addition: it
+# builds the app in app/ against the hermetic parity dataset (the same
+# fixture catalog the verify gate's parity crawl runs against — no network,
+# no production reads), serves it locally, and asserts the plan's
+# thresholds (ARCHITECTURE-BRIEF.md §6 + Bea §1.8: CLS ≤ 0.1, TBT ≤ 200 ms
+# as the INP lab proxy, ≤ 150 KB transferred JS per route — asserted at
+# plan strength — plus the lab-calibrated LCP ≤ 6 s regression guard and
+# zero console errors; see performance-budget.json "lhci" for why the
+# plan's 2.5 s field LCP and the raw 150 KB figure calibrate in the lab).
+# A budget failure fails this workflow, and the Slice 8 gate requires it
+# green. The app's own verify suite enforces the same budgets statically
+# (tests/build/slice8-hardening.test.ts); this workflow enforces them in a
+# real Chromium.
+#
+# Nothing here deploys. The live site (v2/) is untouched.
+#
+# Provenance: the Slice 8 builder's original run (45575526385) authored
+# this workflow inside its tree, but the bench's GitHub App token cannot
+# push workflow files, so the run's first WIP checkpoint was rejected and
+# the tree was lost with the runner. This file was landed on main by the
+# lane coordinator under the workflow-scoped credential (the R0/CI-fix
+# precedent), authored to the builder's specification as recorded in its
+# run log; the header above is the builder's own text.
+
+name: Lighthouse CI
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - ".github/workflows/lighthouse.yml"
+      - "app/.lighthouserc.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lhci:
+    name: Lighthouse CI (app/)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install app dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build the app (client + server)
+        working-directory: app
+        run: |
+          npm run build
+          npm run build:server
+
+      - name: Run Lighthouse CI
+        working-directory: app
+        env:
+          PORT: "4173"
+        run: npx --yes @lhci/cli@0.14.x autorun --config=.lighthouserc.json

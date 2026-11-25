@@ -45,3 +45,20 @@ State the red result in your summary.
 - The robots diff result; the accessibility pass result (failures fixed vs recorded).
 - The C4 statement (above).
 - Anything missing and why — plainly. Name explicitly what remains for Slice 9 (the three internal mounts — /api/internal/variety-status/[slug], /api/internal/unsubscribe/describe, /api/internal/admin/* — are Slice 9 cutover work, NOT this slice; confirm the app expects them and degrades as the gates recorded until they are mounted).
+
+---
+
+## REPAIR ADDENDUM (coordinator, 2026-11-24 — read before starting; this dispatch is a fresh build, not a continuation)
+
+The first Slice 8 run (45575526385) built nearly the whole slice, then its first WIP checkpoint push was REJECTED because the tree contained `.github/workflows/lighthouse.yml` and the bench's GitHub App token cannot push workflow files. The runner was discarded; the tree is lost. Two consequences for you:
+
+1. **`.github/workflows/lighthouse.yml` and `app/.lighthouserc.json` already exist on main** — landed by the lane coordinator under the workflow-scoped credential (the R0/CI-fix precedent), authored to the first builder's recorded specification. **Do NOT create, modify, or delete any `.github/workflows/*` file** — any workflow file in your tree will be rejected at checkpoint and will kill your run the same way. Your job includes making the Lighthouse workflow GREEN: calibrate `app/.lighthouserc.json` and the app-side serve/dataset wiring (both outside `.github/workflows/`) as needed, and report the workflow's first-run result in your summary.
+2. The first builder's interim status (from its run log) is your starting map — its design decisions were sound and its finds were real; re-derive them in your tree rather than starting from zero:
+   - Step-1 red was recorded (8 files: 6 red — 5 collection errors + 4/4 inventory assertions failing; 2 green already-shipped a11y pins), then implemented to green.
+   - `src/server/headers.ts` + full `serve.ts` wiring (v2 header set verbatim, HSTS, CSP with Turnstile/analytics/CDN allowlists + SW-script hash, stricter admin/API, `/sw.js` pair, case-insensitive merge, gzip, `/healthz`).
+   - `src/lib/error-report.ts` (PII/price/account redaction, bounded) + client ErrorReporter + server 5xx capture; own 404/410/500 pages with correct statuses, proven over HTTP including sink delivery.
+   - `performance-budget.json` (150 KB gzip JS uniform per brief §6, 200 KB HTML, LCP/CLS/TBT) enforced in the suite.
+   - `structured-data-inventory.md` at repo root: exact match vs Bea §1.1 (+ ruled §11 logo/sameAs).
+   - Parity crawl: 145 URLs (111×200 / 18×301 / 1×302 / 2×303 / 12×404 / 1×410), snapshot- + rule-verified; 3 seeded divergences caught then restored. Report at `app/parity-reports/slice8-parity-report.md`.
+   - Real finds fixed app-side: `/offline` ported (was 404), 30 sunflower detail pages added (were sitemap 404s), `/api/track` relay (was a real-browser 404).
+   Your summary must state your own starting-red and final counts as usual — the figures above are the prior run's, not yours.
