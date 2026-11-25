@@ -18,7 +18,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { startStubApi, type StubApi } from "../stub/api-server";
 import { fakeCatalogState } from "../unit/fake-catalog";
 import type { FormsEndpointKey } from "../unit/forms-fixtures";
-import { findPriceViolations, stripScriptElements } from "../unit/price-guard";
+import { findPriceViolations } from "../unit/price-guard";
 
 const APP_ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const SITE = "https://seeds.hues.flowers";
@@ -34,9 +34,6 @@ const decodeHtml = (html: string): string =>
     .replace(/&#x27;/g, "'")
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, "&");
-
-/** Visible text only: no scripts, no tags, entities decoded. */
-const visibleText = (html: string): string => decodeHtml(stripScriptElements(html).replace(/<[^>]*>/g, " "));
 
 const countOf = (html: string, pattern: RegExp): number => html.match(pattern)?.length ?? 0;
 

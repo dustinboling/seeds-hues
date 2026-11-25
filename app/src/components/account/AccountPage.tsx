@@ -22,18 +22,23 @@ export function AccountPage({ siteKey, deleted: deletedInitial }: { siteKey: str
   const [session, setSession] = useState<Session>({ status: "unknown" });
   const [deleted, setDeleted] = useState(deletedInitial);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (): Promise<Session> => {
     const me = await callApi<{ signed_in: boolean; user?: AccountPublicUser }>("/api/v1/account/me", undefined, "GET");
     if (!me.ok || !me.data.signed_in || !me.data.user) {
-      setSession({ status: "signed-out" });
-      return;
+      return { status: "signed-out" };
     }
     const alerts = await callApi<AlertItem[]>("/api/v1/account/alerts", undefined, "GET");
-    setSession({ status: "signed-in", user: me.data.user, alerts: alerts.ok ? alerts.data : [] });
+    return { status: "signed-in", user: me.data.user, alerts: alerts.ok ? alerts.data : [] };
   }, []);
 
   useEffect(() => {
-    void load();
+    let live = true;
+    void load().then((next) => {
+      if (live) setSession(next);
+    });
+    return () => {
+      live = false;
+    };
   }, [load]);
 
   if (session.status === "signed-in") {
@@ -42,7 +47,9 @@ export function AccountPage({ siteKey, deleted: deletedInitial }: { siteKey: str
         <AccountPanel
           user={session.user}
           alerts={session.alerts}
-          onChanged={() => void load()}
+          onChanged={() => {
+            void load().then((next) => setSession(next));
+          }}
           onDeleted={() => {
             setDeleted(true);
             setSession({ status: "signed-out" });
@@ -86,7 +93,12 @@ export function AccountPage({ siteKey, deleted: deletedInitial }: { siteKey: str
           <h2 id="signin-title" className="section-heading">
             Already have one? Sign in
           </h2>
-          <SignInForm siteKey={siteKey} onSignedIn={() => void load()} />
+          <SignInForm
+            siteKey={siteKey}
+            onSignedIn={() => {
+              void load().then((next) => setSession(next));
+            }}
+          />
           <p className="form-note">
             Changed your phone number? Create a fresh account and ask us (see <a href="/about">About</a>) to move your waiting lists across.
           </p>
