@@ -40,6 +40,19 @@ describe("resolveShopRoute", () => {
     if (filtered.kind !== "ok") return;
     expect(filtered.total).toBe(14);
     expect(filtered.stated).toBe(true);
+    // v2 S-11: a present ?sort= is stated even at resting filters
+    // (sort-only views noindex); presence, not value — a garbage sort
+    // falls back to the grouped order and is still stated.
+    const sorted = await resolveShopRoute(api, cache, { slug: "blue-ridge-seeds", search: "?sort=name" });
+    expect(sorted.kind).toBe("ok");
+    if (sorted.kind !== "ok") return;
+    expect(sorted.stated).toBe(true);
+    expect(sorted.items[0]!.variety.varietyName).toBe("Amber Waves");
+    const garbage = await resolveShopRoute(api, cache, { slug: "blue-ridge-seeds", search: "?sort=garbage" });
+    expect(garbage.kind).toBe("ok");
+    if (garbage.kind !== "ok") return;
+    expect(garbage.stated).toBe(true);
+    expect(garbage.items[0]!.variety.varietyName).toBe("Apple Blossom");
     const page2 = await resolveShopRoute(api, cache, { slug: "blue-ridge-seeds", search: "?page=2" });
     expect(page2.kind).toBe("ok");
     if (page2.kind !== "ok") return;

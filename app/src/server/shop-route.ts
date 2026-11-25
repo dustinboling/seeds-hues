@@ -108,6 +108,11 @@ export async function resolveShopRoute(
   const total = view.length;
   if (!pageInRange(page, total)) return { kind: "notFound" };
   const { offset, limit } = pageWindow(page, PAGE_SIZE);
+  // v2's stated rule (S-11 — the /variety discipline, extended): a present
+  // ?sort= is stated even when every filter group rests at All, so
+  // sort-only views are noindexed with the clean canonical. Presence, not
+  // value: garbage sorts fall back to the grouped order and are still stated.
+  const stated = hasActiveShopState(state) || sp.sort !== undefined;
   return {
     kind: "ok",
     seller,
@@ -117,7 +122,7 @@ export async function resolveShopRoute(
     total,
     page,
     pages: totalPages(total, PAGE_SIZE),
-    stated: hasActiveShopState(state),
+    stated,
     crops: crops.map((c) => ({ slug: c.slug, commonName: c.commonName })),
   };
 }
