@@ -53,6 +53,22 @@ export function apiBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
   return (env.SEEDS_API_BASE ?? DEFAULT_API_BASE_URL).replace(/\/+$/, "");
 }
 
+/** The API origin behind an /api/v1 base (the backend-owned non-/api paths hang off it). */
+export function apiOrigin(baseUrl: string = apiBaseUrl()): string {
+  return new URL(baseUrl).origin;
+}
+
+/**
+ * The Turnstile site key the form shells render with. The server passes
+ * its configured key per render via pageContextInit (the Worker-safe
+ * path); the process env is the Node-harness fallback. Null renders
+ * the "isn't set up" note, v2-faithful.
+ */
+export function turnstileSiteKey(pageContext?: { turnstileSiteKey?: string | null }, env: NodeJS.ProcessEnv = process.env): string | null {
+  if (pageContext?.turnstileSiteKey !== undefined) return pageContext.turnstileSiteKey;
+  return env.SEEDS_TURNSTILE_SITE_KEY ?? null;
+}
+
 let sharedApi: CatalogApi | null = null;
 let sharedApiBase = "";
 let sharedCache: DataCache | null = null;

@@ -16,6 +16,8 @@ const ART = {
   "empty-search": { src: "/theme/empty-search.webp", wide: null, width: 880, height: 1089 },
   "farms-basket": { src: "/theme/farms-basket.webp", wide: null, width: 1400, height: 933 },
   "offline-path": { src: "/theme/offline-path.webp", wide: null, width: 880, height: 1373 },
+  "farm-gate": { src: "/theme/farm-gate.webp", wide: null, width: 880, height: 1100 },
+  "account-organizer": { src: "/theme/account-organizer.webp", wide: null, width: 880, height: 1100 },
 } as const;
 
 export type ThemeArtName = keyof typeof ART;

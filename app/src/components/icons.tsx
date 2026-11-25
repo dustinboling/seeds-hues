@@ -117,6 +117,63 @@ export function MailIcon({ className = "" }: { className?: string }) {
   );
 }
 
+/**
+ * Field error mark (Tranche 3.3, FIELD-STATES-DESIGN.md §5.5): a warning
+ * triangle holding an exclamation — ported from v2's layout icons (24px
+ * grid, 20px live area, stroke 1.8, currentColor, no fill). A redundant
+ * channel beside the message text, always aria-hidden. The caller sizes
+ * it via className.
+ */
+export function FieldErrorIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M12 4.2 20.4 19.4H3.6L12 4.2Z" />
+      <path d="M12 9.6v4.2" />
+      <path d="M12 16.9v0.3" />
+    </svg>
+  );
+}
+
+/**
+ * Field success mark (Tranche 3.3, FIELD-STATES-DESIGN.md §6): a check
+ * inside a circle outline, ported from v2's layout icons. Not the
+ * Protection seal (shield + check): that glyph belongs to a legal claim
+ * and is never reused as a generic check. The caller sizes it via
+ * className.
+ */
+export function FieldSuccessIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="12" cy="12" r="8.4" />
+      <path d="m8.4 12.3 2.5 2.5 4.9-5.4" />
+    </svg>
+  );
+}
+
 /** Remover cross — the applied row's remover chips. The chip's aria-label carries the meaning. */
 export function ChipRemoveIcon({ className = "" }: { className?: string }) {
   return (
