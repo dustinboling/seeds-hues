@@ -460,6 +460,26 @@ describe("error surfaces", () => {
   });
 });
 
+describe("Slice 9 mount degradation", () => {
+  it("unsubscribe describe unreachable renders the invalid-link state, 200 — never a 500, never a confirm", async () => {
+    // Until Slice 9 mounts /api/internal/unsubscribe/describe, any fault
+    // (here: the dead backend) reads as no scope — the invalid-link state,
+    // by design (§6.2). Any token exercises it: the fault precedes parsing.
+    const r = await get("/unsubscribe?token=definitely-not-a-token", { base: DEAD_BASE });
+    expect(r.status).toBe(200);
+    expect(r.headers.get("cache-control")).toBe("no-store");
+    expect(decodeHtml(r.text)).toContain("This unsubscribe link isn’t valid.");
+    expect(r.text).toContain('href="/account"');
+  });
+
+  it("admin relay unreachable answers 502 JSON — the backend owns the mount, the app reports it", async () => {
+    const r = await get("/api/internal/admin/session", { base: DEAD_BASE, follow: false });
+    expect(r.status).toBe(502);
+    expect(r.headers.get("content-type")).toContain("application/json");
+    expect(JSON.parse(r.text)).toEqual({ error: "backend unreachable" });
+  });
+});
+
 describe("robots diff", () => {
   it("serves the renderer output byte-identical", async () => {
     const r = await getBytes("/robots.txt");
@@ -579,6 +599,140 @@ describe("structured-data inventory vs emitted HTML", () => {
   });
 });
 
+const A11Y_TEMPLATES: { name: string; path: string; status: number; dead?: boolean }[] = [
+  ...BUDGET_TEMPLATES.map((t) => ({ name: t.name, path: t.path, status: 200 })),
+  // The static-informational class beyond the /about representative.
+  { name: "static-about-data", path: "/about/data", status: 200 },
+  { name: "static-about-bot", path: "/about/bot", status: 200 },
+  { name: "static-api-docs", path: "/api-docs", status: 200 },
+  { name: "static-privacy", path: "/privacy", status: 200 },
+  { name: "static-terms", path: "/terms", status: 200 },
+  { name: "static-add-farm", path: "/add-your-farm", status: 200 },
+  { name: "static-unsubscribe", path: "/unsubscribe", status: 200 },
+  { name: "static-offline", path: "/offline", status: 200 },
+  // The error surfaces (the 500 serves from the dead-backend server).
+  { name: "not-found", path: "/no-such-page", status: 404 },
+  { name: "seller-removed", path: "/seller/shuttered-seed-co", status: 410 },
+  { name: "server-error", path: "/variety/sweet-pea-kings-ransom", status: 500, dead: true },
+];
+
+/** Structural HTML without scripts (hydration payloads carry HTML-ish strings). */
+const contentHtml = (html: string): string => html.replace(/<script[\s\S]*?<\/script>/g, "");
+
+/** Heading levels in document order. */
+const headingLevels = (html: string): number[] =>
+  [...contentHtml(html).matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
+
+describe("per-template static accessibility audit", () => {
+  // One fetch per template; the five properties assert off the cached bytes.
+  // This describe runs before the day-0 rehearsal block, whose final test
+  // mutates the stub — every page here renders from unmutated state.
+  const pages = new Map<string, string>();
+  beforeAll(async () => {
+    for (const t of A11Y_TEMPLATES) {
+      const r = await get(t.path, t.dead ? { base: DEAD_BASE } : {});
+      expect(r.status, `${t.name} ${t.path}`).toBe(t.status);
+      pages.set(t.name, r.text);
+    }
+  }, 60_000);
+
+  const names = A11Y_TEMPLATES.map((t) => [t.name]);
+
+  it.each(names)("%s renders one main landmark with the banner, footer, nav, and skip link", (name) => {
+    const body = contentHtml(pages.get(name as string)!);
+    expect(body.match(/<main[\s>]/g) ?? [], `${name}: one main`).toHaveLength(1);
+    // The banner + footer live outside <main> (detail templates nest an
+    // article <header> inside main — valid, not a second banner).
+    const outsideMain = body.replace(/<main[\s\S]*?<\/main>/, "");
+    expect(outsideMain.match(/<header[\s>]/g) ?? [], `${name}: one banner`).toHaveLength(1);
+    expect(outsideMain.match(/<footer[\s>]/g) ?? [], `${name}: one footer`).toHaveLength(1);
+    expect(body, `${name}: navigation landmark`).toContain("<nav");
+    expect(body, `${name}: skip link`).toContain('href="#main"');
+    expect(body, `${name}: skip target`).toMatch(/<main[^>]*\sid="main"/);
+  });
+
+  it.each(names)("%s headings start at h1 exactly once with no skipped levels", (name) => {
+    const levels = headingLevels(pages.get(name as string)!);
+    expect(
+      levels.filter((l) => l === 1),
+      `${name}: one h1 (${levels.join(",")})`,
+    ).toHaveLength(1);
+    expect(levels[0], `${name}: first heading is h1`).toBe(1);
+    for (let i = 1; i < levels.length; i++) {
+      expect(levels[i], `${name}: no skipped level (${levels.join(",")})`).toBeLessThanOrEqual(levels[i - 1]! + 1);
+    }
+  });
+
+  it.each(names)("%s form controls are all labeled", (name) => {
+    const body = contentHtml(pages.get(name as string)!);
+    const labelsFor = new Set([...body.matchAll(/<label[^>]*\sfor="([^"]+)"/g)].map((m) => m[1]));
+    for (const m of body.matchAll(/<(input|select|textarea)\b([^>]*)>/g)) {
+      const tag = m[1]!;
+      const attrs = m[2]!;
+      const type = /type="([^"]*)"/.exec(attrs)?.[1] ?? "";
+      if (tag === "input" && (type === "hidden" || type === "submit" || type === "button" || type === "reset")) continue;
+      if (tag === "input" && type === "image") {
+        expect(attrs, `${name}: image button alt`).toMatch(/alt="[^"]+"/);
+        continue;
+      }
+      const id = /id="([^"]*)"/.exec(attrs)?.[1];
+      const wrapped = body.lastIndexOf("<label", m.index ?? 0) > body.lastIndexOf("</label>", m.index ?? 0);
+      const labeled =
+        /aria-label="[^"]+"/.test(attrs) ||
+        /aria-labelledby="[^"]+"/.test(attrs) ||
+        (id != null && id !== "" && labelsFor.has(id)) ||
+        wrapped;
+      expect(labeled, `${name}: labeled control <${tag} ${attrs.slice(0, 80)}>`).toBe(true);
+    }
+  });
+
+  it.each(names)("%s names every link and button, hides no focusable, and resolves every aria ref", (name) => {
+    const body = contentHtml(pages.get(name as string)!);
+    for (const m of body.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)) {
+      const text = decodeHtml(m[2]!.replace(/<[^>]*>/g, "")).trim();
+      const named = /aria-label="[^"]+"/.test(m[1]!) || /aria-labelledby="[^"]+"/.test(m[1]!) || text !== "";
+      expect(named, `${name}: named button`).toBe(true);
+    }
+    for (const m of body.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)) {
+      if (!/href=/.test(m[1]!)) continue; // An anchor without href is not a link.
+      const text = decodeHtml(m[2]!.replace(/<[^>]*>/g, "")).trim();
+      const named = /aria-label="[^"]+"/.test(m[1]!) || /aria-labelledby="[^"]+"/.test(m[1]!) || text !== "";
+      expect(named, `${name}: named link`).toBe(true);
+    }
+    for (const m of body.matchAll(/<(a|button|input|select|textarea)\b([^>]*)>/g)) {
+      expect(m[2], `${name}: no aria-hidden focusable <${m[1]}>`).not.toContain('aria-hidden="true"');
+    }
+    const ids = new Set([...body.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+    for (const m of body.matchAll(/aria-(?:labelledby|describedby|controls|owns)="([^"]+)"/g)) {
+      for (const ref of m[1]!.split(/\s+/)) {
+        expect(ids.has(ref), `${name}: aria ref resolves #${ref}`).toBe(true);
+      }
+    }
+  });
+
+  it.each(names)("%s carries no positive tabindex", (name) => {
+    expect(contentHtml(pages.get(name as string)!), `${name}: tab order is source order`).not.toMatch(
+      /tabindex="[1-9][0-9]*"/,
+    );
+  });
+
+  it("the shipped shell CSS styles :focus-visible", async () => {
+    const home = pages.get("home")!;
+    const hrefs = [
+      ...new Set([...home.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map((m) => m[1]!)),
+    ];
+    expect(hrefs.length, "stylesheets linked").toBeGreaterThan(0);
+    let styled = false;
+    for (const href of hrefs) {
+      expect(href, "same-origin stylesheet").toMatch(/^\/assets\//);
+      const css = await getBytes(href);
+      expect(css.status, href).toBe(200);
+      if (css.body.toString("utf8").includes(":focus-visible")) styled = true;
+    }
+    expect(styled, ":focus-visible rule shipped").toBe(true);
+  });
+});
+
 describe("day-0 rehearsal (automatable subset)", () => {
   it("the sitemap index lists the seven Bea §8.2 segments", async () => {
     const r = await get("/sitemap.xml");
@@ -616,6 +770,14 @@ describe("day-0 rehearsal (automatable subset)", () => {
   });
 
   it("sitemap lastmod values are real dates, never build stamps", async () => {
+    // NOTE (Slice 8 repair): on stub builds this loop is vacuous — 0 dates
+    // emit because no synthetic stub updated_seq matches the live-derived
+    // committed cache (seq-verified omission, the designed conservative
+    // behavior — see the day-0 rehearsal record). The positive rule (a
+    // verified seq emits its real date; stale/removed rows omit) is proven
+    // non-vacuously at unit level (sitemap-rules + machine-files suites,
+    // aligned fixtures). This test still guards the built artifact against
+    // malformed or future lastmod whenever any date does emit.
     const listed = await get("/sitemap-varieties-listed.xml");
     const dates = [...listed.text.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((m) => m[1]!);
     for (const date of dates) {

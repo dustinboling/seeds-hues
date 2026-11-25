@@ -19,7 +19,7 @@
         "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
         "total-blocking-time": ["error", { "maxNumericValue": 200 }],
         "resource-summary:script:size": ["error", { "maxNumericValue": 153600 }],
-        "errors-in-console": ["error", { "maxNumericValue": 0 }]
+        "errors-in-console": ["error", { "minScore": 1 }]
       }
     },
     "upload": {

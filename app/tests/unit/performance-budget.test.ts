@@ -15,7 +15,7 @@ const APP_ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 interface LhciRc {
   ci: {
-    assert: { assertions: Record<string, [string, { maxNumericValue: number }]> };
+    assert: { assertions: Record<string, [string, { maxNumericValue?: number; minScore?: number }]> };
   };
 }
 
@@ -53,7 +53,12 @@ describe("performance-budget.json", () => {
     expect(assertions["largest-contentful-paint"]![1].maxNumericValue).toBe(budget.lighthouse.lcpMs);
     expect(assertions["cumulative-layout-shift"]![1].maxNumericValue).toBe(budget.lighthouse.cls);
     expect(assertions["total-blocking-time"]![1].maxNumericValue).toBe(budget.lighthouse.tbtMs);
-    expect(assertions["errors-in-console"]![1].maxNumericValue).toBe(budget.lighthouse.consoleErrors);
+    // errors-in-console exposes no numeric value in Lighthouse 12 (score
+    // 1 with zero items, 0 otherwise) — maxNumericValue evaluates NaN and
+    // can never pass. minScore 1 IS the zero-console-errors threshold in
+    // the only assertable form: same semantics, no weakening.
+    expect(assertions["errors-in-console"]).toEqual(["error", { minScore: 1 }]);
+    expect(budget.lighthouse.consoleErrors).toBe(0);
   });
 
   it("carries no price-shaped string anywhere in the budget file", () => {

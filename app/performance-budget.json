@@ -13,7 +13,7 @@
     "cls": 0.1,
     "tbtMs": 200,
     "consoleErrors": 0,
-    "source": "ARCHITECTURE-BRIEF.md §6 field goals (LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1), lab-calibrated: TBT is the INP lab proxy, LCP ≤ 6 s is the lab regression guard; mirrored assertion-for-assertion in app/.lighthouserc.json"
+    "source": "ARCHITECTURE-BRIEF.md §6 field goals (LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1), lab-calibrated: TBT is the INP lab proxy, LCP ≤ 6 s is the lab regression guard; mirrored assertion-for-assertion in app/.lighthouserc.json (errors-in-console as minScore 1 — Lighthouse 12 exposes no numeric value for it, so maxNumericValue can never evaluate)"
   },
   "images": {
     "requireAlt": true,
