@@ -37,6 +37,16 @@ import { fileURLToPath } from "node:url";
 import { renderPage } from "vike/server";
 import { createCatalogApi } from "../src/data/api";
 import { createDataCache } from "../src/data/cache";
+import {
+  handleDecide,
+  handleSectionActions,
+  handleSignInRequest,
+  handleSignInVerify,
+  handleSignOut,
+  type AdminSection,
+  type HandlerResult,
+  type ServiceFetch,
+} from "../src/server/admin-handlers";
 import { serveOgImage } from "../src/og/serve";
 import { isGoId, mapGoStatus, postBackendJson, relayHttp, rewriteGoLocation } from "../src/server/api-relay";
 import {
@@ -143,6 +153,9 @@ function socketIp(req: IncomingMessage): string | null {
 /** v2's /go NO_STORE pair, mirrored on every /go answer the app serves. */
 const GO_NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" };
 
+/** v2's admin-handler pair: never cached, never indexed. */
+const ADMIN_NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex" };
+
 async function main(): Promise<void> {
   const apiBaseUrl = (process.env.SEEDS_API_BASE ?? "https://seeds.hues.flowers/api/v1").replace(/\/+$/, "");
   const secret = process.env.SEEDS_REVALIDATE_SECRET ?? "";
@@ -226,7 +239,7 @@ async function main(): Promise<void> {
         const formOutcome = isReport
           ? reportFloorOutcome(result, reportValuesFromSubmission(payload))
           : farmFloorOutcome(result, farmValuesFromSubmission(payload));
-        const floorRender = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, formOutcome, turnstileSiteKey: siteKey });
+        const floorRender = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, formOutcome, turnstileSiteKey: siteKey, adminApiBase: new URL(apiBaseUrl).origin, requestCookie: req.headers.cookie ?? null });
         const floorBody = await floorRender.httpResponse.getBody();
         const floorHeaders = new Headers(floorRender.httpResponse.headers);
         if (!floorHeaders.has("content-type")) floorHeaders.set("content-type", "text/html; charset=utf-8");
@@ -276,6 +289,104 @@ async function main(): Promise<void> {
         }
         res.writeHead(502, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
         res.end("Bad Gateway");
+        return;
+      }
+
+      // Slice 7: the admin handlers (sign-in, decide, section actions).
+      // Native form posts 303 back with the status wording; the SPA's
+      // JSON posts get v2's sheet-JSON vocabulary. Every write purges the
+      // data cache + edge for the service's revalidate paths (v2's
+      // revalidatePath on the same funnel).
+      const adminAction = /^\/admin\/(?:sign-in\/(?:request|verify|sign-out)|review\/decide|(sellers|varieties|listings|accounts)\/actions)$/.exec(pathname);
+      if (adminAction && req.method === "POST") {
+        const origin = req.headers.origin;
+        if (typeof origin === "string" && origin !== url.origin) {
+          res.writeHead(403, { ...ADMIN_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
+          res.end("Forbidden");
+          return;
+        }
+        const rawBody = await readRawBody(req);
+        const contentType = req.headers["content-type"];
+        let raw: Record<string, unknown> = {};
+        if (contentType?.includes("application/json")) {
+          try {
+            const parsed: unknown = JSON.parse(rawBody.toString("utf8") || "{}");
+            if (parsed && typeof parsed === "object") raw = parsed as Record<string, unknown>;
+          } catch {
+            raw = {};
+          }
+        } else {
+          raw = parseFormBody(rawBody, contentType);
+        }
+        const wantsJson = req.headers.accept?.includes("application/json") ?? false;
+        const cookieHeader = req.headers.cookie;
+        const serviceFetch: ServiceFetch = async (path, init) => {
+          const target = `${new URL(apiBaseUrl).origin}${path}`;
+          const r = await fetch(target, {
+            method: init.method,
+            headers: {
+              "Content-Type": "application/json",
+              ...(init.cookie ? { Cookie: init.cookie } : {}),
+            },
+            body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
+            redirect: "manual",
+          });
+          const json = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+          return { status: r.status, json, setCookie: r.headers.get("set-cookie") };
+        };
+        let result: HandlerResult;
+        try {
+          if (pathname === "/admin/sign-in/request") result = await handleSignInRequest(serviceFetch, { raw, wantsJson });
+          else if (pathname === "/admin/sign-in/verify") result = await handleSignInVerify(serviceFetch, { raw, wantsJson });
+          else if (pathname === "/admin/sign-in/sign-out") result = await handleSignOut(serviceFetch, cookieHeader);
+          else if (pathname === "/admin/review/decide") result = await handleDecide(serviceFetch, { raw, wantsJson, cookie: cookieHeader });
+          else result = await handleSectionActions(serviceFetch, adminAction[1] as AdminSection, { raw, wantsJson, cookie: cookieHeader });
+        } catch {
+          result = wantsJson
+            ? { kind: "json", status: 500, body: { ok: false, message: "That didn't go through. Nothing was changed — try again." }, revalidate: [] }
+            : { kind: "redirect", location: pathname.startsWith("/admin/review") ? "/admin/review?status=failed" : `${pathname.split("/actions")[0]}?status=save_failed`, revalidate: [] };
+        }
+        if (result.revalidate.length > 0) {
+          const related = cache.relatedPaths(result.revalidate);
+          cache.invalidatePaths(result.revalidate);
+          for (const p of new Set([...result.revalidate, ...related])) purgeEdge(edge, p);
+        }
+        if (result.kind === "redirect") {
+          res.writeHead(303, { ...ADMIN_NO_STORE, Location: result.location, ...(result.setCookie ? { "Set-Cookie": result.setCookie } : {}) });
+          res.end();
+          return;
+        }
+        if (result.kind === "json") {
+          res.writeHead(result.status, { ...ADMIN_NO_STORE, "Content-Type": "application/json; charset=utf-8", ...(result.setCookie ? { "Set-Cookie": result.setCookie } : {}) });
+          res.end(JSON.stringify(result.body));
+          return;
+        }
+        res.writeHead(result.status, { ...ADMIN_NO_STORE, "Content-Type": "text/html; charset=utf-8" });
+        res.end(result.body);
+        return;
+      }
+
+      if (pathname === "/api/internal/admin" || pathname.startsWith("/api/internal/admin/")) {
+        // Slice 7: the admin service reads (session + role enforced by the
+        // service from the forwarded cookie): relayed verbatim, like /api/v1.
+        const raw = await readRawBody(req);
+        let out;
+        try {
+          out = await relayHttp(apiBaseUrl, {
+            method: req.method ?? "GET",
+            path: pathname,
+            query: url.search,
+            headers: requestHeaders(req),
+            body: raw.length > 0 ? new Uint8Array(raw) : null,
+            socketIp: socketIp(req),
+          });
+        } catch {
+          res.writeHead(502, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "backend unreachable" }));
+          return;
+        }
+        res.writeHead(out.status, out.headers);
+        res.end(Buffer.from(out.body));
         return;
       }
 
@@ -351,7 +462,7 @@ async function main(): Promise<void> {
         return;
       }
 
-      const pageContext = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, turnstileSiteKey: siteKey });
+      const pageContext = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, turnstileSiteKey: siteKey, adminApiBase: new URL(apiBaseUrl).origin, requestCookie: req.headers.cookie ?? null });
       const { httpResponse } = pageContext;
       const body = await httpResponse.getBody();
       const headers = new Headers(httpResponse.headers);
