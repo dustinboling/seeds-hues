@@ -29,6 +29,7 @@ import {
   type StubVarietySort,
 } from "./catalog-filter";
 import { rederive } from "./derived";
+import { decisionAliasHits, removedVarietySlugs, routeAdminGet, routeAdminPost } from "./admin-server";
 
 const GENERATED_AT = "2026-11-24T00:00:00.000Z";
 
@@ -391,6 +392,9 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
         readPostBody(req).then(
           (parsed) => {
             try {
+              // Slice 7: the admin service endpoints (session reads decide
+              // them; the parsed body is already a record here).
+              if (routeAdminPost(url, bodyRecord(parsed), req, send, state)) return;
               if (!routeFormsPost(url, parsed, req, send, sendRaw, state)) {
                 send(404, { error: { code: "not_found", message: "stub has no such path" } });
               }
@@ -473,8 +477,11 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
         const plants = listValues(url.searchParams, "plant").concat(listValues(url.searchParams, "crop"));
         const colors = listValues(url.searchParams, "color_family");
         const smallFarmSlugs = new Set(state.smallFarmVarieties);
+        // Slice 7: soft-removed varieties leave the public list (v2's
+        // removeVariety — the record stays, the surface comes off).
+        const removed = new Set(removedVarietySlugs(state));
         const pool = stubSortVarieties(
-          state.listItems.filter((item) =>
+          state.listItems.filter((item) => !removed.has(item.slug)).filter((item) =>
             stubVarietyMatches(
               item,
               {
@@ -518,9 +525,12 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
         const seasonClass =
           seasonRaw === "cool" ? "cool_season_hardy_annual" : seasonRaw === "warm" ? "warm_season_tender_annual" : undefined;
         const methodClasses = methods.map((m) => (m === "direct" ? "direct_sow" : "transplant"));
+        const removedSlugs = new Set(removedVarietySlugs(state));
         const response = stubSearch(
           {
-            varieties: state.listItems,
+            // Slice 7: soft-removed varieties leave public search; the
+            // duplicate-decision aliases below keep finding their variety.
+            varieties: state.listItems.filter((item) => !removedSlugs.has(item.slug)),
             smallFarmSlugs: new Set(state.smallFarmVarieties),
             crops: state.crops,
             series: state.seriesCatalog,
@@ -535,12 +545,21 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
             colorFamily: listValues(url.searchParams, "color_family"),
           },
         );
+        // Slice 7: duplicate-decision aliases keep turning up in search
+        // (the standing duplicate ruling — the held name stays findable).
+        for (const hit of decisionAliasHits(state, q)) {
+          const entry = { type: "variety" as const, ...hit };
+          response.results.push(entry);
+          response.varieties.push(entry);
+        }
         send(200, one(response));
         return;
       }
       const varietyDetail = /^\/api\/v1\/varieties\/([^/]+)$/.exec(path);
       if (varietyDetail) {
-        const detail = state.details[varietyDetail[1]!];
+        // Slice 7: a soft-removed variety's public surface 404s (v2's
+        // removeVariety — the record stays, the page comes off).
+        const detail = removedVarietySlugs(state).includes(varietyDetail[1]!) ? undefined : state.details[varietyDetail[1]!];
         if (!detail) {
           send(404, notFound("variety"));
           return;
@@ -706,6 +725,8 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
       // Slice 6 reads: session/alerts/waitlist status, the unsubscribe
       // describe mount, and the backend's own /go/[id].
       if (routeFormsGet(url, req, send, sendRaw, state)) return;
+      // Slice 7: the admin service reads (session + role enforced inside).
+      if (routeAdminGet(url, req, send, state)) return;
       send(404, { error: { code: "not_found", message: "stub has no such path" } });
     } catch (error) {
       send(500, { error: { code: "stub_error", message: String(error) } });

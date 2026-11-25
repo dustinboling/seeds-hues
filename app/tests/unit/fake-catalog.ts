@@ -27,6 +27,7 @@ import type {
 } from "../../src/data/types";
 import type { CatalogApi } from "../../src/data/api";
 import { fakeFormsState, type FormsState } from "./forms-fixtures";
+import { fakeAdminState, type AdminState } from "./admin-fixtures";
 
 export interface FakeCatalogState {
   crops: ApiCrop[];
@@ -76,6 +77,12 @@ export interface FakeCatalogState {
    * accept/reject modes, /go listings + click log, unsubscribe tokens).
    */
   forms: FormsState;
+  /**
+   * Slice 7: the stub backend's admin state (sessions, review queue,
+   * sellers + internal notes, varieties, listings, accounts, statistics,
+   * the verbatim action log, per-endpoint accept/reject modes).
+   */
+  admin: AdminState;
 }
 
 /** The per-crop detail slice GET /api/v1/crops/[slug] adds to the list row. */
@@ -563,6 +570,18 @@ function siblingPool(): ApiVarietyListItem[] {
 
 /** The standard fixture: 2 crops, 3 varieties (listed / zero-seller / hidden), 2 sellers. */
 export function fakeCatalogState(): FakeCatalogState {
+  const details = {
+    "sweet-pea-kings-ransom": kingsRansom(),
+    "cosmos-lonely-bloom": lonelyBloom(),
+    "cosmos-candy-stripe": candyStripe(),
+    "cosmos-mystery-bloom": mysteryBloom(),
+  };
+  const blueRidgeListings = details["sweet-pea-kings-ransom"].listings.filter((l) => l.seller.slug === "blue-ridge-seeds");
+  const prairieListings = [
+    ...details["sweet-pea-kings-ransom"].listings.filter((l) => l.seller.slug === "prairie-seed-house"),
+    ...details["cosmos-candy-stripe"].listings,
+    ...details["cosmos-mystery-bloom"].listings,
+  ];
   return {
     crops: [
       crop("sweet-pea", "Sweet Pea", 10, 8, "Lathyrus odoratus"),
@@ -643,22 +662,90 @@ export function fakeCatalogState(): FakeCatalogState {
       "blue-ridge-seeds": "2026-11-18T00:00:00.000Z",
       "prairie-seed-house": "2026-11-17T00:00:00.000Z",
     },
-    details: {
-      "sweet-pea-kings-ransom": kingsRansom(),
-      "cosmos-lonely-bloom": lonelyBloom(),
-      "cosmos-candy-stripe": candyStripe(),
-      "cosmos-mystery-bloom": mysteryBloom(),
-    },
+    details,
     listItems: siblingPool(),
     // Fixture (iv): a MERGED variety resolving to fixture (i)'s slug.
     merged: { "sweet-pea-old-ransom": "sweet-pea-kings-ransom" },
     seriesCatalog: [{ slug: "spencer-mix", name: "Spencer", plantSlug: "sweet-pea" }],
     smallFarmVarieties: [],
-    sellerDetails: {},
+    // Slice 7: full PUBLIC shop payloads for the two noted sellers — the
+    // notes-leak test greps these for the note markers (absent) while the
+    // admin reads carry them (present). No internal-note text anywhere here.
+    sellerDetails: {
+      "blue-ridge-seeds": {
+        slug: "blue-ridge-seeds",
+        name: "Blue Ridge Seeds",
+        type: "retail",
+        location: "Portland, OR",
+        region: "OR",
+        country: "US",
+        homepage: "https://blueridgeseeds.example.com",
+        ratingCount: 0,
+        ratingAverage: null,
+        rating: { state: "not_yet_rated", average: null, review_count: 0 },
+        importedRating: null,
+        isSmallFarm: true,
+        description: "A family farm selling open-pollinated flower seed.",
+        orderingNotes: "Ships in March.",
+        varietyCount: 1,
+        updatedAt: "2026-11-18T00:00:00.000Z",
+        claimStatus: "unclaimed",
+        shipsTo: ["US"],
+        isSiteOwner: false,
+        listings: blueRidgeListings,
+        customerServicePhone: "(503) 555-0114",
+        customerServiceEmail: "help@blueridgeseeds.example.com",
+        locations: [
+          { kind: "physical", street: null, city: "Portland", state: "OR", zip: null, isPrimary: true },
+          { kind: "mailing", street: "PO Box 1408", city: "Portland", state: "OR", zip: null, isPrimary: false },
+        ],
+      },
+      "prairie-seed-house": {
+        slug: "prairie-seed-house",
+        name: "Prairie Seed House",
+        type: "wholesale",
+        location: "Lawrence, KS",
+        region: "KS",
+        country: "US",
+        homepage: "https://prairieseedhouse.example.com",
+        ratingCount: 0,
+        ratingAverage: null,
+        rating: { state: "not_yet_rated", average: null, review_count: 0 },
+        importedRating: null,
+        isSmallFarm: false,
+        description: "Wholesale seed house with a retail shelf.",
+        orderingNotes: null,
+        varietyCount: 3,
+        updatedAt: "2026-11-17T00:00:00.000Z",
+        claimStatus: "unclaimed",
+        shipsTo: ["US", "CA"],
+        isSiteOwner: false,
+        listings: prairieListings,
+        customerServicePhone: "(785) 555-0199",
+        customerServiceEmail: "care@prairieseedhouse.example.com",
+        locations: [{ kind: "physical", street: null, city: "Lawrence", state: "KS", zip: null, isPrimary: true }],
+      },
+    },
     removedSellers: [],
     cropExtras: {},
     forms: fakeFormsState(),
+    admin: fakeAdminState(),
   };
+}
+
+/**
+ * Slice 7: restore the admin state plus every public surface the admin
+ * effects mutate (details, sellers, sellerDetails, removedSellers) from a
+ * pristine build. Suites that drive admin mutations call this in
+ * beforeEach so each test starts from the exact fixture values.
+ */
+export function resetAdminState(state: FakeCatalogState): void {
+  const fresh = fakeCatalogState();
+  state.admin = fresh.admin;
+  state.details = fresh.details;
+  state.sellers = fresh.sellers;
+  state.sellerDetails = fresh.sellerDetails;
+  state.removedSellers = fresh.removedSellers;
 }
 
 /** A lastmod cache verifying every fake row — plus one stale and one removed entry. */
