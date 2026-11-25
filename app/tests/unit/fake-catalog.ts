@@ -26,6 +26,7 @@ import type {
   SyncSnapshotData,
 } from "../../src/data/types";
 import type { CatalogApi } from "../../src/data/api";
+import { fakeFormsState, type FormsState } from "./forms-fixtures";
 
 export interface FakeCatalogState {
   crops: ApiCrop[];
@@ -69,6 +70,12 @@ export interface FakeCatalogState {
    * and no series (the pre-Slice-5 shape for old suites).
    */
   cropExtras: Record<string, ApiCropExtra>;
+  /**
+   * Slice 6: the stub backend's form/account state (visitor accounts,
+   * sessions, waitlist entries, the verbatim payload log, per-endpoint
+   * accept/reject modes, /go listings + click log, unsubscribe tokens).
+   */
+  forms: FormsState;
 }
 
 /** The per-crop detail slice GET /api/v1/crops/[slug] adds to the list row. */
@@ -650,6 +657,7 @@ export function fakeCatalogState(): FakeCatalogState {
     sellerDetails: {},
     removedSellers: [],
     cropExtras: {},
+    forms: fakeFormsState(),
   };
 }
 

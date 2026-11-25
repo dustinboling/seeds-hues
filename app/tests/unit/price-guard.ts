@@ -32,6 +32,28 @@ const DOLLAR_AMOUNT = /\$\s*\d/;
 const PRICE_LABEL = /("[Pp]rice"|\b[Pp]rices?)\s*:/;
 const FOOTER_POLICY = "No prices are shown.";
 
+/**
+ * Known-good "review" hits: v2's own form/account sentences (the farm
+ * page's "reviewed by hand" is quoted in Bea §5.1 as expected content),
+ * ported verbatim — Quinn reads these hits rather than failing on the
+ * word, the same treatment as the footer sentence. Scrubbed, not pinned
+ * (each is page-specific; the surface tests assert the copy themselves).
+ * Exact sentences only, so no real violation — a "review" key, a
+ * "Reviews" panel, a price pattern — can hide behind them; the JSON-LD
+ * check below runs on the raw HTML and is unaffected.
+ */
+const KNOWN_GOOD_REVIEW_HITS = [
+  "reviewed by hand",
+  "reviewed by a person",
+  "Send for review",
+  "before sending for review",
+  "to draft your profile for your review",
+  "after we review your farm",
+  "in our review queue",
+  "We review every submission by hand",
+  "verify it in review",
+];
+
 export function stripScriptElements(html: string): string {
   return html.replace(/<script[\s\S]*?<\/script>/g, "");
 }
@@ -46,7 +68,8 @@ export function findPriceViolations(html: string): string[] {
   const bodiless = stripScriptElements(html);
   const violations: string[] = [];
   if (!bodiless.includes(FOOTER_POLICY)) violations.push("footer policy sentence missing");
-  const scrubbed = bodiless.replace(FOOTER_POLICY, "");
+  let scrubbed = bodiless.replace(FOOTER_POLICY, "");
+  for (const hit of KNOWN_GOOD_REVIEW_HITS) scrubbed = scrubbed.replaceAll(hit, "");
   for (const forbidden of PROHIBITED_STRINGS) {
     if (scrubbed.includes(forbidden)) violations.push(`prohibited string ${JSON.stringify(forbidden)}`);
   }

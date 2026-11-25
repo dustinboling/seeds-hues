@@ -1,0 +1,641 @@
+/* Slice-6 form styles: the v2 form/account classes this slice's templates
+   render (page frames, stacks, labels, the Tranche 3.3 field-state set,
+   choice rows, the Turnstile box, account details/alerts, and the
+   waitlist joined states), ported from v2/app/globals.css and the v2
+   form components. Every color reads the token mirror; geometry carries
+   v2's values. Plain CSS — no framework (the slice-1 discipline). */
+
+/* ---------- Page frames ---------- */
+
+.form-page {
+  max-width: 48rem;
+}
+
+.form-page-narrow {
+  max-width: 42rem;
+}
+
+/* Article rhythm: v2 spaces these pages with mt-3/mt-6/mt-8 utilities. */
+.form-page > * + *,
+.form-page-narrow > * + * {
+  margin-top: 1.5rem;
+}
+
+.page-lede {
+  margin-top: 0.75rem;
+  font-size: 1.125rem;
+}
+
+.page-subtitle {
+  margin-top: 0.25rem;
+  font-size: 1.125rem;
+}
+
+/* Page head (v2 md:grid 1fr 320px, centered, gap-8): text first, then the
+   decorative painting — beside it from md up, centred below on phones. */
+.form-head-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .form-head-grid {
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+  }
+}
+
+.form-head-grid > div > * + * {
+  margin-top: 0.5rem;
+}
+
+.form-head-grid .page-lede {
+  margin-top: 0.75rem;
+}
+
+.form-head-grid .card {
+  margin-top: 1rem;
+}
+
+.form-head-art {
+  display: block;
+  border: 1px solid var(--sys-color-border);
+  border-radius: 18px;
+  background: var(--sys-color-bg);
+  overflow: hidden;
+  margin: 1rem auto 0;
+  height: auto;
+  width: 100%;
+  max-width: 280px;
+}
+
+@media (min-width: 768px) {
+  .form-head-art {
+    margin-top: 0;
+    max-width: none;
+  }
+}
+
+.section-heading {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.form-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.form-heading-sm {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Signed-out account columns (v2 mt-8 grid, 2 columns from md). */
+.account-cols {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .account-cols {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- Stacks ---------- */
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+form.form-stack {
+  max-width: 42rem;
+}
+
+.form-stack-tight {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-stack-loose {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+fieldset.form-stack-tight,
+fieldset.form-field {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+/* One field: label, control, hint/error lines. */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* City + state pair (v2 sm:grid-cols-[1fr_14rem]). */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr 14rem;
+  }
+}
+
+/* Button/choice rows. */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ---------- Labels and notes ---------- */
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+legend.form-label,
+legend.form-legend {
+  padding: 0;
+}
+
+.form-legend {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.form-label-inline {
+  font-weight: 500;
+}
+
+.form-muted {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+.form-head-grid .form-muted {
+  font-size: 1rem;
+}
+
+.form-muted-inline {
+  font-weight: 400;
+  color: var(--sys-color-text-muted);
+}
+
+.form-note {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+.form-note-spaced {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+.form-page-narrow > .form-note-spaced {
+  margin-top: 1.5rem;
+}
+
+.form-message {
+  font-weight: 500;
+}
+
+.form-message-alert {
+  font-weight: 500;
+  color: var(--comp-field-error-text);
+}
+
+.field-pad {
+  padding: 1rem;
+}
+
+.form-success-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+button.underline {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--comp-link-text);
+  cursor: pointer;
+}
+
+button.underline:hover {
+  color: var(--comp-link-hover-text);
+}
+
+button.underline:disabled {
+  cursor: not-allowed;
+}
+
+.text-verified {
+  color: var(--sys-color-accent-strong);
+}
+
+.text-unverified {
+  color: var(--comp-field-error-text);
+}
+
+/* ---------- Fields (v2 .field + the Tranche 3.3 state set) ---------- */
+
+.field {
+  min-height: 44px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--sys-color-border-field);
+  background: var(--comp-field-background);
+  color: var(--comp-field-text);
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+
+textarea.field {
+  min-height: 6rem;
+}
+
+/* Error: keyed to the accessibility attribute itself, so the visual and
+   programmatic states cannot drift apart. */
+.field[aria-invalid="true"] {
+  border-color: var(--comp-field-error-border);
+}
+
+/* Filled: a content state (ink register), never a validity signal. Always
+   carried with .field, never alone. */
+.field-filled {
+  border-color: var(--comp-field-filled-border);
+}
+
+/* Disabled: genuinely unavailable fields only — never a data-bearing field
+   during a submission. */
+.field:disabled {
+  background: var(--comp-field-disabled-background);
+  border-color: var(--comp-field-disabled-border);
+  color: var(--comp-field-disabled-text);
+  cursor: not-allowed;
+}
+
+.field::placeholder {
+  color: var(--comp-field-placeholder);
+  opacity: 1;
+}
+
+.field-hint {
+  font-size: 0.875rem;
+  color: var(--comp-field-hint-text);
+}
+
+/* Inline error line: warn glyph + mapped words. */
+.field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--comp-field-error-text);
+}
+
+.field-error-icon {
+  margin-top: 0.125rem;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.field-success-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: var(--sys-color-accent-strong);
+}
+
+/* Form-head summary / alert box: one component, two contents (multi-error
+   summary, form-level message). */
+.field-summary {
+  background: var(--sys-color-accent-ink-tint);
+  border: 1px solid var(--sys-color-border-strong);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.field-summary:focus,
+[data-field-success-heading]:focus {
+  outline: 3px solid var(--comp-focus-ring);
+  outline-offset: 2px;
+}
+
+.field-summary-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--comp-field-error-text);
+}
+
+.field-summary-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Success panel: names the composition; the card construction comes from
+   the .card class it always accompanies. */
+.field-success {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+/* Selectable-card dress for weighty choice groups. Always carried with
+   .card, never alone. */
+.field-option {
+  display: flex;
+  cursor: pointer;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .field-option:hover {
+    border-color: var(--sys-color-accent);
+    background: var(--sys-color-accent-tint);
+  }
+}
+
+/* Doubled class so the selected dress survives hover. */
+.field-option.field-option-selected {
+  border-color: var(--sys-color-accent-strong);
+  background-color: var(--sys-color-accent-tint);
+}
+
+.field-option-radio {
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.field-option-title {
+  display: block;
+  font-weight: 500;
+}
+
+.field-option-title-selected {
+  display: block;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+.field-option-hint {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+.field-checkbox {
+  margin-top: 0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Width-capped fields: the 6-digit code, the business phone, the ZIP. */
+.field-code {
+  max-width: 11rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.2em;
+}
+
+.field-narrow {
+  max-width: 20rem;
+}
+
+.field-zip {
+  max-width: 10rem;
+}
+
+/* Choice rows: the radio pair, the checkbox consents. */
+.form-choice-row {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-choice-row-top {
+  display: flex;
+  min-height: 44px;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+/* Checked mark in leaf on native radios/checkboxes. */
+input:is([type="radio"], [type="checkbox"]) {
+  accent-color: var(--sys-color-accent-strong);
+}
+
+/* Busy / disabled submits: the primary loses its letterpress edge; ground
+   and colors hold at their resting computed values. No opacity reduction. */
+.btn-primary:disabled {
+  box-shadow: none;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+/* ---------- Turnstile ---------- */
+
+.turnstile-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.turnstile-mount {
+  min-height: 65px;
+}
+
+.turnstile-note {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* ---------- Account details and alerts ---------- */
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.details-grid dt {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+.details-grid dd {
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .details-grid {
+    grid-template-columns: 10rem 1fr;
+  }
+}
+
+.alerts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--sys-color-border);
+  background: var(--sys-color-surface);
+  box-shadow:
+    0 1px 2px rgb(90 70 20 / 0.08),
+    0 1px 1px rgb(90 70 20 / 0.05);
+}
+
+.alerts-list > li + li {
+  border-top: 1px solid var(--sys-color-border);
+}
+
+.alerts-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .alerts-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.alerts-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.alerts-name {
+  font-weight: 600;
+}
+
+.alerts-name span {
+  font-weight: 400;
+  color: var(--sys-color-text-muted);
+}
+
+.alert-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+.alert-badge {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.alerts-leave {
+  flex-shrink: 0;
+}
+
+/* ---------- Waitlist joined states (Slice 6 additions) ---------- */
+
+.waitlist-joined {
+  margin-top: 1rem;
+}
+
+/* Celebration — on the paper ground: no .card, no border, no background. */
+.waitlist-celebration {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.waitlist-success-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+.waitlist-celebration-copy {
+  margin-top: 0.75rem;
+  max-width: 36rem;
+}
+
+.waitlist-next {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.waitlist-finish {
+  margin-top: 0.25rem;
+  border-top: 1px solid var(--sys-color-border);
+  padding-top: 0.75rem;
+}
+
+@media (forced-colors: active) {
+  .field-option:hover,
+  .field-option.field-option-selected {
+    background: transparent;
+  }
+}

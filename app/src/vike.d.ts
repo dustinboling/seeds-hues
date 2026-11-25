@@ -11,6 +11,10 @@ declare global {
     interface PageContext {
       catalogApi?: CatalogApi;
       dataCache?: DataCache;
+      /** The Turnstile site key, passed per render (the Worker-safe path — no process.env). */
+      turnstileSiteKey?: string | null;
+      /** A floor POST's outcome, passed to the POST render only (report/farm forms). */
+      formOutcome?: unknown;
     }
   }
 }

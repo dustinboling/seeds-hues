@@ -8,16 +8,18 @@ import { shortCommonName } from "../../../src/lib/format";
  * to the clean variety URL, OG + Twitter summary_large_image. The
  * small-farms variant shares the title, description, and canonical — the
  * narrowing is a view, not a different fact base — and adds noindex.
- * Non-indexable varieties are likewise noindexed (v2 parity).
+ * Non-indexable varieties are likewise noindexed (v2 parity), as is any
+ * waitlist-floor render (?waitlist=… present, even bogus — the floor
+ * states are one visitor's transient form state, never indexed).
  */
-export function varietyHead(detail: ApiVarietyDetail, smallFarmOnly: boolean): HeadTags {
+export function varietyHead(detail: ApiVarietyDetail, smallFarmOnly: boolean, floorNoindex = false): HeadTags {
   const label = `${detail.varietyName} ${shortCommonName(detail.plant.commonName)}`;
   const hero = detail.media[0];
   return pageHead({
     title: varietyTitle(detail),
     description: varietyDescription(detail),
     path: `/variety/${detail.slug}`,
-    noindex: smallFarmOnly || !detail.indexable,
+    noindex: smallFarmOnly || !detail.indexable || floorNoindex,
     follow: true,
     og: hero ? mediaOgImage(hero.url, label) : ogImage("variety", detail.slug, label),
   });

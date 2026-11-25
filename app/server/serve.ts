@@ -8,6 +8,12 @@
  * - POST /internal/revalidate (Bearer secret, the revalidate-handler mount
  *   contract): purges the shared data cache AND the edge mock, returns paths;
  * - /og/[kind]/[slug] image responses (the src/og route handler);
+ * - Slice 6: the SSR floor POSTs (/report, /add-your-farm — form-encoded
+ *   fields map to backend JSON and the page re-renders with the outcome);
+ *   the /api/v1/* reverse-proxy to the API origin (verbatim status,
+ *   headers, and bytes, including the 303-only no-JS form endpoints);
+ *   GET /go/[id] (numeric ids relay the backend handler with the m-3
+ *   utm_source rename; 404/410 pass through, v2 + Bea §1.7);
  * - everything else through Vike renderPage with the shared CatalogApi +
  *   DataCache passed via pageContextInit — ONE instance per process, so the
  *   revalidate purge reaches the same cache the +data hooks read (a second
@@ -16,8 +22,9 @@
  *   (/variety/*, /seller/*, /crop/*, /series/*, /state/*), keyed per the
  *   §9 contract (the ?small_farm=true variant and every filtered/paged
  *   view keys separately, so a variant can never serve as the clean
- *   page), purged by the revalidate paths plus the purged entries'
- *   related paths. Only 200s are stored; redirects and errors bypass.
+ *   page; ?waitlist=… floor states bypass it entirely), purged by the
+ *   revalidate paths plus the purged entries' related paths. Only 200s
+ *   are stored; redirects and errors bypass.
  *
  * Env: PORT (0 = ephemeral; the listening URL prints on stdout),
  * SEEDS_API_BASE (default: the live API), SEEDS_REVALIDATE_SECRET
@@ -31,6 +38,16 @@ import { renderPage } from "vike/server";
 import { createCatalogApi } from "../src/data/api";
 import { createDataCache } from "../src/data/cache";
 import { serveOgImage } from "../src/og/serve";
+import { isGoId, mapGoStatus, postBackendJson, relayHttp, rewriteGoLocation } from "../src/server/api-relay";
+import {
+  backendResultOf,
+  farmFloorOutcome,
+  farmJsonFromForm,
+  farmValuesFromSubmission,
+  reportFloorOutcome,
+  reportJsonFromForm,
+  reportValuesFromSubmission,
+} from "../src/server/form-posts";
 import { handleRevalidateHttpRequest } from "../src/server/revalidate-handler";
 
 const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
@@ -94,16 +111,44 @@ function purgeEdge(edge: Map<string, EdgeEntry>, path: string): void {
   }
 }
 
-async function readJsonBody(req: IncomingMessage): Promise<unknown> {
+async function readRawBody(req: IncomingMessage): Promise<Buffer> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
-  const text = Buffer.concat(chunks).toString("utf8");
+  return Buffer.concat(chunks);
+}
+
+async function readJsonBody(req: IncomingMessage): Promise<unknown> {
+  const text = (await readRawBody(req)).toString("utf8");
   return text.length > 0 ? (JSON.parse(text) as unknown) : null;
 }
+
+/** Form-encoded POST fields (the SSR floors); anything else reads as no fields. */
+function parseFormBody(raw: Buffer, contentType: string | undefined): Record<string, string> {
+  if (!contentType?.includes("application/x-www-form-urlencoded")) return {};
+  return Object.fromEntries(new URLSearchParams(raw.toString("utf8")).entries());
+}
+
+function requestHeaders(req: IncomingMessage): Headers {
+  const headers = new Headers();
+  for (const [name, value] of Object.entries(req.headers)) {
+    if (value !== undefined) headers.set(name, Array.isArray(value) ? value.join(", ") : value);
+  }
+  return headers;
+}
+
+function socketIp(req: IncomingMessage): string | null {
+  return req.socket.remoteAddress ?? null;
+}
+
+/** v2's /go NO_STORE pair, mirrored on every /go answer the app serves. */
+const GO_NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 async function main(): Promise<void> {
   const apiBaseUrl = (process.env.SEEDS_API_BASE ?? "https://seeds.hues.flowers/api/v1").replace(/\/+$/, "");
   const secret = process.env.SEEDS_REVALIDATE_SECRET ?? "";
+  // The Turnstile site key, passed per render via pageContextInit (the
+  // Worker-safe path — +data hooks never read process.env directly).
+  const siteKey = process.env.SEEDS_TURNSTILE_SITE_KEY ?? null;
   // The process's ONE catalog client + data cache, shared by every render
   // (via pageContextInit) and every revalidate POST (inline purge).
   const api = createCatalogApi({ baseUrl: apiBaseUrl });
@@ -154,6 +199,113 @@ async function main(): Promise<void> {
         return;
       }
 
+      if (req.method === "POST" && (pathname === "/report" || pathname === "/add-your-farm")) {
+        // The SSR floor POSTs: form-encoded fields map to backend JSON
+        // through the shared chassis builders (identical payloads to the
+        // enhanced path by construction), post to the unchanged backend,
+        // and the page re-renders with the outcome — the success state,
+        // or the plain-language errors with the typed values preserved.
+        // Always 200: a rejection is a re-render, never an error status.
+        const raw = await readRawBody(req);
+        const fields = parseFormBody(raw, req.headers["content-type"]);
+        const isReport = pathname === "/report";
+        const payload = isReport ? reportJsonFromForm(fields) : farmJsonFromForm(fields);
+        let status: number;
+        let json: { code?: string; detail?: string };
+        try {
+          const r = await postBackendJson(apiBaseUrl, isReport ? "/api/v1/reports" : "/api/v1/farm-submissions", payload, {
+            forwardedFor: socketIp(req) ?? undefined,
+          });
+          status = r.status;
+          json = r.json;
+        } catch {
+          status = 500;
+          json = { code: "error", detail: "backend unreachable" };
+        }
+        const result = backendResultOf(status, json);
+        const formOutcome = isReport
+          ? reportFloorOutcome(result, reportValuesFromSubmission(payload))
+          : farmFloorOutcome(result, farmValuesFromSubmission(payload));
+        const floorRender = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, formOutcome, turnstileSiteKey: siteKey });
+        const floorBody = await floorRender.httpResponse.getBody();
+        const floorHeaders = new Headers(floorRender.httpResponse.headers);
+        if (!floorHeaders.has("content-type")) floorHeaders.set("content-type", "text/html; charset=utf-8");
+        res.writeHead(floorRender.httpResponse.statusCode, Object.fromEntries([...floorHeaders.entries()]));
+        res.end(floorBody);
+        return;
+      }
+
+      const go = /^\/go\/([^/]+)$/.exec(pathname);
+      if (go && req.method === "GET") {
+        // GET /go/[id]: numeric ids relay the backend's handler (anything
+        // else 404s without a backend call — v2's route rule), the
+        // retired utm_source is renamed on relay (Bea m-3), and the
+        // backend's 404/410 pass through (removed seller stays 410, v2 +
+        // Bea §1.7). Always no-store.
+        const id = go[1]!;
+        if (!isGoId(id)) {
+          res.writeHead(404, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
+          res.end("Listing not found");
+          return;
+        }
+        let out;
+        try {
+          out = await relayHttp(apiBaseUrl, {
+            method: "GET",
+            path: pathname,
+            query: url.search,
+            headers: requestHeaders(req),
+            body: null,
+            socketIp: socketIp(req),
+          });
+        } catch {
+          res.writeHead(502, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
+          res.end("Bad Gateway");
+          return;
+        }
+        const mapped = mapGoStatus(out.status);
+        if (mapped === 302 && typeof out.headers.location === "string" && out.headers.location) {
+          res.writeHead(302, { ...GO_NO_STORE, "Referrer-Policy": "origin", Location: rewriteGoLocation(out.headers.location) });
+          res.end();
+          return;
+        }
+        if (mapped === 404 || mapped === 410) {
+          res.writeHead(mapped, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
+          res.end(Buffer.from(out.body));
+          return;
+        }
+        res.writeHead(502, { ...GO_NO_STORE, "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Bad Gateway");
+        return;
+      }
+
+      if (pathname === "/api/v1" || pathname.startsWith("/api/v1/")) {
+        // The backend-owned paths (form/account reads and writes, the
+        // 303-only no-JS form endpoints): reverse-proxied to the API
+        // origin with status, headers, and bytes relayed verbatim —
+        // notably the 303 Locations with their Ruling 9 fragments and
+        // the session Set-Cookie.
+        const raw = await readRawBody(req);
+        let out;
+        try {
+          out = await relayHttp(apiBaseUrl, {
+            method: req.method ?? "GET",
+            path: pathname,
+            query: url.search,
+            headers: requestHeaders(req),
+            body: raw.length > 0 ? new Uint8Array(raw) : null,
+            socketIp: socketIp(req),
+          });
+        } catch {
+          res.writeHead(502, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "backend unreachable" }));
+          return;
+        }
+        res.writeHead(out.status, out.headers);
+        res.end(Buffer.from(out.body));
+        return;
+      }
+
       const og = /^\/og\/([^/]+)\/([^/]+)$/.exec(pathname);
       if (og && (req.method === "GET" || req.method === "HEAD")) {
         const result = await serveOgImage(og[1]!, og[2]!, { catalog: api, fontDir: OG_FONTS_DIR });
@@ -182,7 +334,11 @@ async function main(): Promise<void> {
       }
 
       // Edge mock: serve a stored detail 200, else render and maybe store.
-      const cacheable = req.method === "GET" && (pathname.startsWith("/variety/") || DETAIL_PATTERN.test(pathname));
+      // Floor-state URLs (?waitlist=…) bypass it entirely: a transient
+      // per-visitor render must never serve as, or be served from, the
+      // clean page's cache entry.
+      const floorBypass = url.searchParams.has("waitlist");
+      const cacheable = req.method === "GET" && !floorBypass && (pathname.startsWith("/variety/") || DETAIL_PATTERN.test(pathname));
       const key = cacheable
         ? pathname.startsWith("/variety/")
           ? edgeKey(pathname, url.search)
@@ -195,7 +351,7 @@ async function main(): Promise<void> {
         return;
       }
 
-      const pageContext = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache });
+      const pageContext = await renderPage({ urlOriginal: req.url ?? "/", catalogApi: api, dataCache: cache, turnstileSiteKey: siteKey });
       const { httpResponse } = pageContext;
       const body = await httpResponse.getBody();
       const headers = new Headers(httpResponse.headers);

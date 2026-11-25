@@ -8,8 +8,8 @@ import { varietyHead } from "./head";
 // because the title is per-variety (no static `title` setting); SeoHead
 // carries the rest. og:title is the unsuffixed title, v2-faithful.
 export function Head() {
-  const { detail, smallFarmOnly } = useData<Data>();
-  const tags = varietyHead(detail, smallFarmOnly);
+  const { detail, smallFarmOnly, floorTransient } = useData<Data>();
+  const tags = varietyHead(detail, smallFarmOnly, floorTransient);
   return (
     <>
       <title>{tags.title}</title>
