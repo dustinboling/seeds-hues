@@ -746,11 +746,13 @@ describe("crop hub SSR", () => {
   });
 
   it("redirects the plural legacy crop paths in one 301 hop", async () => {
-    for (const from of ["/plants/sunflower", "/categories/sunflower"]) {
-      const res = await get(from, false);
-      expect(res.status).toBe(301);
-      expect(res.headers.get("location")).toBe("/crop/sunflower");
-    }
+    // Live-faithful asymmetry (Slice 8: v2 keeps the /plants slug but drops the /categories one).
+    const plants = await get("/plants/sunflower", false);
+    expect(plants.status).toBe(301);
+    expect(plants.headers.get("location")).toBe("/crop/sunflower");
+    const categories = await get("/categories/sunflower", false);
+    expect(categories.status).toBe(301);
+    expect(categories.headers.get("location")).toBe("/crop");
     for (const from of ["/plants", "/categories"]) {
       const res = await get(from, false);
       expect(res.status).toBe(301);
@@ -834,7 +836,8 @@ describe("series hub SSR", () => {
     expect(lists).toHaveLength(1);
     expect(lists[0]!.numberOfItems).toBe(8);
     expect(countOf(res.text, /href="\/variety\//g)).toBeGreaterThanOrEqual(8);
-    expect(meta(html, "property", "og:image")).toBe(`${SITE}/og/crop/sunflower`);
+    // Slice 8: series pages declare v2's inherited site card (live-exact), not the crop card.
+    expect(meta(html, "property", "og:image")).toBe(`${SITE}/og/site/default`);
     const crumbs = breadcrumbs(res.text);
     expect(crumbs).toHaveLength(1);
     expect(crumbs[0]!.itemListElement.map((e) => [e.position, e.name, e.item])).toEqual([

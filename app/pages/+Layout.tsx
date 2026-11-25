@@ -5,6 +5,7 @@ import "../src/shell.css";
 import "../src/templates.css";
 import { SiteFooter } from "../src/components/SiteFooter";
 import { SiteHeader } from "../src/components/SiteHeader";
+import { ErrorReporter } from "../src/components/ErrorReporter";
 import { RouteAnnouncer } from "../src/components/RouteAnnouncer";
 import { TabBarPlaceholder } from "../src/components/TabBarPlaceholder";
 
@@ -26,6 +27,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <SiteFooter />
       <TabBarPlaceholder />
       <RouteAnnouncer />
+      <ErrorReporter />
     </div>
   );
 }

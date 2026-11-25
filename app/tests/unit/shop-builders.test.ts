@@ -200,7 +200,7 @@ describe("page-head compositions", () => {
     expect(filtered.robots).toBe("noindex, follow");
   });
 
-  it("self-canonicalizes series pages with the crop's generated card", () => {
+  it("self-canonicalizes series pages with v2's inherited site card (Slice 8: live-exact)", () => {
     const head = seriesHead({
       slug: "sunbeam",
       name: "Sunbeam",
@@ -212,7 +212,7 @@ describe("page-head compositions", () => {
     });
     expect(head.canonical).toBe(`${SITE}/series/sunbeam`);
     expect(head.robots).toBe("index, follow");
-    expect(head.og.image).toBe(`${SITE}/og/crop/sunflower`);
+    expect(head.og.image).toBe(`${SITE}/og/site/default`);
   });
 
   it("renders absolute state titles with self-canonicals", () => {

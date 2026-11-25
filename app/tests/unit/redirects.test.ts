@@ -35,7 +35,8 @@ describe("redirectForUrl", () => {
     expect(redirectForUrl("/plants")).toBe("/crop");
     expect(redirectForUrl("/plants/sunflower")).toBe("/crop/sunflower");
     expect(redirectForUrl("/categories")).toBe("/crop");
-    expect(redirectForUrl("/categories/sunflower")).toBe("/crop/sunflower");
+    // Live-faithful asymmetry (Slice 8: v2 drops the /categories slug — /crop, not /crop/:slug).
+    expect(redirectForUrl("/categories/sunflower")).toBe("/crop");
     // Malformed plural slugs fall through (the route 404s them itself).
     expect(redirectForUrl("/varieties/BAD")).toBeNull();
     expect(redirectForUrl("/sellers/BAD")).toBeNull();

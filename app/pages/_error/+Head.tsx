@@ -3,7 +3,9 @@ import { SITE_NAME } from "../../src/site";
 
 // Error pages carry a title and noindex (the HTTP status is the real
 // signal; nothing here is crawled content). No canonical: error URLs must
-// not present themselves as canonical anything.
+// not present themselves as canonical anything. The robots value is the
+// bare "noindex" — live-exact (the live 404 meta and v2's Gone page both
+// read exactly "noindex"; follow is the default either way).
 export function Head() {
   const pageContext = usePageContext();
   const gone = pageContext.abortStatusCode === 410;
@@ -12,7 +14,7 @@ export function Head() {
   return (
     <>
       <title>{`${title} | ${SITE_NAME}`}</title>
-      <meta name="robots" content="noindex, follow" />
+      <meta name="robots" content="noindex" />
     </>
   );
 }
