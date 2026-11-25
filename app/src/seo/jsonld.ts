@@ -79,3 +79,30 @@ export function varietySellersJsonLd(v: {
     sellers.map((l) => ({ name: l.seller.name, href: `/seller/${l.seller.slug}` })),
   );
 }
+
+/** "Accord, NY" → locality + region. Anything else → no address (never invent one). */
+export function parseLocation(location: string | null): Json | null {
+  if (!location) return null;
+  const m = /^([A-Za-z .'-]+),\s*([A-Z]{2})$/.exec(location.trim());
+  if (!m) return null;
+  return { "@type": "PostalAddress", addressLocality: m[1]!.trim(), addressRegion: m[2] };
+}
+
+export function organizationJsonLd(s: {
+  slug: string;
+  name: string;
+  homepage: string | null;
+  description: string | null;
+  location: string | null;
+}): Json {
+  const address = parseLocation(s.location);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: s.name,
+    ...(s.homepage ? { url: s.homepage } : {}),
+    ...(s.description ? { description: s.description } : {}),
+    ...(address ? { address } : {}),
+    mainEntityOfPage: abs(`/seller/${s.slug}`),
+  };
+}

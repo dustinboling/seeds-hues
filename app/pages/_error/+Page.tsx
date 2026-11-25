@@ -6,10 +6,27 @@ import { APP_SHORT_NAME } from "../../src/site";
 /**
  * Error page: the 404 form ports v2/app/not-found.tsx (eyebrow, H1, prose,
  * search box, hub links) — served with a real HTTP 404 for every unknown
- * path. Anything else (render failures) keeps the generic message.
+ * path. The 410 form ports v2/middleware.ts's Gone page (removed sellers
+ * only) — served with a real HTTP 410, noindexed, linking to /seller.
+ * Anything else (render failures) keeps the generic message.
  */
 export default function Page() {
   const pageContext = usePageContext();
+  const gone = pageContext.abortStatusCode === 410;
+  if (gone) {
+    return (
+      <section className="gone" aria-labelledby="gone-title">
+        <p className="eyebrow">410</p>
+        <h1 id="gone-title">This seller has been removed</h1>
+        <p className="gone-copy">This seller asked to be removed from the directory, and its listings have been taken down.</p>
+        <p>
+          <a href="/seller" className="btn btn-secondary">
+            Browse other sellers
+          </a>
+        </p>
+      </section>
+    );
+  }
   const notFound = pageContext.is404 || pageContext.abortStatusCode === 404;
   if (!notFound) {
     return (

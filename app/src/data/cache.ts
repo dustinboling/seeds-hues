@@ -31,6 +31,14 @@ export interface DataCache {
   get<T>(key: string, loader: () => Promise<{ value: T; catalogSeq?: number | null; paths: string[] }>, maxAgeMs?: number): Promise<T>;
   peek<T>(key: string): CacheEntry<T> | null;
   invalidatePaths(paths: string[]): string[];
+  /**
+   * Every path registered by an entry one of the given paths would purge
+   * (the entries' own pages plus their related-entity pages — e.g. the
+   * variety pages behind a purged seller entry). The edge purge deletes
+   * these alongside the tag's own paths, so a one-tag revalidate drops
+   * every affected page even though the tag names only its own.
+   */
+  relatedPaths(paths: string[]): string[];
   invalidateAll(): void;
   size(): number;
 }
@@ -77,6 +85,16 @@ export function createDataCache(now: () => number = Date.now): DataCache {
         }
       }
       return purged.sort();
+    },
+    relatedPaths(paths: string[]): string[] {
+      const wanted = new Set(paths);
+      const out = new Set<string>();
+      for (const stored of entries.values()) {
+        if (stored.entry.paths.some((p) => wanted.has(p))) {
+          for (const p of stored.entry.paths) out.add(p);
+        }
+      }
+      return [...out].sort();
     },
     invalidateAll(): void {
       entries.clear();

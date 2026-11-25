@@ -7,14 +7,17 @@
 import type {
   ApiCoverageItem,
   ApiCrop,
+  ApiGrowerGuide,
   ApiMedia,
   ApiOgSeller,
   ApiPlantGuidance,
   ApiPlantRef,
   ApiPublicListing,
   ApiRecentItem,
+  ApiSellerDetail,
   ApiSellerItem,
   ApiSellerRef,
+  ApiSeriesRef,
   ApiVarietyDetail,
   ApiVarietyListItem,
   CatalogCounts,
@@ -51,6 +54,31 @@ export interface FakeCatalogState {
    * stub's small_farm filter reads this side table.
    */
   smallFarmVarieties: string[];
+  /**
+   * Slice 5: full seller records by slug (GET /api/v1/sellers/[slug]).
+   * Sellers listed in `sellers` but absent here serve the legacy
+   * OG-subset shape (the pre-Slice-5 stub behavior for old suites).
+   */
+  sellerDetails: Record<string, ApiSellerDetail>;
+  /** Slice 5: removed-seller slugs (the seller-status source reports gone → 410). */
+  removedSellers: string[];
+  /**
+   * Slice 5: per-crop detail fields behind GET /api/v1/crops/[slug] (the
+   * list row in `crops` carries the rest; the varieties window derives
+   * from `listItems` members). Crops absent here serve null prose/facts
+   * and no series (the pre-Slice-5 shape for old suites).
+   */
+  cropExtras: Record<string, ApiCropExtra>;
+}
+
+/** The per-crop detail slice GET /api/v1/crops/[slug] adds to the list row. */
+export interface ApiCropExtra {
+  description: string | null;
+  sowingNotes: string | null;
+  life_cycle: string | null;
+  hardiness: string | null;
+  grower_guide: ApiGrowerGuide | null;
+  series: ApiSeriesRef[];
 }
 
 const crop = (
@@ -619,6 +647,9 @@ export function fakeCatalogState(): FakeCatalogState {
     merged: { "sweet-pea-old-ransom": "sweet-pea-kings-ransom" },
     seriesCatalog: [{ slug: "spencer-mix", name: "Spencer", plantSlug: "sweet-pea" }],
     smallFarmVarieties: [],
+    sellerDetails: {},
+    removedSellers: [],
+    cropExtras: {},
   };
 }
 

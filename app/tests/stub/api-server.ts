@@ -255,7 +255,21 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
       }
       const sellerDetail = /^\/api\/v1\/sellers\/([^/]+)$/.exec(path);
       if (sellerDetail) {
-        const seller = state.sellers.find((s) => s.slug === sellerDetail[1]);
+        const slug = sellerDetail[1]!;
+        // Live-faithful: a removed seller 410s at the API (gone), like v2's
+        // getSeller handler — the page resolves gone-vs-missing through the
+        // seller-status lookup, below.
+        if (state.removedSellers.includes(slug)) {
+          send(410, { data: null, error: { code: "gone", message: "seller removed at its request" } });
+          return;
+        }
+        const full = state.sellerDetails[slug];
+        if (full) {
+          send(200, one(full));
+          return;
+        }
+        // Pre-Slice-5 fallback for old suites: the OG-subset shape.
+        const seller = state.sellers.find((s) => s.slug === slug);
         if (!seller) {
           send(404, notFound("seller"));
           return;
@@ -271,7 +285,50 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
           send(404, notFound("crop"));
           return;
         }
-        send(200, one(crop));
+        // Live-faithful: the resting Name A–Z window (the hub walks the
+        // full set and filters/sorts read-side — the handler takes no
+        // filter params). v2's shape: data is the crop with the window
+        // inside, meta.total the full count.
+        const extra = state.cropExtras[crop.slug] ?? {
+          description: null,
+          sowingNotes: null,
+          life_cycle: null,
+          hardiness: null,
+          grower_guide: null,
+          series: [],
+        };
+        const members = stubSortVarieties(
+          state.listItems.filter((item) => item.plant.slug === crop.slug),
+          "name",
+        );
+        const limit = Math.max(1, Math.min(Number(url.searchParams.get("limit") ?? "24") || 24, 100));
+        const offset = Math.max(0, Number(url.searchParams.get("cursor") ?? "0") || 0);
+        const window = members.slice(offset, offset + limit);
+        const next = offset + window.length;
+        send(200, {
+          data: {
+            slug: crop.slug,
+            commonName: crop.commonName,
+            latinName: crop.latinName,
+            lifeCycle: crop.lifeCycle,
+            season_class: crop.season_class,
+            sowing_methods: crop.sowing_methods,
+            varietyCount: crop.varietyCount,
+            varietiesWithSellers: crop.varietiesWithSellers,
+            lastUpdated: crop.lastUpdated,
+            media: crop.media,
+            description: extra.description,
+            sowingNotes: extra.sowingNotes,
+            life_cycle: extra.life_cycle,
+            hardiness: extra.hardiness,
+            grower_guide: extra.grower_guide,
+            series: extra.series,
+            varieties: window,
+          },
+          page: { next_cursor: next < members.length ? String(next) : null, has_more: next < members.length },
+          meta: { nextCursor: next < members.length ? String(next) : null, count: window.length, total: members.length, generated_at: GENERATED_AT },
+          error: null,
+        });
         return;
       }
       const seriesDetail = /^\/api\/v1\/series\/([^/]+)$/.exec(path);
@@ -283,8 +340,11 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
           return;
         }
         // The SeriesDetail's crop is the full plant ref; its variety set is
-        // the pool's members (honest counts, not placeholders).
-        const members = state.listItems.filter((item) => item.series?.slug === seed.slug);
+        // the pool's members in Name A–Z (honest counts, not placeholders).
+        const members = stubSortVarieties(
+          state.listItems.filter((item) => item.series?.slug === seed.slug),
+          "name",
+        );
         send(
           200,
           one({
@@ -324,6 +384,27 @@ export async function startStubApi(state: FakeCatalogState): Promise<StubApi> {
           return;
         }
         send(200, { status: "unknown", merged_into: null });
+        return;
+      }
+      const sellerStatus = /^\/api\/internal\/seller-status\/([^/]+)$/.exec(path);
+      if (sellerStatus) {
+        // v2's shipped precedent: ok (visible), gone (removed → 410), or
+        // missing (→ 404). Always 200: a lookup, not a fetch. Malformed
+        // slugs are missing, like the live route.
+        const slug = sellerStatus[1]!;
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 160) {
+          send(200, { status: "missing" });
+          return;
+        }
+        if (state.removedSellers.includes(slug)) {
+          send(200, { status: "gone" });
+          return;
+        }
+        if (state.sellerDetails[slug] || state.sellers.some((s) => s.slug === slug)) {
+          send(200, { status: "ok" });
+          return;
+        }
+        send(200, { status: "missing" });
         return;
       }
       send(404, { error: { code: "not_found", message: "stub has no such path" } });

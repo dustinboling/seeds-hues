@@ -32,9 +32,15 @@ describe("redirectForUrl", () => {
     expect(redirectForUrl("/varieties/sweet-pea-kings-ransom")).toBe("/variety/sweet-pea-kings-ransom");
     expect(redirectForUrl("/sellers")).toBe("/seller");
     expect(redirectForUrl("/sellers/blue-ridge-seeds")).toBe("/seller/blue-ridge-seeds");
+    expect(redirectForUrl("/plants")).toBe("/crop");
+    expect(redirectForUrl("/plants/sunflower")).toBe("/crop/sunflower");
+    expect(redirectForUrl("/categories")).toBe("/crop");
+    expect(redirectForUrl("/categories/sunflower")).toBe("/crop/sunflower");
     // Malformed plural slugs fall through (the route 404s them itself).
     expect(redirectForUrl("/varieties/BAD")).toBeNull();
     expect(redirectForUrl("/sellers/BAD")).toBeNull();
+    expect(redirectForUrl("/plants/BAD")).toBeNull();
+    expect(redirectForUrl("/categories/BAD")).toBeNull();
   });
 
   it("redirects legacy ?v=/?s= slugs to the detail page", () => {
@@ -52,8 +58,14 @@ describe("redirectForUrl", () => {
     expect(redirectForUrl("/seller?page=1")).toBe("/seller");
     expect(redirectForUrl("/variety?color_family=yellow&page=1")).toBe("/variety?color_family=yellow");
     expect(redirectForUrl("/seller?state=OR&page=1")).toBe("/seller?state=OR");
+    expect(redirectForUrl("/seller/blue-ridge-seeds?page=1")).toBe("/seller/blue-ridge-seeds");
+    expect(redirectForUrl("/seller/blue-ridge-seeds?crop=cosmos&page=1")).toBe("/seller/blue-ridge-seeds?crop=cosmos");
+    expect(redirectForUrl("/crop/sunflower?page=1")).toBe("/crop/sunflower");
+    expect(redirectForUrl("/state/oregon?page=1")).toBe("/state/oregon");
     // The target carries no page param: the rule can never refire (one hop by construction).
     expect(redirectForUrl("/variety?color_family=yellow")).toBeNull();
+    // Series has no pagination: no ?page=1 row on this template.
+    expect(redirectForUrl("/series/sunbeam?page=1")).toBeNull();
   });
 
   it("reads only the FIRST page value (v2's parsePage rule)", () => {

@@ -403,6 +403,172 @@ export interface ApiOgSeller {
   varietyCount: number;
 }
 
+/**
+ * Shop/hub detail shapes (Slice 5). The same JSON the live API serves:
+ * GET /api/v1/sellers/[slug] returns the full SellerDetail (listings
+ * included — the shop page's one read, paginated read-side); GET
+ * /api/v1/crops/[slug] returns the CropDetail with a paged varieties window
+ * (meta.total is the full count — the hub walks and filters read-side);
+ * GET /api/v1/series/[slug] returns the full SeriesDetail. Field names
+ * follow the API (camelCase entity fields; the crop's life_cycle/hardiness
+ * and grower_guide keep v2's snake_case). No price field exists anywhere:
+ * prices are stored, never shown (R1).
+ */
+
+/** A seller's kind of place (v2's SELLER_LOCATION_KINDS, verbatim). */
+export type ApiSellerLocationKind = "physical" | "warehouse" | "mailing";
+
+/**
+ * One qualifying recorded location (the set the shop page's Locations area
+ * renders, in §5.2 order: primary first, then kind, state, city).
+ */
+export interface ApiSellerLocation {
+  kind: ApiSellerLocationKind;
+  street: string | null;
+  city: string;
+  state: string;
+  zip: string | null;
+  isPrimary: boolean;
+}
+
+/** Third-party aggregate (e.g. Google) shown apart from our own rating. */
+export interface ApiImportedRating {
+  source: "Google";
+  placeName: string;
+  placeId: string;
+  rating: number;
+  reviewCount: number;
+  /** YYYY-MM-DD the aggregate was fetched. */
+  fetchedDate: string;
+}
+
+/**
+ * GET /api/v1/sellers/[slug]: the SellerSummary slice plus prose, the full
+ * listing set, the published customer-service contacts, and the qualifying
+ * recorded locations. Removed sellers 410 at the API (gone) and resolve
+ * through sellerStatus, below.
+ */
+export interface ApiSellerDetail {
+  slug: string;
+  name: string;
+  type: ApiSellerType;
+  location: string | null;
+  region: string | null;
+  country: string;
+  homepage: string | null;
+  ratingCount: number;
+  /** Always null until real ratings exist (R7). */
+  ratingAverage: number | null;
+  rating: ApiRating;
+  /** Never omitted: null when no third-party rating was imported. */
+  importedRating: ApiImportedRating | null;
+  /** The seller carries the "Small farm" badge. */
+  isSmallFarm: boolean;
+  description: string | null;
+  orderingNotes: string | null;
+  varietyCount: number;
+  updatedAt: string;
+  claimStatus: "unclaimed" | "claimed";
+  shipsTo: string[];
+  /** True only for Hues itself (disclosure). */
+  isSiteOwner: boolean;
+  listings: ApiPublicListing[];
+  /** The published customer-service phone (display form); null when unpublished. Never omitted. */
+  customerServicePhone: string | null;
+  /** The published customer-service email, in full; null when unpublished. Never omitted. */
+  customerServiceEmail: string | null;
+  /** The seller's qualifying recorded locations, in §5.2 order; [] when none. */
+  locations: ApiSellerLocation[];
+}
+
+/**
+ * The removed-seller lookup (GET /api/internal/seller-status/[slug] —
+ * v2's shipped precedent): "ok" (visible), "gone" (removed at the
+ * seller's request → 410), or "missing" (→ 404). Always 200: it is a
+ * lookup, not a fetch.
+ */
+export interface ApiSellerStatus {
+  status: "ok" | "gone" | "missing";
+}
+
+/** A crop's grower guide (null fields = not known; a null section = no content). */
+export interface ApiGrowerGuide {
+  growing: {
+    sowing: string | null;
+    germination: string | null;
+    transplanting: string | null;
+    days_to_bloom: string | null;
+    spacing: string | null;
+    growing: string | null;
+    /** Harvesting for the vase; null when the content has none. */
+    harvest_for_cutting: string | null;
+    /** Short closing notes; [] when none. */
+    good_to_know: string[];
+  } | null;
+  seed_saving: {
+    /** As written in the content (e.g. "easy", "moderate"). */
+    difficulty: string | null;
+    when_to_harvest: string | null;
+    how_to_collect: string | null;
+    cleaning: string | null;
+    drying: string | null;
+    storage: string | null;
+    pollination_notes: string | null;
+  } | null;
+}
+
+/**
+ * GET /api/v1/crops/[slug]: the crop list fields plus guidance prose,
+ * life-cycle/hardiness facts, the grower guide, the crop's series, and the
+ * varieties WINDOW for the requested page (meta.total is the full count).
+ */
+export interface ApiCropDetail {
+  slug: string;
+  commonName: string;
+  latinName: string | null;
+  lifeCycle: string | null;
+  season_class: ApiSeasonClass | null;
+  sowing_methods: ApiSowingMethod[];
+  varietyCount: number;
+  varietiesWithSellers: number;
+  lastUpdated: string | null;
+  media: { url: string }[];
+  description: string | null;
+  sowingNotes: string | null;
+  /** e.g. "Annual", "Hardy annual"; null when not known. */
+  life_cycle: string | null;
+  /** e.g. "Hardy annual — seedlings tolerate light frost."; null when not known. */
+  hardiness: string | null;
+  /** Null when the crop has no grower content. */
+  grower_guide: ApiGrowerGuide | null;
+  series: ApiSeriesRef[];
+  /** The requested page's window (resting Name A–Z from the API). */
+  varieties: ApiVarietyListItem[];
+}
+
+/** GET /api/v1/series/[slug]: the series, its crop, and ALL its varieties. */
+export interface ApiSeriesDetail {
+  slug: string;
+  name: string;
+  plant: ApiPlantRef;
+  varietyCount: number;
+  varietiesWithSellers: number;
+  varieties: ApiVarietyListItem[];
+}
+
+/**
+ * Per-option result counts for the crop-detail filters (v2's
+ * CropDetailCounts, verbatim): sellers tri-state, hue options, series
+ * options. The app computes these read-side over one walked set; the
+ * /api/browse endpoints that serve them in v2 are internal Next routes,
+ * not public API.
+ */
+export interface ApiCropDetailCounts {
+  sellers: { all: number; has: number; none: number };
+  hue: { all: number; options: Record<string, number> };
+  series: { all: number; options: Record<string, number> };
+}
+
 /** One OpenAPI operation parameter (GET /api/v1/openapi.json). */
 export interface OpenApiParam {
   name: string;
