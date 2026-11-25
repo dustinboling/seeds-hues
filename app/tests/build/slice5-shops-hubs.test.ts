@@ -73,6 +73,14 @@ const organizations = (html: string): Record<string, unknown>[] =>
     (b): b is Record<string, unknown> => typeof b === "object" && b !== null && (b as { "@type": string })["@type"] === "Organization",
   );
 
+interface LdBreadcrumb {
+  "@type": string;
+  itemListElement: { "@type": string; position: number; name: string; item: string }[];
+}
+
+const breadcrumbs = (html: string): LdBreadcrumb[] =>
+  ldJsonBlocks(html).filter((b): b is LdBreadcrumb => typeof b === "object" && b !== null && (b as { "@type": string })["@type"] === "BreadcrumbList");
+
 /** Shop-grid card order: the h3 variety names in DOM order. */
 const shopCardNames = (html: string): string[] =>
   [...decodeHtml(html).matchAll(/<h3[\s\S]*?<\/h3>/g)].map((m) => m[0].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim());
@@ -267,6 +275,15 @@ describe("shop page 1 SSR (raw HTML, no JavaScript)", () => {
     expect(orgs).toHaveLength(1);
     expect(orgs[0]!["name"]).toBe("Blue Ridge Seeds");
     expect(orgs[0]!["address"]).toEqual({ "@type": "PostalAddress", addressLocality: "Portland", addressRegion: "OR" });
+    // The §1.1 trail: Home → Sellers → seller, as JSON-LD and as real anchors.
+    const crumbs = breadcrumbs(html);
+    expect(crumbs).toHaveLength(1);
+    expect(crumbs[0]!.itemListElement.map((e) => [e.position, e.name, e.item])).toEqual([
+      [1, "Home", SITE],
+      [2, "Sellers", `${SITE}/seller`],
+      [3, "Blue Ridge Seeds", `${SITE}/seller/blue-ridge-seeds`],
+    ]);
+    expect(html).toContain('href="/seller"');
   });
 
   it("emits a 24-entry ItemList plus variety anchors", async () => {
@@ -380,6 +397,11 @@ describe("shop page 2 and page bounds", () => {
     expect(res.headers.get("location")).toBe("/seller/blue-ridge-seeds");
     const followed = await get("/seller/blue-ridge-seeds");
     expect(followed.status).toBe(200);
+    // Filtered page 1 keeps its filters (one hop to the filtered clean URL).
+    const filtered = await get("/seller/blue-ridge-seeds?crop=cosmos&page=1", false);
+    expect(filtered.status).toBe(301);
+    expect(filtered.headers.get("location")).toBe("/seller/blue-ridge-seeds?crop=cosmos");
+    expect((await get("/seller/blue-ridge-seeds?crop=cosmos")).status).toBe(200);
   });
 
   it("answers 404 past the end", async () => {
@@ -492,6 +514,11 @@ describe("zero-listing shop and removed sellers", () => {
     expect(meta(html, "name", "description")).toBe(
       "Quiet Hollow Farm in Burlington, VT: 0 flower seed varieties listed, each with its stock state and the date it was last checked. A quiet hillside farm.",
     );
+    // The empty shop still carries its (empty) ItemList — v2 emits it unconditionally.
+    const lists = itemLists(res.text);
+    expect(lists).toHaveLength(1);
+    expect(lists[0]!.numberOfItems).toBe(0);
+    expect(lists[0]!.itemListElement).toEqual([]);
     expectHeadExclusivity(res.text);
     expectNoPrice(res.text);
   });
@@ -588,10 +615,14 @@ describe("shop search, filters, and sort (server-rendered)", () => {
     expect(html).toContain("30 listings, A–Z. · page 1 of 2");
   });
 
-  it("keeps sort-only views indexable with the sort-free canonical", async () => {
+  it("noindexes sort-only views with the clean canonical (v2 S-11, extended)", async () => {
+    // v2's shop rule (generateMetadata, S-11): filtered, searched, AND
+    // sorted views are noindexed with the canonical to the unfiltered shop
+    // URL — the /variety discipline, extended. Sort-only is stated here.
     const html = decodeHtml((await get("/seller/blue-ridge-seeds?sort=name")).text);
-    expect(meta(html, "name", "robots")).toBe("index, follow");
+    expect(meta(html, "name", "robots")).toBe("noindex, follow");
     expect(canonicalOf(html)).toBe(`${SITE}/seller/blue-ridge-seeds`);
+    expect(titleOf(html)).toBe("Blue Ridge Seeds — Flower Seed Seller | seeds.hues.flowers");
   });
 
   it("404s a filtered page past its narrowed end", async () => {
@@ -649,6 +680,13 @@ describe("crop hub SSR", () => {
     expect(lists[0]!.itemListElement.map((e) => e.name)).toEqual(CROP_PAGE1);
     expect(countOf(res.text, /href="\/variety\//g)).toBeGreaterThanOrEqual(24);
     expect(html).toContain("30 varieties, alphabetical. Page 1 of 2.");
+    const crumbs = breadcrumbs(res.text);
+    expect(crumbs).toHaveLength(1);
+    expect(crumbs[0]!.itemListElement.map((e) => [e.position, e.name, e.item])).toEqual([
+      [1, "Home", SITE],
+      [2, "Crops", `${SITE}/crop`],
+      [3, "Sunflower", `${SITE}/crop/sunflower`],
+    ]);
     expectHeadExclusivity(res.text);
     expectNoPrice(res.text);
   });
@@ -697,8 +735,14 @@ describe("crop hub SSR", () => {
     const one = await get("/crop/sunflower?page=1", false);
     expect(one.status).toBe(301);
     expect(one.headers.get("location")).toBe("/crop/sunflower");
+    // Filtered page 1 keeps its filters (one hop to the filtered clean URL).
+    const filtered = await get("/crop/sunflower?has_sellers=true&page=1", false);
+    expect(filtered.status).toBe(301);
+    expect(filtered.headers.get("location")).toBe("/crop/sunflower?has_sellers=true");
+    expect((await get("/crop/sunflower?has_sellers=true")).status).toBe(200);
     expect((await get("/crop/sunflower?page=3")).status).toBe(404);
     expect((await get("/crop/no-such-crop")).status).toBe(404);
+    expect((await get("/crop/Bad_Slug")).status).toBe(404);
   });
 
   it("redirects the plural legacy crop paths in one 301 hop", async () => {
@@ -791,6 +835,13 @@ describe("series hub SSR", () => {
     expect(lists[0]!.numberOfItems).toBe(8);
     expect(countOf(res.text, /href="\/variety\//g)).toBeGreaterThanOrEqual(8);
     expect(meta(html, "property", "og:image")).toBe(`${SITE}/og/crop/sunflower`);
+    const crumbs = breadcrumbs(res.text);
+    expect(crumbs).toHaveLength(1);
+    expect(crumbs[0]!.itemListElement.map((e) => [e.position, e.name, e.item])).toEqual([
+      [1, "Home", SITE],
+      [2, "Sunflower", `${SITE}/crop/sunflower`],
+      [3, "Sunbeam series", `${SITE}/series/sunbeam`],
+    ]);
     expectHeadExclusivity(res.text);
     expectNoPrice(res.text);
   });
@@ -811,12 +862,18 @@ describe("series hub SSR", () => {
 
   it("answers 404 for unknown series", async () => {
     expect((await get("/series/no-such-series")).status).toBe(404);
+    expect((await get("/series/Bad_Slug")).status).toBe(404);
   });
 
   it("ignores paging on the unpaginated template (the port does not paginate series)", async () => {
     const res = await get("/series/sunbeam?page=2");
     expect(res.status).toBe(200);
     expect(itemLists(res.text)[0]!.numberOfItems).toBe(8);
+    // No ?page=1 redirect on this template (Bea §4.1 lists no series row):
+    // paging is ignored and the canonical stays clean, never duplicated.
+    const one = await get("/series/sunbeam?page=1");
+    expect(one.status).toBe(200);
+    expect(canonicalOf(decodeHtml(one.text))).toBe(`${SITE}/series/sunbeam`);
   });
 });
 
@@ -845,6 +902,13 @@ describe("state hub SSR", () => {
     expect(html).toContain("Oregon landscape with Oregon grape");
     expect(html).toContain("Oregon grape, Oregon's state flower");
     expect(meta(html, "property", "og:image")).toBe(`${SITE}/og/site/default`);
+    const crumbs = breadcrumbs(res.text);
+    expect(crumbs).toHaveLength(1);
+    expect(crumbs[0]!.itemListElement.map((e) => [e.position, e.name, e.item])).toEqual([
+      [1, "Home", SITE],
+      [2, "Sellers", `${SITE}/seller`],
+      [3, "Oregon", `${SITE}/state/oregon`],
+    ]);
     expectHeadExclusivity(res.text);
     expectNoPriceWithKnownWords(res.text, ["we review every submission by hand"]);
   });
@@ -875,6 +939,7 @@ describe("state hub SSR", () => {
     // California is real but has no fixture seller: true 404, like any unknown slug.
     expect((await get("/state/california")).status).toBe(404);
     expect((await get("/state/not-a-state")).status).toBe(404);
+    expect((await get("/state/Bad_Slug")).status).toBe(404);
   });
 });
 
