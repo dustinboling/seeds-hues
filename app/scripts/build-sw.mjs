@@ -8,9 +8,11 @@ import { buildSync } from "esbuild";
 import { injectManifest } from "workbox-build";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const clientDir = join(root, "dist/client");
+// SW_CLIENT_DIR retargets the SW build (the worker build passes its own
+// client output); unset, the main build's dist/client stands as before.
+const clientDir = process.env.SW_CLIENT_DIR ? join(root, process.env.SW_CLIENT_DIR) : join(root, "dist/client");
 if (!existsSync(clientDir)) {
-  throw new Error("dist/client is missing — run `vike build` first (via `npm run build`).");
+  throw new Error(`${process.env.SW_CLIENT_DIR ?? "dist/client"} is missing — run the app build first (via \`npm run build\` or \`npm run build:worker\`).`);
 }
 const swDest = join(clientDir, "sw.js");
 buildSync({

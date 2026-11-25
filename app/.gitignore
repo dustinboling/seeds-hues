@@ -1,5 +1,7 @@
 dist/
 dist-server/
+dist-worker/
+.wrangler/
 coverage/
 .vitest/
 *.tsbuildinfo
