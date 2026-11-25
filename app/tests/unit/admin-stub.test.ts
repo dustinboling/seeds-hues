@@ -224,7 +224,7 @@ describe("review flows", () => {
     const res = await post("/api/internal/admin/review/decide", { action: "publish_listing", kind: "review", id: 101 }, ADMIN);
     expect(res.status).toBe(200);
     expect(data(res.json)).toMatchObject({ status: "published", variety: "Lonely Bloom" });
-    const detail = stub.state.details["cosmos-lonely-bloom"];
+    const detail = stub.state.details["cosmos-lonely-bloom"]!;
     expect(detail.listings.map((l) => l.id)).toContain(900);
   });
 
@@ -233,7 +233,7 @@ describe("review flows", () => {
     expect(res.status).toBe(200);
     const variety = stub.state.admin.varieties.find((v) => v.slug === "sweet-pea-kings-ransom")!;
     expect(variety.aliases).toContainEqual({ alias: "King's Ransom Select", source: "duplicate_decision", decidedByName: "Dustin", createdAt: stub.state.admin.now });
-    expect(stub.state.details["sweet-pea-kings-ransom"].aliases).toContain("King's Ransom Select");
+    expect(stub.state.details["sweet-pea-kings-ransom"]!.aliases).toContain("King's Ransom Select");
     // And the held name still turns up in public search.
     const search = await get("/api/v1/search?q=ransom+select");
     expect(JSON.stringify(search.json)).toContain("King's Ransom Select");
@@ -253,7 +253,7 @@ describe("review flows", () => {
       expect(res.json).toMatchObject({ code: "duplicate_hold_ui_only" });
     }
     expect(stub.state.admin.review.find((i) => i.id === 103)!.status).toBe("pending");
-    expect(stub.state.details["sweet-pea-kings-ransom"].aliases).not.toContain("King's Ransom Select");
+    expect(stub.state.details["sweet-pea-kings-ransom"]!.aliases).not.toContain("King's Ransom Select");
   });
 
   it("a generic decide action cannot resolve a hold outside the duplicate path", async () => {

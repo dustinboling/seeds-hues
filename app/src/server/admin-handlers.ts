@@ -428,7 +428,7 @@ async function successRedirect(
       return done({ status: "save_failed" });
     }
     case "listings": {
-      const variety = typeof data.variety_name === "string" ? { variety_name: data.variety_name } : {};
+      const variety: Record<string, string | null> = typeof data.variety_name === "string" ? { variety_name: data.variety_name } : {};
       if (status === "retired") return done({ status: "retired", ...variety });
       if (status === "restored") return done({ status: data.restored === true ? "restored" : "restore_skipped", ...variety });
       if (status === "restore_skipped") return done({ status: "restore_skipped", ...variety });

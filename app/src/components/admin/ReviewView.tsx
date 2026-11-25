@@ -372,7 +372,7 @@ function DuplicatePane({ detail, queue, show, onDone }: { detail: ReviewDetail; 
       {detail.comparison ? (
         <ul aria-label="Comparison" className="card admin-compare-list">
           <li>{detail.comparison.cropLine}</li>
-          <li>{Detail.comparison.nameLine}</li>
+          <li>{detail.comparison.nameLine}</li>
           <li>{detail.comparison.sellerLine}</li>
         </ul>
       ) : null}

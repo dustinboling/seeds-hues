@@ -106,7 +106,8 @@ function SiteStatCard({ card }: { card: HubSnapshotCard }) {
 }
 
 function PopularityTables({ data }: { data: PopularityData }) {
-  if (data.signal === "views" || data.signal === "clicks") {
+  // De Morgan form: TS cannot narrow the || false-branch over the union-typed discriminant.
+  if (data.signal !== "waitlist" && data.signal !== "searches") {
     if (data.rows.length === 0) return <p className="admin-prose-lg">{data.emptyLine}</p>;
     return (
       <div className="admin-stack">

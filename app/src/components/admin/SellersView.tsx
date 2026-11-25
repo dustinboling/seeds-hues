@@ -76,7 +76,7 @@ export function SellersView({
   const isAdmin = role === "admin";
   const listed = detail ? isPubliclyListed({ eligibility: detail.eligibility, status: detail.status, listingPolicy: detail.listingPolicy, deletedAt: detail.deletedAt ?? null }) : false;
   const editDefaults: SellerEditDefaults | null = detail
-    ? { slug: detail.slug, name: detail.name, type: detail.type, platform: detail.platform, homepage: detail.homepage, contactEmail: detail.contactEmail, location: detail.location, region: detail.region, country: detail.country, shipsTo: detail.shipsTo, description: detail.description, orderingNotes: detail.orderingNotes }
+    ? { seller: detail.slug, name: detail.name, type: detail.type, platform: detail.platform, homepage: detail.homepage, contactEmail: detail.contactEmail, location: detail.location, region: detail.region, country: detail.country, shipsTo: detail.shipsTo, description: detail.description, orderingNotes: detail.orderingNotes }
     : null;
   return (
     <div className="admin-stack">

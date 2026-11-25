@@ -117,7 +117,7 @@ describe("AdminShell navigation by role + viewport", () => {
 });
 
 describe("master–detail at iPad widths (no phone-layout collapse)", () => {
-  const rows = [{ ref: { kind: "review", id: 101 }, type: "listing_match", name: "Lonely Bloom", facts: "Blue Ridge Seeds", createdAt: "2026-11-20T09:00:00.000Z", source: null }];
+  const rows = [{ ref: { kind: "review" as const, id: 101 }, type: "listing_match", name: "Lonely Bloom", facts: "Blue Ridge Seeds", createdAt: "2026-11-20T09:00:00.000Z", source: null }];
 
   it("iPad review: the queue list AND the decision pane render together", () => {
     setViewport(1024, 768);
@@ -212,7 +212,7 @@ describe("role rendering inside the sections (Act = absent)", () => {
   it("duplicate holds: BOTH roles get the two equal-weight decision buttons", () => {
     setViewport(1024, 768);
     const detail = { type: "duplicate_hold", name: "King's Ransom Select", held: { name: "King's Ransom Select", cropCommon: "Sweet Pea", sellerName: "Blue Ridge Seeds" }, existing: { name: "King's Ransom", slug: "sweet-pea-kings-ransom" } };
-    const rows = [{ ref: { kind: "review", id: 103 }, type: "duplicate_hold", name: "King's Ransom Select", facts: "Looks like 'King's Ransom'", createdAt: "2026-11-22T11:00:00.000Z", source: "From the scout" }];
+    const rows = [{ ref: { kind: "review" as const, id: 103 }, type: "duplicate_hold", name: "King's Ransom Select", facts: "Looks like 'King's Ransom'", createdAt: "2026-11-22T11:00:00.000Z", source: "From the scout" }];
     for (const role of ["admin", "reviewer"]) {
       const { unmount } = render(<ReviewView queue="duplicates" rows={rows} total={1} selected={{ kind: "review", id: 103 }} detail={detail} role={role} />);
       expect(screen.getByRole("button", { name: "It's a duplicate" })).not.toBeNull();
