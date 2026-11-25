@@ -123,15 +123,26 @@ async function main(): Promise<void> {
         }
         const body = await readJsonBody(req);
         try {
+          // Capture related-entity paths BEFORE the data purge deletes the
+          // entries that register them (a seller tag drops the variety
+          // pages behind its listings even though the tag names only its
+          // own — relatedPaths after invalidate would see an empty cache).
+          let related: string[] = [];
           const result = await handleRevalidateHttpRequest(
             { authorization: req.headers.authorization ?? null, body },
-            { expectedSecret: secret, invalidatePaths: (paths) => cache.invalidatePaths(paths) },
+            {
+              expectedSecret: secret,
+              invalidatePaths: (paths) => {
+                related = cache.relatedPaths(paths);
+                return cache.invalidatePaths(paths);
+              },
+            },
           );
           // The tag's own paths plus the purged entries' related-entity
           // paths (a one-tag revalidate drops every affected page even
           // though the tag names only its own — e.g. a seller tag drops
           // the variety pages behind its listings).
-          for (const p of new Set([...result.paths, ...cache.relatedPaths(result.paths)])) purgeEdge(edge, p);
+          for (const p of new Set([...result.paths, ...related])) purgeEdge(edge, p);
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(result));
         } catch (error) {

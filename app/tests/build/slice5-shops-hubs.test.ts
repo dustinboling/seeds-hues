@@ -907,7 +907,10 @@ describe("invalidation spot proof (runs last — mutates the stub)", () => {
     expect(result.purged).toContain("variety:detail:sweet-pea-kings-ransom");
 
     // After: both pages reflect the write with no rebuild and no cache-busting.
-    const shopAfter = decodeHtml((await get("/seller/blue-ridge-seeds")).text);
+    // Listing 1 sells out, so the grouped order moves it from page 1 (orderable)
+    // to page 2 (sold out, King's Ransom sorts after Joyful Noise) — page 2
+    // carries the new "Checked Nov 22" stock line.
+    const shopAfter = decodeHtml((await get("/seller/blue-ridge-seeds?page=2")).text);
     expect(shopAfter).toContain("Checked Nov 22");
     const varietyAfter = decodeHtml((await get("/variety/sweet-pea-kings-ransom")).text);
     expect(varietyAfter).toContain("Checked Nov 22");
