@@ -74,7 +74,7 @@ export interface RelayRequest {
   path: string;
   query: string;
   headers: Headers;
-  body: Uint8Array | null;
+  body: Uint8Array<ArrayBuffer> | null;
   /** The downstream socket IP, appended to X-Forwarded-For (the backend's rate-limit identity). */
   socketIp: string | null;
 }

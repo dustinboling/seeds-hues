@@ -46,7 +46,7 @@ export function AddYourFarmForm(props: {
   const [token, setToken] = useState<string | null>(null);
   const [reset, setReset] = useState(0);
   const [busy, setBusy] = useState(false);
-  const [failure, setFailure] = useState<MappedFormFailure>(floorValues ? floor.values.failure : { fields: [], form: null });
+  const [failure, setFailure] = useState<MappedFormFailure>(floor?.kind === "failure" ? floor.failure : { fields: [], form: null });
   const [done, setDone] = useState(floor?.kind === "success");
   const summaryRef = useRef<HTMLDivElement | null>(null);
   const successHeadingRef = useRef<HTMLSpanElement | null>(null);

@@ -49,7 +49,7 @@ export function ReportForm(props: { type: Intent; targetType: "variety" | "selle
   const [token, setToken] = useState<string | null>(null);
   const [reset, setReset] = useState(0);
   const [sending, setSending] = useState(false);
-  const [failure, setFailure] = useState<MappedFormFailure>(floorValues ? floor.values.failure : { fields: [], form: null });
+  const [failure, setFailure] = useState<MappedFormFailure>(floor?.kind === "failure" ? floor.failure : { fields: [], form: null });
   const [done, setDone] = useState<{ targetType: "variety" | "seller"; targetRef: string } | null>(
     floor?.kind === "success" ? { targetType: floor.targetType, targetRef: floor.targetRef } : null,
   );
