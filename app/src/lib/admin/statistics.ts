@@ -266,17 +266,8 @@ export const NO_VIEWS_LINE = "No views recorded in this period.";
 export const NO_CLICKS_LINE = "No clicks recorded in this period.";
 export const NO_WAITERS_LINE = "No one is waiting on a variety yet.";
 
-/** A signal with no history at all renders its card's composed no-data line instead of a chart. */
-const NO_ACCOUNTS_YET = "No accounts created yet.";
-const NO_SIGNUPS_YET = "No waitlist signups yet.";
-const NO_CLICKS_YET = "No clicks to sellers yet.";
-
 /** Demand the directory can't yet serve, named: "{p}% of clicks were on sold-out listings". */
 export function soldOutLine(total: number, soldOut: number): string | null {
   if (total <= 0) return null;
   return `${Math.round((100 * soldOut) / total)}% of clicks were on sold-out listings`;
 }
-
-// ─── Page data (fully computed — components render, never interpret) ────────
-
-type SiteCardKey = "visitors" | "accounts" | "waitlist" | "clicks";
