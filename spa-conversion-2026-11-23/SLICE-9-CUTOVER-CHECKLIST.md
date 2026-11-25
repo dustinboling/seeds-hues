@@ -209,3 +209,20 @@ dispositions) and the rollback-trigger status; the C3 drive result with
 its human/mailbox legs named; the sign-off dates recorded; anything
 that deviated and why — plainly. A rollback, if one happens, is
 reported as a rollback with its trigger named.
+
+## Post-prep additions (2026-11-25, from the preview-deploy gate, PR #83)
+
+- **F-1 (Quinn Minor):** the Worker entry's double-fault fallback
+  (end of `app/server/worker-handler.ts`) builds a bare Response
+  outside the shielded responder. In preview that means one
+  nested-failure plain-text 500 can lack the X-Robots-Tag; at cutover
+  the same path shapes the catastrophic-500 response. During Phase C:
+  route the fallback through the responder, or explicitly accept it
+  on the record.
+- **OG path choice (Quinn's condition on accepting the preview's
+  deviation 1):** the preview's /og relays production's rendered
+  cards because Satori cannot initialize in workerd. Phase C must
+  choose explicitly — keep the relay at cutover (the production
+  Worker's OG renderer stays a dependency) or integrate an edge-safe
+  engine for the port's own renderer (`app/src/og/render-edge.ts`,
+  unit-pinned). Do not inherit the relay by inertia.
