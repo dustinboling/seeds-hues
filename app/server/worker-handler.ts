@@ -30,7 +30,7 @@ import type { CatalogApi } from "../src/data/api";
 import type { DataCache } from "../src/data/cache";
 import { buildErrorReport, own500Html, postErrorReport } from "../src/lib/error-report";
 import { scrubAdminFalsePositives } from "../src/server/admin-scrub";
-import { DETAIL_PATTERN, detailKey, edgeKey, purgeEdge, type EdgeEntry } from "../src/server/edge-cache";
+import { DETAIL_PATTERN, detailKey, edgeKey, isPageContextJsonPath, purgeEdge, type EdgeEntry } from "../src/server/edge-cache";
 import { headersFor, mergeHeaders, routeClassFor } from "../src/server/headers";
 import {
   fetchMe,
@@ -621,9 +621,13 @@ export async function handleWorkerRequest(request: Request, deps: WorkerDeps): P
     // Edge mock: serve a stored detail 200, else render and maybe store.
     // Floor-state URLs (?waitlist=…) bypass it entirely: a transient
     // per-visitor render must never serve as, or be served from, the
-    // clean page's cache entry.
+    // clean page's cache entry. Client-navigation data
+    // (.pageContext.json) bypasses it too: it varies by the full query
+    // string, so the variety detail key would serve one filter's data
+    // as another's (Quinn F2).
     const floorBypass = url.searchParams.has("waitlist");
-    const cacheable = method === "GET" && !floorBypass && (pathname.startsWith("/variety/") || DETAIL_PATTERN.test(pathname));
+    const cacheable =
+      method === "GET" && !floorBypass && !isPageContextJsonPath(pathname) && (pathname.startsWith("/variety/") || DETAIL_PATTERN.test(pathname));
     const key = cacheable ? (pathname.startsWith("/variety/") ? edgeKey(pathname, url.search) : detailKey(pathname, url.search)) : null;
     const hit = key ? edge.get(key) : undefined;
     if (key && hit) {

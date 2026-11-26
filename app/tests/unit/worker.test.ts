@@ -589,6 +589,27 @@ describe("the edge mock + Vike catch-all", () => {
     expect(vike.calls).toHaveLength(6);
   });
 
+  it("never serves or stores client-navigation data (.pageContext.json) from the edge mock", async () => {
+    // Quinn F2's sequence: the unfiltered browse data warms first (the
+    // tab-bar navigation to /variety), then the filtered tap must get its
+    // own data — the variety detail key ignores every query but
+    // ?small_farm=true, so a stored JSON entry would answer every later
+    // filter with the first fetch's data.
+    const vike = stubVike((args) => ({
+      statusCode: 200,
+      headers: [["content-type", "application/json; charset=utf-8"]],
+      body: `json:${args.urlOriginal}`,
+    }));
+    const { deps, edge } = testDeps({ renderVike: vike.renderVike });
+    expect(await textOf(await handleWorkerRequest(req("/variety/index.pageContext.json"), deps))).toBe("json:/variety/index.pageContext.json");
+    expect(await textOf(await handleWorkerRequest(req("/variety/index.pageContext.json?color_family=white"), deps))).toBe(
+      "json:/variety/index.pageContext.json?color_family=white",
+    );
+    expect(await textOf(await handleWorkerRequest(req("/variety/index.pageContext.json"), deps))).toBe("json:/variety/index.pageContext.json");
+    expect(vike.calls).toHaveLength(3);
+    expect(edge.size).toBe(0);
+  });
+
   it("passes the isolate's shared client + cache + request context per render", async () => {
     const { deps, vike, cache } = testDeps();
     const res = await handleWorkerRequest(req("/about?x=1", { headers: { cookie: "sf_session=tok" } }), deps);
