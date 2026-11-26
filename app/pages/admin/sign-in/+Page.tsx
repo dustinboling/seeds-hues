@@ -1,5 +1,6 @@
 import { useData } from "vike-react/useData";
 import "../../../src/components/admin/admin.css";
+import "../../../src/forms.css";
 import { BusyForm } from "../../../src/components/admin/BusyForm";
 import type { Data } from "./+data";
 

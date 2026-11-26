@@ -32,8 +32,8 @@ export default function Page() {
         )}
       />
       <Breadcrumbs items={crumbs} />
-      <h1>Flower seed sellers</h1>
-      <ThemeArt name="farms-basket" priority className="art-frame" />
+      <h1 className="page-title">Flower seed sellers</h1>
+      <ThemeArt name="farms-basket" priority className="art-frame seller-index-art" />
       <SellerBrowse initial={browse} />
     </>
   );

@@ -7,10 +7,10 @@ import { SiteFooter } from "../src/components/SiteFooter";
 import { SiteHeader } from "../src/components/SiteHeader";
 import { ErrorReporter } from "../src/components/ErrorReporter";
 import { RouteAnnouncer } from "../src/components/RouteAnnouncer";
-import { TabBarPlaceholder } from "../src/components/TabBarPlaceholder";
+import { TabBar } from "../src/components/TabBar";
 
 /**
- * App shell: skip link, header, main, footer, tab-bar placeholder, and the
+ * App shell: skip link, header, main, footer, tab bar, and the
  * route-announcement live region. WCAG 2.2 AA: exactly one main landmark, the
  * skip link targets it, and route changes move focus + announce (RouteAnnouncer).
  */
@@ -25,7 +25,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         {children}
       </main>
       <SiteFooter />
-      <TabBarPlaceholder />
+      <TabBar />
       <RouteAnnouncer />
       <ErrorReporter />
     </div>

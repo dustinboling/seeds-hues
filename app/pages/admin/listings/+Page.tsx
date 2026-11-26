@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useData } from "vike-react/useData";
 import "../../../src/components/admin/admin.css";
+import "../../../src/forms.css";
 import { AdminShell } from "../../../src/components/admin/AdminShell";
 import { ListingsView, type ListingDetailData, type ListingRow } from "../../../src/components/admin/ListingsView";
 import { getAdmin } from "../../../src/components/admin/api";

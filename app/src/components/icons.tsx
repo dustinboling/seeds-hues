@@ -26,6 +26,47 @@ export function SearchIcon() {
   );
 }
 
+/** Tab-bar icons — ported from v2's layout icons (SVG paths copied exactly). */
+export function HomeIcon() {
+  return (
+    <Base>
+      <path d="M3 10.5 12 3l9 7.5" />
+      <path d="M5 9.5V21h14V9.5" />
+    </Base>
+  );
+}
+
+export function SeedIcon() {
+  return (
+    <Base>
+      <path d="M12 21c-4.5-2.5-6-6.5-6-10a6 6 0 0 1 12 0c0 3.5-1.5 7.5-6 10Z" />
+      <path d="M12 21V9" />
+    </Base>
+  );
+}
+
+/** A single bloom on a stem — the Varieties tab, distinct from the Crops seed/leaf mark. */
+export function BloomIcon() {
+  return (
+    <Base>
+      <path d="M12 2.8c1.5 1.5 4.3 1.9 4.3 4.4 0 2.4-1.9 4-4.3 4s-4.3-1.6-4.3-4c0-2.5 2.8-2.9 4.3-4.4Z" />
+      <path d="M12 11.2V21" />
+      <path d="M12 16.2c-2.6.2-4.3-.9-5-3.2 2.3-.3 4.2.7 5 3.2Z" />
+      <path d="M12 18.4c2.6.2 4.3-.9 5-3.2-2.3-.3-4.2.7-5 3.2Z" />
+    </Base>
+  );
+}
+
+export function FarmIcon() {
+  return (
+    <Base>
+      <path d="M3 21V11l5-4 5 4v10" />
+      <path d="M13 21h8V13l-4-3" />
+      <path d="M7 21v-5h2v5" />
+    </Base>
+  );
+}
+
 /** Account (person) icon — header link to /account. The link carries the accessible name. */
 export function PersonIcon() {
   return (

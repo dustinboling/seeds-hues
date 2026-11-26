@@ -24,7 +24,7 @@ export default function Page() {
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
       <JsonLd data={itemListJsonLd("Flower seed crops", items.map((c) => ({ name: c.commonName, href: `/crop/${c.slug}` })))} />
       <Breadcrumbs items={crumbs} />
-      <h1>Crops</h1>
+      <h1 className="page-title">Crops</h1>
       <p className="crop-index-count" aria-live="polite" aria-atomic="true">
         {plural(total, "crop")} in the directory, alphabetical.
       </p>

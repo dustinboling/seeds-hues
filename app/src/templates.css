@@ -160,6 +160,7 @@
 }
 
 .eyebrow {
+  margin: 0;
   font-family:
     "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
@@ -274,6 +275,10 @@
   margin: 0;
 }
 
+.prose-plain p {
+  margin: 0;
+}
+
 .prose-plain p + p {
   margin-top: 0.75rem;
 }
@@ -296,6 +301,7 @@
 
 .prose-plain ul {
   list-style: disc;
+  margin: 0;
   padding-left: 1.25rem;
 }
 
@@ -303,7 +309,7 @@
   margin-top: 0.25rem;
 }
 
-.prose-lede {
+.prose-plain .prose-lede {
   margin-top: 0.75rem;
   font-size: 1.125rem;
 }
@@ -350,7 +356,7 @@
 
 /* The /crop index. */
 .crop-index-count {
-  margin-top: 0.5rem;
+  margin: 0.5rem 0 0;
   color: var(--sys-color-text-muted);
 }
 
@@ -459,7 +465,7 @@
 }
 
 .home-lede {
-  margin-top: 0.75rem;
+  margin: 0.75rem 0 0;
   max-width: 42rem;
   font-size: 1rem;
   color: var(--sys-color-text-muted);
@@ -477,7 +483,7 @@
 }
 
 .home-coverage {
-  margin-top: 1rem;
+  margin: 1rem 0 0;
   font-family:
     "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, ui-serif, serif;
   font-size: 0.875rem;
@@ -541,7 +547,7 @@
 }
 
 .home-crop-count {
-  margin-top: 0.75rem;
+  margin: 0.75rem 0 0;
   color: var(--sys-color-text-muted);
 }
 
@@ -618,7 +624,7 @@
 }
 
 .home-crop-cap {
-  margin-top: 0.75rem;
+  margin: 0.75rem 0 0;
   color: var(--sys-color-text-muted);
 }
 
@@ -921,6 +927,681 @@
   margin-top: 1rem;
   font-size: 0.875rem;
   color: var(--sys-color-text-muted);
+}
+
+/* ---------- Filter chips (moved from variety.css: every browse surface
+   renders these, and the browse index pages load only this sheet) ---------- */
+
+/* Interactive chip (<a> or <button>): geometry and active states ported
+   with the variety page; the hover rule comes from v2's .chip-filter,
+   which the first port dropped (without it a hovered chip link takes only
+   the base link hover color). */
+.chip-filter {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  border: 1px solid var(--comp-chip-border);
+  background: var(--comp-chip-background);
+  color: var(--comp-chip-text);
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.chip-filter[aria-current="true"],
+button.chip-filter[aria-pressed="true"] {
+  border-color: var(--comp-chip-active-border);
+  background: var(--comp-chip-active-background);
+  color: var(--comp-chip-active-text);
+}
+
+/* Hover sits after the active rule so it wins ties, as in v2 (a hovered
+   active chip takes the hover dress); the color holds the ink against the
+   base link hover. */
+a.chip-filter:hover,
+button.chip-filter:hover {
+  border-color: var(--sys-color-accent);
+  background: var(--sys-color-accent-tint);
+  color: var(--comp-chip-text);
+}
+
+/* Applied-filter remover: same chip plus the 6px gap the drawn close glyph
+   sits in after the label (v2's .chip-removable). */
+.chip-removable {
+  gap: 6px;
+}
+
+/* Remover glyph: the drawn 14px × (v2's size-(--chip-removable-glyph-size)). */
+.chip-remove-glyph {
+  width: 14px;
+  height: 14px;
+}
+
+/* Secondary button (v2's .btn-secondary): the pagination and hub-link
+   dress. Admin keeps its own sheet-local .btn-secondary, which wins there
+   by load order. */
+.btn-secondary {
+  background: var(--sys-color-surface);
+  color: var(--sys-color-accent-strong);
+  border: 1px solid var(--sys-color-border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--sys-color-accent-tint);
+  color: var(--sys-color-accent-strong);
+}
+
+/* Pill button (v2's .btn-pill): full-radius primary, e.g. the state page's
+   "Add Your Farm" link. */
+.btn-pill {
+  border-radius: 999px;
+}
+
+/* ---------- Browse filters (v2's BrowseFilters / StateFilter groups) ---------- */
+
+.browse-filters {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* One filter group: v2 renders min-w-0 over preflight's fieldset reset, so
+   the reset rides here (raw fieldset boxes are the unstyled symptom). */
+.browse-filter-group {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.browse-filter-group > legend {
+  margin-bottom: 0.25rem;
+}
+
+.browse-chip-item {
+  flex: none;
+}
+
+/* Per-option count inside a chip (v2's ChipCount / CropChipCount /
+   ShopChipCount — one dress, three names). */
+.chip-count,
+.browse-chip-count {
+  color: var(--sys-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hue swatch dot inside a chip (v2's SwatchDot). */
+.swatch-dot {
+  margin-right: 0.375rem;
+  display: inline-block;
+  height: 0.875rem;
+  width: 0.875rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid var(--sys-color-border-strong);
+}
+
+/* Badge-legend spacing under a filter group (v2 passes mt-1 / mt-1 max-w-2xl). */
+.browse-legend {
+  margin-top: 0.25rem;
+}
+
+.browse-legend-narrow {
+  margin-top: 0.25rem;
+  max-width: 42rem;
+}
+
+/* The sort control (v2's SortChips wrapper). */
+.browse-sort {
+  margin-top: 0.75rem;
+}
+
+/* Result-count live region (v2 variety/seller: mt-2 muted; the seller line
+   also caps its measure; the crop line's wider step rides its modifier). */
+.browse-count {
+  margin: 0.5rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.browse-count-narrow {
+  max-width: 42rem;
+}
+
+.browse-count-crop {
+  margin-top: 1rem;
+}
+
+/* Results region (v2 variety: mt-6; the crop region's tighter step rides
+   its modifier; the seller region carries the same top step so its grid,
+   which v2 spaces with mt-6 of its own, nets the same rhythm). */
+.browse-results {
+  margin-top: 1.5rem;
+}
+
+.browse-results-crop {
+  margin-top: 0.75rem;
+}
+
+/* Zero-results line (v2 variety/crop empties). */
+.browse-empty {
+  margin: 0;
+  color: var(--sys-color-text-muted);
+}
+
+/* ---------- Filter strips (v2's FilterStrip): one line, never wraps ---------- */
+
+.filter-strip {
+  position: relative;
+}
+
+.filter-strip-list {
+  list-style: none;
+  margin: 0 -0.375rem;
+  padding: 0.375rem;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-padding-inline: 3rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.filter-strip-list::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-strip-fade {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2.5rem;
+}
+
+.filter-strip-fade-left {
+  left: 0;
+  background: linear-gradient(to right, var(--sys-color-bg), transparent);
+}
+
+.filter-strip-fade-right {
+  right: 0;
+  background: linear-gradient(to left, var(--sys-color-bg), transparent);
+}
+
+/* Chevron buttons: mouse/trackpad only (v2's .filter-strip-btn media rule);
+   touch users swipe, cued by the fades. */
+.filter-strip-btn {
+  display: none;
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  height: 2.75rem;
+  width: 2.75rem;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--sys-color-border-strong);
+  background: var(--sys-color-bg);
+  color: var(--sys-color-text);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .filter-strip-btn {
+    display: flex;
+  }
+}
+
+.filter-strip-btn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.filter-strip-btn-left {
+  left: 0;
+}
+
+.filter-strip-btn-right {
+  right: 0;
+}
+
+/* ---------- Applied row (v2's InPlaceAppliedRow) ---------- */
+
+.applied-filters {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.applied-filters-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.browse-failure {
+  margin: 0;
+  font-weight: 500;
+  color: var(--sys-color-accent-ink);
+}
+
+/* ---------- Pagination (v2's Pagination) ---------- */
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.pagination-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-gap {
+  padding-inline: 0.25rem;
+  color: var(--sys-color-text-muted);
+}
+
+.pagination-current {
+  background: var(--sys-color-accent-strong);
+  color: #fff;
+}
+
+/*
+ * In-place browse pending cue (moved from variety.css: v2 carries it in
+ * globals.css, and the layout-only browse pages need it too). While a
+ * filter/sort/remover/Clear-all commit is in flight, the results region
+ * carries this class: a leaf progress hairline pulsing across the region's
+ * top edge, and a leaf-50 wash over the stale results. Tokens only; the
+ * cue is decorative (pseudo-elements), so assistive tech gets the
+ * region's aria-busy instead. Under reduced motion the hairline holds
+ * still; under forced-colors the wash drops and the hairline takes the
+ * system Highlight.
+ */
+.browse-pending {
+  position: relative;
+}
+
+.browse-pending::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--sys-color-accent-strong);
+  pointer-events: none;
+  animation: browse-pending-bar 1.6s ease-in-out infinite;
+}
+
+@keyframes browse-pending-bar {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.browse-pending::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--sys-color-accent-tint) 60%, transparent);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browse-pending::before {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .browse-pending::after {
+    display: none;
+  }
+
+  .browse-pending::before {
+    background: Highlight;
+    animation: none;
+  }
+}
+
+/* ---------- Small farm badge (moved from variety.css: the seller index
+   and seller cards render it without the variety sheet) ---------- */
+
+.badge-small-farm {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--sys-color-accent-strong);
+  border-color: color-mix(in oklab, var(--sys-color-accent-strong) 60%, transparent);
+  background: var(--sys-color-surface);
+}
+
+.badge-small-farm-standard {
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem 0.125rem 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.badge-small-farm-standard .small-farm-mark {
+  width: 13px;
+  height: 13px;
+}
+
+.badge-small-farm-large {
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.badge-small-farm-large .small-farm-mark {
+  width: 16px;
+  height: 16px;
+}
+
+.small-farm-mark {
+  flex-shrink: 0;
+}
+
+.small-farm-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Quiet rating line (moved from variety.css: seller cards render it on the
+   layout-only seller index). */
+.rating-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-soft);
+}
+
+/* ---------- Seller index (v2's SellerBrowse / StateFilter / SellerCard) ---------- */
+
+/* Index art: full-bleed to the measure cap (v2's art-frame mt-4 h-auto
+   w-full max-w-3xl). */
+.seller-index-art {
+  margin-top: 1rem;
+  height: auto;
+  width: 100%;
+  max-width: 48rem;
+}
+
+/* State cloud: wrapping counted chips (v2's StateFilter cloud). */
+.state-cloud {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Plain count inside a state chip (v2's text-muted count span). */
+.chip-count-plain {
+  color: var(--sys-color-text-muted);
+}
+
+/* Seller grid: the results region above carries the top step. */
+.seller-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .seller-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .seller-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Seller card: the whole card is one stretched link (v2's SellerCard). */
+.seller-card {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+}
+
+.seller-card:focus-within {
+  box-shadow: 0 0 0 2px var(--sys-color-focus);
+}
+
+.seller-card-name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.seller-card-link {
+  color: var(--sys-color-text);
+  text-decoration: none;
+}
+
+.seller-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.seller-card-link:hover {
+  text-decoration: underline;
+}
+
+.seller-card-badge {
+  margin: 0;
+}
+
+.seller-card-location {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+.seller-card-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.seller-card-count {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* ---------- Search page (v2's search page / SearchBrowse) ---------- */
+
+.search-page-box {
+  margin-top: 1rem;
+  max-width: 42rem;
+}
+
+.search-browse-hint {
+  margin-top: 2rem;
+}
+
+.search-browse-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.search-browse-copy {
+  margin: 0.5rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.search-browse-chips {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.search-results {
+  margin-top: 2rem;
+}
+
+.search-results-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.search-empty-art {
+  display: block;
+  margin: 1rem auto 0;
+  height: 220px;
+  width: auto;
+}
+
+.search-empty-copy {
+  margin: 0.5rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.search-results-group {
+  margin-top: 1.5rem;
+}
+
+.search-results-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--sys-color-border);
+  background: var(--sys-color-surface);
+}
+
+.search-results-list > li + li {
+  border-top: 1px solid var(--sys-color-border);
+}
+
+.search-result-link {
+  display: flex;
+  flex-direction: column;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+}
+
+.search-result-link:hover {
+  background: var(--sys-color-accent-tint);
+}
+
+.search-result-title {
+  font-weight: 500;
+  color: var(--sys-color-text);
+}
+
+.search-result-subtitle {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* ---------- Offline fallback (v2's offline page) ---------- */
+
+.offline-fallback {
+  max-width: 42rem;
+  padding-block: 1.5rem;
+}
+
+.offline-art {
+  margin: 0 auto 1rem;
+  height: 260px;
+  width: auto;
+}
+
+.offline-copy {
+  margin: 0.75rem 0 0;
+  font-size: 1.125rem;
+}
+
+.offline-reconnect {
+  margin: 0.75rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.offline-links {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 /* Forced-colors kill-switch for the homepage motif. UNLAYERED on purpose:
