@@ -1101,7 +1101,16 @@ button.chip-filter:hover {
   position: relative;
 }
 
+/* The scroller is its content's containing block (position, no offsets:
+   layout-neutral): the chips' sr-only count spans are absolutely
+   positioned, and with a static list their containing block was the
+   .filter-strip wrapper OUTSIDE the scroller — a scroll container only
+   clips the abspos descendants it establishes the containing block for,
+   so the spans' boxes deep in the scrolled-out region leaked to the root
+   (+1255px on /variety at 390px). Anchored inside the scroller, the
+   scroller clips them; the strip keeps its own scroll. */
 .filter-strip-list {
+  position: relative;
   list-style: none;
   margin: 0 -0.375rem;
   padding: 0.375rem;
@@ -2402,6 +2411,20 @@ p.listing-swap {
   justify-content: space-between;
   gap: 0.75rem;
   width: 100%;
+}
+
+/* Narrow 2-column cards cannot fit the footer side by side: the report
+   link's min-content (~46px wrapped) + gap + shrink-0 pill (~116px) needs
+   ~174px, the card content at 390px is 141px, so the pill hangs past the
+   card and the viewport (production v2 renders the same bleed, worse).
+   Below 440px — the bleed zone ends at ~421px, so this keeps a margin
+   under font drift — stack the footer: report link over a full-width
+   pill. Side by side everywhere else, as v2. */
+@media (max-width: 440px) {
+  .shop-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* "Report a problem" (v2's inline-flex min-h-target items-center
