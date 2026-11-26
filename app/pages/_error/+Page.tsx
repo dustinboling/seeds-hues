@@ -1,4 +1,5 @@
 import { usePageContext } from "vike-react/usePageContext";
+import "../../src/variety.css";
 import { SearchForm } from "../../src/components/SearchForm";
 import { ThemeArt } from "../../src/components/ThemeArt";
 import { APP_SHORT_NAME } from "../../src/site";

@@ -111,7 +111,7 @@ export function CropDetailBrowse({
         failureMessage={FAILURE_MESSAGE}
       />
       {/* Persistent live region: text updates, never remounts — exactly one announcement per commit. */}
-      <p id="crop-results-count" className="browse-count" aria-live="polite" aria-atomic="true">
+      <p id="crop-results-count" className="browse-count browse-count-crop" aria-live="polite" aria-atomic="true">
         {cropDetailCountLine(initial.state, initial.total, initial.page, pages)}
       </p>
       {/* Pending indication: busy while a filter change is in flight.
@@ -120,7 +120,7 @@ export function CropDetailBrowse({
           the region also shows the pending cue. */}
       <div
         id="crop-variety-results"
-        className={pendingCue ? "browse-results browse-pending" : "browse-results"}
+        className={pendingCue ? "browse-results browse-results-crop browse-pending" : "browse-results browse-results-crop"}
         aria-busy={pending === null ? undefined : true}
       >
         {initial.total > 0 ? (

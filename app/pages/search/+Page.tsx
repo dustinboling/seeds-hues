@@ -13,14 +13,16 @@ export default function Page() {
   const { q, result } = useData<Data>();
   return (
     <>
-      <h1>Search</h1>
+      <h1 className="page-title">Search</h1>
       <div className="search-page-box">
         <SearchForm label="Search flower seeds" defaultValue={q} autoFocus={!q} />
       </div>
       {!q ? (
         <section className="search-browse-hint" aria-labelledby="browse-title">
-          <h2 id="browse-title">Not sure what to search for?</h2>
-          <p>
+          <h2 id="browse-title" className="search-browse-title">
+            Not sure what to search for?
+          </h2>
+          <p className="search-browse-copy">
             Try a crop (“sweet pea”), a variety (“King’s Ransom”) or a Latin name (“Papaver”). Two letters are enough to
             start; names a variety is also sold under match too.
           </p>

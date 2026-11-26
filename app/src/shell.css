@@ -1,6 +1,27 @@
 /* App shell styles. Every color reads the token mirror (tokens.css); every font
    reads the wired stacks. Plain CSS in slice 1 — no framework. */
 
+/* Preflight parity: the two Tailwind resets the port dropped whose absence
+   is a measured defect (content-box page overflow, unconstrained media).
+   Nothing else from preflight is ported. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
 html {
   background: var(--sys-color-bg);
   -webkit-text-size-adjust: 100%;
@@ -517,37 +538,78 @@ button.header-icon-button {
   align-items: center;
 }
 
-/* Named placeholder: the bar's footprint only. Slots are empty by design (see
-   TabBarPlaceholder); the dashed outline marks them as reserved, decorative. */
-.tabbar-placeholder {
+/* Bottom tab bar: port of v2's TabBar (fixed bottom, full width,
+   line-strong top rule, paper-deep wash at 92% + blur, 64px bar, inner
+   grid max-width 32rem, 5 equal columns). Mobile only: hidden at ≥768px
+   (v2 is md:hidden) — desktop has no bottom bar. The footer keeps the
+   matching bottom clearance below 768px and drops it above. */
+.tabbar {
   position: fixed;
   inset-inline: 0;
   bottom: 0;
   z-index: 40;
-  background: var(--sys-color-bg-deep);
-  border-top: 1px solid var(--sys-color-border-strong);
+  border-top: 1px solid var(--comp-tabbar-border);
+  background: color-mix(in oklab, var(--comp-tabbar-background) 92%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.tabbar-slots {
-  list-style: none;
-  margin: 0;
-  padding: 0.5rem 1rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.tabbar-slot {
-  flex: 1;
-  min-height: 44px;
-  border: 1px dashed var(--sys-color-border-strong);
-  border-radius: 12px;
-}
-
-@media (forced-colors: active) {
-  .tabbar-slot {
-    border: 1px dashed CanvasText;
+@media (min-width: 768px) {
+  .tabbar {
+    display: none;
   }
+}
+
+.tabbar-list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: 4rem;
+  max-width: 32rem;
+}
+
+.tabbar-item {
+  display: flex;
+}
+
+.tabbar-link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  min-height: 44px;
+  min-width: 44px;
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--comp-tabbar-text);
+  transition: color 150ms ease-out;
+}
+
+.tabbar-link-current {
+  color: var(--comp-tabbar-active-text);
+}
+
+/* Active marker: a 3px petal dot above the label; the transparent dot on
+   every other tab reserves the space so nothing shifts. */
+.tabbar-dot {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.tabbar-link-current .tabbar-dot {
+  background: var(--comp-tabbar-dot);
 }
 
 @media (prefers-reduced-motion: reduce) {

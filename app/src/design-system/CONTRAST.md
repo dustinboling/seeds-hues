@@ -27,8 +27,8 @@ for the coverage rule). WCAG 2.x relative-luminance math.
 
 Notes:
 
-- `ink-soft`/`leaf` on tab-bar wash: the tab bar is a named placeholder in slice 1
-  (see `TabBarPlaceholder`); the composite is carried so Iris + Ada re-verify the
-  exact pair at Quinn's gate.
+- `ink-soft`/`leaf` on tab-bar wash: the ported live tab bar (see `TabBar`);
+  the composite is carried so Iris + Ada re-verify the exact pair at
+  Quinn's gate.
 - Grain worst case follows THEME-REPORT.md's method (darkest grain pixel 6.5% black).
 - `line on ground` has no floor: the hairline is decorative and never carries text.

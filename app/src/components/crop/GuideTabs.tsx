@@ -95,7 +95,7 @@ export function GuideTabs({ label, panels }: { label: string; panels: GuideTabPa
             tabIndex={i === active ? 0 : -1}
             onClick={() => setSelected(i)}
             onKeyDown={(e) => onKeyDown(e, i)}
-            className="chip-filter"
+            className="guide-tab"
             data-testid="grower-guide-tab"
           >
             {p.label}

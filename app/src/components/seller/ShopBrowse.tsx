@@ -366,7 +366,7 @@ export function ShopBrowse({
       {total === 0 ? (
         <p className="shop-count shop-count-empty">{plural(committed.total, "listing")}</p>
       ) : (
-        <p id="seller-results-count" className="shop-count" aria-live="polite" aria-atomic="true">
+        <p id="seller-results-count" className={showTools ? "shop-count" : "shop-count shop-count-tight"} aria-live="polite" aria-atomic="true">
           {shopCountLine(committed.state, committed.total, committed.page, pages)}
         </p>
       )}

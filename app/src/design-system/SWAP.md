@@ -64,8 +64,9 @@ Keep, and re-verify (do not delete):
   primitives. Keep the component's exported name as an adapter so
   `pages/+Layout.tsx` needs no import change; `tests/dom/shell.test.tsx`
   ("route changes") then drives the package mechanics.
-- `src/components/TabBarPlaceholder.tsx` is NOT part of the swap — the D1 tab
-  bar builds post-cutover as a seeds component on shared tokens.
+- `src/components/TabBar.tsx` (the ported live tab bar) is NOT part of the
+  swap — the D1 tab bar builds post-cutover as a seeds component on shared
+  tokens.
 
 ## 5. After the swap
 

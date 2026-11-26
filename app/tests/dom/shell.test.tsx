@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 /**
- * Shell contract (WCAG 2.2 AA): landmarks, skip link, tab-bar placeholder
- * structure, live region, and the route-change focus + announcement mechanics.
+ * Shell contract (WCAG 2.2 AA): landmarks, skip link, tab bar, live region,
+ * and the route-change focus + announcement mechanics. The tab bar's own
+ * contract (five tabs, active matching) lives in tabbar.test.tsx.
  */
 import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
@@ -22,29 +23,13 @@ function renderShell(urlOriginal: string, children: ReactNode = <h1>Test page</h
   );
 }
 
-/**
- * The shell now carries labelled header/footer navs alongside the tab-bar
- * placeholder, so the bare "navigation" role query is ambiguous. Select the
- * placeholder by its structural class hook (asserted nowhere) so every
- * landmark/marker assertion below stays meaningful.
- */
-function getPlaceholderNav(): HTMLElement {
-  const matches = screen.getAllByRole("navigation").filter((el) => el.classList.contains("tabbar-placeholder"));
-  expect(matches).toHaveLength(1);
-  return matches[0] as HTMLElement;
-}
-
 describe("shell landmarks", () => {
-  it("renders banner, main, contentinfo, and the placeholder nav", () => {
+  it("renders banner, main, contentinfo, and the labelled tab-bar nav", () => {
     renderShell("/");
     expect(screen.getByRole("banner")).toBeTruthy();
     expect(screen.getByRole("main")).toBeTruthy();
     expect(screen.getByRole("contentinfo")).toBeTruthy();
-    const nav = getPlaceholderNav();
-    expect(nav.getAttribute("data-placeholder")).toBe("tab-bar-d1");
-    // The empty placeholder must not expose a labelled landmark.
-    expect(nav.getAttribute("aria-label")).toBeNull();
-    expect(nav.getAttribute("aria-labelledby")).toBeNull();
+    expect(screen.getByRole("navigation", { name: "Primary" })).toBeTruthy();
   });
 
   it("renders the header wordmark and footer disclosures", () => {
@@ -53,18 +38,6 @@ describe("shell landmarks", () => {
     expect(screen.getByText("Seed Directory", { selector: "p" })).toBeTruthy();
     expect(screen.getByText(/independent directory, not affiliated/)).toBeTruthy();
     expect(screen.getByText(/Sellers do not pay for placement/)).toBeTruthy();
-  });
-
-  it("carries the tab-bar placeholder as five empty slots (structure only)", () => {
-    renderShell("/");
-    const nav = getPlaceholderNav();
-    const slots = nav.querySelectorAll("li.tabbar-slot");
-    expect(slots.length).toBe(5);
-    for (const slot of slots) {
-      expect(slot.getAttribute("aria-hidden")).toBe("true");
-      expect(slot.textContent).toBe("");
-    }
-    expect(nav.querySelectorAll("a, button").length).toBe(0);
   });
 
   it("skip link targets the main landmark, which is focusable", () => {
