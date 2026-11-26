@@ -25,6 +25,24 @@ export function edgeKey(pathname: string, search: string): string {
 export const DETAIL_PATTERN = /^\/(?:seller|crop|series|state)\/[^/]+$/;
 
 /**
+ * Client-navigation data requests (Vike's `.pageContext.json`: the JSON the
+ * client router fetches on every in-place navigation) bypass the edge mock
+ * entirely — never served, never stored. They vary by the FULL query string
+ * (every filter/sort/page combination is its own data), so the variety
+ * detail key — which deliberately ignores every query but ?small_farm=true
+ * — would serve one filter's data as another's (Quinn F2: the unfiltered
+ * /variety data warmed by tab-bar navigation answered the later
+ * ?color_family=white tap with the unfiltered total). The browse indexes'
+ * HTML already stays uncached (Slice 4's rule); their data stays uncached
+ * with it — and the revalidate purge keys on page paths, so a stored JSON
+ * entry could never be purged with its page anyway. Freshness comes from
+ * the data cache underneath, which the revalidate hook purges by key.
+ */
+export function isPageContextJsonPath(pathname: string): boolean {
+  return pathname.endsWith(".pageContext.json");
+}
+
+/**
  * Edge key for a shop/hub URL: the pathname plus the FULL query string.
  * Every filtered, searched, sorted, and paged view keys separately from
  * the clean page (and from each other), so a variant can never serve as

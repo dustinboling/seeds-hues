@@ -866,6 +866,31 @@ describe("statuses & redirects (permanent redirects are 301, uniformly, one hop)
   });
 });
 
+describe("client-navigation data (.pageContext.json, the in-place filter path)", () => {
+  // Quinn F2's sequence against the real serve: the unfiltered browse data
+  // warms first (the tab-bar navigation to /variety), then the filtered tap
+  // must carry its own filtered totals — the first broken link was this
+  // response itself (200 with the unfiltered total).
+  const browseTotalOf = (text: string): unknown => {
+    const parsed: unknown = JSON.parse(text);
+    const pageContext = (Array.isArray(parsed) ? parsed[0] : parsed) as { data?: { browse?: { total?: unknown } } };
+    return pageContext.data?.browse?.total;
+  };
+
+  it("serves per-URL filtered totals: the ?color_family=white fetch narrows after an unfiltered warm", async () => {
+    const clean = await get("/variety/index.pageContext.json");
+    expect(clean.status).toBe(200);
+    expect(clean.headers.get("content-type")).toContain("application/json");
+    expect(browseTotalOf(clean.text)).toBe(55);
+    const filtered = await get("/variety/index.pageContext.json?color_family=white");
+    expect(filtered.status).toBe(200);
+    expect(filtered.headers.get("content-type")).toContain("application/json");
+    expect(browseTotalOf(filtered.text)).toBe(17);
+    // No contamination in either direction: the clean URL still reads clean.
+    expect(browseTotalOf((await get("/variety/index.pageContext.json")).text)).toBe(55);
+  });
+});
+
 // The invalidation proof mutates the stub catalog: it runs LAST.
 describe("cache-invalidation proof for the browse index on the built artifact", () => {
   it("serves the renamed variety after a list:variety revalidate (no rebuild, no cache-bust)", async () => {
