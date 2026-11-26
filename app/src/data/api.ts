@@ -750,22 +750,35 @@ export function createCatalogApi(options: CatalogApiOptions) {
   const paceMs = options.paceMs ?? DEFAULT_PACE_MS;
   const maxRetries = options.maxRetries ?? DEFAULT_MAX_RETRIES;
   const userAgent = options.userAgent ?? "seeds-hues-app/0.1 (+https://seeds.hues.flowers/about/bot)";
-  // Serialize requests through one chain so sweeps pace themselves even when
-  // callers fire concurrently — the live API's per-IP rate limit is shared.
-  let chain: Promise<void> = Promise.resolve();
+  // Pace state is a PLAIN NUMBER — the earliest timestamp (ms) the next
+  // fetch may start — never a promise. The Worker shares one client per
+  // isolate across requests, and under workerd's
+  // handle_cross_request_promise_resolution a promise created by a request
+  // that has since ended can never settle: a stored chain's trailing sleep
+  // would outlive its response, poison the isolate, and 500 every later
+  // fresh read. Each call reserves its slot synchronously (concurrent
+  // callers take successive slots, so fetches still start >= paceMs apart
+  // even when callers fire concurrently — the live API's per-IP rate limit
+  // is shared) and awaits only a sleep created within its own call.
+  let nextSlotMs = 0;
 
   const sleep = (ms: number): Promise<void> => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+  /** Reserve this call's start slot; sleep the remainder within this call only. */
+  async function takePaceSlot(): Promise<void> {
+    const nowMs = Date.now();
+    const slot = Math.max(nowMs, nextSlotMs);
+    nextSlotMs = slot + paceMs;
+    const waitMs = slot - nowMs;
+    if (waitMs > 0) await sleep(waitMs);
+  }
 
   async function getRaw(path: string, init?: { ifNoneMatch?: string }): Promise<{ status: number; etag: string | null; json: () => Promise<unknown> }> {
     const headers: Record<string, string> = { "User-Agent": userAgent };
     if (init?.ifNoneMatch) headers["If-None-Match"] = init.ifNoneMatch;
     for (let attempt = 0; ; attempt++) {
-      const run = chain.then(() => fetchImpl(`${baseUrl}${path}`, { headers }));
-      chain = run.then(
-        () => sleep(paceMs),
-        () => sleep(paceMs),
-      );
-      const res = await run;
+      await takePaceSlot();
+      const res = await fetchImpl(`${baseUrl}${path}`, { headers });
       if (res.status === 429 && attempt < maxRetries) {
         const waitMs = Number(res.headers.get("retry-after") ?? "10") * 1000;
         await sleep(Number.isFinite(waitMs) ? waitMs + 250 : 10_250);
