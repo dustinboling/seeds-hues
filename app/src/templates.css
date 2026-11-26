@@ -1604,6 +1604,1144 @@ button.chip-filter:hover {
   gap: 0.5rem;
 }
 
+/* ---------- Preview visual fix (root cause C): the remaining unstyled
+   families. Every value below is v2's rendered value for the matching
+   Tailwind utility on the ported component; token mapping follows the
+   variety.css convention (v2 leaf → accent-strong, leaf-600 → accent,
+   leaf-50 → accent-tint, warn → accent-ink). Margins are explicit
+   throughout — the app ports no margin reset, so each v2 margin utility
+   becomes a full margin declaration. ---------- */
+
+/* ---------- Seller contact block (v2's SellerContactBlock) ---------- */
+
+/* Website channel (v2's mt-4 website paragraph). */
+.contact-website {
+  margin: 1rem 0 0;
+}
+
+/* "No website on file" (v2's mt-4 text-sm text-muted). */
+.contact-no-website {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Contact row: one link per channel (v2's flex min-h-target w-full
+   items-center gap-2 sm:max-w-[32rem]). */
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 44px;
+}
+
+@media (min-width: 640px) {
+  .contact-row {
+    max-width: 32rem;
+  }
+}
+
+/* Button → first row 8px; "No website" line → first row 4px (v2's
+   firstRowMargin: mt-2 with a homepage, mt-1 without; row → row 0). */
+.contact-row-first {
+  margin-top: 0.5rem;
+}
+
+.contact-row-first-tight {
+  margin-top: 0.25rem;
+}
+
+/* Channel icon (v2's size-5 shrink-0 text-leaf-600). */
+.contact-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--sys-color-accent);
+}
+
+/* "Customer service" label (v2's text-base text-ink-soft). */
+.contact-label {
+  font-size: 1rem;
+  color: var(--sys-color-text-soft);
+}
+
+/* Published number/address (v2's min-w-0 break-all text-base
+   font-semibold underline). */
+.contact-value {
+  min-width: 0;
+  word-break: break-all;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ---------- Crop hub (v2's crop/[slug] page) ---------- */
+
+/* Header: heading + pod motif (v2's flex items-start justify-between
+   gap-4). */
+.crop-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Heading column (v2's min-w-0). */
+.crop-heading {
+  min-width: 0;
+}
+
+/* Crop H1 (v2's text-3xl font-semibold text-leaf). */
+.crop-name {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+/* Latin line (v2's mt-1 text-lg). */
+.crop-latin {
+  margin: 0.25rem 0 0;
+  font-size: 1.125rem;
+}
+
+/* Coverage line (v2's mt-2 font-medium). */
+.crop-coverage {
+  margin: 0.5rem 0 0;
+  font-weight: 500;
+}
+
+/* Season / sowing / life-cycle facts (v2's mt-1 text-sm text-muted). */
+.crop-fact {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Decorative pod motif (v2's h-24 w-24 shrink-0 object-contain
+   sm:h-36 sm:w-36). */
+.crop-pod-motif {
+  flex-shrink: 0;
+  width: 6rem;
+  height: 6rem;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) {
+  .crop-pod-motif {
+    width: 9rem;
+    height: 9rem;
+  }
+}
+
+/* About band (v2's mt-4 max-w-3xl rounded-inner bg-leaf-50 p-4 — a flat
+   tint band, so the port's card frame is neutralized to match). */
+.crop-about {
+  margin: 1rem 0 0;
+  max-width: 48rem;
+  padding: 1rem;
+  background: var(--sys-color-accent-tint);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.crop-about-heading {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* About paragraphs (v2's mt-1). */
+.crop-about-text {
+  margin: 0.25rem 0 0;
+}
+
+/* Series links + "All crops" (v2's mt-6 / mt-8). */
+.crop-series-links {
+  margin: 1.5rem 0 0;
+}
+
+.crop-all-link {
+  margin: 2rem 0 0;
+}
+
+/* ---------- Variety facts row (the facts-grid child) ---------- */
+
+.facts-row {
+  min-width: 0;
+}
+
+/* ---------- Gone page (the 410 form; v2 serves unclassed HTML, so this
+   mirrors the app's own .not-found dress) ---------- */
+
+.gone {
+  max-width: 42rem;
+  padding: 1.5rem 0;
+}
+
+.gone h1 {
+  margin: 0.25rem 0 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+.gone-copy {
+  margin: 0.75rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+/* ---------- Grower guide (v2's GrowerGuide / GuideTabs) ---------- */
+
+/* Guide card (v2's card mt-8 max-w-3xl p-4 sm:p-6). */
+.guide {
+  margin-top: 2rem;
+  max-width: 48rem;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .guide {
+    padding: 1.5rem;
+  }
+}
+
+.guide-heading {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Tabs wrapper (v2's mt-3). */
+.guide-tabs {
+  margin-top: 0.75rem;
+}
+
+/* No-JS in-page nav (v2's flex flex-wrap gap-2). */
+.guide-tabs-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Panel: no-JS stacked section (v2's mt-5); the enhanced tabpanel is
+   v2's mt-4. */
+.guide-panel {
+  margin: 1.25rem 0 0;
+}
+
+.guide-panel[role="tabpanel"] {
+  margin-top: 1rem;
+}
+
+.guide-panel-heading {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+/* No-JS panel body (v2's mt-2). */
+.guide-panel-body {
+  margin-top: 0.5rem;
+}
+
+/* Enhanced tablist (v2's flex flex-wrap gap-x-1 border-b border-line). */
+.guide-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.25rem;
+  border-bottom: 1px solid var(--sys-color-border);
+}
+
+/* Enhanced tab (v2's tap -mb-px rounded-t-inner border-b-[3px] px-3 py-2
+   font-sans text-sm font-semibold + the aria-selected dress). */
+.guide-tab {
+  min-height: 44px;
+  min-width: 44px;
+  margin: 0 0 -1px;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: var(--sys-color-text-soft);
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+
+.guide-tab[aria-selected="true"] {
+  border-bottom-color: var(--sys-color-accent-strong);
+  color: var(--sys-color-accent-strong);
+}
+
+.guide-tab[aria-selected="false"]:hover {
+  background: var(--sys-color-accent-tint);
+  color: var(--sys-color-accent-strong);
+}
+
+/* Guide item list (v2's space-y-3). */
+.guide-items {
+  margin: 0;
+}
+
+.guide-items > div + div {
+  margin-top: 0.75rem;
+}
+
+.guide-item-label {
+  font-weight: 600;
+}
+
+/* dd carries v2's mt-0.5 as a full margin (also killing the UA dd
+   indent, which v2's preflight resets). */
+.guide-item-text {
+  margin: 0.125rem 0 0;
+}
+
+/* "Good to know" callout (v2's mt-4 rounded-inner bg-leaf-50 p-3). */
+.guide-good-to-know {
+  margin: 1rem 0 0;
+  border-radius: 8px;
+  background: var(--sys-color-accent-tint);
+  padding: 0.75rem;
+}
+
+.guide-good-to-know-heading {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Single-note form (v2's mt-0.5). */
+.guide-good-to-know-single {
+  margin: 0.125rem 0 0;
+}
+
+/* Multi-note list (v2's mt-0.5 list-disc space-y-1 pl-5). */
+.guide-good-to-know-list {
+  margin: 0.125rem 0 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.guide-good-to-know-list > li + li {
+  margin-top: 0.25rem;
+}
+
+/* Seed-saving difficulty line (v2's mb-3 font-semibold). */
+.guide-difficulty {
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+/* ---------- Imported rating panel (v2's ImportedRatingPanel) ---------- */
+
+/* Panel (v2's mt-6 max-w-3xl rounded-card border border-line-strong
+   bg-surface p-4 — the line-strong border, not the card's line). */
+.imported-rating {
+  margin: 1.5rem 0 0;
+  max-width: 48rem;
+  padding: 1rem;
+  border-color: var(--sys-color-border-strong);
+  box-shadow: none;
+}
+
+.imported-rating-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Score row (v2's mt-2 flex flex-wrap items-center gap-x-3 gap-y-1). */
+.imported-rating-row {
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.25rem;
+}
+
+/* "Rated X out of 5" (v2's inline-flex items-center gap-2). */
+.imported-rating-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Aggregate value (v2's text-2xl font-semibold leading-none text-ink). */
+.imported-rating-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--sys-color-text);
+}
+
+/* Review count (v2's text-ink-soft). */
+.imported-rating-count {
+  color: var(--sys-color-text-soft);
+}
+
+/* Fetch line (v2's mt-2 text-xs text-muted). */
+.imported-rating-meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Star stack (v2's relative inline-block). */
+.imported-stars {
+  position: relative;
+  display: inline-block;
+}
+
+/* One five-star row (v2's flex gap-0.5). */
+.imported-stars-row {
+  display: flex;
+  gap: 0.125rem;
+}
+
+/* Fractional-fill clip (v2's absolute inset-y-0 left-0
+   overflow-hidden; width rides inline). */
+.imported-stars-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+/* Star-row tones (v2's text-line-strong base / text-warn value). */
+.imported-stars-base {
+  color: var(--sys-color-border-strong);
+}
+
+.imported-stars-value {
+  color: var(--sys-color-accent-ink);
+}
+
+/* ---------- Filter-update cascade (v2's .listing-swap) ---------- */
+
+/* On an in-place seller-filter change the incoming rows fade/rise in
+   with a capped 30ms stagger over the final layout (opacity/transform
+   only, never height). Applied only after a visitor-initiated change,
+   never on first load. Total: 120ms max delay + 220ms duration. */
+@keyframes listing-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.listing-swap > li {
+  animation: listing-item-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.listing-swap > li:nth-child(2) { animation-delay: 30ms; }
+.listing-swap > li:nth-child(3) { animation-delay: 60ms; }
+.listing-swap > li:nth-child(4) { animation-delay: 90ms; }
+.listing-swap > li:nth-child(5) { animation-delay: 120ms; }
+.listing-swap > li:nth-child(n + 6) { animation-delay: 120ms; }
+
+p.listing-swap {
+  animation: listing-item-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listing-swap > li,
+  p.listing-swap {
+    animation: none;
+  }
+}
+
+/* ---------- Seller shop (v2's seller/[slug] page) ---------- */
+
+/* Header: summary + state plate (v2's sm:flex sm:items-start sm:gap-8). */
+@media (min-width: 640px) {
+  .seller-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+}
+
+/* Summary column (v2's min-w-0 flex-1). */
+.seller-summary {
+  min-width: 0;
+  flex: 1;
+}
+
+/* Seller H1 (v2's mt-1 text-3xl font-semibold text-leaf md:text-4xl). */
+.seller-name {
+  margin: 0.25rem 0 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+@media (min-width: 768px) {
+  .seller-name {
+    font-size: 2.25rem;
+  }
+}
+
+/* Small-farm badge row (v2's mt-2 flex flex-wrap items-center gap-2). */
+.seller-badge-row {
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Badge legend (v2's text-sm text-muted). */
+.seller-badge-legend {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Facts grid (v2's mt-3 grid grid-cols-1 gap-x-6 gap-y-2
+   sm:grid-cols-3). */
+.seller-facts {
+  margin: 0.75rem 0 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 1.5rem;
+  row-gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .seller-facts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Bare dd (v2's preflight zeroes it; the app must say so). */
+.seller-facts dd {
+  margin: 0;
+}
+
+.seller-facts-label {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* State link under the location (v2's mt-1 flex w-fit items-center
+   gap-1.5 py-1). */
+.seller-state-link {
+  margin: 0.25rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  width: fit-content;
+  padding: 0.25rem 0;
+}
+
+/* Site-owner disclosure (v2's mt-3 text-sm text-muted). */
+.seller-owner-disclosure {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* About section (v2's mt-6 max-w-3xl). */
+.seller-about {
+  margin: 1.5rem 0 0;
+  max-width: 48rem;
+}
+
+.seller-about-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Description (v2's mt-2). */
+.seller-description {
+  margin: 0.5rem 0 0;
+}
+
+/* Ordering notes (v2's mt-2 text-muted). */
+.seller-ordering-notes {
+  margin: 0.5rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.seller-ordering-notes-label {
+  font-weight: 600;
+  color: var(--sys-color-text);
+}
+
+/* Shop section + claim line (v2's mt-8 each). */
+.seller-shop {
+  margin: 2rem 0 0;
+}
+
+.seller-claim {
+  margin: 2rem 0 0;
+}
+
+/* ---------- Seller locations (v2's SellerLocations) ---------- */
+
+/* Locations area (v2's mt-6 max-w-3xl). */
+.seller-locations {
+  margin: 1.5rem 0 0;
+  max-width: 48rem;
+}
+
+.seller-locations-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Location list (v2's mt-2 flex flex-col gap-4). */
+.seller-locations-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Kind line (v2's text-sm font-semibold). */
+.seller-location-kind {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.seller-location-kind-label {
+  color: var(--sys-color-text-soft);
+}
+
+.seller-location-sep {
+  color: var(--sys-color-text-muted);
+}
+
+/* "Primary" marker (v2's text-leaf). */
+.seller-location-primary {
+  color: var(--sys-color-accent-strong);
+}
+
+/* Address lines (v2's mt-1; street and city each v2's block). */
+.seller-location-address {
+  margin: 0.25rem 0 0;
+}
+
+.seller-location-street {
+  display: block;
+}
+
+.seller-location-city {
+  display: block;
+}
+
+/* ---------- Series hub (v2's series/[slug] page) ---------- */
+
+/* Series H1 (v2's text-3xl font-semibold text-leaf). */
+.series-name {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+/* "… series" subline (v2's block text-xl font-normal text-ink). */
+.series-subline {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--sys-color-text);
+}
+
+/* Facts card (v2's card mt-4 grid max-w-2xl grid-cols-1 gap-x-6 gap-y-2
+   p-4 sm:grid-cols-3). */
+.series-facts {
+  margin: 1rem 0 0;
+  max-width: 42rem;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 1.5rem;
+  row-gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .series-facts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Bare dd (v2's preflight zeroes it; the app must say so). */
+.series-facts dd {
+  margin: 0;
+}
+
+.series-facts-label {
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Full variety grid + crop link (v2's mt-6 / mt-8). */
+.series-grid {
+  margin-top: 1.5rem;
+}
+
+.series-crop-link {
+  margin: 2rem 0 0;
+}
+
+/* ---------- Shop variety card (v2's VarietyCard, shop context) ---------- */
+
+/* Card body (v2's card packet flex h-full flex-col items-center p-4
+   text-center — the packet keyline stays with the packet class, which
+   the port does not mount here). */
+.shop-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Sold-out card (v2's bg-paper shadow-listing-flat). */
+.shop-card-sold-out {
+  background: var(--sys-color-bg);
+  box-shadow: 0 2px 8px rgb(151 134 95 / 0.08);
+}
+
+/* Name block (v2's flex w-full flex-col items-center gap-0.5). */
+.shop-card-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  width: 100%;
+}
+
+/* Variety name (v2's w-full font-display text-lg font-semibold
+   leading-snug text-ink). */
+.shop-card-name {
+  margin: 0;
+  width: 100%;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.375;
+  color: var(--sys-color-text);
+}
+
+/* Name link (v2's block min-h-target text-ink no-underline — a 44px
+   minimum on its border box). */
+.shop-card-link {
+  display: block;
+  min-height: 44px;
+  color: var(--sys-color-text);
+  text-decoration: none;
+}
+
+/* Clamped name text (v2's line-clamp-2, as on .variety-card-name). */
+.shop-card-name-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Stock line (v2's mt-listing-status font-sans text-[13px]
+   text-muted). */
+.shop-card-status {
+  margin: 0.5625rem 0 0;
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 0.8125rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Packets + notes (v2's mt-2 flex flex-col gap-1). */
+.shop-card-packets {
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.shop-card-notes {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Pinned footer (v2's mt-auto flex w-full items-center justify-between
+   gap-3 pt-4 — no stem rule above it). */
+.shop-card-footer {
+  margin: auto 0 0;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* "Report a problem" (v2's inline-flex min-h-target items-center
+   font-sans text-[13px] text-muted underline underline-offset-[3px]). */
+.shop-card-report {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 0.8125rem;
+  color: var(--sys-color-text-muted);
+  text-underline-offset: 3px;
+}
+
+/* "Visit shop" pill (v2's inline-flex h-11 shrink-0 items-center
+   justify-center rounded-full border-visit border-leaf px-visit-inline
+   font-sans text-[15px] font-semibold text-leaf no-underline bg-visit
+   shadow-visit-pill — the same port as .visit-pill). */
+.shop-card-visit {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  padding: 0 1.125rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--sys-color-accent-strong);
+  background: var(--comp-visit-fill);
+  color: var(--sys-color-accent-strong);
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Sold-out pill (v2's bg-transparent shadow-none). */
+.shop-card-visit-sold-out {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ---------- Shop browse block (v2's ShopBrowse) ---------- */
+
+/* "{name}'s shop" heading (v2's text-2xl font-semibold + the
+   programmatic-focus ring). */
+.shop-heading {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.shop-heading:focus {
+  outline: 3px solid var(--sys-color-focus);
+  outline-offset: 2px;
+}
+
+/* In-shop search block (v2's mt-4). */
+.shop-search {
+  margin: 1rem 0 0;
+}
+
+/* Search label (v2's eyebrow mb-1 block). */
+.shop-search-label {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* Search field wrapper (v2's relative w-full). */
+.shop-search-field {
+  position: relative;
+  width: 100%;
+}
+
+/* Search input (v2's w-full rounded-search border-2 border-line-strong
+   bg-surface h-12 text-base pl-10 pr-24 text-ink placeholder:text-muted
+   focus:border-leaf + the focus-visible ring). */
+.shop-search-input {
+  width: 100%;
+  height: 3rem;
+  border-radius: 14px;
+  border: 2px solid var(--sys-color-border-strong);
+  background: var(--sys-color-surface);
+  color: var(--sys-color-text);
+  font-family:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 1rem;
+  padding-left: 2.5rem;
+  padding-right: 6rem;
+}
+
+.shop-search-input::placeholder {
+  color: var(--sys-color-text-muted);
+}
+
+.shop-search-input:focus {
+  border-color: var(--sys-color-accent-strong);
+  outline: none;
+}
+
+.shop-search-input:focus-visible {
+  outline: 3px solid var(--sys-color-focus);
+  outline-offset: 2px;
+}
+
+/* Search icon (v2's pointer-events-none absolute top-1/2 left-3
+   -translate-y-1/2 text-leaf-600). */
+.shop-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--sys-color-accent);
+}
+
+/* Search submit (v2's btn btn-primary absolute right-1.5 top-1/2
+   -translate-y-1/2). */
+.shop-search-submit {
+  position: absolute;
+  top: 50%;
+  right: 0.375rem;
+  transform: translateY(-50%);
+}
+
+/* Lone sort group (v2's mt-1 wrapper restoring the 16px top step when
+   no filter group discriminates). */
+.shop-sort-alone {
+  margin-top: 0.25rem;
+}
+
+/* Count line (v2's mt-3 text-muted tabular-nums live region). */
+.shop-count {
+  margin: 0.75rem 0 0;
+  color: var(--sys-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Zero-listing count (v2's mt-1 text-muted — no tabular figures). */
+.shop-count-empty {
+  margin-top: 0.25rem;
+  font-variant-numeric: normal;
+}
+
+/* Count without filter tools (v2's mt-1 step). */
+.shop-count-tight {
+  margin-top: 0.25rem;
+}
+
+/* All-sold-out notice (v2's mt-1 text-ink-soft). */
+.shop-all-sold-out {
+  margin: 0.25rem 0 0;
+  color: var(--sys-color-text-soft);
+}
+
+/* Results region (v2 carries no box here; the guard keeps grid
+   children from forcing overflow). */
+.shop-results {
+  min-width: 0;
+}
+
+/* Shop results grid (v2's mt-3 on the grid). */
+.shop-grid {
+  margin: 0.75rem 0 0;
+}
+
+/* Designed empty states (v2's mt-3 text-muted / mt-3 / mt-1 text-muted
+   / mt-2 text-muted / mt-3). */
+.shop-empty {
+  margin: 0.75rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.shop-no-matches {
+  margin: 0.75rem 0 0;
+}
+
+.shop-no-matches-filters {
+  margin: 0.25rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.shop-did-you-mean {
+  margin: 0.5rem 0 0;
+  color: var(--sys-color-text-muted);
+}
+
+.shop-zero-combination {
+  margin: 0.75rem 0 0;
+}
+
+/* ---------- State hub (v2's state/[slug] page + StatePlate) ---------- */
+
+/* Hero figure (v2's unclassed figure = margin reset). */
+.state-hero-frame {
+  margin: 0;
+}
+
+/* Hero art (v2's card mx-auto block h-auto max-h-[30rem] w-auto
+   max-w-full sm:max-h-[40rem]). */
+.state-hero {
+  display: block;
+  margin-inline: auto;
+  height: auto;
+  width: auto;
+  max-width: 100%;
+  max-height: 30rem;
+}
+
+@media (min-width: 640px) {
+  .state-hero {
+    max-height: 40rem;
+  }
+}
+
+/* Heading block (v2's mt-6 min-w-0). */
+.state-heading {
+  margin: 1.5rem 0 0;
+  min-width: 0;
+}
+
+/* State H1 (v2's text-3xl font-semibold text-leaf md:text-4xl). */
+.state-name {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--sys-color-accent-strong);
+}
+
+@media (min-width: 768px) {
+  .state-name {
+    font-size: 2.25rem;
+  }
+}
+
+/* Intro (v2's mt-2 max-w-2xl text-muted). */
+.state-intro {
+  margin: 0.5rem 0 0;
+  max-width: 42rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* Add Your Farm row (v2's mt-4). */
+.state-add-farm {
+  margin: 1rem 0 0;
+}
+
+/* Add Your Farm note (v2's ml-3 text-sm text-muted). */
+.state-add-farm-note {
+  margin-left: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--sys-color-text-muted);
+}
+
+/* State-flower plate figure (v2's w-[280px] shrink-0 sm:w-[300px]
+   lg:w-[320px]; the placement class carries the margins). */
+.state-plate {
+  flex-shrink: 0;
+  width: 280px;
+}
+
+@media (min-width: 640px) {
+  .state-plate {
+    width: 300px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .state-plate {
+    width: 320px;
+  }
+}
+
+/* State-page placement: above the farm list (v2's mx-auto mt-8
+   sm:mx-0). */
+.state-plate-state {
+  margin: 2rem auto 0;
+}
+
+@media (min-width: 640px) {
+  .state-plate-state {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Seller-page placement: beside the summary (v2's mx-auto mt-6 sm:mx-0
+   sm:mt-1). */
+.state-plate-seller {
+  margin: 1.5rem auto 0;
+}
+
+@media (min-width: 640px) {
+  .state-plate-seller {
+    margin: 0.25rem 0 0;
+  }
+}
+
+/* Plate art (v2's art-frame h-auto w-full). */
+.state-plate-img {
+  height: auto;
+  width: 100%;
+}
+
+/* Seller cards (v2's mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2
+   lg:grid-cols-3). */
+.state-sellers {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .state-sellers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .state-sellers {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Missing-farm + all-sellers lines (v2's mt-8 / mt-3). */
+.state-missing {
+  margin: 2rem 0 0;
+}
+
+.state-all-link {
+  margin: 0.75rem 0 0;
+}
+
 /* Forced-colors kill-switch for the homepage motif. UNLAYERED on purpose:
    unlayered author CSS beats every @layer, so this hides the motif even if a
    display utility ever lands on the img again. Do not move into a layer. */
