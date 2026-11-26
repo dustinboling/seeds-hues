@@ -1,4 +1,5 @@
 import { useData } from "vike-react/useData";
+import "../../../src/variety.css";
 import { Breadcrumbs } from "../../../src/components/Breadcrumbs";
 import { VarietyBrowse } from "../../../src/components/variety/VarietyBrowse";
 import { JsonLd } from "../../../src/seo/JsonLd";
@@ -29,7 +30,7 @@ export default function Page() {
         )}
       />
       <Breadcrumbs items={crumbs} />
-      <h1>Flower seed varieties</h1>
+      <h1 className="page-title">Flower seed varieties</h1>
       <VarietyBrowse initial={browse} />
     </>
   );

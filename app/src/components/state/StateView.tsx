@@ -40,7 +40,7 @@ export function StateView({ resolved }: { resolved: Extract<StateRouteResult, { 
       <Breadcrumbs items={crumbs} />
       <header>
         {scene ? (
-          <figure data-testid="state-hero">
+          <figure data-testid="state-hero" className="state-hero-frame">
             {/* A plain <img>: a 1200-wide scale-down transformation from our own image CDN (lib/images). */}
             <img
               src={imageUrl(`/theme/state-scenes/${st.slug}.webp`, { width: 1200 })}

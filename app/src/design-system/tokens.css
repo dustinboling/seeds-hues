@@ -71,4 +71,9 @@
   --comp-listing-hairline: var(--sys-color-listing) /* #E9DFC2 */;
   --comp-visit-fill: var(--sys-color-visit) /* #DFE9D6 */;
   --comp-stem-rule: var(--sys-color-stem-rule) /* rgb(151 134 95 / 0.45) */;
+  --comp-tabbar-background: var(--sys-color-bg-deep) /* #f0e5cb */;
+  --comp-tabbar-border: var(--sys-color-border-strong) /* #91825C */;
+  --comp-tabbar-text: var(--sys-color-text-soft) /* #4a4438 */;
+  --comp-tabbar-active-text: var(--sys-color-accent-strong) /* #1B4332 */;
+  --comp-tabbar-dot: var(--sys-color-petal) /* #8e2a52 */;
 }

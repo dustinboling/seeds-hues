@@ -1,5 +1,5 @@
 {
-  "$comment": "Slice-1 mirror of the @hues comp layer for seeds (see SWAP.md). Every alias traces to a live rule in v2/app/globals.css (@layer components / base); `sys` names the sys slot that carries the seeds value, `live` cites the rule. Colors only in slice 1 — radius/shadow/spacing comp roles port with their templates, not here. No tabbar roles: the tab bar is a named placeholder in this slice (see TabBarPlaceholder), and recording roles for an undesigned component would be speculative.",
+  "$comment": "Slice-1 mirror of the @hues comp layer for seeds (see SWAP.md). Every alias traces to a live rule in v2/app/globals.css (@layer components / base) or a live v2 component utility; `sys` names the sys slot that carries the seeds value, `live` cites the rule. Colors only in slice 1 — radius/shadow/spacing comp roles port with their templates, not here.",
   "comp.card.background": { "sys": "sys.color.surface", "live": ".card background" },
   "comp.card.border": { "sys": "sys.color.border", "live": ".card border" },
   "comp.card.hover-border": { "sys": "sys.color.border-strong", "live": ".card-hover:hover border-color" },
@@ -45,5 +45,10 @@
   "comp.listing.divider": { "sys": "sys.color.border", "live": "listing sheet hairline dividers (line)" },
   "comp.listing.hairline": { "sys": "sys.color.listing", "live": "Quiet Ledger card hairline (promoted token)" },
   "comp.visit.fill": { "sys": "sys.color.visit", "live": "Visit shop pill fill (promoted token)" },
-  "comp.stem.rule": { "sys": "sys.color.stem-rule", "live": "listing stem rule (frozen token)" }
+  "comp.stem.rule": { "sys": "sys.color.stem-rule", "live": "listing stem rule (frozen token)" },
+  "comp.tabbar.background": { "sys": "sys.color.bg-deep", "live": "TabBar nav bg-paper-deep/92 (the wash opacity lives in the rule, not the token)" },
+  "comp.tabbar.border": { "sys": "sys.color.border-strong", "live": "TabBar nav border-t border-line-strong" },
+  "comp.tabbar.text": { "sys": "sys.color.text-soft", "live": "TabBar link text-ink-soft (inactive)" },
+  "comp.tabbar.active-text": { "sys": "sys.color.accent-strong", "live": "TabBar link text-leaf (active)" },
+  "comp.tabbar.dot": { "sys": "sys.color.petal", "live": "TabBar active marker bg-petal" }
 }

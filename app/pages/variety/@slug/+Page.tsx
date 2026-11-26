@@ -1,4 +1,5 @@
 import { useData } from "vike-react/useData";
+import "../../../src/forms.css";
 import "../../../src/variety.css";
 import { VarietyView } from "../../../src/components/variety/VarietyView";
 import type { Data } from "./+data";

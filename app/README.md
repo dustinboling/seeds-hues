@@ -124,8 +124,8 @@ npm run gen:sitemap-lastmod  # live API → src/data/sitemap-lastmod.json (run w
 ## Conventions
 
 - Strict TypeScript (`strict` + `noUncheckedIndexedAccess`), zero `any`.
-- No placeholder stubs — the single exception is the named `TabBarPlaceholder`
-  (structure + slots; the D1 design builds post-cutover).
+- No placeholder stubs. (The shell's bottom bar is the ported live `TabBar`;
+  the D1 redesign builds post-cutover.)
 - WCAG 2.2 AA for the shell; every touched contrast pair is computed from the
   actual token values (`CONTRAST.md`) and cross-checked against the recorded
   ratios before the gate trusts them.
