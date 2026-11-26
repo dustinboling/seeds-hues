@@ -22,7 +22,8 @@
  *   (/variety/*, /seller/*, /crop/*, /series/*, /state/*), keyed per the
  *   §9 contract (the ?small_farm=true variant and every filtered/paged
  *   view keys separately, so a variant can never serve as the clean
- *   page; ?waitlist=… floor states bypass it entirely), purged by the
+ *   page; ?waitlist=… floor states and client-navigation data
+ *   (.pageContext.json) bypass it entirely), purged by the
  *   revalidate paths plus the purged entries' related paths. Only 200s
  *   are stored; redirects and errors bypass.
  *
@@ -40,7 +41,7 @@ import { createCatalogApi } from "../src/data/api";
 import { createDataCache } from "../src/data/cache";
 import { buildErrorReport, own500Html, postErrorReport } from "../src/lib/error-report";
 import { scrubAdminFalsePositives } from "../src/server/admin-scrub";
-import { DETAIL_PATTERN, detailKey, edgeKey, purgeEdge, type EdgeEntry } from "../src/server/edge-cache";
+import { DETAIL_PATTERN, detailKey, edgeKey, isPageContextJsonPath, purgeEdge, type EdgeEntry } from "../src/server/edge-cache";
 import { headersFor, mergeHeaders, routeClassFor, shouldCompress } from "../src/server/headers";
 import {
   fetchMe,
@@ -606,9 +607,16 @@ async function main(): Promise<void> {
       // Edge mock: serve a stored detail 200, else render and maybe store.
       // Floor-state URLs (?waitlist=…) bypass it entirely: a transient
       // per-visitor render must never serve as, or be served from, the
-      // clean page's cache entry.
+      // clean page's cache entry. Client-navigation data
+      // (.pageContext.json) bypasses it too: it varies by the full query
+      // string, so the variety detail key would serve one filter's data
+      // as another's (Quinn F2).
       const floorBypass = url.searchParams.has("waitlist");
-      const cacheable = req.method === "GET" && !floorBypass && (pathname.startsWith("/variety/") || DETAIL_PATTERN.test(pathname));
+      const cacheable =
+        req.method === "GET" &&
+        !floorBypass &&
+        !isPageContextJsonPath(pathname) &&
+        (pathname.startsWith("/variety/") || DETAIL_PATTERN.test(pathname));
       const key = cacheable
         ? pathname.startsWith("/variety/")
           ? edgeKey(pathname, url.search)
